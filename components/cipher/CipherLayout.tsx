@@ -49,6 +49,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const [input, setInput] = useState(cipher.defaultInput)
   const [key, setKey] = useState(cipher.defaultKey)
   const [action, setAction] = useState<'encrypt' | 'decrypt'>('encrypt')
+  const [autoCompute, setAutoCompute] = useState(true)
   
   // Custom options states
   const [hexInput, setHexInput] = useState(true)
@@ -156,10 +157,16 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     }
   }
 
-  // Auto-run once on mount/load
+  // Auto-run with debounce when computation inputs change
   useEffect(() => {
-    handleRun()
-  }, [cipher, action, hexInput, rounds, demoMode])
+    if (!autoCompute) return
+
+    const debounceId = setTimeout(() => {
+      void handleRun()
+    }, 450)
+
+    return () => clearTimeout(debounceId)
+  }, [autoCompute, cipher, input, key, action, hexInput, rounds, demoMode, bobSecret])
 
   // Helper for status badge styling
   const getStatusBadge = (status: 'secure' | 'deprecated' | 'broken') => {
@@ -351,24 +358,42 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               </div>
             )}
 
-            {/* Run button */}
-            <button
-              onClick={handleRun}
-              disabled={loading}
-              className="mt-2 flex w-full items-center justify-center rounded-lg bg-teal-600 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-teal-500 focus:outline-none disabled:opacity-50 dark:bg-teal-500 dark:hover:bg-teal-400"
-            >
-              {loading ? (
-                <span className="flex items-center gap-1.5">
-                  <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  Running in Web Worker...
-                </span>
-              ) : (
-                'Run Computation'
-              )}
-            </button>
+            {/* Run button + Auto Compute toggle */}
+            <div className="mt-2 flex items-center gap-3">
+              <button
+                onClick={handleRun}
+                disabled={loading}
+                className="h-10 flex-1 flex items-center justify-center rounded-lg bg-teal-600 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-teal-500 focus:outline-none disabled:opacity-50 active:scale-[0.98] dark:bg-teal-500 dark:hover:bg-teal-400"
+              >
+                {loading ? (
+                  <span className="flex items-center gap-1.5">
+                    <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Running in Web Worker...
+                  </span>
+                ) : (
+                  'Run Computation'
+                )}
+              </button>
+
+              <label
+                className={`h-10 flex items-center gap-3 rounded-lg border px-3.5 text-xs font-semibold cursor-pointer select-none transition-all duration-200 ${
+                  autoCompute
+                    ? 'border-teal-500/30 bg-teal-50/10 text-teal-700 dark:border-teal-500/30 dark:bg-teal-950/20 dark:text-teal-400'
+                    : 'border-zinc-200 bg-zinc-50/30 text-zinc-500 hover:bg-zinc-50 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900/10 dark:text-zinc-400 dark:hover:bg-zinc-900/30 dark:hover:border-zinc-700'
+                }`}
+              >
+                <span className="tracking-wide">Auto Compute</span>
+                <input
+                  type="checkbox"
+                  checked={autoCompute}
+                  onChange={(e) => setAutoCompute(e.target.checked)}
+                  className="relative h-5 w-9 cursor-pointer appearance-none rounded-full border border-zinc-300 bg-zinc-200 transition-all duration-200 before:absolute before:left-0.5 before:top-0.5 before:h-4 before:w-4 before:rounded-full before:bg-white before:shadow-sm before:transition-all before:duration-200 checked:border-teal-600 checked:bg-teal-600 checked:before:translate-x-4 dark:border-zinc-700 dark:bg-zinc-700 dark:before:bg-zinc-100 dark:checked:border-teal-500 dark:checked:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+                />
+              </label>
+            </div>
           </div>
 
           {/* Errors Display */}
