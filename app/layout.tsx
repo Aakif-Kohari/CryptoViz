@@ -20,6 +20,21 @@ export const metadata: Metadata = {
   },
 };
 
+// Runs synchronously, before the browser paints anything and before React
+// hydrates. Mirrors the exact logic in Navbar's theme-init effect (same
+// 'theme' localStorage key, same system-preference fallback) so the class
+// it sets is never wrong or out of sync with what Navbar would compute.
+const themeInitScript = `
+(function () {
+  try {
+    var stored = localStorage.getItem('theme');
+    var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var isDark = stored ? stored === 'dark' : systemDark;
+    if (isDark) document.documentElement.classList.add('dark');
+  } catch (e) {}
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,8 +43,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      // The inline script below sets the `dark` class before React
+      // hydrates, which will differ from the server-rendered markup.
+      // That's expected here, so hydration warnings for this attribute
+      // are suppressed rather than "fixed."
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
