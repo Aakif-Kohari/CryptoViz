@@ -50,8 +50,13 @@ export function useCipherWorker() {
       new URL('../workers/cipher.worker.ts', import.meta.url)
     )
 
-    worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
-      const { id, success, result, error: workerError } = event.data
+    worker.onmessage = (event: MessageEvent<any>) => {
+      let data = event.data
+      if (data instanceof Uint8Array) {
+        const decoder = new TextDecoder()
+        data = JSON.parse(decoder.decode(data))
+      }
+      const { id, success, result, error: workerError } = data as WorkerResponse
       const request = activeRequestsRef.current.get(id)
 
       if (request) {
@@ -96,8 +101,13 @@ export function useCipherWorker() {
             const worker = new Worker(
               new URL('../workers/cipher.worker.ts', import.meta.url)
             )
-            worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
-              const { id, success, result, error: workerError } = event.data
+            worker.onmessage = (event: MessageEvent<any>) => {
+              let data = event.data
+              if (data instanceof Uint8Array) {
+                const decoder = new TextDecoder()
+                data = JSON.parse(decoder.decode(data))
+              }
+              const { id, success, result, error: workerError } = data as WorkerResponse
               const req = activeRequestsRef.current.get(id)
               if (req) {
                 if (success && result) req.resolve(result)
@@ -123,14 +133,18 @@ export function useCipherWorker() {
         setLoading(true)
         setError(null)
 
-        workerRef.current.postMessage({
+        const payloadStr = JSON.stringify({
           id,
           action,
           cipherId,
           input,
           key,
           options,
-        } as WorkerRequest)
+        })
+        const encoder = new TextEncoder()
+        const payloadBuffer = encoder.encode(payloadStr)
+
+        workerRef.current.postMessage(payloadBuffer, [payloadBuffer.buffer])
       })
     },
     []
