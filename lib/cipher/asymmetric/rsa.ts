@@ -30,6 +30,16 @@ export function extendedGCD(a: bigint, b: bigint): { gcd: bigint; x: bigint; y: 
   const { gcd, x, y } = extendedGCD(b % a, a)
   return { gcd, x: y - (b / a) * x, y: x }
 }
+function gcd(a: bigint, b: bigint): bigint {
+  while (b !== 0n) {
+    [a, b] = [b, a % b]
+  }
+  return a
+}
+
+function lcm(a: bigint, b: bigint): bigint {
+  return (a / gcd(a, b)) * b
+}
 
 export function modInverse(e: bigint, lambda: bigint): bigint {
   const { gcd, x } = extendedGCD(e, lambda)
@@ -101,6 +111,13 @@ function modPowInstrumented(
 
   return { result, steps }
 }
+/**
+ * Parses an RSA key string.
+ * - 2 values "a,b": treated as "n,e" (encrypt) or "n,d" (decrypt)
+ * - 3 values "p,q,e": always p, q, and PUBLIC exponent e — n and
+ *   (if decrypting) d are derived automatically. The third value
+ *   is never d, even in decrypt mode.
+ */
 
 function parseRsaKey(keyStr: string, isPrivateKey: boolean): { n: bigint; e?: bigint; d?: bigint } {
   const cleanKey = keyStr.trim()
@@ -125,11 +142,36 @@ function parseRsaKey(keyStr: string, isPrivateKey: boolean): { n: bigint; e?: bi
   } catch {}
 
   const parts = cleanKey.split(/[\s,]+/).map(p => p.trim()).filter(Boolean)
-  if (parts.length >= 2) {
-    const n = BigInt(parts[0])
-    const val = BigInt(parts[1])
-    return isPrivateKey ? { n, d: val } : { n, e: val }
+  if (parts.length === 3) {
+  const p = BigInt(parts[0])
+  const q = BigInt(parts[1])
+  const e = BigInt(parts[2])
+
+  if (p <= 1n || q <= 1n) {
+    throw new CipherError('INVALID_KEY', 'p and q must both be greater than 1.')
   }
+
+  const n = p * q
+  const lambda = lcm(p - 1n, q - 1n)
+
+  if (isPrivateKey) {
+    return { n, d: modInverse(e, lambda) }
+  }
+  return { n, e }
+}
+if (parts.length === 2) {
+  const n = BigInt(parts[0])
+  const val = BigInt(parts[1])
+
+  if (n < 128n) {
+    throw new CipherError(
+      'INVALID_KEY',
+      `Modulus n=${n} looks too small — did you mean to enter two primes "p, q, e" instead of "n, e"?`
+    )
+  }
+
+  return isPrivateKey ? { n, d: val } : { n, e: val }
+}
 
   throw new CipherError(
     'INVALID_KEY',

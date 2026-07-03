@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { encrypt, decrypt, TEST_VECTORS } from '../../../lib/cipher/asymmetric/rsa'
 
+
+
 describe('RSA Asymmetric Cipher Unit Tests', () => {
   it('passes standard test vectors (encrypt)', () => {
     // Vector 1: M=65, key=3233,17 -> C=2790
@@ -48,4 +50,15 @@ describe('RSA Asymmetric Cipher Unit Tests', () => {
     expect(() => encrypt('65', 'abc')).toThrow(/Invalid RSA key format/)
     expect(() => decrypt('2790', '3233')).toThrow(/Invalid RSA key format/)
   })
+  it('derives n, d from p,q,e for encrypt/decrypt (3-value key format)', () => {
+    const encResult = encrypt('65', '61,53,17')
+    expect(encResult.output).toBe('2790')
+    const decResult = decrypt('2790', '61,53,17')
+    expect(decResult.output).toBe('65')
+  })
+  it('throws a helpful error when n is suspiciously small (likely p,q entered as n,e)', () => {
+    expect(() => encrypt('72', '61,53')).toThrow(/did you mean to enter two primes/)
+  })
+
+ 
 })
