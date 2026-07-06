@@ -15,6 +15,7 @@ export default function Navbar() {
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     const initialTheme = savedTheme || systemTheme
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(initialTheme)
     if (initialTheme === 'dark') {
       document.documentElement.classList.add('dark')
@@ -37,6 +38,7 @@ export default function Navbar() {
   const navLinks = [
     { name: 'Playground', href: '/visualizer/caesar/' },
     { name: 'Benchmark', href: '/benchmark' },
+    { name: 'Challenge', href: '/challenge' },
     { name: 'Docs', href: '/docs' },
     { name: 'Resources', href: '/resources' },
   ];

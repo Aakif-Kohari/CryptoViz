@@ -1,9 +1,24 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Analytics } from "@vercel/analytics/next"
 import Navbar from "../components/layout/Navbar";
 import Typewriter from "../components/layout/typewriter";
+import SkeletonCard from "../components/ui/SkeletonCard";
+
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
   const categories = [
     {
       title: "Classical Ciphers",
@@ -164,34 +179,36 @@ export default function Home() {
       {/* Categories Grid */}
       <section className="mx-auto max-w-5xl py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {categories.map((cat, idx) => (
-            <div
-              key={idx}
-              className={`group relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 dark:border-zinc-850 dark:bg-zinc-900/40 ${cat.glowClass}`}
-            >
-              <div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-50 dark:bg-zinc-950/50">
-                  {cat.icon}
-                </div>
-                <h3 className="mt-4 text-lg font-bold text-zinc-900 dark:text-white transition-colors group-hover:text-teal-600 dark:group-hover:text-teal-400">
-                  {cat.title}
-                </h3>
-                <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                  {cat.description}
-                </p>
-              </div>
-
-              <div className="mt-6 border-t border-zinc-100 pt-4 dark:border-zinc-850">
-                <Link
-                  href={cat.link}
-                  className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-teal-600 hover:text-teal-500 dark:text-teal-400 dark:hover:text-teal-300"
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, idx) => <SkeletonCard key={idx} />)
+            : categories.map((cat, idx) => (
+                <div
+                  key={idx}
+                  className={`group relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 dark:border-zinc-850 dark:bg-zinc-900/40 ${cat.glowClass}`}
                 >
-                  Explore Category 
-                  <span className="ml-1 transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
-                </Link>
-              </div>
-            </div>
-          ))}
+                  <div>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-50 dark:bg-zinc-950/50">
+                      {cat.icon}
+                    </div>
+                    <h3 className="mt-4 text-lg font-bold text-zinc-900 dark:text-white transition-colors group-hover:text-teal-600 dark:group-hover:text-teal-400">
+                      {cat.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                      {cat.description}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 border-t border-zinc-100 pt-4 dark:border-zinc-850">
+                    <Link
+                      href={cat.link}
+                      className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-teal-600 hover:text-teal-500 dark:text-teal-400 dark:hover:text-teal-300"
+                    >
+                      Explore Category 
+                      <span className="ml-1 transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
+                    </Link>
+                  </div>
+                </div>
+              ))}
         </div>
       </section>
 
