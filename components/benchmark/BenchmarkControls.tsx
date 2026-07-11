@@ -64,7 +64,7 @@ export default function BenchmarkControls({
             <button
               key={preset.value}
               onClick={() => onInputSizeChange(preset.value)}
-              className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+              className={`rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-200 hover:scale-[1.03] active:scale-95 ${
                 inputSize === preset.value
                   ? 'border-teal-600 bg-teal-50 text-teal-700 dark:border-teal-400 dark:bg-teal-900/20 dark:text-teal-300'
                   : 'border-zinc-200 text-zinc-700 hover:border-zinc-300 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-600'
@@ -84,8 +84,7 @@ export default function BenchmarkControls({
             value={inputSize}
             onChange={handleCustomInputSize}
             min="1"
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-white"
-            placeholder="Enter custom size in bytes"
+className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white"            placeholder="Enter custom size in bytes"
           />
         </div>
       </div>
@@ -99,7 +98,7 @@ export default function BenchmarkControls({
             <button
               key={preset.value}
               onClick={() => onIterationsChange(preset.value)}
-              className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+             className={`rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-200 hover:scale-[1.03] active:scale-95 ${
                 iterations === preset.value
                   ? 'border-teal-600 bg-teal-50 text-teal-700 dark:border-teal-400 dark:bg-teal-900/20 dark:text-teal-300'
                   : 'border-zinc-200 text-zinc-700 hover:border-zinc-300 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-600'
@@ -120,8 +119,7 @@ export default function BenchmarkControls({
             onChange={handleCustomIterations}
             min="1"
             max="10000"
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-white"
-            placeholder="Enter custom iteration count"
+className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white"            placeholder="Enter custom iteration count"
           />
         </div>
       </div>
@@ -138,8 +136,7 @@ export default function BenchmarkControls({
       <button
         onClick={onBenchmarkStart}
         disabled={isRunning}
-        className="w-full rounded-lg bg-teal-600 px-4 py-3 font-semibold text-white transition-colors hover:bg-teal-700 disabled:opacity-50 dark:bg-teal-500 dark:hover:bg-teal-600"
-      >
+className="w-full rounded-lg bg-teal-600 px-4 py-3 font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.01] hover:bg-teal-700 hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100 dark:bg-teal-500 dark:hover:bg-teal-600"      >
         {isRunning ? (
           <div className="flex items-center justify-center gap-2">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>

@@ -7,8 +7,7 @@ interface PlaygroundCardProps {
 
 export const PlaygroundCard: React.FC<PlaygroundCardProps> = ({ link }) => {
   return (
-    <div className="mt-10 p-6 bg-white dark:bg-gradient-to-br dark:from-zinc-900 dark:to-zinc-950 border border-zinc-200 dark:border-teal-500/30 rounded-lg flex flex-col sm:flex-row gap-4 items-center justify-between shadow-sm dark:shadow-[0_0_15px_rgba(20,184,166,0.1)] relative overflow-hidden group transition-colors">
-      {/* Glow effect */}
+<div className="mt-10 p-6 bg-white dark:bg-gradient-to-br dark:from-zinc-900 dark:to-zinc-950 border border-zinc-200 dark:border-teal-500/30 rounded-lg flex flex-col sm:flex-row gap-4 items-center justify-between shadow-sm dark:shadow-[0_0_15px_rgba(20,184,166,0.1)] relative overflow-hidden group transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">      {/* Glow effect */}
       <div className="absolute inset-0 bg-zinc-50 dark:bg-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
       
       <div className="relative z-10 text-center sm:text-left">

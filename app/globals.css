@@ -60,8 +60,41 @@
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) var(--background, #0d1117);
 }
-
 :root {
   --scrollbar-thumb: #009689;
   --scrollbar-thumb-hover: #04877c;
+}
+
+/* Smooth, consistent transitions for every interactive element */
+a,
+button,
+input,
+select,
+textarea {
+  transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Visible outline when navigating with the keyboard (Tab key) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #009689;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect users who have "reduce motion" turned on in their OS */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -48,8 +48,7 @@ export default function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2">
-            <svg
+<Link href="/" className="flex items-center gap-2 transition-transform duration-200 hover:scale-[1.03] active:scale-95">            <svg
               className="h-8 w-8 text-teal-600 dark:text-teal-400"
               fill="none"
               stroke="currentColor"
@@ -77,7 +76,7 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`text-sm font-medium transition-colors hover:text-zinc-950 dark:hover:text-white ${isActive
+                  className={`relative text-sm font-medium transition-colors duration-200 hover:text-zinc-950 dark:hover:text-white after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:bg-teal-500 after:content-[''] after:transition-all after:duration-300 hover:after:w-full ${isActive
                     ? 'text-teal-600 dark:text-teal-400'
                     : 'text-zinc-600 dark:text-zinc-400'
                     }`}
@@ -93,7 +92,7 @@ export default function Navbar() {
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-all duration-200 hover:scale-110 hover:bg-zinc-100 hover:text-zinc-900 active:scale-95 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
             aria-label="Toggle theme"
           >
             {theme === 'dark' ? (
@@ -122,8 +121,7 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 sm:hidden dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
-            aria-label="Toggle menu"
+className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-all duration-200 hover:scale-110 hover:bg-zinc-100 hover:text-zinc-900 active:scale-95 sm:hidden dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"            aria-label="Toggle menu"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               {isMobileMenuOpen ? (

@@ -265,8 +265,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
             <div className="flex rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-800/80">
               <button
                 onClick={() => setAction('encrypt')}
-                className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all ${
-                  action === 'encrypt'
+className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${                  action === 'encrypt'
                     ? 'bg-white text-zinc-950 shadow dark:bg-zinc-900 dark:text-white'
                     : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
                 }`}
@@ -275,7 +274,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               </button>
               <button
                 onClick={() => setAction('decrypt')}
-                className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all ${
+                className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${
                   action === 'decrypt'
                     ? 'bg-white text-zinc-950 shadow dark:bg-zinc-900 dark:text-white'
                     : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
@@ -392,8 +391,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               <button
                 onClick={handleRun}
                 disabled={loading}
-                className="h-10 flex-1 flex items-center justify-center rounded-lg bg-teal-600 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-teal-500 focus:outline-none disabled:opacity-50 active:scale-[0.98] dark:bg-teal-500 dark:hover:bg-teal-400"
-              >
+className="h-10 flex-1 flex items-center justify-center rounded-lg bg-teal-600 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.01] hover:bg-teal-500 hover:shadow-md focus:outline-none disabled:opacity-50 disabled:hover:scale-100 active:scale-[0.98] dark:bg-teal-500 dark:hover:bg-teal-400"              >
                 {loading ? (
                   <span className="flex items-center gap-1.5">
                     <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
@@ -450,8 +448,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           <div className="flex rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-800/80">
             <button
               onClick={() => setActiveTab('result')}
-              className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all ${
-                activeTab === 'result'
+className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${                activeTab === 'result'
                   ? 'bg-white text-zinc-950 shadow dark:bg-zinc-900 dark:text-white'
                   : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
               }`}
@@ -460,8 +457,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
             </button>
             <button
               onClick={() => setActiveTab('history')}
-              className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all ${
-                activeTab === 'history'
+className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${                activeTab === 'history'
                   ? 'bg-white text-zinc-950 shadow dark:bg-zinc-900 dark:text-white'
                   : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
               }`}

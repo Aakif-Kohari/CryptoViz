@@ -150,16 +150,14 @@ export default function Home() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/visualizer/caesar/"
-              className="rounded-lg bg-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-teal-500 dark:bg-teal-500 dark:hover:bg-teal-400 hover:scale-[1.02]"
-            >
+className="rounded-lg bg-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] hover:bg-teal-500 hover:shadow-lg active:scale-[0.98] dark:bg-teal-500 dark:hover:bg-teal-400"            >
               Open Interactive Playground
             </Link>
             <a
               href="https://github.com"
               target="_blank"
               rel="noreferrer"
-              className="rounded-lg border border-zinc-200 bg-white px-6 py-3 text-sm font-semibold text-zinc-800 shadow-sm transition-all hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 hover:scale-[1.02]"
-            >
+className="rounded-lg border border-zinc-200 bg-white px-6 py-3 text-sm font-semibold text-zinc-800 shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-zinc-50 hover:shadow-md active:scale-[0.98] dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"            >
               View Documentation
             </a>
           </div>
@@ -175,8 +173,7 @@ export default function Home() {
                   className={`group relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 dark:border-zinc-850 dark:bg-zinc-900/40 ${cat.glowClass}`}
                 >
                   <div>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-50 dark:bg-zinc-950/50">
-                      {cat.icon}
+<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-50 transition-transform duration-300 group-hover:scale-110 dark:bg-zinc-950/50">                      {cat.icon}
                     </div>
                     <h3 className="mt-4 text-lg font-bold text-zinc-900 dark:text-white transition-colors group-hover:text-teal-600 dark:group-hover:text-teal-400">
                       {cat.title}

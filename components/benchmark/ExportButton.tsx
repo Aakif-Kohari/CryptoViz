@@ -40,8 +40,7 @@ export default function ExportButton({ results, session, disabled = false }: Exp
       <button
         onClick={handleExportResults}
         disabled={disabled || results.length === 0 || isExporting}
-        className="inline-flex items-center justify-center gap-2 rounded-lg border border-teal-600 bg-white px-4 py-2 font-medium text-teal-600 transition-colors hover:bg-teal-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-teal-400 dark:bg-zinc-900 dark:text-teal-400 dark:hover:bg-zinc-800"
-      >
+className="inline-flex items-center justify-center gap-2 rounded-lg border border-teal-600 bg-white px-4 py-2 font-medium text-teal-600 transition-all duration-200 hover:scale-[1.02] hover:bg-teal-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 dark:border-teal-400 dark:bg-zinc-900 dark:text-teal-400 dark:hover:bg-zinc-800"      >
         {isExporting ? (
           <>
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-teal-600 border-t-transparent dark:border-teal-400"></div>
@@ -71,8 +70,7 @@ export default function ExportButton({ results, session, disabled = false }: Exp
         <button
           onClick={handleExportSession}
           disabled={disabled || isExporting}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-blue-600 bg-white px-4 py-2 font-medium text-blue-600 transition-colors hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-blue-400 dark:bg-zinc-900 dark:text-blue-400 dark:hover:bg-zinc-800"
-        >
+className="inline-flex items-center justify-center gap-2 rounded-lg border border-blue-600 bg-white px-4 py-2 font-medium text-blue-600 transition-all duration-200 hover:scale-[1.02] hover:bg-blue-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 dark:border-blue-400 dark:bg-zinc-900 dark:text-blue-400 dark:hover:bg-zinc-800"        >
           <svg
             className="h-4 w-4"
             fill="none"

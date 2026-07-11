@@ -48,8 +48,7 @@ function FooterColumn({
                   ? "noopener noreferrer"
                   : undefined
               }
-              className="text-sm text-zinc-600 transition-colors hover:text-teal-600 dark:text-zinc-400 dark:hover:text-teal-400"
-            >
+className="inline-block text-sm text-zinc-600 transition-all duration-200 hover:translate-x-1 hover:text-teal-600 dark:text-zinc-400 dark:hover:text-teal-400"            >
               {link.name}
             </Link>
           </li>
@@ -104,8 +103,7 @@ export default function Footer() {
             href="https://github.com/csxark/CryptoViz"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-lg p-2 text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-teal-600 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-teal-400"
-            aria-label="GitHub Repository"
+            className="rounded-lg p-2 text-zinc-600 transition-all duration-200 hover:scale-110 hover:bg-zinc-100 hover:text-teal-600 active:scale-95 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-teal-400"
           >
             <svg
               className="h-5 w-5"

@@ -14,8 +14,7 @@ interface ExampleCardProps {
 
 export const ExampleCard: React.FC<ExampleCardProps> = ({ plaintext, parameters, steps, finalCiphertext }) => {
   return (
-    <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden my-6 shadow-sm dark:shadow-xl transition-colors">
-      {/* Header */}
+<div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden my-6 shadow-sm dark:shadow-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:hover:shadow-2xl">      {/* Header */}
       <div className="bg-zinc-50 dark:bg-zinc-900/40 p-4 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center transition-colors">
         <div>
           <span className="text-xs text-zinc-500 dark:text-zinc-400 font-mono block mb-1">Plaintext</span>

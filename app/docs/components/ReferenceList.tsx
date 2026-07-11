@@ -23,8 +23,7 @@ export const ReferenceList: React.FC<ReferenceListProps> = ({ references }) => {
             href={ref.url} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-zinc-600 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors underline decoration-zinc-300 dark:decoration-zinc-700 hover:decoration-teal-500/50 underline-offset-4 break-words"
-          >
+className="inline-block text-zinc-600 dark:text-zinc-400 transition-all duration-200 hover:translate-x-0.5 hover:text-teal-600 dark:hover:text-teal-400 underline decoration-zinc-300 dark:decoration-zinc-700 hover:decoration-teal-500/50 underline-offset-4 break-words"          >
             {ref.title}
           </a>
         </li>

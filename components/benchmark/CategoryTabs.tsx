@@ -27,7 +27,7 @@ export default function CategoryTabs({
         <button
           key={category.id}
           onClick={() => onCategoryChange(category.id)}
-          className={`inline-flex flex-col items-start gap-1 rounded-lg px-3 py-2 transition-colors ${
+          className={`inline-flex flex-col items-start gap-1 rounded-lg px-3 py-2 transition-all duration-200 hover:scale-[1.02] active:scale-95 ${
             selectedCategory === category.id
               ? 'border border-teal-600 bg-teal-50 dark:border-teal-400 dark:bg-teal-900/20'
               : 'hover:bg-zinc-50 dark:hover:bg-zinc-800'

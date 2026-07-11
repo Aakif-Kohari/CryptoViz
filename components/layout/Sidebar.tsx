@@ -57,10 +57,10 @@ export default function Sidebar({ ciphers }: SidebarProps) {
                   <Link
                     key={cipher.id}
                     href={href}
-                    className={`flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+                   className={`flex items-center rounded-lg border-l-2 border-transparent px-3 py-2 text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
                       isActive
-                        ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/30 dark:text-teal-400'
-                        : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-white'
+                        ? 'border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-950/30 dark:text-teal-400'
+                        : 'text-zinc-600 hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-white'
                     }`}
                   >
                     {cipher.name}
