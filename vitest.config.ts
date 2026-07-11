@@ -5,6 +5,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    setupFiles: ['./tests/setup.ts'],
     coverage: {
       provider: 'v8',
       include: ['lib/cipher/**'],
@@ -12,7 +13,7 @@ export default defineConfig({
         lines: 80,
       },
     },
-    include: ['tests/**/*.test.ts'],
+    include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx'],
   },
   resolve: {
     alias: {

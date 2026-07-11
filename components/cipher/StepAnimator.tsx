@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, memo } from 'react'
+import { useState, useEffect, useCallback, memo } from 'react'
 import type { CipherStep } from '../../lib/cipher/types'
+import { cn } from '../../lib/utils'
 
 interface StepAnimatorProps {
   steps: CipherStep[]
@@ -9,30 +10,122 @@ interface StepAnimatorProps {
   onStepChange: (index: number) => void
 }
 
+const SPEED_OPTIONS = [0.5, 1, 2, 4] as const
+const BASE_INTERVAL_MS = 1500
+
 const StepAnimator = memo(function StepAnimator({ steps, currentStep, onStepChange }: StepAnimatorProps) {
   const [isPlaying, setIsPlaying] = useState(false)
+  const [speed, setSpeed] = useState<(typeof SPEED_OPTIONS)[number]>(1)
+  const [reducedMotion, setReducedMotion] = useState(false)
 
+  const hasMultipleSteps = steps.length > 1
+
+  // Respect the user's OS-level motion preference.
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
+    const mql = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setReducedMotion(mql.matches)
 
-    if (isPlaying) {
-      interval = setInterval(() => {
-        if (currentStep < steps.length - 1) {
-          onStepChange(currentStep + 1)
-        } else {
-          setIsPlaying(false)
-        }
-      }, 1500)
+    const handleChange = (e: MediaQueryListEvent) => {
+      setReducedMotion(e.matches)
+      if (e.matches) setIsPlaying(false)
+    }
+    mql.addEventListener('change', handleChange)
+    return () => mql.removeEventListener('change', handleChange)
+  }, [])
+
+  // Any manual navigation should interrupt auto-advance playback.
+  const goToStep = useCallback(
+    (index: number) => {
+      setIsPlaying(false)
+      onStepChange(Math.min(Math.max(index, 0), Math.max(steps.length - 1, 0)))
+    },
+    [onStepChange, steps.length]
+  )
+
+  const restart = useCallback(() => {
+    setIsPlaying(false)
+    onStepChange(0)
+  }, [onStepChange])
+
+  const togglePlay = useCallback(() => {
+    if (!hasMultipleSteps) return
+
+    if (reducedMotion) {
+      // Skip the animated tween entirely and jump straight to the end.
+      onStepChange(steps.length - 1)
+      return
     }
 
-    return () => {
-      if (interval) clearInterval(interval)
+    if (!isPlaying && currentStep === steps.length - 1) {
+      onStepChange(0)
     }
-  }, [isPlaying, currentStep, steps.length, onStepChange])
+    setIsPlaying(!isPlaying)
+  }, [hasMultipleSteps, reducedMotion, isPlaying, currentStep, steps.length, onStepChange])
+
+  // Auto-advance loop.
+  useEffect(() => {
+    if (!isPlaying || reducedMotion) return
+
+    const msPerStep = BASE_INTERVAL_MS / speed
+    const interval = setInterval(() => {
+      if (currentStep < steps.length - 1) {
+        onStepChange(currentStep + 1)
+      } else {
+        setIsPlaying(false)
+      }
+    }, msPerStep)
+
+    return () => clearInterval(interval)
+  }, [isPlaying, reducedMotion, speed, currentStep, steps.length, onStepChange])
+
+  // Keyboard shortcuts: space to play/pause, arrows to step, home/r to restart, end to jump to last step.
+  useEffect(() => {
+    if (steps.length === 0) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null
+      const tag = target?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target?.isContentEditable) {
+        return
+      }
+
+      switch (e.key) {
+        case ' ':
+        case 'Spacebar':
+          e.preventDefault()
+          togglePlay()
+          break
+        case 'ArrowRight':
+          e.preventDefault()
+          goToStep(currentStep + 1)
+          break
+        case 'ArrowLeft':
+          e.preventDefault()
+          goToStep(currentStep - 1)
+          break
+        case 'Home':
+        case 'r':
+        case 'R':
+          e.preventDefault()
+          restart()
+          break
+        case 'End':
+          e.preventDefault()
+          goToStep(steps.length - 1)
+          break
+        default:
+          break
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [steps.length, currentStep, togglePlay, goToStep, restart])
 
   if (steps.length === 0) return null
 
   const step = steps[currentStep]
+  const progressPercent = hasMultipleSteps ? (currentStep / (steps.length - 1)) * 100 : 100
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50">
@@ -108,27 +201,52 @@ const StepAnimator = memo(function StepAnimator({ steps, currentStep, onStepChan
         )}
       </div>
 
+      {/* Progress Bar */}
+      <div className="mb-3">
+        <div className="mb-1 flex items-center justify-between text-2xs text-zinc-400 dark:text-zinc-500">
+          <span>Progress</span>
+          <span>{Math.round(progressPercent)}%</span>
+        </div>
+        <div
+          className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700"
+          role="progressbar"
+          aria-label="Step progress"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(progressPercent)}
+        >
+          <div
+            className={cn(
+              'h-full rounded-full bg-teal-600 dark:bg-teal-400',
+              !reducedMotion && 'transition-all duration-300 ease-out'
+            )}
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+      </div>
+
       {/* Control bar */}
-      <div className="mt-2 flex flex-col gap-3 border-t border-zinc-100 pt-3 dark:border-zinc-800 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-3 border-t border-zinc-100 pt-3 dark:border-zinc-800 sm:flex-row sm:items-center">
         {/* Playback Controls */}
         <div className="flex items-center gap-1.5">
           <button
-            onClick={() => onStepChange(0)}
-            disabled={currentStep === 0}
+            onClick={restart}
+            disabled={currentStep === 0 && !isPlaying}
+            aria-label="Restart"
             className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
-            title="First Step"
+            title="Restart (Home / R)"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
           </button>
-          
+
           <button
-            onClick={() => onStepChange(Math.max(0, currentStep - 1))}
+            onClick={() => goToStep(currentStep - 1)}
             disabled={currentStep === 0}
+            aria-label="Previous step"
             className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
-            title="Previous Step"
+            title="Previous Step (←)"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -136,9 +254,12 @@ const StepAnimator = memo(function StepAnimator({ steps, currentStep, onStepChan
           </button>
 
           <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 text-white hover:bg-teal-500 focus:outline-none dark:bg-teal-500 dark:hover:bg-teal-400"
-            title={isPlaying ? 'Pause' : 'Play Auto-Advance'}
+            onClick={togglePlay}
+            disabled={!hasMultipleSteps}
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+            aria-pressed={isPlaying}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 text-white hover:bg-teal-500 focus:outline-none disabled:opacity-30 dark:bg-teal-500 dark:hover:bg-teal-400"
+            title={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
           >
             {isPlaying ? (
               // Pause Icon
@@ -154,10 +275,11 @@ const StepAnimator = memo(function StepAnimator({ steps, currentStep, onStepChan
           </button>
 
           <button
-            onClick={() => onStepChange(Math.min(steps.length - 1, currentStep + 1))}
+            onClick={() => goToStep(currentStep + 1)}
             disabled={currentStep === steps.length - 1}
+            aria-label="Next step"
             className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
-            title="Next Step"
+            title="Next Step (→)"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -165,16 +287,37 @@ const StepAnimator = memo(function StepAnimator({ steps, currentStep, onStepChan
           </button>
 
           <button
-            onClick={() => onStepChange(steps.length - 1)}
+            onClick={() => goToStep(steps.length - 1)}
             disabled={currentStep === steps.length - 1}
+            aria-label="Jump to end"
             className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
-            title="Last Step"
+            title="Jump to End (End)"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 005 8v8a1 1 0 001.6.8l5.334-4z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.334-4z" />
             </svg>
           </button>
+
+          {/* Playback Speed */}
+          <div className="ml-1 flex items-center gap-0.5 rounded-md bg-zinc-100 p-0.5 dark:bg-zinc-800" role="group" aria-label="Playback speed">
+            {SPEED_OPTIONS.map((s) => (
+              <button
+                key={s}
+                onClick={() => setSpeed(s)}
+                aria-pressed={speed === s}
+                className={cn(
+                  'rounded px-1.5 py-0.5 text-2xs font-mono font-semibold transition-colors',
+                  speed === s
+                    ? 'bg-white text-teal-700 shadow-sm dark:bg-zinc-900 dark:text-teal-400'
+                    : 'text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200'
+                )}
+                title={`${s}x speed`}
+              >
+                {s}x
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Timeline Scrub Slider */}
@@ -184,7 +327,11 @@ const StepAnimator = memo(function StepAnimator({ steps, currentStep, onStepChan
             min="0"
             max={steps.length - 1}
             value={currentStep}
-            onChange={(e) => onStepChange(parseInt(e.target.value))}
+            onChange={(e) => goToStep(parseInt(e.target.value))}
+            aria-label="Scrub to step"
+            aria-valuemin={0}
+            aria-valuemax={steps.length - 1}
+            aria-valuenow={currentStep}
             className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-zinc-200 dark:bg-zinc-700 accent-teal-600 dark:accent-teal-400"
           />
           <span className="shrink-0 font-mono text-xs text-zinc-400 dark:text-zinc-500">
@@ -192,6 +339,10 @@ const StepAnimator = memo(function StepAnimator({ steps, currentStep, onStepChan
           </span>
         </div>
       </div>
+
+      <p className="mt-2 text-2xs text-zinc-400 dark:text-zinc-600">
+        Shortcuts: Space play/pause · ←/→ step · Home/R restart · End jump to last step
+      </p>
     </div>
   )
 })
