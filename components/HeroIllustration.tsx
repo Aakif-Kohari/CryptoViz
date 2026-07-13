@@ -18,142 +18,133 @@ const rotationStyles = `
 
 export default function HeroIllustration() {
   return (
-    <div className="relative flex h-[620px] w-[620px] -my-6 items-center justify-center overflow-visible bg-[#09090B]">
+    <div className="relative flex h-[660px] w-[620px] -my-4 items-center justify-center overflow-visible bg-black select-none mb-16">
       <style>{rotationStyles}</style>
 
-      {/* Structural Orbit Outlines */}
-      <div className="absolute -left-24 top-10 h-[500px] w-[500px] rounded-full border border-[#2A2A31]/40" />
-      <div className="absolute right-[-120px] top-28 h-[420px] w-[420px] rounded-full border border-[#2A2A31]/40" />
-      <div className="absolute left-[90px] top-[40px] h-[460px] w-[460px] rotate-12 rounded-full border border-[#00C2AE]/5" />
+      {/* Atmospheric Space (No square bounding fills) */}
+      <div className="absolute -left-24 top-14 h-[500px] w-[500px] rounded-full border border-[#2A2A31]/20 pointer-events-none" />
+      <div className="absolute right-[-120px] top-32 h-[420px] w-[420px] rounded-full border border-[#2A2A31]/20 pointer-events-none" />
+      <div className="absolute left-[90px] top-[60px] h-[460px] w-[460px] rotate-12 rounded-full border border-[#00C2AE]/5 pointer-events-none" />
 
-      {/* Primary Teal Soft Ambient Underlays */}
-      <div className="absolute h-[650px] w-[650px] rounded-full bg-[#00C2AE]/5 blur-[170px]" />
-      <div className="absolute h-[520px] w-[520px] rounded-full bg-[#008A7C]/5 blur-[150px]" />
+      {/* Primary Teal Smooth Gradients */}
+      <div className="absolute h-[600px] w-[600px] rounded-full bg-[#00C2AE]/4 blur-[140px] pointer-events-none" />
+      <div className="absolute h-[450px] w-[450px] rounded-full bg-[#008A7C]/3 blur-[120px] pointer-events-none" />
 
-      {/* Workspace Area */}
-      <div className="relative h-[520px] w-[520px]">
+      {/* Infinite Area Container */}
+      <div className="relative h-full w-full flex items-center justify-center">
 
         {/* Vertical Base Light Ray */}
-        <div className="absolute bottom-[72px] left-1/2 h-[210px] w-[140px] -translate-x-1/2 bg-gradient-to-t from-[#00C2AE]/15 via-[#00C2AE]/5 to-transparent blur-2xl" />
+        <div className="absolute bottom-[160px] left-1/2 h-[210px] w-[140px] -translate-x-1/2 bg-gradient-to-t from-[#00C2AE]/10 via-[#00C2AE]/3 to-transparent blur-2xl pointer-events-none" />
 
         {/* 3D Configured Orbit Rings */}
         <div
-          className="absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#2A2A31]"
-          style={{ transform: "translate(-50%,-50%) rotateX(72deg) rotateZ(18deg)" }}
+          className="absolute h-[420px] w-[420px] rounded-full border border-[#2A2A31]/40 pointer-events-none"
+          style={{ transform: "rotateX(72deg) rotateZ(18deg)" }}
         />
         <div
-          className="absolute left-1/2 top-1/2 h-[330px] w-[330px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#00C2AE]/20 animate-spin"
+          className="absolute h-[330px] w-[330px] rounded-full border border-[#00C2AE]/10 animate-spin pointer-events-none"
           style={{
             animationDuration: "28s",
-            transform: "translate(-50%,-50%) rotateX(72deg) rotateY(25deg)",
+            transform: "rotateX(72deg) rotateY(25deg)",
           }}
         />
         <div
-          className="absolute left-1/2 top-1/2 h-[470px] w-[470px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#2A2A31]"
-          style={{ transform: "translate(-50%,-50%) rotateX(70deg) rotateY(-30deg)" }}
+          className="absolute h-[470px] w-[470px] rounded-full border border-[#2A2A31]/30 pointer-events-none"
+          style={{ transform: "rotateX(70deg) rotateY(-30deg)" }}
         />
 
-        {/* Node Points */}
-        <div className="absolute left-[95px] top-[150px] h-2.5 w-2.5 rounded-full bg-[#00C2AE] shadow-[0_0_15px_#00C2AE]" />
-        <div className="absolute right-[110px] top-[120px] h-2.5 w-2.5 rounded-full bg-[#14D8C2] shadow-[0_0_15px_#14D8C2]" />
-        <div className="absolute left-[140px] bottom-[120px] h-2.5 w-2.5 rounded-full bg-[#008A7C] shadow-[0_0_15px_#008A7C]" />
-        <div className="absolute right-[120px] bottom-[150px] h-2.5 w-2.5 rounded-full bg-[#00C2AE] shadow-[0_0_15px_#00C2AE]" />
+        {/* Interactive Floating Network Nodes */}
+        <div className="absolute left-[135px] top-[200px] h-2 w-2 rounded-full bg-[#00C2AE] shadow-[0_0_15px_#00C2AE]" />
+        <div className="absolute right-[140px] top-[170px] h-2 w-2 rounded-full bg-[#14D8C2] shadow-[0_0_15px_#14D8C2]" />
+        <div className="absolute left-[160px] bottom-[220px] h-2 w-2 rounded-full bg-[#008A7C] shadow-[0_0_15px_#008A7C]" />
+        <div className="absolute right-[150px] bottom-[240px] h-2 w-2 rounded-full bg-[#00C2AE] shadow-[0_0_15px_#00C2AE]" />
 
-        {/* SVG Network Interconnects */}
-        <svg className="absolute inset-0 h-full w-full pointer-events-none" viewBox="0 0 520 520">
-          <path d="M130 170 C220 120 310 120 390 170" stroke="#2A2A31" strokeWidth="1" fill="none" />
-          <path d="M140 350 C240 410 320 410 390 340" stroke="#2A2A31" strokeWidth="1" fill="none" />
+        {/* Dynamic Vector Curves */}
+        <svg className="absolute inset-0 h-full w-full pointer-events-none opacity-40" viewBox="0 0 620 660">
+          <path d="M180 240 C270 190 350 190 440 240" stroke="#2A2A31" strokeWidth="1" fill="none" />
+          <path d="M190 420 C290 470 360 470 430 410" stroke="#2A2A31" strokeWidth="1" fill="none" />
         </svg>
 
-        {/* Algorithm Modules (Strict Palette integration) */}
+        {/* --- Unified System Feature Blocks --- */}
 
         {/* AES - Top Left */}
         <div
-          className="absolute left-[70px] top-[90px] animate-[float_6s_ease-in-out_infinite]"
-          style={{ transform: "perspective(1000px) rotateY(18deg) rotateX(8deg)" }}
+          className="absolute left-[65px] top-[130px] animate-[float_6s_ease-in-out_infinite]"
+          style={{ transform: "perspective(1000px) rotateY(16deg) rotateX(6deg)" }}
         >
-          <div className="rounded-xl border border-[#2A2A31] bg-[#16161A] px-6 py-5 shadow-xl">
+          <div className="rounded-xl border border-[#2A2A31] bg-[#16161A] px-5 py-4 shadow-xl">
             <Lock className="mb-2 text-[#00C2AE]" size={18} />
             <p className="text-[10px] font-medium tracking-widest text-[#8A8A94] uppercase">AES-256</p>
-            <h3 className="text-base font-semibold text-[#F5F5F5]">Encryption</h3>
+            <h3 className="text-sm font-semibold text-[#F5F5F5]">Encryption</h3>
           </div>
         </div>
 
         {/* SHA - Top Right */}
         <div
-          className="absolute right-[40px] top-[140px] animate-[float_7s_ease-in-out_infinite]"
-          style={{ transform: "perspective(1000px) rotateY(-18deg)" }}
+          className="absolute right-[45px] top-[190px] animate-[float_7s_ease-in-out_infinite]"
+          style={{ transform: "perspective(1000px) rotateY(-16deg)" }}
         >
-          <div className="rounded-xl border border-[#2A2A31] bg-[#16161A] px-6 py-5 shadow-xl">
+          <div className="rounded-xl border border-[#2A2A31] bg-[#16161A] px-5 py-4 shadow-xl">
             <Cpu className="mb-2 text-[#00C2AE]" size={18} />
             <p className="text-[10px] font-medium tracking-widest text-[#8A8A94] uppercase">SHA-512</p>
-            <h3 className="text-base font-semibold text-[#F5F5F5]">Hash Function</h3>
+            <h3 className="text-sm font-semibold text-[#F5F5F5]">Hash Function</h3>
           </div>
         </div>
 
         {/* RSA - Bottom Left */}
         <div
-          className="absolute left-[50px] bottom-[120px] animate-[float_8s_ease-in-out_infinite]"
-          style={{ transform: "perspective(1000px) rotateY(18deg)" }}
+          className="absolute left-[55px] bottom-[185px] animate-[float_8s_ease-in-out_infinite]"
+          style={{ transform: "perspective(1000px) rotateY(16deg)" }}
         >
-          <div className="rounded-xl border border-[#2A2A31] bg-[#16161A] px-6 py-5 shadow-xl">
+          <div className="rounded-xl border border-[#2A2A31] bg-[#16161A] px-5 py-4 shadow-xl">
             <KeyRound className="mb-2 text-[#00C2AE]" size={18} />
             <p className="text-[10px] font-medium tracking-widest text-[#8A8A94] uppercase">RSA</p>
-            <h3 className="text-base font-semibold text-[#F5F5F5]">Asymmetric</h3>
+            <h3 className="text-sm font-semibold text-[#F5F5F5]">Asymmetric</h3>
           </div>
         </div>
 
-        {/* ECC - Bottom Right */}
+        {/* ECC - Bottom Right (Shifted Upwards to avoid screen clipping) */}
         <div
-          className="absolute right-[60px] bottom-[90px] animate-[float_9s_ease-in-out_infinite]"
-          style={{ transform: "perspective(1000px) rotateY(-18deg)" }}
+          className="absolute right-[55px] bottom-[155px] animate-[float_9s_ease-in-out_infinite]"
+          style={{ transform: "perspective(1000px) rotateY(-16deg)" }}
         >
-          <div className="rounded-xl border border-[#2A2A31] bg-[#16161A] px-6 py-5 shadow-xl">
+          <div className="rounded-xl border border-[#2A2A31] bg-[#16161A] px-5 py-4 shadow-xl">
             <Shield className="mb-2 text-[#00C2AE]" size={18} />
             <p className="text-[10px] font-medium tracking-widest text-[#8A8A94] uppercase">ECC</p>
-            <h3 className="text-base font-semibold text-[#F5F5F5]">Elliptic Curve</h3>
+            <h3 className="text-sm font-semibold text-[#F5F5F5]">Elliptic Curve</h3>
           </div>
         </div>
 
-        {/* Center Focal Core Glows */}
-        <div className="absolute left-1/2 top-[180px] -translate-x-1/2">
-          <div className="absolute left-1/2 top-1/2 h-[260px] w-[260px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#00C2AE]/10 blur-[90px]" />
-          <div className="absolute left-1/2 top-1/2 h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#008A7C]/5 blur-[120px]" />
+        {/* Core Shield Radial Soft Blur Fields */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="h-[200px] w-[200px] rounded-full bg-[#00C2AE]/8 blur-[60px]" />
+          <div className="absolute h-[300px] w-[300px] rounded-full bg-[#008A7C]/4 blur-[100px]" />
         </div>
 
-        {/* --- Rotating Floating Shield Node (Box constraints fixed) --- */}
-        <div className="absolute left-1/2 top-[170px] -translate-x-1/2 animate-[float_6s_ease-in-out_infinite]">
+        {/* --- Seamless Floating Shield Unit --- */}
+        <div className="absolute z-10 animate-[float_6s_ease-in-out_infinite]">
           <div
-            className="relative flex h-44 w-44 items-center justify-center rounded-full
-                       border border-[#2A2A31] bg-[#16161A]
-                       shadow-[0_0_50px_rgba(0,194,174,0.1)]
+            className="relative flex h-40 w-44 items-center justify-center rounded-full
+                       border border-[#2A2A31] bg-[#101013]
+                       shadow-[0_0_40px_rgba(0,194,174,0.08)]
                        animate-spin-y"
           >
-            {/* Geometric Concentric Rings within the core component boundary */}
-            <div className="absolute inset-3 rounded-full border border-[#2A2A31]/50" />
-            <div className="absolute inset-6 rounded-full border border-[#00C2AE]/10" />
+            {/* Native Circular Overlay Metrics */}
+            <div className="absolute inset-3 rounded-full border border-[#2A2A31]/40 pointer-events-none" />
+            <div className="absolute inset-6 rounded-full border border-[#00C2AE]/5 pointer-events-none" />
 
             <Shield
-              size={85}
+              size={80}
               strokeWidth={1.5}
-              className="text-[#00C2AE] drop-shadow-[0_0_20px_rgba(0,194,174,0.4)]"
+              className="text-[#00d2bd] drop-shadow-[0_0_15px_rgba(0,194,174,0.35)]"
             />
             <Lock
-              size={28}
+              size={24}
               strokeWidth={2}
-              className="absolute text-[#F5F5F5] drop-shadow-[0_0_10px_rgba(245,245,245,0.3)]"
+              className="absolute text-[#F5F5F5] drop-shadow-[0_0_8px_rgba(245,245,245,0.25)]"
             />
           </div>
         </div>
-
-      </div>
-
-      {/* --- Platform Dock System --- */}
-      <div className="absolute bottom-[45px] left-1/2 -translate-x-1/2">
-        <div className="absolute left-1/2 top-4 h-24 w-48 -translate-x-1/2 rounded-full bg-[#00C2AE]/10 blur-[40px]" />
-        <div className="h-7 w-52 rounded-full border border-[#2A2A31] bg-[#101013]" />
-        <div className="absolute left-1/2 top-1.5 h-3 w-36 -translate-x-1/2 rounded-full border border-[#2A2A31] bg-[#16161A]" />
-        <div className="absolute left-1/2 top-2 h-1.5 w-16 -translate-x-1/2 rounded-full bg-[#00C2AE] shadow-[0_0_15px_#00C2AE]" />
       </div>
 
     </div>

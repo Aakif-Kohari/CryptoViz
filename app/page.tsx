@@ -72,17 +72,17 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#09090B] font-sans transition-colors duration-300 text-[#F5F5F5]">
+    <div className="min-h-screen bg-black font-sans transition-colors duration-300 text-[#F5F5F5]">
       <Navbar />
       <Analytics />
 
       {/* Hero Frame */}
-      <section className="relative overflow-hidden bg-[#000000]">
+      <section className="relative overflow-hidden bg-black">
 
         {/* Unified Design System Vector Ambient Underlay */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute left-1/2 top-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#00C2AE]/5 blur-[200px]" />
-          <div className="absolute -left-40 top-10 h-[450px] w-[450px] rounded-full bg-[#008A7C]/5 blur-[150px]" />
+          <div className="absolute left-1/2 top-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#00C2AE]/3 blur-[200px]" />
+          <div className="absolute -left-40 top-10 h-[450px] w-[450px] rounded-full bg-[#008A7C]/3 blur-[150px]" />
         </div>
 
         {/* Architecture Grid Mesh */}
@@ -97,7 +97,7 @@ export default function Home() {
           }}
         />
 
-        <div className="mx-auto max-w-[1400px] px-6 pt-16 pb-24 lg:px-8">
+        <div className="mx-auto max-w-[1400px] px-6  pb-20 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-[1fr_520px]">
             
             {/* LEFT ENGINE LOGIC INFO */}
@@ -106,14 +106,13 @@ export default function Home() {
               <div className="absolute left-10 top-24 h-1.5 w-1.5 rounded-full bg-[#00C2AE]/60 animate-pulse" />
               <div className="absolute left-72 top-40 h-1 w-1 rounded-full bg-[#00C2AE]/40 animate-pulse" />
 
-              <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight text-[#F5F5F5] lg:text-6xl">
+              <h1 className="text-5xl font-extrabold leading-[1.15] tracking-tight text-[#F5F5F5] pt-8 lg:text-6xl">
                 Interact with
                 <span className="block mt-1">Modern</span>
                 <span className="block w-fit bg-gradient-to-r from-[#00C2AE] to-[#14D8C2] bg-clip-text text-transparent pb-2">
                   Cryptography
                 </span>
               </h1>
-
 
               <p className="mt-6 max-w-xl text-base leading-relaxed text-[#8A8A94]">
                 Learn encryption, hashing and secure communication through
@@ -138,20 +137,20 @@ export default function Home() {
               </div>
 
               {/* Minimal Core Cards */}
-              <div className="mt-14 grid grid-cols-3 gap-4">
-                <div className="group rounded-xl border border-[#2A2A31] bg-[#101013] p-5 transition-all duration-300">
+              <div className="mt-14 pt-20 grid grid-cols-3 gap-4">
+                <div className="group rounded-xl border border-[#2A2A31] bg-black p-5 transition-all duration-300">
                   <Zap className="mb-3 text-[#00C2AE]" size={20} />
                   <h4 className="text-sm font-semibold text-[#F5F5F5]">Interactive</h4>
                   <p className="mt-1 text-xs text-[#8A8A94]">Live playground execution</p>
                 </div>
 
-                <div className="group rounded-xl border border-[#2A2A31] bg-[#101013] p-5 transition-all duration-300">
+                <div className="group rounded-xl border border-[#2A2A31] bg-black p-5 transition-all duration-300">
                   <ShieldCheck className="mb-3 text-[#00C2AE]" size={20} />
                   <h4 className="text-sm font-semibold text-[#F5F5F5]">Secure</h4>
                   <p className="mt-1 text-xs text-[#8A8A94]">Standard algorithms</p>
                 </div>
 
-                <div className="group rounded-xl border border-[#2A2A31] bg-[#101013] p-5 transition-all duration-300">
+                <div className="group rounded-xl border border-[#2A2A31] bg-black p-5 transition-all duration-300">
                   <BookOpen className="mb-3 text-[#00C2AE]" size={20} />
                   <h4 className="text-sm font-semibold text-[#F5F5F5]">Learn</h4>
                   <p className="mt-1 text-xs text-[#8A8A94]">Step-by-step analytics</p>
@@ -160,7 +159,7 @@ export default function Home() {
             </div>
 
             {/* RIGHT MOUNTED VIEWPORT */}
-            <div className="relative flex items-center justify-center">
+            <div className="relative flex items-center justify-center overflow-visible">
               <HeroIllustration />
             </div>
 
@@ -169,14 +168,14 @@ export default function Home() {
       </section>
 
       {/* Grid Platform Items */}
-      <section className="mx-auto max-w-5xl py-12 px-4 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-5xl py-12 px-4 sm:px-6 lg:px-8 bg-black overflow-hidden">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {isLoading
             ? Array.from({ length: 4 }).map((_, idx) => <SkeletonCard key={idx} />)
             : categories.map((cat, idx) => (
                 <div
                   key={idx}
-                  className={`group relative flex flex-col justify-between rounded-xl border border-[#2A2A31] bg-[#101013] p-6 shadow-sm transition-all duration-200 ${cat.glowClass}`}
+                  className={`group relative flex flex-col justify-between rounded-xl border border-[#2A2A31] bg-black p-6 shadow-sm transition-all duration-200 ${cat.glowClass}`}
                 >
                   <div>
                     <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[#16161A] border border-[#2A2A31]">
@@ -201,26 +200,6 @@ export default function Home() {
                   </div>
                 </div>
               ))}
-        </div>
-      </section>
-
-      {/* Signature Stack Banner */}
-      <section className="mx-auto max-w-5xl py-6 px-4 sm:px-6 lg:px-8 text-center">
-        <div className="rounded-xl border border-[#2A2A31] bg-[#101013] p-5">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-[#8A8A94]">
-            Performance & Security Stack
-          </span>
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-[#B3B3B8]">
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#00C2AE]" /> Next.js 15 Static Export
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#00C2AE]" /> Web Worker Threading
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#00C2AE]" /> Tailwind Engine
-            </span>
-          </div>
         </div>
       </section>
 
