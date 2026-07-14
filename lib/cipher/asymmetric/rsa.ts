@@ -2,6 +2,158 @@ import { CipherError } from '../../utils/errors'
 import { toByteArray, fromByteArray } from '../../utils/encoding'
 import type { CipherResult, CipherStep, CipherMetadata, CipherOptions, TestVector } from '../types'
 
+// ---------------------------------------------------------------------------
+// Real mode: genuine RSA-OAEP (SHA-256) via the WebCrypto API (crypto.subtle).
+//
+// A fixed 2048-bit demo key pair is embedded so that encrypt -> decrypt can
+// round-trip inside the visualizer even though encrypt and decrypt arrive as
+// independent worker messages. This is a throwaway teaching key, NOT a secret:
+// in a real deployment the private key would be generated per session and would
+// never leave the browser/OS key store. The maths (OAEP padding + modular
+// exponentiation over a 2048-bit modulus) is performed by the platform.
+// ---------------------------------------------------------------------------
+const DEMO_RSA_SPKI_B64 =
+  'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmoHyoJfLKhFKPe3L6rP9C0Kvbby2qSsIObBaj6FCWICpzk8qtR+fjKzWLwZvqAIYH2TaaI+CjZwnIgOUQUVZwrOQeFZ2ZLHzsQKFa2xZ9bD/1PAN4YgJuo2ARTGb31VuPEKxdAjqYgt++R1UCmaMzpo2sjc0QRJFK03zQ52W9rPCS7IdMvxM73it66TWhFRc8+9nvmjLMJTTRevrypybPp70xyMnwPASLpG/dycfrjt5PURkQb8klYMMwGiRXyqTw1t6qckBcFq5kuQCHi8E0EbTsQRLaq+BLRHHgIlxQ8GkrPUJeO6olu4jVwl8w2x4Es3UagQSgBY5s3aZQwClxQIDAQAB'
+const DEMO_RSA_PKCS8_B64 =
+  'MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCagfKgl8sqEUo97cvqs/0LQq9tvLapKwg5sFqPoUJYgKnOTyq1H5+MrNYvBm+oAhgfZNpoj4KNnCciA5RBRVnCs5B4VnZksfOxAoVrbFn1sP/U8A3hiAm6jYBFMZvfVW48QrF0COpiC375HVQKZozOmjayNzRBEkUrTfNDnZb2s8JLsh0y/EzveK3rpNaEVFzz72e+aMswlNNF6+vKnJs+nvTHIyfA8BIukb93Jx+uO3k9RGRBvySVgwzAaJFfKpPDW3qpyQFwWrmS5AIeLwTQRtOxBEtqr4EtEceAiXFDwaSs9Ql47qiW7iNXCXzDbHgSzdRqBBKAFjmzdplDAKXFAgMBAAECggEAGmxu2hgbnq4mTEEGxrTRacOVzOahNn0tgvAuDLI/bnNSlv3jB+bImn5UguZO4iS5i2TsFUW1xhIWfzKtgBwkJbAf3PSserwUOQl9V8nH+MS0e+4x8YgaYdUhQrQhPCiYGaYuQvHjY7EjnebuIHk5S3wELqZSQW6mdal3GPEyiC4h3WJidE88RysNJjhJdrWwHw3u/ccZP49N2ZujxXciPUHDbboGRPKlI9p5Sj4vfM3/Et0bONpqtGgiJRp068kBkH4AKcYNO1tKWPP8TvC2tdPBN3hmzK+/x2B9YkR64tuh55nEOeQNi/k7gAsaqMPuDycEAX95VQM9xqpxp0PBYQKBgQDIP8c7YoV5yIsdRpg/AEx64r020pmsaemwxpox1GA7SeIKxvoxUxFrdGUBDiPzf8PH3f/dPb/oSwHwG2AgK3rvhTRuPScPjiAP/zkmw8T/4iey4kLHw/IFdDZU7L7FjvS/RJXxaw35MconhYKUAyPJs3D6/fRE28IJZQ4sQ4NvvwKBgQDFhhCHB20ge1zt/S6WE6xdHdk/dFl3bdnKCW0x/O4ssThr7k+cAMLUQq4t8szc/ho7INzIS64GDE/907S1CJwmfh3lsQNcYZPirF+i0uYk8M5ig/vX9G6gSZIQwW5GrG3E/cILXM8n/nngkCSKYDOxxh8yw4IgIcHxlmWtdiNLewKBgBSKBiNfLZWaLjqofQEpRK7uBr5Sx5RZoLCTDknCIMS0BU1Zr1vTy1ucKqf7DVDyb+BWMuI8bSykVOSNykRCcW+T2Bbeit0blMpPQUtqlRAx4CSG9JaM0IwiqVf4mHCnAw+DN2X1tw8yPivjk8ser1MG5rW3ypAtgi94gAWmPxr9AoGBALhLqkgSqcNQ1xhGzpzApmYLX5RRHtjL6hUUTooBkMiqYhZyOF06aI5b2OCOVo8rl5Xrx5Qq6KhD/K68RTNUYT2ZFpQlYRllAfLRGjp1xL5a4HYS53xLWJy9iEeR8y6F27WdftvTMIYEbfsVAsMJl7IbRSi8OkF4vdiHlz8Np0jZAoGBAMYtXgikg1wYPmY1EDLikI/44y0tCMp62JtC+6suBA+OxUZM5R89z2liNvRHbwl9Pha3XeOW13xSmfX9Reshdzh87dAtwj8beI+5ycY1jsG4/OskbdRRh24xy1o8lqyBJSfRHhhd3C3wksv1Wy3L9vLnDgEZkD7/bVscxmGHs6Go'
+
+// RSA-OAEP with a 2048-bit modulus and SHA-256 tolerates at most
+// 256 - 2*hashLen - 2 = 256 - 64 - 2 = 190 plaintext bytes per operation.
+const RSA_OAEP_MAX_BYTES = 190
+const RSA_OAEP_ALGO = { name: 'RSA-OAEP', hash: 'SHA-256' } as const
+
+function getSubtle(): SubtleCrypto {
+  const subtle = globalThis.crypto?.subtle
+  if (!subtle) {
+    throw new CipherError(
+      'WEBCRYPTO_UNAVAILABLE',
+      'WebCrypto (crypto.subtle) is unavailable in this environment; RSA real mode requires it.'
+    )
+  }
+  return subtle
+}
+
+// crypto.subtle's DOM types require BufferSource backed by a (non-shared)
+// ArrayBuffer; our Uint8Array helpers are typed as ArrayBufferLike. The bytes
+// are always ArrayBuffer-backed at runtime, so this narrowing is safe.
+function asBufferSource(bytes: Uint8Array): BufferSource {
+  return bytes as unknown as BufferSource
+}
+
+// Imported CryptoKeys are cached so we import the demo key material only once.
+let demoPublicKeyPromise: Promise<CryptoKey> | null = null
+let demoPrivateKeyPromise: Promise<CryptoKey> | null = null
+
+function getDemoPublicKey(): Promise<CryptoKey> {
+  if (!demoPublicKeyPromise) {
+    demoPublicKeyPromise = getSubtle().importKey(
+      'spki',
+      asBufferSource(toByteArray(DEMO_RSA_SPKI_B64, 'base64')),
+      RSA_OAEP_ALGO,
+      false,
+      ['encrypt']
+    )
+  }
+  return demoPublicKeyPromise
+}
+
+function getDemoPrivateKey(): Promise<CryptoKey> {
+  if (!demoPrivateKeyPromise) {
+    demoPrivateKeyPromise = getSubtle().importKey(
+      'pkcs8',
+      asBufferSource(toByteArray(DEMO_RSA_PKCS8_B64, 'base64')),
+      RSA_OAEP_ALGO,
+      false,
+      ['decrypt']
+    )
+  }
+  return demoPrivateKeyPromise
+}
+
+async function rsaRealEncrypt(
+  input: string,
+  options: CipherOptions,
+  start: number
+): Promise<CipherResult> {
+  const inputBytes = toByteArray(input, options.encoding || 'utf8')
+  if (inputBytes.length > RSA_OAEP_MAX_BYTES) {
+    throw new CipherError(
+      'INPUT_TOO_LONG',
+      `RSA-OAEP with a 2048-bit key can encrypt at most ${RSA_OAEP_MAX_BYTES} bytes at once (got ${inputBytes.length}). Real RSA is used to wrap a symmetric key, not bulk data.`
+    )
+  }
+
+  const publicKey = await getDemoPublicKey()
+  const cipherBuffer = await getSubtle().encrypt(RSA_OAEP_ALGO, publicKey, asBufferSource(inputBytes))
+  const output = fromByteArray(new Uint8Array(cipherBuffer), 'hex')
+
+  const steps: CipherStep[] = []
+  if (options.instrument) {
+    steps.push({
+      index: 0,
+      label: 'RSA-OAEP 2048-bit Encryption (WebCrypto)',
+      inputState: fromByteArray(inputBytes, 'hex'),
+      outputState: output,
+      note: 'Real mode: the plaintext is encrypted with genuine RSA-OAEP (SHA-256) using crypto.subtle over a 2048-bit key. OAEP adds randomised padding, so the 256-byte ciphertext changes on every run while still decrypting back to the same plaintext.',
+      isMilestone: true,
+    })
+  }
+
+  return {
+    output,
+    outputEncoding: 'hex',
+    steps,
+    metadata: { ...METADATA, keySize: 2048 },
+    durationMs: performance.now() - start,
+  }
+}
+
+async function rsaRealDecrypt(
+  input: string,
+  options: CipherOptions,
+  start: number
+): Promise<CipherResult> {
+  let cipherBytes: Uint8Array
+  try {
+    cipherBytes = toByteArray(input.trim(), 'hex')
+  } catch {
+    throw new CipherError('INVALID_PADDING', 'Ciphertext must be a hex string produced by RSA real mode.')
+  }
+
+  let outputString: string
+  try {
+    const privateKey = await getDemoPrivateKey()
+    const plainBuffer = await getSubtle().decrypt(RSA_OAEP_ALGO, privateKey, asBufferSource(cipherBytes))
+    outputString = fromByteArray(new Uint8Array(plainBuffer), 'utf8')
+  } catch (err) {
+    if (err instanceof CipherError) throw err
+    throw new CipherError(
+      'INVALID_PADDING',
+      'RSA-OAEP decryption failed. The ciphertext must come from this tool’s RSA real mode (it is bound to the embedded demo key).'
+    )
+  }
+
+  const steps: CipherStep[] = []
+  if (options.instrument) {
+    steps.push({
+      index: 0,
+      label: 'RSA-OAEP 2048-bit Decryption (WebCrypto)',
+      inputState: input,
+      outputState: outputString,
+      note: 'Real mode: crypto.subtle performs the RSA private-key operation and verifies/strips the OAEP padding. A wrong or tampered ciphertext throws instead of returning garbage.',
+      isMilestone: true,
+    })
+  }
+
+  return {
+    output: outputString,
+    outputEncoding: 'utf8',
+    steps,
+    metadata: { ...METADATA, keySize: 2048 },
+    durationMs: performance.now() - start,
+  }
+}
+
 const METADATA: CipherMetadata = {
   name: 'RSA',
   securityStatus: 'secure', // Real mode is secure, demo mode is legacy/broken
@@ -204,51 +356,22 @@ export function encrypt(
   input: string,
   key: string = '',
   options: CipherOptions = {}
-): CipherResult {
+): CipherResult | Promise<CipherResult> {
   if (input === undefined || input === null || input === '') {
     throw new CipherError('INPUT_REQUIRED', 'Input is required.')
   }
 
   const start = performance.now()
   const isRealMode = options.mode === 'real'
+
+  // Real Mode: genuine RSA-OAEP (SHA-256) via WebCrypto (async).
+  if (isRealMode) {
+    return rsaRealEncrypt(input, options, start)
+  }
+
   const keyInfo = parseRsaKey(key, false)
   const n = keyInfo.n
   const e = keyInfo.e ?? 65537n // Default public exponent
-
-  // Real Mode RSA-OAEP 2048-bit (Simulated/WebCrypto representation)
-  if (isRealMode) {
-    // RSA real mode processes input as bytes and returns hex
-    const inputBytes = toByteArray(input, options.encoding || 'utf8')
-    // Simulate ciphertext generation (for standard visualizer compatibility)
-    // We prefix the output to indicate 2048-bit simulated RSA-OAEP
-    const mockOutput = '3082010a0282010100' + Array.from(inputBytes)
-      .map(b => (b ^ 0x42).toString(16).padStart(2, '0'))
-      .join('')
-      .padEnd(512, 'a')
-
-    const steps: CipherStep[] = []
-    if (options.instrument) {
-      steps.push({
-        index: 0,
-        label: 'RSA-OAEP 2048-bit Encryption',
-        inputState: fromByteArray(inputBytes, 'hex'),
-        outputState: mockOutput,
-        note: 'Real mode uses WebCrypto RSA-OAEP with a 2048-bit key. The mathematical details (exponentiation with a 617-digit modulus) are handled securely off-thread by the browser/OS keystore.',
-        isMilestone: true,
-      })
-    }
-
-    return {
-      output: mockOutput,
-      outputEncoding: 'hex',
-      steps,
-      metadata: {
-        ...METADATA,
-        keySize: 2048,
-      },
-      durationMs: performance.now() - start,
-    }
-  }
 
   // Demo Mode (Small Primes)
   const steps: CipherStep[] = []
@@ -328,60 +451,25 @@ export function decrypt(
   input: string,
   key: string = '',
   options: CipherOptions = {}
-): CipherResult {
+): CipherResult | Promise<CipherResult> {
   if (input === undefined || input === null || input === '') {
     throw new CipherError('INPUT_REQUIRED', 'Ciphertext input is required.')
   }
 
   const start = performance.now()
   const isRealMode = options.mode === 'real'
+
+  // Real Mode: genuine RSA-OAEP (SHA-256) via WebCrypto (async).
+  if (isRealMode) {
+    return rsaRealDecrypt(input, options, start)
+  }
+
   const keyInfo = parseRsaKey(key, true)
   const n = keyInfo.n
   const d = keyInfo.d
 
   if (!d) {
     throw new CipherError('INVALID_KEY', 'Private exponent d is required for decryption.')
-  }
-
-  // Real Mode RSA-OAEP 2048-bit (Simulated/WebCrypto representation)
-  if (isRealMode) {
-    // In simulated real mode, we reverse the XOR mock operation
-    const steps: CipherStep[] = []
-    let outputString = ''
-    try {
-      const cleanHex = input.trim().replace(/^3082010a0282010100/, '')
-      const bytes: number[] = []
-      for (let i = 0; i < cleanHex.length; i += 2) {
-        const char = cleanHex.slice(i, i + 2)
-        if (char === 'aa') break // padding end
-        bytes.push(parseInt(char, 16) ^ 0x42)
-      }
-      outputString = new TextDecoder().decode(new Uint8Array(bytes))
-    } catch (err) {
-      throw new CipherError('INVALID_PADDING', 'Decryption failed (invalid RSA-OAEP structure/padding).')
-    }
-
-    if (options.instrument) {
-      steps.push({
-        index: 0,
-        label: 'RSA-OAEP 2048-bit Decryption',
-        inputState: input,
-        outputState: outputString,
-        note: 'Real mode uses WebCrypto RSA-OAEP. Secure private key operations are handled by the browser/OS key store, protecting the private exponent d from exposure.',
-        isMilestone: true,
-      })
-    }
-
-    return {
-      output: outputString,
-      outputEncoding: 'utf8',
-      steps,
-      metadata: {
-        ...METADATA,
-        keySize: 2048,
-      },
-      durationMs: performance.now() - start,
-    }
   }
 
   // Demo Mode

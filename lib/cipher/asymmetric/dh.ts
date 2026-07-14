@@ -1,7 +1,27 @@
+import { p256 } from '@noble/curves/nist.js'
+import { sha256 } from '@noble/hashes/sha2.js'
 import { CipherError } from '../../utils/errors'
 import { toByteArray, fromByteArray } from '../../utils/encoding'
 import { modPow } from './rsa'
-import type { CipherResult, CipherStep, CipherMetadata, CipherOptions, TestVector } from '../types'
+import type { CipherResult, CipherStep, CipherMetadata, CipherOptions, Encoding, TestVector } from '../types'
+
+/**
+ * Derive a valid P-256 private scalar deterministically from arbitrary input.
+ * SHA-256 of the seed is almost always a valid secret key; on the astronomically
+ * rare chance it is out of range we re-hash until getPublicKey accepts it.
+ */
+function derivePrivateScalar(seed: string, encoding: Encoding): Uint8Array {
+  let candidate = sha256(toByteArray(seed, encoding))
+  for (let i = 0; i < 16; i++) {
+    try {
+      p256.getPublicKey(candidate)
+      return candidate
+    } catch {
+      candidate = sha256(candidate)
+    }
+  }
+  throw new CipherError('INVALID_KEY', 'Could not derive a valid P-256 private key from the input.')
+}
 
 const METADATA: CipherMetadata = {
   name: 'Diffie-Hellman',
@@ -102,29 +122,46 @@ export function encrypt(
   const start = performance.now()
   const isRealMode = options.mode === 'real'
 
-  // Real Mode: ECDH P-256 Simulation
+  // Real Mode: genuine ECDH over the NIST P-256 curve via @noble/curves.
   if (isRealMode) {
     const steps: CipherStep[] = []
-    
-    // Simulate ECDH
-    // If the input is hex private key or string, we generate a mock public key and shared secret
-    const alicePriv = toByteArray(input, options.encoding || 'utf8')
-    const alicePubMock = '04' + Array.from(alicePriv).map(b => (b ^ 0xaa).toString(16).padStart(2, '0')).join('').padEnd(128, 'b')
-    const sharedSecretMock = Array.from(alicePriv).map(b => (b ^ 0x55).toString(16).padStart(2, '0')).join('').padEnd(64, 'c')
+
+    // Alice's private scalar is derived deterministically from the input seed;
+    // Bob is the counterparty with an ephemeral (freshly generated) key pair.
+    const alicePriv = derivePrivateScalar(input, options.encoding || 'utf8')
+    const bobPriv = p256.utils.randomSecretKey()
+    const alicePub = p256.getPublicKey(alicePriv)
+    const bobPub = p256.getPublicKey(bobPriv)
+
+    // ECDH: each party multiplies its own private key by the other's public key.
+    // The result is the same shared point; its x-coordinate is the raw secret.
+    const aliceShared = p256.getSharedSecret(alicePriv, bobPub)
+    const bobShared = p256.getSharedSecret(bobPriv, alicePub)
+    if (fromByteArray(aliceShared, 'hex') !== fromByteArray(bobShared, 'hex')) {
+      // Should be mathematically impossible; guards against a broken curve impl.
+      throw new CipherError('ALGORITHM_UNSUPPORTED', 'ECDH shared secret mismatch between parties.')
+    }
+
+    // Strip the 0x02/0x03 compressed-point prefix to expose the 32-byte x-coordinate.
+    const sharedSecret = fromByteArray(aliceShared.slice(1), 'hex')
 
     if (options.instrument) {
       steps.push({
         index: 0,
-        label: 'ECDH P-256 Key Exchange',
+        label: 'ECDH P-256 Key Exchange (real)',
         inputState: fromByteArray(alicePriv, 'hex'),
-        outputState: sharedSecretMock,
-        note: 'Real mode uses Elliptic Curve Diffie-Hellman (ECDH) over the NIST P-256 curve. The shared secret is derived securely via scalar multiplication of Alice\'s private key and Bob\'s public key.',
+        outputState: sharedSecret,
+        table: [
+          { key: "Alice's public key", value: fromByteArray(alicePub, 'hex') },
+          { key: "Bob's public key (ephemeral)", value: fromByteArray(bobPub, 'hex') },
+        ],
+        note: "Real mode performs genuine Elliptic Curve Diffie-Hellman over NIST P-256 using @noble/curves. Alice computes a·B and Bob computes b·A; both scalar multiplications land on the same point, so the shared secret (its x-coordinate) matches. In practice this raw secret is run through a KDF before use as a key.",
         isMilestone: true,
       })
     }
 
     return {
-      output: sharedSecretMock,
+      output: sharedSecret,
       outputEncoding: 'hex',
       steps,
       metadata: {

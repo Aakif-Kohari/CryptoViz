@@ -34,10 +34,21 @@ describe('Diffie-Hellman Key Exchange Unit Tests', () => {
     expect(() => decrypt('2')).toThrow(/does not support decryption/)
   })
 
-  it('supports real mode ECDH P-256 simulation', () => {
-    const res = encrypt('alice_secret_hex', '', { mode: 'real', instrument: true })
+  it('real mode performs a genuine ECDH P-256 key exchange', () => {
+    const res = encrypt('alice_secret_seed', '', { mode: 'real', instrument: true })
     expect(res.metadata.name).toBe('ECDH P-256')
     expect(res.metadata.keySize).toBe(256)
+    // Shared secret is the 32-byte x-coordinate -> 64 hex chars.
+    expect(res.output).toMatch(/^[0-9a-f]{64}$/)
     expect(res.steps.length).toBe(1)
+    expect(res.steps[0].note).toMatch(/Elliptic Curve Diffie-Hellman/)
+    // Both parties' public keys are shown, proving a real exchange took place.
+    expect(res.steps[0].table).toHaveLength(2)
+  })
+
+  it('real mode yields a valid shared secret for any seed input', () => {
+    const res = encrypt('6,15', '', { mode: 'real' })
+    expect(res.output).toMatch(/^[0-9a-f]{64}$/)
+    expect(res.outputEncoding).toBe('hex')
   })
 })

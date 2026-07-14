@@ -31,7 +31,7 @@ type WorkerRequestMessage = WorkerRequest | Uint8Array
 
 const workerScope = self as unknown as Worker
 
-workerScope.addEventListener('message', (event: MessageEvent<WorkerRequestMessage>) => {
+workerScope.addEventListener('message', async (event: MessageEvent<WorkerRequestMessage>) => {
   const startTime = performance.now()
   let requestData: WorkerRequestMessage = event.data
   if (requestData instanceof Uint8Array) {
@@ -145,6 +145,10 @@ workerScope.addEventListener('message', (event: MessageEvent<WorkerRequestMessag
       default:
         throw new Error(`Unsupported cipher ID: ${cipherId}`)
     }
+
+    // Some cipher implementations (e.g. RSA real mode via WebCrypto) are async
+    // and return a Promise; awaiting a plain value is a no-op for the rest.
+    result = await result
 
     const durationMs = performance.now() - startTime
     const response: WorkerResponse = {

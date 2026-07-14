@@ -7,15 +7,9 @@ import type { CipherResult } from '../../lib/cipher/types'
 import { useCipherWorker } from '../../lib/hooks/useCipherWorker'
 import TraceTransferControls from './TraceTransferControls'
 import { traceToCipherResult, type CipherTraceFile } from '../../lib/utils/cipherTrace'
-import type { CipherResult } from '../../lib/cipher/types'
 import type { AnimationSpeed } from './StepAnimator'
 import WorkspacePresetManager from './WorkspacePresetManager'
 import type { WorkspacePreset } from '../../lib/utils/workspacePresets'
-import TraceTransferControls from './TraceTransferControls'
-import {
-  traceToCipherResult,
-  type CipherTraceFile,
-} from '../../lib/utils/cipherTrace'
 
 const StepAnimator = dynamic(() => import('./StepAnimator'), { ssr: false })
 const PlayfairGrid = dynamic(() => import('./PlayfairGrid'), { ssr: false })
