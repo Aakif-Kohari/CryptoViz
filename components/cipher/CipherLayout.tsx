@@ -506,6 +506,19 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       clearScopeAnnotations(annotationStore, annotationScope),
     )
 
+    const permalink = buildVisualizerPermalink(window.location.href, {
+      input,
+      key,
+      direction: cipher.id === 'dh' ? 'encrypt' : action,
+      step: currentStep,
+      options: {
+        hexInput,
+        rounds,
+        demoMode,
+        bobSecret,
+      },
+    })
+
     await navigator.clipboard.writeText(permalink)
   }
 
