@@ -1,42 +1,45 @@
-import Link from "next/link";
-import Navbar from "../../components/layout/Navbar";
-import RecentlyViewedCiphers from "../../components/cipher/RecentlyViewedCiphers";
+import Link from 'next/link'
+import Navbar from '../../components/layout/Navbar'
+import FavoriteCipherButton from '../../components/cipher/FavoriteCipherButton'
+import PinnedCiphers from '../../components/cipher/PinnedCiphers'
+import RecentlyViewedCiphers from '../../components/cipher/RecentlyViewedCiphers'
 import {
   CIPHER_REGISTRY,
   type CipherDefinition,
-} from "../../lib/cipher/registry";
+} from '../../lib/cipher/registry'
 
-const categoryLabels: Record<CipherDefinition["category"], string> = {
-  classical: "Classical",
-  symmetric: "Symmetric",
-  asymmetric: "Asymmetric",
-  hash: "Hashing",
-};
+const categoryLabels: Record<CipherDefinition['category'], string> = {
+  classical: 'Classical',
+  symmetric: 'Symmetric',
+  asymmetric: 'Asymmetric',
+  hash: 'Hashing',
+}
 
-const categoryDescriptions: Record<CipherDefinition["category"], string> = {
-  classical: "Explore foundational substitution and transposition techniques.",
-  symmetric:
-    "Study shared-key encryption, block ciphers, and stream operations.",
-  asymmetric: "Understand public-key cryptography and secure key exchange.",
-  hash: "Inspect hashing, message authentication, and password derivation.",
-};
+const categoryDescriptions: Record<CipherDefinition['category'], string> = {
+  classical: 'Explore foundational substitution and transposition techniques.',
+  symmetric: 'Study shared-key encryption, block ciphers, and stream operations.',
+  asymmetric: 'Understand public-key cryptography and secure key exchange.',
+  hash: 'Inspect hashing, message authentication, and password derivation.',
+}
 
-const statusStyles: Record<CipherDefinition["securityStatus"], string> = {
+const statusStyles: Record<CipherDefinition['securityStatus'], string> = {
   secure:
-    "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-400",
+    'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-400',
   deprecated:
-    "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-400",
+    'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-400',
   broken:
-    "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400",
-};
+    'border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400',
+}
 
 export default function VisualizerIndex() {
   const categories = (
-    ["classical", "symmetric", "asymmetric", "hash"] as const
+    ['classical', 'symmetric', 'asymmetric', 'hash'] as const
   ).map((category) => ({
     category,
-    ciphers: CIPHER_REGISTRY.filter((cipher) => cipher.category === category),
-  }));
+    ciphers: CIPHER_REGISTRY.filter(
+      (cipher) => cipher.category === category,
+    ),
+  }))
 
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-100">
@@ -51,11 +54,12 @@ export default function VisualizerIndex() {
             Choose an algorithm to explore
           </h1>
           <p className="mt-4 text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Run cryptographic operations inside browser Web Workers and inspect
-            each algorithm through an interactive, step-by-step trace.
+            Pin frequently used algorithms, revisit recent ciphers, and inspect
+            each operation through an interactive step-by-step trace.
           </p>
         </header>
 
+        <PinnedCiphers ciphers={CIPHER_REGISTRY} />
         <RecentlyViewedCiphers ciphers={CIPHER_REGISTRY} />
 
         <div className="space-y-10">
@@ -79,30 +83,43 @@ export default function VisualizerIndex() {
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {ciphers.map((cipher) => (
-                  <Link
+                  <article
                     key={cipher.id}
-                    href={`/visualizer/${cipher.id}/`}
-                    className="group rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:border-zinc-800 dark:bg-zinc-900/40 dark:hover:border-teal-700"
+                    className="group relative rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/40 dark:hover:border-teal-700"
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <h3 className="text-lg font-bold text-zinc-900 group-hover:text-teal-700 dark:text-white dark:group-hover:text-teal-400">
-                        {cipher.name}
-                      </h3>
-                      <span
-                        className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${statusStyles[cipher.securityStatus]}`}
+                      <Link
+                        href={`/visualizer/${cipher.id}/`}
+                        className="min-w-0 flex-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
                       >
-                        {cipher.securityStatus}
-                      </span>
+                        <h3 className="text-lg font-bold text-zinc-900 group-hover:text-teal-700 dark:text-white dark:group-hover:text-teal-400">
+                          {cipher.name}
+                        </h3>
+                      </Link>
+
+                      <FavoriteCipherButton
+                        cipherId={cipher.id}
+                        cipherName={cipher.name}
+                      />
                     </div>
+
+                    <span
+                      className={`mt-3 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${statusStyles[cipher.securityStatus]}`}
+                    >
+                      {cipher.securityStatus}
+                    </span>
 
                     <p className="mt-3 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
                       {cipher.description}
                     </p>
 
-                    <span className="mt-5 inline-flex text-sm font-semibold text-teal-700 dark:text-teal-400">
+                    <Link
+                      href={`/visualizer/${cipher.id}/`}
+                      className="mt-5 inline-flex text-sm font-semibold text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:text-teal-400"
+                    >
                       Open visualizer →
-                    </span>
-                  </Link>
+                    </Link>
+                  </article>
                 ))}
               </div>
             </section>
@@ -110,5 +127,5 @@ export default function VisualizerIndex() {
         </div>
       </main>
     </div>
-  );
+  )
 }
