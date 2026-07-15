@@ -21,11 +21,16 @@ function validateParams(params: Pbkdf2Params): void {
   if (![16, 24, 32].includes(params.keyLength)) {
     throw new Error('keyLength must be 16, 24, or 32 bytes (AES-128/192/256)')
   }
-  if (params.salt && !/^[0-9a-fA-F]+$/.test(params.salt)) {
-    throw new Error('salt must be a hex string')
+  if (params.salt) {
+    if (!/^[0-9a-fA-F]+$/.test(params.salt)) {
+      throw new Error('salt must be a hex string')
+    }
+    if (params.salt.length % 2 !== 0) {
+      throw new Error('salt must have an even number of hex characters')
+    }
   }
 }
-
+  
 export async function deriveKey(
   password: string,
   params: Pbkdf2Params

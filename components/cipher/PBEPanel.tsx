@@ -12,8 +12,6 @@ export default function PBEPanel() {
   const [payloadInput, setPayloadInput] = useState('')
   const [iterations, setIterations] = useState(100_000)
   const [hash, setHash] = useState<'SHA-256' | 'SHA-512'>('SHA-256')
-  const [keyLength, setKeyLength] = useState<16 | 24 | 32>(32)
-
   const [result, setResult] = useState<{
     payload?: PbePayload
     plaintext?: string
@@ -31,14 +29,13 @@ export default function PBEPanel() {
         const { payload, derivedKeyHex } = await pbeEncrypt(plaintext, password, {
           iterations,
           hash,
-          keyLength,
         })
         setResult({ payload, derivedKeyHex })
       } else {
         const parsed: PbePayload = JSON.parse(payloadInput)
         const { plaintext: recovered, derivedKeyHex } = await pbeDecrypt(parsed, password)
-        setResult({ plaintext: recovered, derivedKeyHex })
-      }
+        setResult({ plaintext: recovered, derivedKeyHex, payload: parsed })
+   }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong.')
     } finally {
@@ -98,7 +95,7 @@ export default function PBEPanel() {
       )}
 
       {mode === 'encrypt' && (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs font-medium">Iterations</label>
             <input
@@ -120,18 +117,6 @@ export default function PBEPanel() {
             >
               <option value="SHA-256">SHA-256</option>
               <option value="SHA-512">SHA-512</option>
-            </select>
-          </div>
-          <div>
-            <label className="text-xs font-medium">Key Length</label>
-            <select
-              value={keyLength}
-              onChange={(e) => setKeyLength(Number(e.target.value) as 16 | 24 | 32)}
-              className="w-full mt-1 rounded border px-2 py-1 bg-background text-sm"
-            >
-              <option value={16}>128-bit (AES-128)</option>
-              <option value={24}>192-bit (AES-192)</option>
-              <option value={32}>256-bit (AES-256)</option>
             </select>
           </div>
         </div>
@@ -163,7 +148,7 @@ export default function PBEPanel() {
             )}
           </div>
 
-          {result.payload && (
+          {result.payload && mode === 'encrypt' && (
             <>
               <h4 className="text-sm font-semibold pt-2">Exportable Payload</h4>
               <pre className="text-xs bg-background rounded p-2 overflow-x-auto">
@@ -171,7 +156,6 @@ export default function PBEPanel() {
               </pre>
             </>
           )}
-
           {result.plaintext !== undefined && (
             <>
               <h4 className="text-sm font-semibold pt-2">Recovered Plaintext</h4>

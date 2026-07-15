@@ -1,7 +1,7 @@
-import { WorkerPool } from '../workers/pool'
 import { encrypt as aesEncrypt, decrypt as aesDecrypt } from './symmetric/aes'
 import { CipherError } from '../utils/errors'
 import type { WorkerRequest } from '../../types/worker'
+import { sharedCipherPool } from '../workers/sharedPool'
 
 export interface PbePayload {
   algorithm: 'AES-256-CBC'
@@ -27,7 +27,6 @@ const DEFAULT_KEY_LENGTH = 32 // AES-256
 // already be using for cipher.worker.ts (check CipherLayout.tsx for the
 // existing pool instantiation and reuse that instance instead of creating
 // a second one here, to avoid spinning up double the worker threads).
-const kdfPool = new WorkerPool(() => new Worker(new URL('../workers/cipher.worker.ts', import.meta.url)))
 
 async function deriveKeyViaWorker(
   password: string,
@@ -44,7 +43,7 @@ async function deriveKeyViaWorker(
     },
   }
 
-  const response = await kdfPool.execute(message)
+  const response = await sharedCipherPool.execute(message)
   // cipher.worker.ts's response has no `type` field, so pool.ts's fallback
   // branch delivers the raw worker payload here.
   if (response.success === false) {
