@@ -2,8 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import FavoriteCipherButton from '../cipher/FavoriteCipherButton'
-import PinnedCiphers from '../cipher/PinnedCiphers'
+
 
 interface SidebarCipher {
   id: string
@@ -49,18 +48,12 @@ export default function Sidebar({ ciphers }: SidebarProps) {
     'asymmetric',
   ]
 
-  const pinnedCompatibleCiphers = ciphers.map((cipher) => ({
-    ...cipher,
-    description: cipher.description ?? '',
-    defaultKey: cipher.defaultKey ?? '',
-    defaultInput: cipher.defaultInput ?? '',
-    securityStatus: cipher.securityStatus ?? 'secure',
-  }))
+  
 
   return (
     <aside className="w-full shrink-0 border-b border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950 md:w-64 md:border-b-0 md:border-r">
       <div className="space-y-6 md:sticky md:top-4">
-        <PinnedCiphers ciphers={pinnedCompatibleCiphers} compact />
+        
 
         {categories.map((category) => (
           <section key={category}>
@@ -85,12 +78,6 @@ export default function Sidebar({ ciphers }: SidebarProps) {
                     >
                       <span className="block truncate">{cipher.name}</span>
                     </Link>
-
-                    <FavoriteCipherButton
-                      cipherId={cipher.id}
-                      cipherName={cipher.name}
-                      compact
-                    />
                   </li>
                 )
               })}
