@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- High-contrast "penguin" with large uniform regions so that ECB's
+       block-by-block leakage becomes visible when the pixels are encrypted. -->
+  <rect width="128" height="128" fill="#ffffff"/>
+  <ellipse cx="64" cy="70" rx="38" ry="48" fill="#111111"/>
+  <ellipse cx="64" cy="30" rx="24" ry="24" fill="#111111"/>
+  <ellipse cx="64" cy="78" rx="24" ry="36" fill="#ffffff"/>
+  <circle cx="55" cy="26" r="5" fill="#ffffff"/>
+  <circle cx="73" cy="26" r="5" fill="#ffffff"/>
+  <circle cx="55" cy="27" r="2.4" fill="#111111"/>
+  <circle cx="73" cy="27" r="2.4" fill="#111111"/>
+  <polygon points="64,30 56,38 72,38" fill="#f59e0b"/>
+  <polygon points="50,116 40,124 60,124" fill="#f59e0b"/>
+  <polygon points="78,116 68,124 88,124" fill="#f59e0b"/>
+</svg>

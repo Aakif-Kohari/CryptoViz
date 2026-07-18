@@ -43,6 +43,7 @@ describe('cipher comparison utilities', () => {
       key: aes.defaultKey,
       options: {
         hexInput: true,
+        mode: 'ECB',
       },
     })
   })

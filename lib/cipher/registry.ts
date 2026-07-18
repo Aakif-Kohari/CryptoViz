@@ -179,6 +179,19 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
         type: 'boolean',
         default: true,
       },
+      {
+        name: 'Mode of Operation',
+        id: 'mode',
+        type: 'select',
+        default: 'ECB',
+        choices: [
+          { label: 'ECB (Electronic Codebook)', value: 'ECB' },
+          { label: 'CBC (Cipher Block Chaining)', value: 'CBC' },
+          { label: 'CTR (Counter)', value: 'CTR' },
+          { label: 'CFB (Cipher Feedback)', value: 'CFB' },
+          { label: 'OFB (Output Feedback)', value: 'OFB' },
+        ],
+      },
     ],
   },
   {
