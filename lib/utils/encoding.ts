@@ -6,13 +6,15 @@ export function toByteArray(str: string, encoding: Encoding): Uint8Array {
     return new TextEncoder().encode(str)
   }
   if (encoding === 'hex') {
-    const clean = str.replace(/[^0-9a-fA-F]/g, '')
-    if (clean.length % 2 !== 0) {
-      throw new CipherError('INVALID_KEY', 'Hex string must have an even length.')
+    if (str.length > 0 && /[^0-9a-fA-F]/.test(str)) {
+      throw new CipherError('INVALID_INPUT', `Invalid hex string: contains non-hex characters.`)
     }
-    const arr = new Uint8Array(clean.length / 2)
-    for (let i = 0; i < clean.length; i += 2) {
-      arr[i / 2] = parseInt(clean.slice(i, i + 2), 16)
+    if (str.length % 2 !== 0) {
+      throw new CipherError('INVALID_INPUT', 'Hex string must have an even number of characters.')
+    }
+    const arr = new Uint8Array(str.length / 2)
+    for (let i = 0; i < str.length; i += 2) {
+      arr[i / 2] = parseInt(str.slice(i, i + 2), 16)
     }
     return arr
   }
