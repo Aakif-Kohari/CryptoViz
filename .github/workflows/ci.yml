@@ -26,6 +26,12 @@ jobs:
         run: npm run lint
         continue-on-error: true
 
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
       - name: Run tests
         run: npm test
 
