@@ -17,6 +17,24 @@ const METADATA = {
   blockSize: 16,
 }
 
+// --- Modes of operation ---
+// ECB/CBC are block modes (require PKCS7 padding); CTR/CFB/OFB turn AES into a
+// stream cipher (keystream XORed with the data, no padding, ciphertext length
+// equals plaintext length). See NIST SP 800-38A.
+export type AesMode = 'ECB' | 'CBC' | 'CTR' | 'CFB' | 'OFB'
+
+const STREAM_MODES: readonly AesMode[] = ['CTR', 'CFB', 'OFB']
+const IV_MODES: readonly AesMode[] = ['CBC', 'CTR', 'CFB', 'OFB']
+
+const isStreamMode = (mode: AesMode): boolean => STREAM_MODES.includes(mode)
+const needsIv = (mode: AesMode): boolean => IV_MODES.includes(mode)
+
+function parseMode(mode?: string): AesMode {
+  const up = (mode ?? 'ECB').toUpperCase()
+  const known: readonly AesMode[] = ['ECB', 'CBC', 'CTR', 'CFB', 'OFB']
+  return known.includes(up as AesMode) ? (up as AesMode) : 'ECB'
+}
+
 // --- AES Tables ---
 
 const S_BOX = new Uint8Array([
@@ -274,10 +292,14 @@ function aesInstrumented(
   inputBytes: Uint8Array,
   keyBytes: Uint8Array,
   decrypt: boolean,
-  mode: 'ECB' | 'CBC' = 'ECB',
+  mode: AesMode = 'ECB',
   iv: Uint8Array | null = null,
   ivProvided = false
 ): CipherResult {
+  if (isStreamMode(mode)) {
+    return aesStreamInstrumented(inputBytes, keyBytes, decrypt, mode, iv!, ivProvided)
+  }
+
   const start = performance.now()
   const roundKeys = expandKey(keyBytes)
   const nRounds = roundKeys.length - 1
@@ -615,6 +637,166 @@ function xorBlocks(a: Uint8Array, b: Uint8Array): Uint8Array {
   }
   return result
 }
+
+// --- Stream modes (CTR / CFB / OFB) ---
+
+// Increment a 128-bit big-endian counter block in place (used by CTR mode).
+function incrementCounter(counter: Uint8Array): void {
+  for (let i = counter.length - 1; i >= 0; i--) {
+    counter[i] = (counter[i] + 1) & 0xff
+    if (counter[i] !== 0) break
+  }
+}
+
+/**
+ * Shared CTR/CFB/OFB engine. Each mode derives a 16-byte keystream block from
+ * the block cipher and XORs it with the data; encryption and decryption are the
+ * same operation except for the CFB feedback source. Handles a short final block
+ * (only the needed bytes are XORed), so arbitrary-length input round-trips
+ * without padding. When `steps` is provided, per-block instrumentation is pushed.
+ */
+function runStreamMode(
+  inputBytes: Uint8Array,
+  roundKeys: Uint8Array[],
+  mode: AesMode,
+  iv: Uint8Array,
+  decrypt: boolean,
+  steps?: CipherStep[]
+): Uint8Array {
+  const output = new Uint8Array(inputBytes.length)
+  const numBlocks = Math.ceil(inputBytes.length / 16)
+
+  // CTR keeps a running counter; CFB/OFB keep a running feedback block.
+  const counter = new Uint8Array(iv)
+  let feedback = new Uint8Array(iv)
+
+  for (let b = 0; b < numBlocks; b++) {
+    const offset = b * 16
+    const blockLen = Math.min(16, inputBytes.length - offset)
+    const inBlock = inputBytes.subarray(offset, offset + blockLen)
+
+    // Derive the keystream block E(cipherInput) for this position.
+    let cipherInput: Uint8Array
+    if (mode === 'CTR') {
+      cipherInput = new Uint8Array(counter)
+    } else {
+      cipherInput = new Uint8Array(feedback)
+    }
+    const keystream = processBlock(cipherInput, roundKeys, false)
+
+    // XOR keystream with the (possibly short) data block.
+    const outBlock = new Uint8Array(blockLen)
+    for (let i = 0; i < blockLen; i++) {
+      outBlock[i] = inBlock[i] ^ keystream[i]
+    }
+    output.set(outBlock, offset)
+
+    // Advance the mode state for the next block.
+    if (mode === 'CTR') {
+      incrementCounter(counter)
+    } else if (mode === 'OFB') {
+      feedback = new Uint8Array(keystream)
+    } else {
+      // CFB: feedback is the ciphertext block (out on encrypt, in on decrypt).
+      const cipherBlock = decrypt ? inBlock : outBlock
+      const next = new Uint8Array(16)
+      next.set(cipherBlock)
+      feedback = next
+    }
+
+    if (steps) {
+      const blockNum = b + 1
+      const sourceLabel =
+        mode === 'CTR'
+          ? 'counter block'
+          : mode === 'OFB'
+            ? b === 0
+              ? 'IV'
+              : 'previous keystream output'
+            : b === 0
+              ? 'IV'
+              : 'previous ciphertext block'
+      steps.push({
+        index: steps.length,
+        label: `Block ${blockNum} — ${mode} Keystream`,
+        inputState: fromByteArray(cipherInput, 'hex'),
+        outputState: fromByteArray(keystream, 'hex'),
+        note: `Encrypted the ${sourceLabel} with the AES block cipher to produce this block's 16-byte keystream.`,
+        isMilestone: b === 0,
+      })
+      steps.push({
+        index: steps.length,
+        label: `Block ${blockNum} — ${mode} XOR`,
+        inputState: fromByteArray(inBlock, 'hex'),
+        outputState: fromByteArray(outBlock, 'hex'),
+        note: `XORed the ${decrypt ? 'ciphertext' : 'plaintext'} block with the keystream to recover the ${decrypt ? 'plaintext' : 'ciphertext'}.`,
+      })
+    }
+  }
+
+  return output
+}
+
+function aesStreamInstrumented(
+  inputBytes: Uint8Array,
+  keyBytes: Uint8Array,
+  decrypt: boolean,
+  mode: AesMode,
+  iv: Uint8Array,
+  ivProvided: boolean
+): CipherResult {
+  const start = performance.now()
+  const roundKeys = expandKey(keyBytes)
+  const steps: CipherStep[] = []
+
+  steps.push({
+    index: 0,
+    label: 'AES Key Schedule Expansion',
+    inputState: fromByteArray(keyBytes, 'hex'),
+    outputState: `Generated ${roundKeys.length} round keys.`,
+    note: `Key of size ${keyBytes.length} bytes expanded into ${roundKeys.length} round keys using Rijndael key schedule.`,
+    isMilestone: true,
+  })
+
+  const ivLabel = mode === 'CTR' ? 'CTR Initial Counter Block' : `${mode} Initialization Vector (IV)`
+  const ivNote =
+    mode === 'CTR'
+      ? 'The counter block starts here and is incremented (big-endian) for every subsequent block; each E(counter) forms the keystream.'
+      : mode === 'OFB'
+        ? 'The IV seeds the keystream feedback loop; each keystream block is fed back through AES to produce the next one, independent of the data.'
+        : 'The IV seeds the feedback register; each ciphertext block is fed back through AES to mask the next plaintext block.'
+  steps.push({
+    index: steps.length,
+    label: ivLabel,
+    inputState: decrypt
+      ? 'Extracted from ciphertext prefix'
+      : ivProvided
+        ? 'Caller-provided 16-byte IV'
+        : 'Random 16-byte IV',
+    outputState: fromByteArray(iv, 'hex'),
+    note: ivNote,
+    isMilestone: true,
+  })
+
+  const outputBytes = runStreamMode(inputBytes, roundKeys, mode, iv, decrypt, steps)
+
+  steps.push({
+    index: steps.length,
+    label: `AES ${mode} ${decrypt ? 'Decryption' : 'Encryption'} Output`,
+    inputState: `Total blocks: ${Math.ceil(inputBytes.length / 16)}`,
+    outputState: fromByteArray(outputBytes, 'hex'),
+    note: `Completed AES ${mode} ${decrypt ? 'decryption' : 'encryption'}.`,
+    isMilestone: true,
+  })
+
+  return {
+    output: fromByteArray(outputBytes, 'hex'),
+    outputEncoding: 'hex',
+    steps,
+    metadata: { ...METADATA, modeOfOperation: mode },
+    durationMs: performance.now() - start,
+  }
+}
 // PKCS7 padding helper
 function padPKCS7(bytes: Uint8Array, blockSize: number): Uint8Array {
   const paddingVal = blockSize - (bytes.length % blockSize)
@@ -646,11 +828,22 @@ function aesFast(
   inputBytes: Uint8Array,
   keyBytes: Uint8Array,
   decrypt: boolean,
-  mode: 'ECB' | 'CBC',
+  mode: AesMode,
   iv: Uint8Array | null
 ): CipherResult {
   const start = performance.now()
   const roundKeys = expandKey(keyBytes)
+
+  if (isStreamMode(mode)) {
+    const outputBytes = runStreamMode(inputBytes, roundKeys, mode, iv!, decrypt)
+    return {
+      output: fromByteArray(outputBytes, 'hex'),
+      outputEncoding: 'hex',
+      steps: [],
+      metadata: { ...METADATA, modeOfOperation: mode },
+      durationMs: performance.now() - start,
+    }
+  }
 
   const numBlocks = Math.ceil(inputBytes.length / 16)
   const outputBytes = new Uint8Array(numBlocks * 16)
@@ -733,12 +926,13 @@ export function encrypt(
     )
   }
 
-  const paddedInput = padPKCS7(inputBytes, 16)
+  const mode = parseMode(options.mode)
 
-  const mode: 'ECB' | 'CBC' = options.mode === 'CBC' ? 'CBC' : 'ECB'
+  // Stream modes (CTR/CFB/OFB) are unpadded; block modes (ECB/CBC) use PKCS7.
+  const processedInput = isStreamMode(mode) ? inputBytes : padPKCS7(inputBytes, 16)
 
   let iv: Uint8Array | null = null
-  if (mode === 'CBC') {
+  if (needsIv(mode)) {
     if (options.iv) {
       if (!/^[0-9a-fA-F]{32}$/.test(options.iv)) {
         throw new CipherError('INVALID_IV', 'AES IV must be exactly 32 hex characters (16 bytes).')
@@ -752,12 +946,12 @@ export function encrypt(
 
   let result: CipherResult
   if (options.instrument) {
-    result = aesInstrumented(paddedInput, keyBytes, false, mode, iv, !!options.iv)
+    result = aesInstrumented(processedInput, keyBytes, false, mode, iv, !!options.iv)
   } else {
-    result = aesFast(paddedInput, keyBytes, false, mode, iv)
+    result = aesFast(processedInput, keyBytes, false, mode, iv)
   }
 
-  if (mode === 'CBC') {
+  if (needsIv(mode)) {
     // Prepend IV (as hex) to the ciphertext so decrypt() can recover it
     const ivHex = fromByteArray(iv!, 'hex')
     return { ...result, output: ivHex + result.output }
@@ -774,21 +968,22 @@ export function decrypt(
   validateInput(input)
   validateKey(key)
 
- const mode: 'ECB' | 'CBC' = options.mode === 'CBC' ? 'CBC' : 'ECB'
+  const mode = parseMode(options.mode)
 
   let iv: Uint8Array | null = null
   let cipherHex = input
 
-  if (mode === 'CBC') {
+  if (needsIv(mode)) {
     if (input.length < 32) {
-      throw new CipherError('INVALID_INPUT', 'CBC ciphertext must include a 32-character hex IV prefix.')
+      throw new CipherError('INVALID_INPUT', `${mode} ciphertext must include a 32-character hex IV prefix.`)
     }
     iv = toByteArray(input.slice(0, 32), 'hex')
     cipherHex = input.slice(32)
   }
 
   const inputBytes = toByteArray(cipherHex, 'hex')
-  if (inputBytes.length % 16 !== 0) {
+  // Block modes need whole 16-byte blocks; stream modes accept any length.
+  if (!isStreamMode(mode) && inputBytes.length % 16 !== 0) {
     throw new CipherError('INVALID_PADDING', 'AES ciphertext must be a multiple of 16 bytes.')
   }
 
@@ -812,13 +1007,14 @@ if (
     result = aesFast(inputBytes, keyBytes, true, mode, iv)
   }
   const rawBytes = toByteArray(result.output, 'hex')
-  const unpaddedBytes = unpadPKCS7(rawBytes)
+  // Stream modes are unpadded; only strip PKCS7 for block modes.
+  const finalBytes = isStreamMode(mode) ? rawBytes : unpadPKCS7(rawBytes)
 
   const outEnc = options.encoding || 'utf8'
 
   return {
     ...result,
-    output: fromByteArray(unpaddedBytes, outEnc),
+    output: fromByteArray(finalBytes, outEnc),
     outputEncoding: outEnc,
   }
 }

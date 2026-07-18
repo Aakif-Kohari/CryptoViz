@@ -91,6 +91,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const [rounds, setRounds] = useState(4);
   const [demoMode, setDemoMode] = useState(true);
   const [bobSecret, setBobSecret] = useState("15");
+  const [aesMode, setAesMode] = useState("ECB");
 
   const [result, setResult] = useState<CipherResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -251,6 +252,9 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       if (cipher.id === "des" || cipher.id === "3des" || cipher.id === "aes") {
         options.hexInput = hexInput;
       }
+      if (cipher.id === "aes") {
+        options.mode = aesMode;
+      }
       if (cipher.id === "bcrypt") {
         options.rounds = rounds;
       }
@@ -364,6 +368,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     rounds,
     demoMode,
     bobSecret,
+    aesMode,
   ]);
 
   // Helper for status badge styling
@@ -685,6 +690,31 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
                   onChange={(e) => setHexInput(e.target.checked)}
                   className="h-4 w-4 rounded border-zinc-300 text-teal-600 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800"
                 />
+              </div>
+            )}
+
+            {cipher.id === "aes" && (
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                  Mode of Operation
+                </label>
+                <select
+                  value={aesMode}
+                  onChange={(e) => setAesMode(e.target.value)}
+                  className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 p-2.5 font-mono text-sm text-zinc-900 outline-none transition-all focus:border-teal-500 focus:bg-white dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-100 dark:focus:border-teal-400"
+                >
+                  <option value="ECB">ECB (Electronic Codebook)</option>
+                  <option value="CBC">CBC (Cipher Block Chaining)</option>
+                  <option value="CTR">CTR (Counter)</option>
+                  <option value="CFB">CFB (Cipher Feedback)</option>
+                  <option value="OFB">OFB (Output Feedback)</option>
+                </select>
+                <p className="text-[11px] leading-snug text-zinc-400 dark:text-zinc-500">
+                  <a href="/modes/" className="text-teal-600 hover:underline dark:text-teal-400">
+                    Explore the modes lab
+                  </a>{" "}
+                  to see how each mode propagates a one-byte change.
+                </p>
               </div>
             )}
 
