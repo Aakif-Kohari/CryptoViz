@@ -77,6 +77,7 @@ export type CipherName =
   | 'rc4'
   | 'chacha20'
   | 'rsa'
+  | 'columnar-transposition'
   | 'dh'
   | 'ecc'
   | 'elgamal'

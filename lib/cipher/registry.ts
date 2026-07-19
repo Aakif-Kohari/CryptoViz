@@ -97,6 +97,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'Keyword (e.g. BEAUFORT)',
   },
   {
+    id: 'columnar-transposition',
+    name: 'Columnar Transposition',
+    category: 'classical',
+    description: 'Keyed transposition cipher — plaintext is written in rows then columns are read in alphabetical key order.',
+    defaultKey: 'ZEBRAS',
+    defaultInput: 'WEAREDISCOVEREDFLEEAATONCE',
+    securityStatus: 'broken',
+    keyPlaceholder: 'Alphabetic key (e.g. ZEBRAS)',
+  },
+  {
     id: 'hill',
     name: 'Hill Cipher',
     category: 'classical',
