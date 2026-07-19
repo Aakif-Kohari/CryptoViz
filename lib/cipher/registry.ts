@@ -279,6 +279,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
   },
   {
+    id: 'sha1',
+    name: 'SHA-1',
+    category: 'hash',
+    description: 'Legacy 160-bit hash function (NIST FIPS 180-1). Cryptographically broken — SHAttered collision attack demonstrated in 2017.',
+    defaultKey: '',
+    defaultInput: 'abc',
+    securityStatus: 'broken',
+  },
+  {
     id: 'ripemd160',
     name: 'RIPEMD-160',
     category: 'hash',

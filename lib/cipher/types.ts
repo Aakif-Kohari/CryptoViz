@@ -88,6 +88,7 @@ export type CipherName =
   | 'sha3'
   | 'ripemd160'
   | 'hmac'
+  | 'sha1'
 
 export interface TestVector {
   input: string
