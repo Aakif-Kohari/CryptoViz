@@ -85,6 +85,7 @@ export type CipherName =
   | 'sha512'
   | 'md5'
   | 'bcrypt'
+  | 'polybius'
   | 'sha3'
   | 'ripemd160'
   | 'hmac'

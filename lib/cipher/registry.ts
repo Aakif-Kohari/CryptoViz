@@ -77,6 +77,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'Number of rails (e.g. 3)',
   },
   {
+    id: 'polybius',
+    name: 'Polybius Square',
+    category: 'classical',
+    description: 'Ancient Greek grid cipher encoding each letter as a (row, col) coordinate pair in a 5×5 grid. J is merged into I.',
+    defaultKey: '',
+    defaultInput: 'HELLO WORLD',
+    securityStatus: 'broken',
+    keyPlaceholder: 'Optional keyword to key the grid (e.g. POLYBIUS)',
+  },
+  {
     id: 'beaufort',
     name: 'Beaufort Cipher',
     category: 'classical',
