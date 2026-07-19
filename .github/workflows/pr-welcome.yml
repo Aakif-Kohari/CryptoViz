@@ -48,8 +48,6 @@ jobs:
               `👤 Follow [${process.env.MAINTAINER_NAME}](${process.env.GITHUB_PROFILE_URL}) on GitHub`,
               `💼 [LinkedIn](${process.env.LINKEDIN_URL})`,
               `🌐 [Portfolio](${process.env.PORTFOLIO_URL})`,
-              `💬 [Discord](${process.env.DISCORD_URL})`,
-              `🐦 [Twitter / X](${process.env.TWITTER_URL})`
             ].join("\n");
 
             const body = [
