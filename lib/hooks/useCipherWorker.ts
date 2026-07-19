@@ -104,7 +104,7 @@ export function useCipherWorker() {
         reject: (reason: any) => void
         signal?: AbortSignal
         onAbort?: () => void
-        timeoutId?: NodeJS.Timeout
+        timeoutId?: ReturnType<typeof setTimeout>
         cacheKey?: string
       }
     >
