@@ -42,19 +42,10 @@ export default function RootLayout({
             theme-init effect (same 'theme' localStorage key, same system-
             preference fallback) so the class it sets is never wrong or out
             of sync with what Navbar computes. */}
-        <script src="/theme-init.js" />
       </head>
       <body className="min-h-full flex flex-col bg-[#060816] relative">
         {/* Full Page Border Glow */}
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-
-          <div className="absolute -top-40 left-1/2 h-80 w-[1200px] -translate-x-1/2 rounded-full bg-cyan-500/15 blur-[180px]" />
-
-          <div className="absolute -bottom-40 left-1/2 h-80 w-[1200px] -translate-x-1/2 rounded-full bg-violet-500/15 blur-[180px]" />
-
-          <div className="absolute top-1/2 -left-40 h-[900px] w-80 -translate-y-1/2 rounded-full bg-cyan-500/10 blur-[180px]" />
-
-          <div className="absolute top-1/2 -right-40 h-[900px] w-80 -translate-y-1/2 rounded-full bg-indigo-500/10 blur-[180px]" />
 
         </div>
         {children}</body>
