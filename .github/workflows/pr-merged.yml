@@ -11,9 +11,8 @@ name: PR Merged
 # sidesteps the fork-triggered read-only-token restriction that applied
 # to the old pull_request_review approach — so this needs no PAT/secret.
 # Safe here because the job never checks out the PR's code, it only
-# reads the payload and posts a comment.
-# ==========================================================================
-
+# reads the payload and posts a comment.  
+# ========================================================================== 
 on:
   pull_request_target:
     types:
@@ -55,20 +54,30 @@ jobs:
             const supportSection = [
               "### ❤️ Support CryptoViz",
               "",
-              "⭐ Star the repository",
-              `👤 Follow [${process.env.MAINTAINER_NAME}](${process.env.GITHUB_PROFILE_URL}) on GitHub`,
-              `💼 [LinkedIn](${process.env.LINKEDIN_URL})`,
-              `🌐 [Portfolio](${process.env.PORTFOLIO_URL})`
+              "If you find CryptoViz helpful, consider supporting the project by:",
+              "",
+              "- ⭐ Starring the repository",
+              "- 🍴 Forking the repository",
+              `- 👤 Following [${process.env.MAINTAINER_NAME}](${process.env.GITHUB_PROFILE_URL}) on GitHub`,
+              `- 💼 Connecting on [LinkedIn](${process.env.LINKEDIN_URL})`,
+              `- 🌐 Visiting the [Portfolio](${process.env.PORTFOLIO_URL})`,
+              "",
+              "Your support helps increase the project's visibility and encourages continued development. Thank you for being a part of the CryptoViz community!",
             ].join("\n");
 
             const body = [
-              `Great work @${author}, and thank you for your contribution! 🎉`,
+              "## 🎉 Pull Request Merged",
               "",
-              "This Pull Request has been merged. Looking forward to your future contributions!",
+              `Hello @${author},`,
               "",
-              supportSection
+              "Thank you for your contribution to CryptoViz. Your Pull Request has been reviewed and successfully merged into the project.",
+              "",
+              "We sincerely appreciate the time and effort you invested in improving the project. Contributions like yours help make CryptoViz better for the entire community.",
+              "",
+              "We look forward to your future contributions and hope to collaborate with you again.",
+              "",
+              supportSection,
             ].join("\n");
-
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
