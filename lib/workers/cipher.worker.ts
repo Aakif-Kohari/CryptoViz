@@ -23,6 +23,7 @@ import { encrypt as aesEncrypt, decrypt as aesDecrypt } from '../cipher/symmetri
 import { encrypt as aesGcmEncrypt, decrypt as aesGcmDecrypt } from '../cipher/symmetric/aes-gcm'
 import { encrypt as rc4Encrypt, decrypt as rc4Decrypt } from '../cipher/symmetric/rc4'
 import { encrypt as chacha20Encrypt, decrypt as chacha20Decrypt } from '../cipher/symmetric/chacha20'
+import { encrypt as xteaEncrypt, decrypt as xteaDecrypt } from '../cipher/symmetric/xtea'
 import { encrypt as rsaEncrypt, decrypt as rsaDecrypt } from '../cipher/asymmetric/rsa'
 import { encrypt as dhEncrypt, decrypt as dhDecrypt } from '../cipher/asymmetric/dh'
 import { encrypt as eccEncrypt, decrypt as eccDecrypt } from '../cipher/asymmetric/ecc'
@@ -156,6 +157,11 @@ workerScope.addEventListener('message', async (event: MessageEvent<WorkerRequest
         result = encryptMode
           ? chacha20Encrypt(input, key, options)
           : chacha20Decrypt(input, key, options)
+        break
+      case 'xtea':
+        result = encryptMode
+          ? xteaEncrypt(input, key, options)
+          : xteaDecrypt(input, key, options)
         break
       case 'rsa':
         result = encryptMode
