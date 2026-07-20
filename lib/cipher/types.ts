@@ -77,6 +77,7 @@ export type CipherName =
   | 'aes-gcm'
   | 'rc4'
   | 'chacha20'
+  | 'xtea'
   | 'rsa'
   | 'columnar-transposition'
   | 'dh'

@@ -244,6 +244,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: '64-char hex key | 24-char hex nonce [:counter]',
   },
+  {
+    id: 'xtea',
+    name: 'XTEA',
+    category: 'symmetric',
+    description: 'A compact 64-round Feistel cipher (Wheeler & Needham, 1997) using only addition, XOR, and shifts — no lookup tables.',
+    defaultKey: '000102030405060708090a0b0c0d0e0f',
+    defaultInput: '4142434445464748',
+    securityStatus: 'secure',
+    keyPlaceholder: '32-character hex key (128-bit)',
+  },
   // Hash
   {
     id: 'sha256',
