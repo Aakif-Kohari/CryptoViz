@@ -38,6 +38,7 @@ import { encrypt as ripemd160Encrypt, decrypt as ripemd160Decrypt } from '../cip
 import { encrypt as sha1Encrypt, decrypt as sha1Decrypt } from '../cipher/hash/sha1'
 
 import { deriveKey } from '../kdf/pbkdf2'
+import { CipherError } from '../utils/errors'
 
 import type { WorkerRequest, WorkerResponse } from '../../types/worker'
 
@@ -261,7 +262,7 @@ workerScope.addEventListener('message', async (event: MessageEvent<WorkerRequest
       errorMessage = String(error)
     }
 
-    if (error instanceof import('@/lib/utils/errors').CipherError) {
+    if (error instanceof CipherError) {
       errorCode = error.code
       errorMessage = error.message
     }

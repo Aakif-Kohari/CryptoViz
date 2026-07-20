@@ -259,7 +259,7 @@ export default function CipherComparisonPanel({
             role="alert"
             className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/20 dark:text-red-300"
           >
-            {error || workerError}
+            {error || workerError?.message || workerError?.code || 'Unknown error'}
           </div>
         )}
 

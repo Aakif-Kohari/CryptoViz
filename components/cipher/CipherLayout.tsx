@@ -808,7 +808,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
                     Execution Error
                   </h4>
                   <p className="text-xs text-red-700 dark:text-red-400">
-                    {error || workerError}
+                    {error || workerError?.message || workerError?.code || 'Unknown error'}
                   </p>
                 </div>
               </div>
