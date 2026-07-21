@@ -108,7 +108,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     setAnnotationStore(loadStepAnnotationStore())
   }, [])
 
-  // Restore a shared visualizer configuration from the URL.
+  // Restore a shared visualizer configuration from the URL (runs once per cipher).
   useEffect(() => {
     const shared = parseVisualizerPermalink(window.location.search)
 
@@ -117,46 +117,29 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     if (shared.direction !== undefined && cipher.id !== 'dh') {
       setAction(shared.direction)
     }
-    if (shared.options.hexInput !== undefined) {
-      setHexInput(shared.options.hexInput)
-    }
-    if (shared.options.rounds !== undefined) {
-      setRounds(shared.options.rounds)
-    }
-    if (shared.options.demoMode !== undefined) {
-      setDemoMode(shared.options.demoMode)
-    }
-    if (shared.options.bobSecret !== undefined) {
-      setBobSecret(shared.options.bobSecret)
-    }
+    if (shared.options.hexInput !== undefined) setHexInput(shared.options.hexInput)
+    if (shared.options.rounds !== undefined) setRounds(shared.options.rounds)
+    if (shared.options.demoMode !== undefined) setDemoMode(shared.options.demoMode)
+    if (shared.options.bobSecret !== undefined) setBobSecret(shared.options.bobSecret)
 
     pendingSharedStepRef.current = shared.step ?? null
   }, [cipher.id])
 
-  // Restore a shared visualizer configuration from the URL.
+  // Sync playground state into the URL (debounced) so refresh/share preserves the session.
   useEffect(() => {
-    const shared = parseVisualizerPermalink(window.location.search);
+    const debounceId = setTimeout(() => {
+      const permalink = buildVisualizerPermalink(window.location.href, {
+        input,
+        key,
+        direction: cipher.id === 'dh' ? 'encrypt' : action,
+        step: currentStep,
+        options: { hexInput, rounds, demoMode, bobSecret },
+      })
+      window.history.replaceState(window.history.state, '', permalink)
+    }, 300)
 
-    if (shared.input !== undefined) setInput(shared.input);
-    if (shared.key !== undefined) setKey(shared.key);
-    if (shared.direction !== undefined && cipher.id !== "dh") {
-      setAction(shared.direction);
-    }
-    if (shared.options.hexInput !== undefined) {
-      setHexInput(shared.options.hexInput);
-    }
-    if (shared.options.rounds !== undefined) {
-      setRounds(shared.options.rounds);
-    }
-    if (shared.options.demoMode !== undefined) {
-      setDemoMode(shared.options.demoMode);
-    }
-    if (shared.options.bobSecret !== undefined) {
-      setBobSecret(shared.options.bobSecret);
-    }
-
-    pendingSharedStepRef.current = shared.step ?? null;
-  }, [cipher.id]);
+    return () => clearTimeout(debounceId)
+  }, [input, key, action, hexInput, rounds, demoMode, bobSecret, aesMode, currentStep, cipher.id])
 
   // Reset inputs when cipher changes
   useEffect(() => {
