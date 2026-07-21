@@ -151,3 +151,51 @@
 [#10] (closed) by @aryxncodes7: Bug: 404 errors on Navbar links and misaligned Sun icon
 [#7] (closed) by @Komal290106: Bug: Default Next.js metadata is displayed instead of CryptoViz branding
 [#5] (closed) by @Sakshi123509: Bug: Theme toggle button is not functioning on the landing page
+
+=== Audited 2026-07-21 20:21 UTC (46 new) ===
+[#341] (open) by @csxark: Dynamic Cipher Loader
+[#340] (open) by @csxark: Snapshot Tests for Visualization Components
+[#339] (open) by @csxark: Worker Communication Tests
+[#338] (open) by @csxark: Integration Tests for Every Cipher
+[#337] (open) by @csxark: Worker Architecture Documentation
+[#336] (open) by @csxark: Visualization Development Guide
+[#335] (open) by @csxark: Architecture Documentation
+[#334] (open) by @csxark: Browser Capability Benchmark
+[#333] (open) by @csxark: CPU Information Panel
+[#332] (open) by @csxark: Benchmark History Timeline
+[#331] (open) by @csxark: Compare Benchmarks Across Sessions
+[#330] (open) by @csxark: Side-Channel Attack Playground
+[#329] (open) by @csxark: Timing Attack Visualization
+[#328] (open) by @csxark: Linear Cryptanalysis Demo
+[#327] (open) by @csxark: Differential Cryptanalysis Demo
+[#326] (open) by @csxark: ECB Pattern Leakage Playground
+[#325] (open) by @csxark: Hash Collision Playground
+[#324] (open) by @csxark: Birthday Attack Simulator
+[#323] (open) by @csxark: Rainbow Table Demonstration
+[#322] (open) by @csxark: Brute Force Attack Time Estimator
+[#321] (open) by @csxark: Dictionary Attack Simulator
+[#320] (open) by @csxark: IDEA Cipher Visualizer
+[#319] (open) by @csxark: CAST5 Cipher Visualizer
+[#318] (open) by @csxark: Camellia Cipher Visualizer
+[#317] (open) by @csxark: SM3 Hash Visualization
+[#316] (open) by @csxark: Whirlpool Hash Visualization
+[#315] (open) by @csxark: XXHash Visualization
+[#314] (open) by @csxark: SipHash Visualizer
+[#313] (open) by @csxark: Scrypt Visualizer
+[#312] (open) by @csxark: HKDF Visualizer
+[#311] (open) by @csxark: Argon2id Visualizer
+[#310] (open) by @csxark: CRC32 Visualization
+[#309] (open) by @csxark: Reed-Solomon Error Correction Demo
+[#308] (open) by @csxark: Bloom Filter Simulator
+[#307] (open) by @csxark: Merkle Proof Demonstration
+[#306] (open) by @csxark: Merkle Tree Visualizer
+[#305] (open) by @csxark: HMAC Visualization
+[#304] (open) by @csxark: SHA-256 Compression Round Visualizer
+[#303] (open) by @csxark: DES Key Schedule Visualization
+[#302] (open) by @csxark: Interactive AES Key Expansion Visualizer
+[#301] (open) by @csxark: Interactive RSA Key Generation Wizard
+[#300] (open) by @Aakif-Kohari: [FEATURE] Add Skipjack symmetric block cipher (NSA Clipper chip, declassified 1998)
+[#299] (open) by @Aakif-Kohari: [FEATURE] Add RC5 symmetric block cipher with data-dependent rotations
+[#298] (open) by @Aakif-Kohari: [FEATURE] Add Poly1305 message authentication code (MAC) module
+[#297] (open) by @Aakif-Kohari: [FEATURE] Add Merkle–Hellman Knapsack asymmetric cryptosystem
+[#296] (open) by @Aakif-Kohari: [FEATURE] Add IDEA (International Data Encryption Algorithm) symmetric block cipher
