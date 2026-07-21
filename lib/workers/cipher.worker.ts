@@ -17,6 +17,7 @@ import { encrypt as autokeyEncrypt, decrypt as autokeyDecrypt } from '../cipher/
 import { encrypt as adfgvxEncrypt, decrypt as adfgvxDecrypt } from '../cipher/classical/adfgvx'
 import { encrypt as bifidEncrypt, decrypt as bifidDecrypt } from '../cipher/classical/bifid'
 import { encrypt as foursquareEncrypt, decrypt as foursquareDecrypt } from '../cipher/classical/four-square'
+import { encrypt as nihilistEncrypt, decrypt as nihilistDecrypt } from '../cipher/classical/nihilist'
 import { encrypt as polybiusEncrypt, decrypt as polybiusDecrypt } from '../cipher/classical/polybius'
 import { encrypt as xorEncrypt, decrypt as xorDecrypt } from '../cipher/symmetric/xor'
 import { encrypt as otpEncrypt, decrypt as otpDecrypt } from '../cipher/symmetric/otp'
@@ -131,6 +132,11 @@ workerScope.addEventListener('message', async (event: MessageEvent<WorkerRequest
         result = encryptMode
           ? foursquareEncrypt(input, key, options)
           : foursquareDecrypt(input, key, options)
+        break
+      case 'nihilist':
+        result = encryptMode
+          ? nihilistEncrypt(input, key, options)
+          : nihilistDecrypt(input, key, options)
         break
       case 'polybius':
         result = encryptMode

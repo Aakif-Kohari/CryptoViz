@@ -72,6 +72,7 @@ export type CipherName =
   | 'adfgvx'
   | 'bifid'
   | 'foursquare'
+  | 'nihilist'
   | 'xor'
   | 'otp'
   | 'des'
