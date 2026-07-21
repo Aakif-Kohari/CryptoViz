@@ -90,6 +90,7 @@ export type CipherName =
   | 'ecc'
   | 'elgamal'
   | 'ed25519'
+  | 'x25519'
   | 'sha256'
   | 'sha512'
   | 'md5'
