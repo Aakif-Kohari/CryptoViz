@@ -84,6 +84,7 @@ export type CipherName =
   | 'salsa20'
   | 'chacha20'
   | 'xtea'
+  | 'idea'
   | 'rsa'
   | 'columnar-transposition'
   | 'dh'
