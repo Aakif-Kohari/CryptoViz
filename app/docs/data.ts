@@ -514,5 +514,60 @@ export const docCategories: DocCategory[] = [
       { title: "Ralph Merkle's original patent", url: "https://patents.google.com/patent/US4309569A/en" },
       { title: "RFC 9162: Certificate Transparency (Merkle Trees)", url: "https://datatracker.ietf.org/doc/html/rfc9162" }
     ]
+  },
+  {
+    type: 'cipher',
+    title: "HMAC-SHA256",
+    description: "Keyed-Hash Message Authentication Code using SHA-256 to verify data integrity and authenticity.",
+    overview: {
+      history: "First proposed in 1996 by Mihir Bellare, Ran Canetti, and Hugo Krawczyk, and formalized in RFC 2104. It was designed to solve the vulnerabilities of simple MAC designs like H(K || m) which are susceptible to length extension attacks.",
+      description: "HMAC is a cryptographic construction for calculating a message authentication code involving a cryptographic hash function in combination with a secret key. It computes the hash twice using nested padding constants (ipad and opad) to bind the message state securely to the key."
+    },
+    mathematics: {
+      encryptionFormula: "\\text{HMAC}(K, m) = H((K' \\oplus opad) \\parallel H((K' \\oplus ipad) \\parallel m))",
+      decryptionFormula: "\\text{Verify}(K, m, \\text{Mac}) \\to [\\text{HMAC}(K, m) == \\text{Mac}]",
+      explanation: [
+        "K' is the block-sized prepared key. If K is longer than 64 bytes, K' = H(K). If K is shorter, K' is K padded with trailing zeros to 64 bytes.",
+        "ipad is the inner padding constant (the byte 0x36 repeated 64 times).",
+        "opad is the outer padding constant (the byte 0x5c repeated 64 times).",
+        "\\parallel represents byte concatenation, and \\oplus represents bitwise XOR."
+      ]
+    },
+    workedExample: {
+      plaintext: "Hi There",
+      parameters: "Key = 0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b (Hex format)",
+      steps: [
+        { description: "Key Preparation", result: "Original key is 20 bytes (<= 64). Pad key with zeros to block size: 0b0b...0000..." },
+        { description: "Inner XOR Calculation", result: "Compute K' XOR ipad (0x36) resulting in: 3d3d...3636..." },
+        { description: "Inner SHA-256 Hashing", result: "Concatenate Inner Key and 'Hi There' message and compute SHA-256: 3b344c61d8db..." },
+        { description: "Outer XOR Calculation", result: "Compute K' XOR opad (0x5c) resulting in: 5757...5c5c..." },
+        { description: "Outer SHA-256 (Final HMAC)", result: "Concatenate Outer Key and Inner Hash, compute final SHA-256 digest." }
+      ],
+      finalCiphertext: "b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7"
+    },
+    complexity: "O(N) operations, equivalent to two standard SHA-256 updates.",
+    securityAnalysis: {
+      advantages: [
+        "Provably immune to length extension attacks because the final outer hash hides the internal state of the inner hash.",
+        "Provides both data integrity (tamper proofing) and authenticity (key ownership proof)."
+      ],
+      weaknesses: [
+        "Cryptographic security relies entirely on the strength of the underlying hash function (e.g., HMAC-SHA256 is strong, whereas HMAC-MD5 is legacy due to MD5 weaknesses)."
+      ]
+    },
+    realWorldApplications: [
+      "API Request Signing: Standard authentication method for AWS (Signature Version 4) and Twilio request verification.",
+      "Token-Based Authentication: Forming the signature part of JSON Web Tokens (JWT).",
+      "Key Derivation Functions: Forms the core PRF (Pseudorandom Function) for HKDF in TLS 1.3."
+    ],
+    codeSnippets: {
+      python: "import hmac\nimport hashlib\n\ndef generate_hmac(key_bytes, msg_bytes):\n    return hmac.new(key_bytes, msg_bytes, hashlib.sha256).hexdigest()",
+      javascript: "import { hmac } from '@noble/hashes/hmac.js'\nimport { sha256 } from '@noble/hashes/sha2.js'\n\nconst digestBytes = hmac(sha256, keyBytes, msgBytes);"
+    },
+    playgroundLink: "/visualizer/hmac",
+    references: [
+      { title: "RFC 2104: HMAC (Keyed-Hashing for Message Authentication)", url: "https://datatracker.ietf.org/doc/html/rfc2104" },
+      { title: "NIST FIPS 198-1: The Keyed-Hash Message Authentication Code", url: "https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.198-1.pdf" }
+    ]
   }
 ];
