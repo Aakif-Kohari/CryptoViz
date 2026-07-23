@@ -55,8 +55,12 @@ export interface CipherOptions {
   padding?: string
   encoding?: Encoding
   iv?: string
+  hash?: string
+  keyLength?: number
+  info?: string
   /** When true, capture state after every sub-step (for visualizer) */
   instrument?: boolean
+  [key: string]: string | number | boolean | Encoding | undefined
 }
 
 export type CipherName =
@@ -106,6 +110,7 @@ export type CipherName =
   | 'poly1305'
   | 'hmac'
   | 'sha1'
+  | 'hkdf'
 
 export interface TestVector {
   input: string
