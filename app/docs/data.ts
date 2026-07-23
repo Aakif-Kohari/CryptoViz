@@ -626,4 +626,4 @@ export const docCategories: DocCategory[] = [
       { title: "Tarsnap: Scrypt algorithm description by Colin Percival", url: "https://www.tarsnap.com/scrypt.html" }
     ]
   }
-];
+];
