@@ -55,6 +55,7 @@ import { encrypt as blake2bEncrypt, decrypt as blake2bDecrypt } from '../cipher/
 import { encrypt as blake3Encrypt, decrypt as blake3Decrypt } from '../cipher/hash/blake3'
 import { encrypt as poly1305Encrypt, decrypt as poly1305Decrypt } from '../cipher/hash/poly1305'
 import { encrypt as sha1Encrypt, decrypt as sha1Decrypt } from '../cipher/hash/sha1'
+import { encrypt as hkdfEncrypt, decrypt as hkdfDecrypt } from '../cipher/hash/hkdf'
 
 import { deriveKey } from '../kdf/pbkdf2'
 import { deriveScryptKey } from '../kdf/scrypt'
@@ -336,6 +337,11 @@ workerScope.addEventListener('message', async (event: MessageEvent<WorkerRequest
         result = encryptMode
           ? sha1Encrypt(input, key, options)
           : sha1Decrypt()
+        break
+      case 'hkdf':
+        result = encryptMode
+          ? hkdfEncrypt(input, key, options)
+          : hkdfDecrypt()
         break
       case 'pbkdf2':
         // KDF derivation doesn't fit the encrypt/decrypt(input, key, options)
