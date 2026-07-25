@@ -386,4 +386,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: "secure",
     keyPlaceholder: "32-byte private key hex (64 chars)",
   },
+  {
+    id: 'schnorr',
+    name: 'Schnorr (BIP340)',
+    category: 'asymmetric',
+    description: 'Schnorr signatures per BIP340 over secp256k1, using x-only public keys. Provably secure under a simpler assumption than ECDSA and supports clean signature aggregation (MuSig) — compare against ecdsa.ts on the same curve.',
+    defaultKey: '',
+    defaultInput: 'hello',
+    securityStatus: 'secure',
+    keyPlaceholder: '32-byte private key hex (64 chars), or leave blank to generate one',
+  },
 ];

@@ -98,6 +98,7 @@ export type CipherName =
   | 'dh'
   | 'x448'
   | 'ecc'
+  | 'schnorr'
   | 'elgamal'
   | 'ed25519'
   | 'rabin'
