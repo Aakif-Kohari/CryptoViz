@@ -114,6 +114,7 @@ export type CipherName =
   | 'blake3'
   | 'poly1305'
   | 'hmac'
+  | 'cmac'
   | 'sha1'
   | 'hkdf'
   | 'bloom-filter'

@@ -23,6 +23,7 @@ import { encrypt as bcryptEncrypt, decrypt as bcryptDecrypt } from "../cipher/ha
 import { encrypt as blake2bEncrypt, decrypt as blake2bDecrypt } from "../cipher/hash/blake2b";
 import { encrypt as blake3Encrypt, decrypt as blake3Decrypt } from "../cipher/hash/blake3";
 import { encrypt as hmacEncrypt, decrypt as hmacDecrypt } from "../cipher/hash/hmac";
+import { encrypt as cmacEncrypt, decrypt as cmacDecrypt } from '../cipher/hash/cmac'
 import { encrypt as hkdfEncrypt, decrypt as hkdfDecrypt } from "../cipher/hash/hkdf";
 import { encrypt as md5Encrypt, decrypt as md5Decrypt } from "../cipher/hash/md5";
 import { encrypt as poly1305Encrypt, decrypt as poly1305Decrypt } from "../cipher/hash/poly1305";
@@ -189,6 +190,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       case "hmac":
         result = encryptMode ? hmacEncrypt(input, key, options) : hmacDecrypt(input, key, options);
         break;
+      case 'cmac':
+        result = encryptMode ? cmacEncrypt(input, key, options) : cmacDecrypt(input, key, options)
+        break
       case "bcrypt":
         result = encryptMode ? bcryptEncrypt(input, key, options) : bcryptDecrypt(input, key, options);
         break;
