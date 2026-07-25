@@ -91,6 +91,7 @@ export type CipherName =
   | 'rc5'
   | 'xtea'
   | 'rc6'
+  | 'camellia'
   | 'idea'
   | 'rsa'
   | 'columnar-transposition'

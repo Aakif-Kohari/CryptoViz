@@ -131,6 +131,16 @@ interface CamelliaKeys {
 }
 
 function generateKeys(keyBytes: Uint8Array): CamelliaKeys {
+  if (
+    keyBytes.length !== 16 &&
+    keyBytes.length !== 24 &&
+    keyBytes.length !== 32
+  ) {
+    throw new CipherError(
+      'INVALID_KEY_LENGTH',
+      `Camellia key must be exactly 16, 24, or 32 bytes (got ${keyBytes.length} bytes).`
+    )
+  }
   const K = new Uint8Array(32)
   K.set(keyBytes)
 
@@ -285,8 +295,8 @@ function processBlock(blockBytes: Uint8Array, keys: CamelliaKeys, isExtendedRoun
     D2 = D2 ^ kw3
     D1 = D1 ^ kw4
   } else {
-    D1 = D1 ^ (isExtendedRounds ? kw3 : kw3)
-    D2 = D2 ^ (isExtendedRounds ? kw4 : kw4)
+    D1 = D1 ^ kw3
+    D2 = D2 ^ kw4
 
     if (isExtendedRounds) {
       D2 = D2 ^ F(D1, k[24]); D1 = D1 ^ F(D2, k[23])
@@ -374,6 +384,9 @@ export function encrypt(
   if (typeof input === 'string') validateInput(input)
   if (typeof key === 'string') validateKey(key)
 
+  const mode = (options?.mode || 'ECB') as CamelliaMode
+  const useCbc = mode === 'CBC'
+
   const inputBytes = typeof input === 'string' ? toByteArray(input, options?.hexInput ? 'hex' : 'utf8') : input
   const keyBytes = typeof key === 'string' ? getKeyBytes(key, options) : key
 
@@ -388,7 +401,44 @@ export function encrypt(
     )
   }
 
-  return executeCamellia(inputBytes, keyBytes, false, options)
+  let iv: Uint8Array = new Uint8Array(16)
+  if (useCbc) {
+    if (options?.iv) {
+      if (typeof options.iv === 'string') {
+        if (!/^[0-9a-fA-F]{32}$/.test(options.iv)) {
+          throw new CipherError('INVALID_IV', 'Camellia IV must be exactly 32 hex characters (16 bytes).')
+        }
+        iv = toByteArray(options.iv, 'hex')
+      } else if (options.iv instanceof Uint8Array) {
+        if (options.iv.length !== 16) {
+          throw new CipherError('INVALID_IV', 'Camellia IV must be exactly 16 bytes.')
+        }
+        iv = options.iv
+      } else {
+        throw new CipherError('INVALID_IV', 'Invalid IV format.')
+      }
+    } else {
+      if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+        crypto.getRandomValues(iv)
+      } else {
+        for (let i = 0; i < 16; i++) {
+          iv[i] = Math.floor(Math.random() * 256)
+        }
+      }
+    }
+  }
+
+  const res = executeCamellia(inputBytes, keyBytes, false, options, iv)
+
+  if (useCbc) {
+    const ivHex = fromByteArray(iv, 'hex')
+    return {
+      ...res,
+      output: ivHex + res.output,
+    }
+  }
+
+  return res
 }
 
 export function decrypt(
@@ -399,7 +449,9 @@ export function decrypt(
   if (typeof input === 'string') validateInput(input)
   if (typeof key === 'string') validateKey(key)
 
-  const inputBytes = typeof input === 'string' ? toByteArray(input, 'hex') : input
+  const mode = (options?.mode || 'ECB') as CamelliaMode
+  const useCbc = mode === 'CBC'
+
   const keyBytes = typeof key === 'string' ? getKeyBytes(key, options) : key
 
   if (
@@ -413,10 +465,48 @@ export function decrypt(
     )
   }
 
+  let iv: Uint8Array = new Uint8Array(16)
+  let inputBytes: Uint8Array
+
+  if (useCbc) {
+    if (options?.iv) {
+      if (typeof options.iv === 'string') {
+        if (!/^[0-9a-fA-F]{32}$/.test(options.iv)) {
+          throw new CipherError('INVALID_IV', 'Camellia IV must be exactly 32 hex characters (16 bytes).')
+        }
+        iv = toByteArray(options.iv, 'hex')
+      } else if (options.iv instanceof Uint8Array) {
+        if (options.iv.length !== 16) {
+          throw new CipherError('INVALID_IV', 'Camellia IV must be exactly 16 bytes.')
+        }
+        iv = options.iv
+      } else {
+        throw new CipherError('INVALID_IV', 'Invalid IV format.')
+      }
+      inputBytes = typeof input === 'string' ? toByteArray(input, 'hex') : input
+    } else {
+      if (typeof input === 'string') {
+        if (input.length < 32) {
+          throw new CipherError('INVALID_INPUT', 'CBC ciphertext must include a 32-character hex IV prefix.')
+        }
+        iv = toByteArray(input.slice(0, 32), 'hex')
+        inputBytes = toByteArray(input.slice(32), 'hex')
+      } else {
+        if (input.length < 16) {
+          throw new CipherError('INVALID_INPUT', 'CBC ciphertext must include a 16-byte IV prefix.')
+        }
+        iv = input.subarray(0, 16)
+        inputBytes = input.subarray(16)
+      }
+    }
+  } else {
+    inputBytes = typeof input === 'string' ? toByteArray(input, 'hex') : input
+  }
+
   const defaultEncoding = typeof input === 'string' ? 'utf8' : 'hex'
   const outEnc = options?.encoding || defaultEncoding
 
-  const res = executeCamellia(inputBytes, keyBytes, true, options)
+  const res = executeCamellia(inputBytes, keyBytes, true, options, iv)
   const rawBytes = toByteArray(res.output, 'hex')
 
   return {
@@ -430,7 +520,8 @@ function executeCamellia(
   inputBytes: Uint8Array,
   keyBytes: Uint8Array,
   isDecrypt: boolean,
-  options?: Record<string, any>
+  options?: Record<string, any>,
+  iv: Uint8Array = new Uint8Array(16)
 ): CipherResult {
   const start = performance.now()
   const mode = (options?.mode || 'ECB') as CamelliaMode
@@ -459,11 +550,17 @@ function executeCamellia(
         throw new CipherError('INVALID_INPUT', 'Ciphertext length must be a multiple of 16 bytes.')
       }
     }
+  } else {
+    if (inputBytes.length % 16 !== 0) {
+      const errMsg = isDecrypt
+        ? 'Ciphertext length must be a multiple of 16 bytes when padding is disabled.'
+        : 'Plaintext length must be a multiple of 16 bytes when padding is disabled.'
+      throw new CipherError('INVALID_INPUT', errMsg)
+    }
   }
 
   const numBlocks = Math.ceil(processedInput.length / 16)
   const outputBytes = new Uint8Array(numBlocks * 16)
-  const iv: Uint8Array = new Uint8Array(16)
   let prevBlock: Uint8Array = useCbc ? iv : new Uint8Array(16)
 
   for (let b = 0; b < numBlocks; b++) {

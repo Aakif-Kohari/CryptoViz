@@ -78,6 +78,45 @@ describe('Camellia Cipher', () => {
       expect(() => decrypt(invalidCiphertext, key, { mode: 'ECB' })).toThrowError(CipherError)
     })
 
+    it('throws error on decrypt with unaligned input when padding is disabled', () => {
+      const key = 'camelliakey12345'
+      const invalidCiphertext = '123456789012345678901234567890'
+      expect(() => decrypt(invalidCiphertext, key, { mode: 'ECB', padding: false })).toThrowError(CipherError)
+    })
+
+    it('throws error on encrypt with unaligned input when padding is disabled', () => {
+      const key = 'camelliakey12345'
+      const invalidPlaintext = 'unalignedPlaintext'
+      expect(() => encrypt(invalidPlaintext, key, { mode: 'ECB', padding: false })).toThrowError(CipherError)
+    })
+
+    it('supports CBC mode encryption/decryption with custom IV', () => {
+      const key = 'camelliakey12345'
+      const iv = '00112233445566778899aabbccddeeff'
+      const plaintext = 'Hello Camellia IV Test!'
+      
+      const encRes = encrypt(plaintext, key, { mode: 'CBC', iv })
+      // Ciphertext output should have iv prepended (32 hex characters)
+      expect(encRes.output.slice(0, 32)).toBe(iv)
+      
+      const decRes = decrypt(encRes.output, key, { mode: 'CBC' })
+      expect(decRes.output).toBe(plaintext)
+    })
+
+    it('supports CBC mode encryption/decryption with randomized IV', () => {
+      const key = 'camelliakey12345'
+      const plaintext = 'Hello Camellia Randomized IV Test!'
+      
+      const encRes1 = encrypt(plaintext, key, { mode: 'CBC' })
+      const encRes2 = encrypt(plaintext, key, { mode: 'CBC' })
+      
+      // Different random IVs mean ciphertexts should differ
+      expect(encRes1.output).not.toBe(encRes2.output)
+      
+      const decRes = decrypt(encRes1.output, key, { mode: 'CBC' })
+      expect(decRes.output).toBe(plaintext)
+    })
+
     it('validates key presence and invalid key length', () => {
       expect(() => encrypt('test input', 'short')).toThrowError(CipherError)
       expect(() => encrypt('test input', 'short')).toThrow(/Camellia key must be exactly 16, 24, or 32 bytes/)
