@@ -163,6 +163,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     ],
   },
   {
+    id: 'speck',
+    name: 'Speck128/128',
+    category: 'symmetric',
+    description: 'An NSA lightweight ARX cipher (2013) using only addition, rotation, and XOR — no S-boxes or lookup tables at all, unlike every other symmetric cipher in this registry.',
+    defaultKey: '0f0e0d0c0b0a09080706050403020100',
+    defaultInput: '6f6e6920736968746d2073696874706d',
+    securityStatus: 'secure',
+    keyPlaceholder: '32-character hex key (128-bit)',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
