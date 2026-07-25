@@ -24,6 +24,7 @@ import { encrypt as bcryptEncrypt, decrypt as bcryptDecrypt } from "../cipher/ha
 import { encrypt as blake2bEncrypt, decrypt as blake2bDecrypt } from "../cipher/hash/blake2b";
 import { encrypt as blake3Encrypt, decrypt as blake3Decrypt } from "../cipher/hash/blake3";
 import { encrypt as hmacEncrypt, decrypt as hmacDecrypt } from "../cipher/hash/hmac";
+import { encrypt as cmacEncrypt, decrypt as cmacDecrypt } from '../cipher/hash/cmac'
 import { encrypt as hkdfEncrypt, decrypt as hkdfDecrypt } from "../cipher/hash/hkdf";
 import { encrypt as md5Encrypt, decrypt as md5Decrypt } from "../cipher/hash/md5";
 import { encrypt as poly1305Encrypt, decrypt as poly1305Decrypt } from "../cipher/hash/poly1305";
@@ -33,8 +34,11 @@ import { encrypt as sha256Encrypt, decrypt as sha256Decrypt } from "../cipher/ha
 import { encrypt as sha3Encrypt, decrypt as sha3Decrypt } from "../cipher/hash/sha3";
 import { encrypt as sha512Encrypt, decrypt as sha512Decrypt } from "../cipher/hash/sha512";
 import { encrypt as xxhashEncrypt, decrypt as xxhashDecrypt } from "../cipher/hash/xxhash";
+import { encrypt as dsaEncrypt, decrypt as dsaDecrypt } from '../cipher/asymmetric/dsa'
 import { encrypt as dhEncrypt, decrypt as dhDecrypt } from "../cipher/asymmetric/dh";
+import { encrypt as x448Encrypt, decrypt as x448Decrypt } from '../cipher/asymmetric/x448'
 import { encrypt as eccEncrypt, decrypt as eccDecrypt } from "../cipher/asymmetric/ecc";
+import { encrypt as schnorrEncrypt, decrypt as schnorrDecrypt } from '../cipher/asymmetric/schnorr'
 import { encrypt as ecdsaEncrypt, decrypt as ecdsaDecrypt } from "../cipher/asymmetric/ecdsa";
 import { encrypt as ed25519Encrypt, decrypt as ed25519Decrypt } from "../cipher/asymmetric/ed25519";
 import { encrypt as elgamalEncrypt, decrypt as elgamalDecrypt } from "../cipher/asymmetric/elgamal";
@@ -149,15 +153,27 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       case "aes-gcm":
         result = encryptMode ? aesGcmEncrypt(input, key, options) : aesGcmDecrypt(input, key, options);
         break;
+      case 'speck':
+        result = encryptMode ? speckEncrypt(input, key, options) : speckDecrypt(input, key, options)
+        break
       case "rsa":
         result = encryptMode ? rsaEncrypt(input, key, options) : rsaDecrypt(input, key, options);
         break;
+      case 'dsa':
+        result = encryptMode ? dsaEncrypt(input, key, options) : dsaDecrypt(input, key, options)
+        break
       case "dh":
         result = encryptMode ? dhEncrypt(input, key, options) : dhDecrypt(input, key, options);
         break;
+      case 'x448':
+        result = encryptMode ? x448Encrypt(input, key, options) : x448Decrypt(input, key, options)
+        break
       case "ecc":
         result = encryptMode ? eccEncrypt(input, key, options) : eccDecrypt(input, key, options);
         break;
+      case 'schnorr':
+        result = encryptMode ? schnorrEncrypt(input, key, options) : schnorrDecrypt(input, key, options)
+        break
       case "ecdsa":
         result = encryptMode ? ecdsaEncrypt(input, key, options) : ecdsaDecrypt(input, key, options);
         break;
@@ -191,6 +207,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       case "hmac":
         result = encryptMode ? hmacEncrypt(input, key, options) : hmacDecrypt(input, key, options);
         break;
+      case 'cmac':
+        result = encryptMode ? cmacEncrypt(input, key, options) : cmacDecrypt(input, key, options)
+        break
       case "bcrypt":
         result = encryptMode ? bcryptEncrypt(input, key, options) : bcryptDecrypt(input, key, options);
         break;
