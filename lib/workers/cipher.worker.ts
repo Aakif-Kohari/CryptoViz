@@ -33,6 +33,7 @@ import { encrypt as sha3Encrypt, decrypt as sha3Decrypt } from "../cipher/hash/s
 import { encrypt as sha512Encrypt, decrypt as sha512Decrypt } from "../cipher/hash/sha512";
 import { encrypt as xxhashEncrypt, decrypt as xxhashDecrypt } from "../cipher/hash/xxhash";
 import { encrypt as dhEncrypt, decrypt as dhDecrypt } from "../cipher/asymmetric/dh";
+import { encrypt as x448Encrypt, decrypt as x448Decrypt } from '../cipher/asymmetric/x448'
 import { encrypt as eccEncrypt, decrypt as eccDecrypt } from "../cipher/asymmetric/ecc";
 import { encrypt as ecdsaEncrypt, decrypt as ecdsaDecrypt } from "../cipher/asymmetric/ecdsa";
 import { encrypt as ed25519Encrypt, decrypt as ed25519Decrypt } from "../cipher/asymmetric/ed25519";
@@ -153,6 +154,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       case "dh":
         result = encryptMode ? dhEncrypt(input, key, options) : dhDecrypt(input, key, options);
         break;
+      case 'x448':
+        result = encryptMode ? x448Encrypt(input, key, options) : x448Decrypt(input, key, options)
+        break
       case "ecc":
         result = encryptMode ? eccEncrypt(input, key, options) : eccDecrypt(input, key, options);
         break;
