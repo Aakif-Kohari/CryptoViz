@@ -34,6 +34,7 @@ import { encrypt as sha512Encrypt, decrypt as sha512Decrypt } from "../cipher/ha
 import { encrypt as xxhashEncrypt, decrypt as xxhashDecrypt } from "../cipher/hash/xxhash";
 import { encrypt as dhEncrypt, decrypt as dhDecrypt } from "../cipher/asymmetric/dh";
 import { encrypt as eccEncrypt, decrypt as eccDecrypt } from "../cipher/asymmetric/ecc";
+import { encrypt as schnorrEncrypt, decrypt as schnorrDecrypt } from '../cipher/asymmetric/schnorr'
 import { encrypt as ecdsaEncrypt, decrypt as ecdsaDecrypt } from "../cipher/asymmetric/ecdsa";
 import { encrypt as ed25519Encrypt, decrypt as ed25519Decrypt } from "../cipher/asymmetric/ed25519";
 import { encrypt as elgamalEncrypt, decrypt as elgamalDecrypt } from "../cipher/asymmetric/elgamal";
@@ -156,6 +157,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       case "ecc":
         result = encryptMode ? eccEncrypt(input, key, options) : eccDecrypt(input, key, options);
         break;
+      case 'schnorr':
+        result = encryptMode ? schnorrEncrypt(input, key, options) : schnorrDecrypt(input, key, options)
+        break
       case "ecdsa":
         result = encryptMode ? ecdsaEncrypt(input, key, options) : ecdsaDecrypt(input, key, options);
         break;
