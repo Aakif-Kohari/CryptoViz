@@ -365,6 +365,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     ],
   },
   {
+    id: 'x448',
+    name: 'X448',
+    category: 'asymmetric',
+    description: 'Diffie-Hellman key exchange over Curve448 (RFC 7748) — the higher-security sibling of X25519, targeting ~224-bit security with 56-byte keys instead of X25519\'s 32-byte keys.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+    keyPlaceholder: '56-byte private key hex (112 chars), or leave blank to generate one',
+  },
+  {
     id: "ecc",
     name: "ECC (ECDSA P-256)",
     category: "asymmetric",

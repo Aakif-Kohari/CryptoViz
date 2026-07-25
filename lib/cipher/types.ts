@@ -96,6 +96,7 @@ export type CipherName =
   | 'columnar-transposition'
   | 'dsa'
   | 'dh'
+  | 'x448'
   | 'ecc'
   | 'elgamal'
   | 'ed25519'
