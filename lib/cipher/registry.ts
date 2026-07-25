@@ -327,6 +327,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     ],
   },
   {
+    id: 'dsa',
+    name: 'DSA',
+    category: 'asymmetric',
+    description: 'The finite-field discrete-log ancestor of ECDSA (NIST FIPS 186, 1994) — same r/s signature equation, computed in a prime-order subgroup instead of on a curve. Demo uses toy parameters; real DSA needs p>=2048 bits, q>=224 bits.',
+    defaultKey: '47,23,4,5',
+    defaultInput: '15',
+    securityStatus: 'secure',
+    keyPlaceholder: 'p,q,g,x (private, sign) or p,q,g,y (public, verify)',
+  },
+  {
     id: "dh",
     name: "Diffie-Hellman",
     category: "asymmetric",

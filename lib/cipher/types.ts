@@ -94,6 +94,7 @@ export type CipherName =
   | 'idea'
   | 'rsa'
   | 'columnar-transposition'
+  | 'dsa'
   | 'dh'
   | 'ecc'
   | 'elgamal'
