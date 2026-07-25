@@ -204,6 +204,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: "HMAC Secret Key",
   },
   {
+    id: 'cmac',
+    name: 'AES-CMAC',
+    category: 'hash',
+    description: 'A MAC built entirely from AES block-cipher calls plus a GF(2^128) subkey-derivation step (NIST SP 800-38B) — no separate hash function, unlike HMAC. Composed from the existing AES module, no new dependencies.',
+    defaultKey: '2b7e151628aed2a6abf7158809cf4f3c',
+    defaultInput: '6bc1bee22e409f96e93d7e117393172a',
+    securityStatus: 'secure',
+  },
+  {
     id: "bcrypt",
     name: "Bcrypt",
     category: "hash",
