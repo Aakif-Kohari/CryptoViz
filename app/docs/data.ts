@@ -408,6 +408,61 @@ export const docCategories: DocCategory[] = [
   },
   {
     type: 'cipher',
+    title: "SM3 Hash",
+    description: "Chinese Commercial Cryptography standard (GB/T 32905-2016) cryptographic hash function producing a 256-bit digest.",
+    overview: {
+      history: "Published in 2010 by the State Encryption Management Bureau (OSCCA) and formalized as Chinese National Standard GB/T 32905-2016 and ISO/IEC 10118-3:2018. SM3 is an integral member of China's commercial cryptographic algorithm suite (alongside SM2 and SM4).",
+      description: "SM3 processes 512-bit message blocks through a Merkle-Damgård construction using 64 ARX (Addition, Rotation, XOR) compression rounds. Unlike SHA-256 which uses modular addition to combine block outputs, SM3 updates its intermediate 256-bit hash state using bitwise XOR operations (V^(i+1) = V^(i) ^ (A,B,C,D,E,F,G,H))."
+    },
+    mathematics: {
+      encryptionFormula: "H(M) = \\text{SM3}(M)",
+      decryptionFormula: "N/A (One-way deterministic cryptographic hash function)",
+      explanation: [
+        "Message Expansion: Generates 68 32-bit words W_0..W_{67} and 64 XOR-derived words W'_j = W_j \\oplus W_{j+4}.",
+        "Permutation Functions: P_0(X) = X \\oplus (X \\lll 9) \\oplus (X \\lll 17) and P_1(X) = X \\oplus (X \\lll 15) \\oplus (X \\lll 23).",
+        "Round Functions: FF_j(X,Y,Z) and GG_j(X,Y,Z) act as bitwise XOR for rounds 0-15 and majority/choice functions for rounds 16-63.",
+        "Intermediate Variables: SS1 = ((A \\lll 12) + E + (T_j \\lll (j \\bmod 32))) \\lll 7, SS2 = SS1 \\oplus (A \\lll 12)."
+      ]
+    },
+    workedExample: {
+      plaintext: "abc",
+      parameters: "64 Rounds, 512-bit Message Block",
+      steps: [
+        { description: "Message Padding", result: "Appends 0x80, zero-pads to 448 mod 512 bits, and appends 64-bit length (24 bits)." },
+        { description: "Message Expansion", result: "Expands 16 block words into W[0..67] using P1 permutation and derives W'[0..63]." },
+        { description: "64 Compression Rounds", result: "Mutates working registers A..H using FF_j, GG_j, P0, SS1, SS2, TT1, and TT2." },
+        { description: "State Update (XOR)", result: "Updates IV registers V^(1) = V^(0) XOR (A,B,C,D,E,F,G,H)." },
+        { description: "Digest Finalization", result: "Concatenates V0..V7 into a 256-bit hexadecimal digest." }
+      ],
+      finalCiphertext: "66c7f0f462eeedd9d1f2d46bdc10e4e24167c4875cf2f7a2297da02b8f4ba8e0"
+    },
+    complexity: "O(n) time complexity where n is message length in 512-bit blocks. Space complexity is O(1) streaming state buffer.",
+    securityAnalysis: {
+      advantages: [
+        "Cryptographically secure 256-bit digest with resistance to collision and preimage attacks.",
+        "ARX design provides high hardware efficiency without relying on table lookups (S-boxes), mitigating cache-timing side channels."
+      ],
+      weaknesses: [
+        "Like SHA-256, built on Merkle-Damgård construction and vulnerable to length extension attacks if raw hash is used directly as a MAC (use HMAC-SM3 instead)."
+      ]
+    },
+    realWorldApplications: [
+      "Chinese Commercial Cryptography (Guomi / Commercial Code) mandatory standards.",
+      "Digital signatures with SM2 elliptic curve algorithm.",
+      "GM/T standard TLS/SSL connections and banking applications in East Asia."
+    ],
+    codeSnippets: {
+      python: "# Using pycryptodome or gmssl library\nfrom gmssl import sm3, func\n\ndef compute_sm3(text):\n    return sm3.sm3_hash(func.bytes_to_list(text.encode('utf-8')))",
+      javascript: "import { encrypt as sm3Encrypt } from './lib/cipher/hash/sm3';\n\nconst digest = sm3Encrypt('abc').output;\nconsole.log(digest); // 66c7f0f462eeedd9d1f2d46bdc10e4e24167c4875cf2f7a2297da02b8f4ba8e0"
+    },
+    playgroundLink: "/visualizer/sm3",
+    references: [
+      { title: "GB/T 32905-2016: SM3 Cryptographic Hash Algorithm", url: "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=022F9E5894101A094D26500F9514757C" },
+      { title: "ISO/IEC 10118-3:2018 Dedicated Hash Functions (SM3)", url: "https://www.iso.org/standard/67918.html" }
+    ]
+  },
+  {
+    type: 'cipher',
     title: "RSA-2048",
     description: "A widely used public-key cryptosystem for secure data transmission based on the factoring of large prime numbers.",
     overview: {

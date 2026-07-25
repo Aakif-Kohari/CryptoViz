@@ -64,6 +64,14 @@ const ALGORITHMS: AvalancheAlgorithm[] = [
     note: 'Keccak sponge construction — strong, uniform diffusion.',
   },
   {
+    id: 'sm3',
+    name: 'SM3',
+    securityStatus: 'secure',
+    key: '',
+    options: {},
+    note: 'Chinese Commercial Cryptography standard (GB/T 32905-2016) — 256-bit digest with 64 ARX compression rounds.',
+  },
+  {
     id: 'ripemd160',
     name: 'RIPEMD-160',
     securityStatus: 'secure',

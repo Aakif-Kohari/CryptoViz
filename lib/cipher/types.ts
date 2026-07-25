@@ -122,6 +122,7 @@ export type CipherName =
   | 'sha1'
   | 'hkdf'
   | 'bloom-filter'
+  | 'sm3'
 
 export interface TestVector {
   input: string
