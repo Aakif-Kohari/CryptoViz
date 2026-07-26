@@ -8,8 +8,14 @@ import { CIPHER_REGISTRY } from '../../lib/cipher/registry'
 
 type FeedbackState = 'idle' | 'correct' | 'incorrect'
 
-const TOTAL_QUESTIONS = 10
-const TIME_LIMIT = 60
+export type QuestionCountOption = 5 | 10 | 20
+export type TimeLimitOption = 30 | 60 | 120 | 0
+
+const QUESTION_COUNT_OPTIONS: readonly QuestionCountOption[] = [5, 10, 20]
+const TIME_LIMIT_OPTIONS: readonly TimeLimitOption[] = [30, 60, 120, 0]
+
+const DEFAULT_QUESTION_COUNT: QuestionCountOption = 10
+const DEFAULT_TIME_LIMIT: TimeLimitOption = 60
 
 const XP_BASE_CORRECT = 100
 const XP_PENALTY_PER_HINT = 20
@@ -21,6 +27,8 @@ const XP_TOTAL_KEY = 'cryptoviz_xp_total'
 const STREAK_COUNT_KEY = 'cryptoviz_streak_count'
 const STREAK_LAST_DATE_KEY = 'cryptoviz_streak_last_play_date'
 const BEST_SCORE_KEY = 'cryptoviz_best_score'
+const QUESTION_COUNT_KEY = 'cryptoviz_challenge_question_count'
+const TIME_LIMIT_KEY = 'cryptoviz_challenge_time_limit'
 
 type QuestionRun = {
   cipherId: ChallengeData['cipherId']
