@@ -101,6 +101,7 @@ export type CipherName =
   | 'x448'
   | 'ecc'
   | 'schnorr'
+  | 'elgamal-signature'
   | 'elgamal'
   | 'ed25519'
   | 'rabin'
