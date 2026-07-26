@@ -114,6 +114,8 @@ export default function ChallengeMode() {
 
 
   const [difficulty, setDifficulty] = useState<ChallengeDifficulty>('medium')
+  const [questionCount, setQuestionCount] = useState<QuestionCountOption>(DEFAULT_QUESTION_COUNT)
+  const [timeLimit, setTimeLimit] = useState<TimeLimitOption>(DEFAULT_TIME_LIMIT)
   const [started, setStarted] = useState(false)
   const [replayMode, setReplayMode] = useState(false)
 
@@ -129,17 +131,27 @@ export default function ChallengeMode() {
   // Session state
   const [sessionChallenges, setSessionChallenges] = useState<ChallengeData[] | null>(null)
   const [expectedCiphertext, setExpectedCiphertext] = useState('')
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0) // 0..9
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0) // 0..n-1
   const [feedback, setFeedback] = useState<FeedbackState>('idle')
   const [copied, setCopied] = useState(false)
 
   const [answer, setAnswer] = useState('')
-  const [timeLeft, setTimeLeft] = useState(TIME_LIMIT)
+  const [timeLeft, setTimeLeft] = useState<number>(DEFAULT_TIME_LIMIT)
 
   const [showHintIndex, setShowHintIndex] = useState(0) // 0..n-1 (but reveals hint at index)
 
   const [questionRuns, setQuestionRuns] = useState<QuestionRun[] | null>(null)
   const [challengeExplanation, setChallengeExplanation] = useState<{ title: string; details: string[] } | null>(null)
+
+  const handleQuestionCountChange = useCallback((count: QuestionCountOption) => {
+    setQuestionCount(count)
+    localStorage.setItem(QUESTION_COUNT_KEY, String(count))
+  }, [])
+
+  const handleTimeLimitChange = useCallback((limit: TimeLimitOption) => {
+    setTimeLimit(limit)
+    localStorage.setItem(TIME_LIMIT_KEY, String(limit))
+  }, [])
 
   const currentChallenge = useMemo(() => {
     if (!sessionChallenges) return null
@@ -152,8 +164,8 @@ export default function ChallengeMode() {
   }, [currentChallenge])
 
   const progressPercent = useMemo(() => {
-    return Math.round((currentQuestionIndex / TOTAL_QUESTIONS) * 100)
-  }, [currentQuestionIndex])
+    return Math.round((currentQuestionIndex / questionCount) * 100)
+  }, [currentQuestionIndex, questionCount])
 
   // Hydration + persisted values
   useEffect(() => {
@@ -164,11 +176,24 @@ export default function ChallengeMode() {
     if (savedXp) setXpTotal(parseInt(savedXp, 10) || 0)
 
     const savedStreakCount = localStorage.getItem(STREAK_COUNT_KEY)
-    const savedStreakLast = localStorage.getItem(STREAK_LAST_DATE_KEY)
 
     if (savedStreakCount) setStreak(parseInt(savedStreakCount, 10) || 0)
 
-    // If last date is invalid, keep streak as-is; streak update will happen on completion.
+    const savedCount = localStorage.getItem(QUESTION_COUNT_KEY)
+    if (savedCount) {
+      const val = parseInt(savedCount, 10)
+      if (QUESTION_COUNT_OPTIONS.includes(val as QuestionCountOption)) {
+        setQuestionCount(val as QuestionCountOption)
+      }
+    }
+
+    const savedTime = localStorage.getItem(TIME_LIMIT_KEY)
+    if (savedTime !== null) {
+      const val = parseInt(savedTime, 10)
+      if (TIME_LIMIT_OPTIONS.includes(val as TimeLimitOption)) {
+        setTimeLimit(val as TimeLimitOption)
+      }
+    }
 
     setIsHydrated(true)
   }, [])
