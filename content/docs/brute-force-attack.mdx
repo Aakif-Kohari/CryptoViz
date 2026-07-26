@@ -1,0 +1,74 @@
+---
+title: "Understanding Brute-Force Attacks"
+description: "An educational guide into how keyspace size and attacker speeds determine password cracking times."
+difficulty: beginner
+readingTime: 6
+tags: ["attacks", "brute-force", "security", "passwords"]
+prerequisites: ["dictionary-attack"]
+publishedAt: 2026-07-27
+updatedAt: 2026-07-27
+---
+
+## What is a Brute-Force Attack?
+
+A **brute-force attack** is a cryptographic trial-and-error method where an attacker systematically generates and tests every possible combination of characters until the correct key or password is found. Unlike dictionary attacks, which rely on pre-existing lists of popular words, a brute-force search is mathematically guaranteed to find the target, assuming infinite time and computing power.
+
+---
+
+## The Mathematics of Keyspace
+
+The difficulty of resisting a brute-force search is determined by the size of the search space, known as the **keyspace**. The keyspace represents the total number of unique combinations that can be generated for a password of a given length and character composition.
+
+The keyspace $K$ is calculated using the exponential formula:
+
+$$K = S^L$$
+
+Where:
+* **$S$**: The size of the character pool (character set).
+* **$L$**: The length of the password.
+
+For example, a password that uses only 8 lowercase letters ($S = 26$) has a keyspace of:
+
+$$26^8 = 208,827,064,576 \text{ combinations}$$
+
+If we double the length to 16 characters, the keyspace becomes:
+
+$$26^{16} \approx 4.36 \times 10^{22} \text{ combinations}$$
+
+Increasing the length exponent $L$ increases complexity exponentially, making it far more effective than simply adding character sets to $S$.
+
+---
+
+## Entropy: Measuring Strength in Bits
+
+To simplify comparisons, security professionals measure password strength using **entropy** (measured in bits). Entropy represents the exponent base 2 of the keyspace:
+
+$$H = \log_2(K) = L \times \log_2(S)$$
+
+Each additional bit of entropy doubles the difficulty of cracking the password. The industry standard guidelines define strength thresholds as:
+
+* **Under 28 bits**: Very Weak (vulnerable to instantaneous online cracking)
+* **28 to 35 bits**: Weak (easily cracked in seconds/minutes offline)
+* **36 to 59 bits**: Reasonable (resistant to standard online cracking, but vulnerable offline)
+* **60 to 127 bits**: Strong (safe for general accounts against offline attacks)
+* **128 bits and above**: Cryptographically Secure (practically uncrackable)
+
+---
+
+## Attacker Speeds: Online vs. Offline Attacks
+
+The time required to brute-force a password depends heavily on where the password is checked:
+
+### 1. Online Rate-Limited Attacks
+If the attacker is testing guesses against a live website, the website can implement rate limits (e.g., blocking IPs after 5 failed attempts). In this scenario, the attacker's speed is restricted to perhaps 10 attempts per second. Even a weak password with 30 bits of entropy would take years to crack online.
+
+### 2. Offline Cracking
+If an attacker steals a database of password hashes (e.g. through a SQL injection), they do not need to interact with the website. They can run cracking tools like **Hashcat** offline using high-performance hardware (GPUs, FPGAs, or custom ASICs). On weak hash algorithms like MD5 or SHA-1, a standard GPU can compute billions of hashes per second.
+
+---
+
+## The Best Defenses
+
+To defend passwords against offline brute-forcing, developers use **Slow Hashing Algorithms** (Key Derivation Functions). 
+
+Instead of computing a hash instantly, KDFs like `[scrypt]`, `[pbkdf2]`, or Argon2 are designed to consume deliberate CPU cycles and memory. By forcing the processor to do expensive work for every guess, KDFs slow down an attacker's offline cracking speed from 1,000,000,000 hashes per second to just 100, effectively rendering brute force mathematically impossible.
