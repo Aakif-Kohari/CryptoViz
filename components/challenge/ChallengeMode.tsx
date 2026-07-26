@@ -841,9 +841,9 @@ export default function ChallengeMode() {
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeDasharray="138.2"
-                    strokeDashoffset={138.2 - 138.2 * (timeLeft / TIME_LIMIT)}
+                    strokeDashoffset={timeLimit === 0 ? 0 : 138.2 - 138.2 * (timeLeft / timeLimit)}
                     className="transition-all duration-1000 ease-linear"
-                    style={{ stroke: timeLeft <= 10 ? '#ef4444' : 'currentColor' }}
+                    style={{ stroke: timeLimit > 0 && timeLeft <= 10 ? '#ef4444' : 'currentColor' }}
                   />
                 </svg>
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -852,7 +852,9 @@ export default function ChallengeMode() {
               </div>
               <div className="min-w-0">
                 <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Time Left</div>
-                <div className={`mt-0.5 text-lg font-mono font-bold tabular-nums truncate ${timeLeft <= 10 ? 'text-red-500 animate-pulse' : 'text-zinc-900 dark:text-white'}`} aria-live={timeLeft <= 10 ? 'assertive' : 'polite'} aria-atomic="true">00:{timeLeft.toString().padStart(2, '0')}</div>
+                <div className={`mt-0.5 text-lg font-mono font-bold tabular-nums truncate ${timeLimit > 0 && timeLeft <= 10 ? 'text-red-500 animate-pulse' : 'text-zinc-900 dark:text-white'}`} aria-live={timeLimit > 0 && timeLeft <= 10 ? 'assertive' : 'polite'} aria-atomic="true">
+                  {timeLimit === 0 ? 'Untimed' : `${Math.floor(timeLeft / 60).toString().padStart(2, '0')}:${(timeLeft % 60).toString().padStart(2, '0')}`}
+                </div>
               </div>
             </div>
           </div>
