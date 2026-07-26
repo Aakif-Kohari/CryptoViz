@@ -82,9 +82,12 @@ export type CipherName =
   | 'otp'
   | 'des'
   | '3des'
+  | 'aes-xts'
   | 'aes'
   | 'aes-gcm'
+  | 'serpent'
   | 'speck'
+  | 'threefish'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
@@ -101,6 +104,7 @@ export type CipherName =
   | 'x448'
   | 'ecc'
   | 'schnorr'
+  | 'elgamal-signature'
   | 'elgamal'
   | 'ed25519'
   | 'rabin'
@@ -122,6 +126,7 @@ export type CipherName =
   | 'cmac'
   | 'sha1'
   | 'hkdf'
+  | 'blake2s'
   | 'bloom-filter'
 
 export interface TestVector {
