@@ -238,6 +238,19 @@ export default function ChallengeMode() {
   }, [currentQuestionIndex, started])
 
 
+  const advanceQuestion = useCallback(() => {
+    setFeedback('idle')
+    setChallengeExplanation(null)
+    setAnswer('')
+    setShowHintIndex(0)
+    setTimeLeft(timeLimit)
+
+    setCurrentQuestionIndex((i) => {
+      const next = i + 1
+      return next
+    })
+  }, [timeLimit])
+
   // Timer effect for challenge countdown and untimed mode
   useEffect(() => {
     if (!currentChallenge) return
@@ -285,19 +298,6 @@ export default function ChallengeMode() {
     return () => clearTimeout(t)
   }, [currentChallenge, feedback, loading, timeLeft, currentQuestionIndex, showHintIndex, timeLimit, advanceQuestion])
 
-  const advanceQuestion = useCallback(() => {
-    setFeedback('idle')
-    setChallengeExplanation(null)
-    setAnswer('')
-    setShowHintIndex(0)
-    setTimeLeft(timeLimit)
-
-    setCurrentQuestionIndex((i) => {
-      const next = i + 1
-      return next
-    })
-  }, [timeLimit])
-
   const resetSession = useCallback(() => {
     successTimeoutRef.current && clearTimeout(successTimeoutRef.current)
     sessionPersistedRef.current = false
@@ -313,30 +313,25 @@ export default function ChallengeMode() {
     setAnswer('')
     setShowHintIndex(0)
     setTimeLeft(timeLimit)
-  }, [difficulty, questionCount, timeLimit, generateSessionChallenges])
-    setChallengeExplanation(null)
-    setAnswer('')
-    setShowHintIndex(0)
-    setTimeLeft(TIME_LIMIT)
     setCopied(false)
-  }, [difficulty, generateSessionChallenges])
+  }, [difficulty, questionCount, timeLimit, generateSessionChallenges])
 
   const startNewSession = useCallback(() => {
     successTimeoutRef.current && clearTimeout(successTimeoutRef.current)
     sessionPersistedRef.current = false
     setReplayMode(false)
-    setSessionChallenges(generateSessionChallenges(difficulty))
-    setQuestionRuns(new Array(TOTAL_QUESTIONS))
+    setSessionChallenges(generateSessionChallenges(difficulty, questionCount))
+    setQuestionRuns(new Array(questionCount))
     setCurrentQuestionIndex(0)
     setExpectedCiphertext('')
     setFeedback('idle')
     setChallengeExplanation(null)
     setAnswer('')
     setShowHintIndex(0)
-    setTimeLeft(TIME_LIMIT)
+    setTimeLeft(timeLimit)
     setCopied(false)
     setStarted(true)
-  }, [difficulty, generateSessionChallenges])
+  }, [difficulty, questionCount, timeLimit, generateSessionChallenges])
 
   const handleCopy = () => {
     if (!expectedCiphertext) return
@@ -560,14 +555,14 @@ export default function ChallengeMode() {
     setChallengeExplanation(null)
     setAnswer('')
     setShowHintIndex(0)
-    setTimeLeft(TIME_LIMIT)
+    setTimeLeft(timeLimit)
     setCopied(false)
-  }, [sessionChallenges])
+  }, [sessionChallenges, timeLimit])
 
   // Completion screen when index reached end
-  if (currentQuestionIndex > TOTAL_QUESTIONS - 1 && sessionSummary) {
+  if (currentQuestionIndex > questionCount - 1 && sessionSummary) {
     const sessionCorrect = sessionSummary.correctCount
-    const totalQuestions = TOTAL_QUESTIONS
+    const totalQuestions = questionCount
     const isNewBest = sessionCorrect * XP_BASE_CORRECT >= bestScore && sessionCorrect > 0
 
     return (
@@ -784,7 +779,7 @@ export default function ChallengeMode() {
     )
   }
 
-  const timePercent = (timeLeft / TIME_LIMIT) * 100
+  const timePercent = timeLimit === 0 ? 100 : (timeLeft / timeLimit) * 100
   const maxHintIndex = Math.max(0, currentChallenge.hints.length - 1)
   const hintText = currentChallenge.hints[showHintIndex]
 
@@ -1077,11 +1072,11 @@ export default function ChallengeMode() {
           <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40 transition-all hover:shadow-md">
             <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Your Progress</h3>
             <div className="flex items-center justify-between text-sm font-semibold text-zinc-900 dark:text-white">
-              <span>Question {currentQuestionIndex + 1} of {TOTAL_QUESTIONS}</span>
+              <span>Question {currentQuestionIndex + 1} of {questionCount}</span>
               <span className="text-teal-600 dark:text-teal-400">{progressPercent}%</span>
             </div>
             <div className="mt-4 flex h-2 w-full gap-1">
-              {Array.from({ length: TOTAL_QUESTIONS }).map((_, i) => (
+              {Array.from({ length: questionCount }).map((_, i) => (
                 <div
                   key={i}
                   className={`h-full flex-1 rounded-full transition-colors ${
@@ -1151,8 +1146,8 @@ export default function ChallengeMode() {
         </div>
       </div>
 
-      <div className="h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800" role="progressbar" aria-valuenow={timeLeft} aria-valuemin={0} aria-valuemax={TIME_LIMIT} aria-label="Time remaining">
-        <div className={`h-full rounded-full transition-all duration-1000 ease-linear ${timeLeft <= 10 ? 'bg-red-500' : 'bg-teal-600 dark:bg-teal-500'}`} style={{ width: `${timePercent}%` }} />
+      <div className="h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800" role="progressbar" aria-valuenow={timeLimit === 0 ? 100 : timeLeft} aria-valuemin={0} aria-valuemax={timeLimit === 0 ? 100 : timeLimit} aria-label="Time remaining">
+        <div className={`h-full rounded-full transition-all duration-1000 ease-linear ${timeLimit > 0 && timeLeft <= 10 ? 'bg-red-500' : 'bg-teal-600 dark:bg-teal-500'}`} style={{ width: `${timePercent}%` }} />
       </div>
     </div>
   )
