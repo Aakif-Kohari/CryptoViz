@@ -87,6 +87,7 @@ export type CipherName =
   | 'aes-gcm'
   | 'serpent'
   | 'speck'
+  | 'threefish'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'

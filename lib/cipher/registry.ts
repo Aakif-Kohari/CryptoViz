@@ -193,6 +193,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '32-character hex key (128-bit)',
   },
   {
+    id: 'threefish',
+    name: 'Threefish-256',
+    category: 'symmetric',
+    description: 'A tweakable, large-block ARX cipher (2008) underlying the Skein hash function (a SHA-3 finalist). 256-bit block, 72 rounds, and a 128-bit tweak that varies ciphertext without changing the key — no other cipher here exposes a tweak input.',
+    defaultKey: '17161514131211101f1e1d1c1b1a191827262524232221202f2e2d2c2b2a2928|07060504030201000f0e0d0c0b0a0908',
+    defaultInput: '0'.repeat(64),
+    securityStatus: 'secure',
+    keyPlaceholder: '64-char hex key, optionally "|32-char hex tweak"',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
