@@ -199,9 +199,9 @@ export default function ChallengeMode() {
   }, [])
 
   const generateSessionChallenges = useCallback(
-    (d: ChallengeDifficulty) => {
+    (d: ChallengeDifficulty, count: number) => {
       const arr: ChallengeData[] = []
-      for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+      for (let i = 0; i < count; i++) {
         arr.push(generateChallengeData(d))
       }
       return arr
@@ -289,13 +289,13 @@ export default function ChallengeMode() {
     setChallengeExplanation(null)
     setAnswer('')
     setShowHintIndex(0)
-    setTimeLeft(TIME_LIMIT)
+    setTimeLeft(timeLimit)
 
     setCurrentQuestionIndex((i) => {
       const next = i + 1
       return next
     })
-  }, [])
+  }, [timeLimit])
 
   const resetSession = useCallback(() => {
     successTimeoutRef.current && clearTimeout(successTimeoutRef.current)
@@ -303,11 +303,16 @@ export default function ChallengeMode() {
     setReplayMode(false)
 
     setStarted(true)
-    setSessionChallenges(generateSessionChallenges(difficulty))
-    setQuestionRuns(new Array(TOTAL_QUESTIONS))
+    setSessionChallenges(generateSessionChallenges(difficulty, questionCount))
+    setQuestionRuns(new Array(questionCount))
     setCurrentQuestionIndex(0)
     setExpectedCiphertext('')
     setFeedback('idle')
+    setChallengeExplanation(null)
+    setAnswer('')
+    setShowHintIndex(0)
+    setTimeLeft(timeLimit)
+  }, [difficulty, questionCount, timeLimit, generateSessionChallenges])
     setChallengeExplanation(null)
     setAnswer('')
     setShowHintIndex(0)
