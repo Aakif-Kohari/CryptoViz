@@ -82,6 +82,7 @@ export type CipherName =
   | 'otp'
   | 'des'
   | '3des'
+  | 'aes-xts'
   | 'aes'
   | 'aes-gcm'
   | 'speck'
