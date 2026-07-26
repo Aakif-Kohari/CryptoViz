@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from 'react';
 import ReedSolomonVisualizer from './ReedSolomonVisualizer';
 
@@ -24,11 +26,7 @@ const ReedSolomonDemo: React.FC = () => {
 
   // Initialize the web worker once
   useEffect(() => {
-    // The worker file will be located at lib/workers/reedSolomonWorker.ts
-    // Vite-compatible import for module worker
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const WorkerConstructor = require('worker-loader!../lib/workers/reedSolomonWorker.ts').default;
-    workerRef.current = new WorkerConstructor();
+    workerRef.current = new Worker(new URL('../lib/workers/reedSolomonWorker.ts', import.meta.url));
     return () => {
       workerRef.current?.terminate();
     };
