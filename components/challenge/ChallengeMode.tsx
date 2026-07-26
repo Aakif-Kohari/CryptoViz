@@ -477,10 +477,10 @@ export default function ChallengeMode() {
     if (sessionPersistedRef.current) return
     if (!started) return
     if (!questionRuns) return
-    if (currentQuestionIndex <= TOTAL_QUESTIONS - 1) return
+    if (currentQuestionIndex <= questionCount - 1) return
 
     const completed = questionRuns.filter(Boolean) as QuestionRun[]
-    if (completed.length !== TOTAL_QUESTIONS) return
+    if (completed.length !== questionCount) return
 
     const sessionXp = completed.reduce((a, r) => a + r.earnedXp, 0)
     const correctCount = completed.filter((r) => r.correct).length
@@ -546,14 +546,14 @@ export default function ChallengeMode() {
 
     // Mark this session as persisted to prevent double-persistence
     sessionPersistedRef.current = true
-  }, [started, questionRuns, currentQuestionIndex, difficulty])
+  }, [started, questionRuns, currentQuestionIndex, difficulty, questionCount])
 
   const handleReplay = useCallback(() => {
     if (!sessionChallenges) return
     successTimeoutRef.current && clearTimeout(successTimeoutRef.current)
     sessionPersistedRef.current = false
     setReplayMode(true)
-    setQuestionRuns(new Array(TOTAL_QUESTIONS))
+    setQuestionRuns(new Array(questionCount))
     setCurrentQuestionIndex(0)
     setExpectedCiphertext('')
     setFeedback('idle')
