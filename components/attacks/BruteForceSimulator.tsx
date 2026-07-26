@@ -13,6 +13,18 @@ import {
   type CharsetOption,
 } from "../../lib/attacks/bruteForce";
 import { cn } from "../../lib/utils";
+
+function formatLargeValue(value: number | bigint): string {
+  if (typeof value === "bigint") {
+    return value.toString();
+  }
+
+  if (value >= 1_000_000_000_000) {
+    return value.toExponential(3);
+  }
+
+  return value.toLocaleString();
+}
 import {
   ShieldCheck,
   Timer,
@@ -418,7 +430,7 @@ export default function BruteForceSimulator() {
                   <span className="text-xs font-semibold uppercase tracking-wider">Total Keyspace</span>
                 </div>
                 <p className="mt-2 text-lg font-black font-mono truncate text-white" title={keyspace.toString()}>
-                  {keyspace > 1000000000000n ? keyspace.toExponential(3) : keyspace.toLocaleString()}
+                  {formatLargeValue(keyspace)}
                 </p>
                 <span className="text-[10px] text-slate-500">Possible combinations ({totalCharsetSize}^{length})</span>
               </div>
@@ -429,7 +441,7 @@ export default function BruteForceSimulator() {
                   <span className="text-xs font-semibold uppercase tracking-wider">Cracking Speed</span>
                 </div>
                 <p className="mt-2 text-lg font-black font-mono truncate text-white">
-                  {activeSpeed.toExponential(1)} H/s
+                  {activeSpeed >= 1_000_000_000 ? activeSpeed.toExponential(1) : activeSpeed.toLocaleString()} H/s
                 </p>
                 <span className="text-[10px] text-slate-500">Attempts processed per sec</span>
               </div>

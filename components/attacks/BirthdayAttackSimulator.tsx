@@ -463,7 +463,7 @@ export default function BirthdayAttackSimulator() {
             <h3 className="font-bold">Preimage vs. Collision Resistance</h3>
           </div>
           <p className="text-sm leading-6 text-slate-400">
-            Brute forcing a *specific* hash output (preimage resistance) has a complexity of $O(2^n)$. Finding *any* collision (collision resistance) has a complexity of only $O(2^{n/2})$. Thus, a 256-bit hash function only provides 128 bits of security against collisions.
+            Brute forcing a *specific* hash output (preimage resistance) has a complexity of O(2^n). Finding *any* collision (collision resistance) has a complexity of only O(2^(n/2)). Thus, a 256-bit hash function only provides 128 bits of security against collisions.
           </p>
         </div>
 

@@ -160,6 +160,10 @@ export const RESOURCES: Resource[] = [
       'A detailed mathematical essay explaining the Birthday Paradox, derivation of the collision probability equations, and implications for cryptographic hashes.',
     tags: ['hash', 'attacks'],
     readingTime: 10,
+    type: 'article',
+    addedAt: '2026-07-27',
+  },
+  {
     id: 'owasp-password-hashing-cheat-sheet',
     title: 'OWASP Password Hashing Cheat Sheet',
     url: 'https://cheatsheetseries.owasp.org/cheatsheets/Password_Hashing_Cheat_Sheet.html',
