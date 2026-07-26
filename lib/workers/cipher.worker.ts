@@ -48,6 +48,7 @@ import { encrypt as rsaEncrypt, decrypt as rsaDecrypt } from "../cipher/asymmetr
 import { encrypt as x25519Encrypt, decrypt as x25519Decrypt } from "../cipher/asymmetric/x25519";
 import { encrypt as aesEncrypt, decrypt as aesDecrypt } from "../cipher/symmetric/aes";
 import { encrypt as aesGcmEncrypt, decrypt as aesGcmDecrypt } from "../cipher/symmetric/aes-gcm";
+import { encrypt as serpentEncrypt, decrypt as serpentDecrypt } from '../cipher/symmetric/serpent';
 import { encrypt as speckEncrypt, decrypt as speckDecrypt } from '../cipher/symmetric/speck'
 import { encrypt as chacha20Encrypt, decrypt as chacha20Decrypt } from "../cipher/symmetric/chacha20";
 import { encrypt as desEncrypt, decrypt as desDecrypt } from "../cipher/symmetric/des";
@@ -152,6 +153,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       case "aes-gcm":
         result = encryptMode ? aesGcmEncrypt(input, key, options) : aesGcmDecrypt(input, key, options);
         break;
+      case 'serpent':
+        result = encryptMode ? serpentEncrypt(input, key, options) : serpentDecrypt(input, key, options)
+        break
       case 'speck':
         result = encryptMode ? speckEncrypt(input, key, options) : speckDecrypt(input, key, options)
         break
