@@ -256,6 +256,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: "secure",
   },
   {
+    id: "sm3",
+    name: "SM3 Hash",
+    category: "hash",
+    description:
+      "Chinese National Standard cryptographic hash function (GB/T 32905-2016). Produces a 256-bit message digest using 64 ARX compression rounds.",
+    defaultKey: "",
+    defaultInput: "abc",
+    securityStatus: "secure",
+  },
+  {
     id: "md5",
     name: "MD5",
     category: "hash",

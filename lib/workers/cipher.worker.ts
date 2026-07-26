@@ -32,6 +32,7 @@ import { encrypt as poly1305Encrypt, decrypt as poly1305Decrypt } from "../ciphe
 import { encrypt as ripemd160Encrypt, decrypt as ripemd160Decrypt } from "../cipher/hash/ripemd160";
 import { encrypt as sha1Encrypt, decrypt as sha1Decrypt } from "../cipher/hash/sha1";
 import { encrypt as sha256Encrypt, decrypt as sha256Decrypt } from "../cipher/hash/sha256";
+import { encrypt as sm3Encrypt, decrypt as sm3Decrypt } from "../cipher/hash/sm3";
 import { encrypt as sha3Encrypt, decrypt as sha3Decrypt } from "../cipher/hash/sha3";
 import { encrypt as sha512Encrypt, decrypt as sha512Decrypt } from "../cipher/hash/sha512";
 import { encrypt as xxhashEncrypt, decrypt as xxhashDecrypt } from "../cipher/hash/xxhash";
@@ -215,6 +216,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break;
       case "sha256":
         result = encryptMode ? sha256Encrypt(input, key, options) : sha256Decrypt(input, key, options);
+        break;
+      case "sm3":
+        result = encryptMode ? sm3Encrypt(input, key, options) : sm3Decrypt(input, key, options);
         break;
       case "sha512":
         result = encryptMode ? sha512Encrypt(input, key, options) : sha512Decrypt(input, key, options);
