@@ -152,6 +152,14 @@ export const RESOURCES: Resource[] = [
     addedAt: '2026-07-19',
   },
   {
+    id: 'birthday-paradox-collision-risk',
+    title: 'The Birthday Paradox and Hash Collision Risk',
+    url: 'https://dwheeler.com/essays/birthday-paradox.html',
+    source: 'David A. Wheeler',
+    description:
+      'A detailed mathematical essay explaining the Birthday Paradox, derivation of the collision probability equations, and implications for cryptographic hashes.',
+    tags: ['hash', 'attacks'],
+    readingTime: 10,
     id: 'owasp-password-hashing-cheat-sheet',
     title: 'OWASP Password Hashing Cheat Sheet',
     url: 'https://cheatsheetseries.owasp.org/cheatsheets/Password_Hashing_Cheat_Sheet.html',
