@@ -173,6 +173,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     ],
   },
   {
+    id: 'serpent',
+    name: 'Serpent',
+    category: 'symmetric',
+    description: 'An AES finalist (1998, runner-up to Rijndael) with the largest security margin of the finalists — 32 rounds using 8 different S-boxes cycled per round, versus AES\'s single S-box.',
+    defaultKey: '000102030405060708090a0b0c0d0e0f',
+    defaultInput: '00112233445566778899aabbccddeeff',
+    securityStatus: 'secure',
+    keyPlaceholder: '32-character hex key (128-bit)',
+  },
+  {
     id: 'speck',
     name: 'Speck128/128',
     category: 'symmetric',
