@@ -238,11 +238,12 @@ export default function ChallengeMode() {
   }, [currentQuestionIndex, started])
 
 
-  // Timer
+  // Timer effect for challenge countdown and untimed mode
   useEffect(() => {
     if (!currentChallenge) return
     if (feedback === 'correct') return
     if (loading) return
+    if (timeLimit === 0) return
 
     if (timeLeft === 0) {
       // mark incorrect due to timeout
@@ -282,7 +283,7 @@ export default function ChallengeMode() {
 
     const t = setTimeout(() => setTimeLeft((v) => v - 1), 1000)
     return () => clearTimeout(t)
-  }, [currentChallenge, feedback, loading, timeLeft, currentQuestionIndex, showHintIndex])
+  }, [currentChallenge, feedback, loading, timeLeft, currentQuestionIndex, showHintIndex, timeLimit, advanceQuestion])
 
   const advanceQuestion = useCallback(() => {
     setFeedback('idle')
