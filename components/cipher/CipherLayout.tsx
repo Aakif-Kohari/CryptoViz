@@ -86,6 +86,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const [demoMode, setDemoMode] = useState(true);
   const [bobSecret, setBobSecret] = useState("15");
   const [aesMode, setAesMode] = useState("ECB");
+  const [padding, setPadding] = useState(true);
   const [result, setResult] = useState<CipherResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
@@ -111,6 +112,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     if (shared.options.rounds !== undefined) setRounds(shared.options.rounds)
     if (shared.options.demoMode !== undefined) setDemoMode(shared.options.demoMode)
     if (shared.options.bobSecret !== undefined) setBobSecret(shared.options.bobSecret)
+    if (shared.options.padding !== undefined) setPadding(shared.options.padding)
     pendingSharedStepRef.current = shared.step ?? null
   }, [cipher.id])
   // Sync playground state into the URL (debounced) so refresh/share preserves the session.
@@ -121,12 +123,12 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         key,
         direction: cipher.id === 'dh' ? 'encrypt' : action,
         step: currentStep,
-        options: { hexInput, rounds, demoMode, bobSecret },
+        options: { hexInput, rounds, demoMode, bobSecret, padding },
       })
       window.history.replaceState(window.history.state, '', permalink)
     }, 300)
     return () => clearTimeout(debounceId)
-  }, [input, key, action, hexInput, rounds, demoMode, bobSecret, aesMode, currentStep, cipher.id])
+  }, [input, key, action, hexInput, rounds, demoMode, bobSecret, aesMode, padding, currentStep, cipher.id])
   // Reset inputs when cipher changes
   useEffect(() => {
     if (abortControllerRef.current) {
@@ -156,6 +158,9 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         if (opt.id === "bobSecret" && shared.options.bobSecret === undefined && isStringOptionValue(opt.default)) {
           setBobSecret(opt.default);
         }
+        if (opt.id === "padding" && shared.options.padding === undefined && isBooleanOptionValue(opt.default)) {
+          setPadding(opt.default);
+        }
       });
     }
     return () => {
@@ -169,6 +174,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     rounds,
     demoMode,
     bobSecret,
+    padding,
   };
   const handlePresetLoad = (preset: WorkspacePreset) => {
     if (preset.cipherId !== cipher.id) {
@@ -193,6 +199,9 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     if (typeof preset.options.bobSecret === "string") {
       setBobSecret(preset.options.bobSecret);
     }
+    if (typeof preset.options.padding === "boolean") {
+      setPadding(preset.options.padding);
+    }
     setAnimationSpeed(preset.animationSpeed);
     setResult(null);
     setCurrentStep(0);
@@ -214,10 +223,10 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         instrument: true, // Always request instrumented steps for visualizer
         signal: controller.signal,
       };
-      if (cipher.id === "des" || cipher.id === "3des" || cipher.id === "aes") {
+      if (cipher.id === "des" || cipher.id === "3des" || cipher.id === "aes" || cipher.id === "camellia") {
         options.hexInput = hexInput;
       }
-      if (cipher.id === "aes") {
+      if (cipher.id === "aes" || cipher.id === "camellia") {
         options.mode = aesMode;
       }
       if (cipher.id === "bcrypt") {
@@ -229,6 +238,9 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       if (cipher.id === "dh") {
         options.mode = "demo"; // Always demo for paint mixing
         options.bobSecret = bobSecret;
+      }
+      if (cipher.id === "camellia") {
+        options.padding = padding;
       }
       // DH does not support decrypt
       const currentAction = cipher.id === "dh" ? "encrypt" : action;
@@ -293,6 +305,9 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     if (typeof trace.options.bobSecret === "string") {
       setBobSecret(trace.options.bobSecret);
     }
+    if (typeof trace.options.padding === "boolean") {
+      setPadding(trace.options.padding);
+    }
     const importedResult = traceToCipherResult(trace);
     setResult(importedResult);
     const restoredStep = pendingSharedStepRef.current;
@@ -323,6 +338,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     demoMode,
     bobSecret,
     aesMode,
+    padding,
   ]);
   // Helper for status badge styling
   const getStatusBadge = (status: "secure" | "legacy" | "deprecated" | "broken") => {
@@ -374,6 +390,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         rounds,
         demoMode,
         bobSecret,
+        padding,
       },
     })
     await navigator.clipboard.writeText(permalink)
@@ -469,6 +486,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     rounds,
     demoMode,
     bobSecret,
+    padding,
   };
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-6 md:px-6 md:py-8 lg:px-8">
@@ -607,7 +625,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
                 />
               </div>
             )}
-            {["des", "3des", "aes"].includes(cipher.id) && (
+            {["des", "3des", "aes", "camellia"].includes(cipher.id) && (
               <div className="flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-800">
                 <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
                   Input / Key in Hex Format
@@ -620,7 +638,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
                 />
               </div>
             )}
-            {cipher.id === "aes" && (
+            {(cipher.id === "aes" || cipher.id === "camellia") && (
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
                   Mode of Operation
@@ -632,16 +650,35 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
                 >
                   <option value="ECB">ECB (Electronic Codebook)</option>
                   <option value="CBC">CBC (Cipher Block Chaining)</option>
-                  <option value="CTR">CTR (Counter)</option>
-                  <option value="CFB">CFB (Cipher Feedback)</option>
-                  <option value="OFB">OFB (Output Feedback)</option>
+                  {cipher.id === "aes" && (
+                    <>
+                      <option value="CTR">CTR (Counter)</option>
+                      <option value="CFB">CFB (Cipher Feedback)</option>
+                      <option value="OFB">OFB (Output Feedback)</option>
+                    </>
+                  )}
                 </select>
-                <p className="text-[11px] leading-snug text-zinc-400 dark:text-zinc-500">
-                  <a href="/modes/" className="text-teal-600 hover:underline dark:text-teal-400">
-                    Explore the modes lab
-                  </a>{" "}
-                  to see how each mode propagates a one-byte change.
-                </p>
+                {cipher.id === "aes" && (
+                  <p className="text-[11px] leading-snug text-zinc-400 dark:text-zinc-500">
+                    <a href="/modes/" className="text-teal-600 hover:underline dark:text-teal-400">
+                      Explore the modes lab
+                    </a>{" "}
+                    to see how each mode propagates a one-byte change.
+                  </p>
+                )}
+              </div>
+            )}
+            {cipher.id === "camellia" && (
+              <div className="flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-800">
+                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                  PKCS#7 Padding
+                </span>
+                <input
+                  type="checkbox"
+                  checked={padding}
+                  onChange={(e) => setPadding(e.target.checked)}
+                  className="h-4 w-4 rounded border-zinc-300 text-teal-600 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800"
+                />
               </div>
             )}
             {/* Run button + Auto Compute toggle */}

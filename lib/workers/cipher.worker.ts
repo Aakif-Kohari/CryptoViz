@@ -3,6 +3,7 @@
  * Handles heavy cryptographic operations off the main thread.
  * @see CLAUDE.md
  */
+
 import { encrypt as atbashEncrypt, decrypt as atbashDecrypt } from "../cipher/classical/atbash";
 import { encrypt as autokeyEncrypt, decrypt as autokeyDecrypt } from "../cipher/classical/autokey";
 import { encrypt as adfgvxEncrypt, decrypt as adfgvxDecrypt } from "../cipher/classical/adfgvx";
@@ -51,6 +52,7 @@ import { encrypt as x25519Encrypt, decrypt as x25519Decrypt } from "../cipher/as
 import { encrypt as aesXtsEncrypt, decrypt as aesXtsDecrypt } from '../cipher/symmetric/aes-xts';
 import { encrypt as aesEncrypt, decrypt as aesDecrypt } from "../cipher/symmetric/aes";
 import { encrypt as aesGcmEncrypt, decrypt as aesGcmDecrypt } from "../cipher/symmetric/aes-gcm";
+import { encrypt as camelliaEncrypt, decrypt as camelliaDecrypt } from "../cipher/symmetric/camellia";
 import { encrypt as speckEncrypt, decrypt as speckDecrypt } from '../cipher/symmetric/speck';
 import { encrypt as threefishEncrypt, decrypt as threefishDecrypt } from '../cipher/symmetric/threefish';
 import { encrypt as serpentEncrypt, decrypt as serpentDecrypt } from '../cipher/symmetric/serpent';
@@ -68,6 +70,7 @@ import { encrypt as xorEncrypt, decrypt as xorDecrypt } from "../cipher/symmetri
 import { encrypt as xteaEncrypt, decrypt as xteaDecrypt } from "../cipher/symmetric/xtea";
 import { deriveKey } from "../kdf/pbkdf2";
 import { deriveScryptKey } from "../kdf/scrypt";
+import { CipherError } from "../utils/errors";
 import type { WorkerRequest, WorkerResponse } from "../../types/worker";
 
 type WorkerRequestMessage = WorkerRequest | Uint8Array;
@@ -82,7 +85,6 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
     const decoder = new TextDecoder();
     requestData = JSON.parse(decoder.decode(requestData)) as WorkerRequest;
   }
-
   const { type, requestId, payload } = requestData as WorkerRequest;
   const { cipherId, input, key, options } = payload;
 
@@ -294,12 +296,19 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       case "rc6":
         result = encryptMode ? rc6Encrypt(input, key, options) : rc6Decrypt(input, key, options);
         break;
+      case "camellia":
+        result = encryptMode ? camelliaEncrypt(input, key, options) : camelliaDecrypt(input, key, options);
+        break;
       case "idea":
         result = encryptMode ? ideaEncrypt(input, key, options) : ideaDecrypt(input, key, options);
         break;
       default:
         throw new Error(`Unsupported cipher ID: ${cipherId}`);
     }
+
+    // Some cipher implementations (e.g. RSA real mode via WebCrypto) are async
+    // and return a Promise; awaiting a plain value is a no-op for the rest.
+    result = await result;
 
     const durationMs = performance.now() - startTime;
     const response: WorkerResponse = {
@@ -311,11 +320,29 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
     workerScope.postMessage(response);
   } catch (error: unknown) {
     const durationMs = performance.now() - startTime;
+
+    // If cipher code throws CipherError, preserve its stable error code.
+    let errorCode: import("@/lib/utils/errors").CipherErrorCode | undefined;
+    let errorMessage: string;
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else {
+      errorMessage = String(error);
+    }
+
+    if (error instanceof CipherError) {
+      errorCode = error.code;
+      errorMessage = error.message;
+    }
+
     const response: WorkerResponse = {
       requestId,
       success: false,
       payload: {
-        error: error instanceof Error ? error.message : String(error),
+        error: errorMessage, // legacy
+        errorCode,
+        errorMessage,
       },
       timings: { durationMs },
     };

@@ -173,6 +173,39 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     ],
   },
   {
+    id: "camellia",
+    name: "Camellia",
+    category: "symmetric",
+    description:
+      "A symmetric key block cipher jointly developed by Mitsubishi Electric and NTT, widely used and standardized (RFC 3713).",
+    defaultKey: "0123456789abcdeffedcba9876543210",
+    defaultInput: "0123456789abcdeffedcba9876543210",
+    securityStatus: "secure",
+    keyPlaceholder: "32/48/64-character hex key (128/192/256-bit)",
+    options: [
+      {
+        name: "Mode of Operation",
+        id: "mode",
+        type: "select",
+        default: "ECB",
+        choices: [
+          { label: "ECB (Electronic Codebook)", value: "ECB" },
+          { label: "CBC (Cipher Block Chaining)", value: "CBC" },
+        ],
+      },
+      {
+        name: "Padding",
+        id: "padding",
+        type: "boolean",
+        default: true,
+      },
+      {
+        name: "Hex Input Mode",
+        id: "hexInput",
+        type: "boolean",
+        default: true,
+      },
+    ],
     id: 'serpent',
     name: 'Serpent',
     category: 'symmetric',
