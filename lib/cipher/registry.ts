@@ -206,6 +206,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
         default: true,
       },
     ],
+  },
+  {
     id: 'serpent',
     name: 'Serpent',
     category: 'symmetric',
