@@ -696,6 +696,65 @@ export default function ChallengeMode() {
               </button>
             ))}
           </div>
+
+          {/* Question Count Selector */}
+          <div className="mt-6 text-left">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Questions Per Session</label>
+            <div role="radiogroup" aria-label="Question count" className="mt-2 grid grid-cols-3 gap-3">
+              {(
+                [
+                  { value: 5, label: '5 Questions' },
+                  { value: 10, label: '10 Questions' },
+                  { value: 20, label: '20 Questions' },
+                ] as const
+              ).map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={questionCount === opt.value}
+                  onClick={() => handleQuestionCountChange(opt.value)}
+                  className={`rounded-lg border py-2.5 px-3 text-center text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                    questionCount === opt.value
+                      ? 'border-teal-500 bg-teal-50 text-teal-900 dark:border-teal-400 dark:bg-teal-950/40 dark:text-teal-200'
+                      : 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-300 dark:hover:border-zinc-700'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Time Limit Selector */}
+          <div className="mt-6 text-left">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Timer Duration</label>
+            <div role="radiogroup" aria-label="Timer duration" className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {(
+                [
+                  { value: 30, label: '30s Blitz' },
+                  { value: 60, label: '60s Standard' },
+                  { value: 120, label: '120s Extended' },
+                  { value: 0, label: 'Untimed' },
+                ] as const
+              ).map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={timeLimit === opt.value}
+                  onClick={() => handleTimeLimitChange(opt.value)}
+                  className={`rounded-lg border py-2.5 px-3 text-center text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                    timeLimit === opt.value
+                      ? 'border-teal-500 bg-teal-50 text-teal-900 dark:border-teal-400 dark:bg-teal-950/40 dark:text-teal-200'
+                      : 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-300 dark:hover:border-zinc-700'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
           <button
             type="button"
             onClick={startNewSession}
