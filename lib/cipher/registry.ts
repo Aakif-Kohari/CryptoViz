@@ -324,6 +324,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
       },
     ],
   },
+  {
+    id: 'blake2s',
+    name: 'BLAKE2s',
+    category: 'hash',
+    description: 'The 32-bit-word sibling of BLAKE2b (2012), optimized for 8- to 32-bit platforms — smaller blocks, fewer rounds, 256-bit max output. Used internally by Argon2.',
+    defaultKey: '',
+    defaultInput: 'abc',
+    securityStatus: 'secure',
+  },
   // Asymmetric
   {
     id: "rsa",

@@ -121,6 +121,7 @@ export type CipherName =
   | 'cmac'
   | 'sha1'
   | 'hkdf'
+  | 'blake2s'
   | 'bloom-filter'
 
 export interface TestVector {
