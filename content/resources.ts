@@ -151,4 +151,16 @@ export const RESOURCES: Resource[] = [
     type: 'tool',
     addedAt: '2026-07-19',
   },
+  {
+    id: 'owasp-password-hashing-cheat-sheet',
+    title: 'OWASP Password Hashing Cheat Sheet',
+    url: 'https://cheatsheetseries.owasp.org/cheatsheets/Password_Hashing_Cheat_Sheet.html',
+    source: 'OWASP',
+    description:
+      'Official OWASP guidelines on storing passwords securely, detailing Argon2id, bcrypt, scrypt, and PBKDF2 parameters and defense margins against brute-force attacks.',
+    tags: ['hash', 'attacks', 'standard'],
+    readingTime: 12,
+    type: 'article',
+    addedAt: '2026-07-27',
+  },
 ]
