@@ -43,7 +43,7 @@ export default function RootLayout({
             preference fallback) so the class it sets is never wrong or out
             of sync with what Navbar computes. */}
       </head>
-      <body className="min-h-full flex flex-col bg-[#060816] relative">
+      <body className="min-h-full flex flex-col bg-white dark:bg-[#060816] relative">
         {/* Skip-to-content link for keyboard and screen reader users */}
         <a href="#main-content" className="skip-to-content">
           Skip to main content
