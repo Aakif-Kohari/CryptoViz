@@ -1,0 +1,69 @@
+---
+title: "Understanding Birthday Attacks"
+description: "An educational guide on the birthday paradox, hash collisions, and birthday attack math."
+difficulty: intermediate
+readingTime: 6
+tags: ["attacks", "hash", "birthday-attack", "collisions"]
+prerequisites: ["dictionary-attack", "brute-force-attack"]
+publishedAt: 2026-07-27
+updatedAt: 2026-07-27
+---
+
+## What is a Birthday Attack?
+
+A **birthday attack** is a class of cryptographic attacks that search for **collisions**—situations where two different inputs produce the exact same hash output. 
+
+Instead of targeting a specific pre-determined hash (which is called a preimage attack), a birthday attack searches for *any* duplicate output pair among a group of generated hashes. This attack exploits the counter-intuitive mathematics of the **birthday paradox**.
+
+---
+
+## The Birthday Paradox Mathematics
+
+The birthday paradox asks: *How many randomly chosen people must be in a room before there is a 50% chance that at least two share a birthday?*
+
+Although there are 365 possible birthdays, the answer is only **23 people**. 
+
+This happens because we are looking for *any* pair of people who share a birthday. The number of unique pairs increases quadratically with the group size $k$:
+
+$$\text{Pairs} = \frac{k(k - 1)}{2}$$
+
+For 23 people, there are $\frac{23 \times 22}{2} = 253$ possible pairings, making a match highly likely.
+
+---
+
+## Collision Probability Formula
+
+In cryptographic terms, if we have a hash space of size $N$ (where $N = 2^b$ for a $b$-bit hash function), and we generate $k$ random hashes, the probability $p(k, N)$ of at least one collision is:
+
+$$p(k, N) \approx 1 - e^{-\frac{k(k-1)}{2N}} \approx 1 - e^{-\frac{k^2}{2N}}$$
+
+To find a collision with a 50% probability ($p = 0.5$), the number of hashes needed is:
+
+$$k_{50\%} \approx \sqrt{2N \ln(2)} \approx 1.177 \times \sqrt{N}$$
+
+Since $N = 2^b$, we can express the threshold as:
+
+$$k_{50\%} \approx 1.177 \times 2^{b/2}$$
+
+This means the work required to find a collision is proportional to the **square root** of the hash space size, effectively cutting the bit security of the hash function in **half**.
+
+---
+
+## Preimage vs. Collision Complexity
+
+| Metric | Preimage Attack (Brute Force) | Collision Attack (Birthday) |
+| :--- | :--- | :--- |
+| **Objective** | Find $x$ such that $H(x) = y$ (fixed target) | Find $x_1, x_2$ such that $H(x_1) = H(x_2)$ |
+| **Time Complexity** | $O(2^b)$ attempts | $O(2^{b/2})$ attempts |
+| **Example (256-bit hash)** | $2^{256}$ attempts | $2^{128}$ attempts |
+
+---
+
+## Practical Impact on Hash Design
+
+Because birthday attacks reduce the effective security margin of hash functions by half, cryptographic hashes require much larger output bit sizes than symmetric ciphers:
+
+1. **Symmetric Ciphers (e.g., AES-128)**: 128 bits of key length is considered highly secure because there is no shortcut equivalent to a birthday attack to guess keys. An attacker must perform $2^{128}$ operations.
+2. **Hash Functions (e.g., SHA-256)**: To achieve 128 bits of security against collision searches, a hash function must output at least 256 bits. If a developer uses a 128-bit hash (such as MD5, which is also broken mathematically), it could be broken via a birthday search in only $2^{64}$ operations, which is highly feasible on modern computing rigs.
+
+To protect against collision attacks, always select modern secure hashes (like SHA-256 or SHA-512) and store passwords using slow key derivation functions like `[scrypt]` or `[pbkdf2]`.
