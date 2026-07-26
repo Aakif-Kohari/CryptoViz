@@ -144,6 +144,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     ],
   },
   {
+    id: 'aes-xts',
+    name: 'AES-XTS',
+    category: 'symmetric',
+    description: 'A tweakable mode (IEEE P1619) for disk-sector encryption, composed from the existing AES module — the sector number IS the tweak, so no IV needs to be stored per sector. Confidentiality-only, no authentication tag (unlike AES-GCM).',
+    defaultKey: '2b7e151628aed2a6abf7158809cf4f3c|000102030405060708090a0b0c0d0e0f',
+    defaultInput: `0|${'0'.repeat(32)}`,
+    securityStatus: 'secure',
+    keyPlaceholder: 'dataKeyHex|tweakKeyHex (must be different keys)',
+  },
+  {
     id: "aes",
     name: "AES",
     category: "symmetric",

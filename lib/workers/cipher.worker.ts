@@ -46,6 +46,7 @@ import { encrypt as paillierEncrypt, decrypt as paillierDecrypt } from "../ciphe
 import { encrypt as rabinEncrypt, decrypt as rabinDecrypt } from "../cipher/asymmetric/rabin";
 import { encrypt as rsaEncrypt, decrypt as rsaDecrypt } from "../cipher/asymmetric/rsa";
 import { encrypt as x25519Encrypt, decrypt as x25519Decrypt } from "../cipher/asymmetric/x25519";
+import { encrypt as aesXtsEncrypt, decrypt as aesXtsDecrypt } from '../cipher/symmetric/aes-xts';
 import { encrypt as aesEncrypt, decrypt as aesDecrypt } from "../cipher/symmetric/aes";
 import { encrypt as aesGcmEncrypt, decrypt as aesGcmDecrypt } from "../cipher/symmetric/aes-gcm";
 import { encrypt as speckEncrypt, decrypt as speckDecrypt } from '../cipher/symmetric/speck'
@@ -146,6 +147,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       case "3des":
         result = encryptMode ? des3Encrypt(input, key, options) : des3Decrypt(input, key, options);
         break;
+      case 'aes-xts':
+        result = encryptMode ? aesXtsEncrypt(input, key, options) : aesXtsDecrypt(input, key, options)
+        break
       case "aes":
         result = encryptMode ? aesEncrypt(input, key, options) : aesDecrypt(input, key, options);
         break;
