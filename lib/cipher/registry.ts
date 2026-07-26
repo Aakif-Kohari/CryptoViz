@@ -406,4 +406,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: '32-byte private key hex (64 chars), or leave blank to generate one',
   },
+  {
+    id: 'elgamal-signature',
+    name: 'ElGamal Signature',
+    category: 'asymmetric',
+    description: 'The ElGamal signature scheme (1985) — distinct from ElGamal encryption already in this registry. Historically the direct ancestor of DSA: DSA is this scheme computed in a smaller prime-order subgroup for shorter signatures.',
+    defaultKey: '467,2,127',
+    defaultInput: '100',
+    securityStatus: 'secure',
+    keyPlaceholder: 'p,g,x (private, sign) or p,g,y (public, verify)',
+  },
 ];

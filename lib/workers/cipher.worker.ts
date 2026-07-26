@@ -37,7 +37,8 @@ import { encrypt as dsaEncrypt, decrypt as dsaDecrypt } from '../cipher/asymmetr
 import { encrypt as dhEncrypt, decrypt as dhDecrypt } from "../cipher/asymmetric/dh";
 import { encrypt as x448Encrypt, decrypt as x448Decrypt } from '../cipher/asymmetric/x448'
 import { encrypt as eccEncrypt, decrypt as eccDecrypt } from "../cipher/asymmetric/ecc";
-import { encrypt as schnorrEncrypt, decrypt as schnorrDecrypt } from '../cipher/asymmetric/schnorr'
+import { encrypt as schnorrEncrypt, decrypt as schnorrDecrypt } from '../cipher/asymmetric/schnorr';
+import { encrypt as elgamalSigEncrypt, decrypt as elgamalSigDecrypt } from '../cipher/asymmetric/elgamal-signature';
 import { encrypt as ecdsaEncrypt, decrypt as ecdsaDecrypt } from "../cipher/asymmetric/ecdsa";
 import { encrypt as ed25519Encrypt, decrypt as ed25519Decrypt } from "../cipher/asymmetric/ed25519";
 import { encrypt as elgamalEncrypt, decrypt as elgamalDecrypt } from "../cipher/asymmetric/elgamal";
@@ -172,6 +173,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break;
       case 'schnorr':
         result = encryptMode ? schnorrEncrypt(input, key, options) : schnorrDecrypt(input, key, options)
+        break
+      case 'elgamal-signature':
+        result = encryptMode ? elgamalSigEncrypt(input, key, options) : elgamalSigDecrypt(input, key, options)
         break
       case "ecdsa":
         result = encryptMode ? ecdsaEncrypt(input, key, options) : ecdsaDecrypt(input, key, options);
