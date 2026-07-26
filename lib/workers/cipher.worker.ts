@@ -25,6 +25,7 @@ import { encrypt as blake3Encrypt, decrypt as blake3Decrypt } from "../cipher/ha
 import { encrypt as hmacEncrypt, decrypt as hmacDecrypt } from "../cipher/hash/hmac";
 import { encrypt as cmacEncrypt, decrypt as cmacDecrypt } from '../cipher/hash/cmac'
 import { encrypt as hkdfEncrypt, decrypt as hkdfDecrypt } from "../cipher/hash/hkdf";
+import { encrypt as blake2sEncrypt, decrypt as blake2sDecrypt } from '../cipher/hash/blake2s';
 import { encrypt as md5Encrypt, decrypt as md5Decrypt } from "../cipher/hash/md5";
 import { encrypt as poly1305Encrypt, decrypt as poly1305Decrypt } from "../cipher/hash/poly1305";
 import { encrypt as ripemd160Encrypt, decrypt as ripemd160Decrypt } from "../cipher/hash/ripemd160";
@@ -37,7 +38,8 @@ import { encrypt as dsaEncrypt, decrypt as dsaDecrypt } from '../cipher/asymmetr
 import { encrypt as dhEncrypt, decrypt as dhDecrypt } from "../cipher/asymmetric/dh";
 import { encrypt as x448Encrypt, decrypt as x448Decrypt } from '../cipher/asymmetric/x448'
 import { encrypt as eccEncrypt, decrypt as eccDecrypt } from "../cipher/asymmetric/ecc";
-import { encrypt as schnorrEncrypt, decrypt as schnorrDecrypt } from '../cipher/asymmetric/schnorr'
+import { encrypt as schnorrEncrypt, decrypt as schnorrDecrypt } from '../cipher/asymmetric/schnorr';
+import { encrypt as elgamalSigEncrypt, decrypt as elgamalSigDecrypt } from '../cipher/asymmetric/elgamal-signature';
 import { encrypt as ecdsaEncrypt, decrypt as ecdsaDecrypt } from "../cipher/asymmetric/ecdsa";
 import { encrypt as ed25519Encrypt, decrypt as ed25519Decrypt } from "../cipher/asymmetric/ed25519";
 import { encrypt as elgamalEncrypt, decrypt as elgamalDecrypt } from "../cipher/asymmetric/elgamal";
@@ -46,10 +48,12 @@ import { encrypt as paillierEncrypt, decrypt as paillierDecrypt } from "../ciphe
 import { encrypt as rabinEncrypt, decrypt as rabinDecrypt } from "../cipher/asymmetric/rabin";
 import { encrypt as rsaEncrypt, decrypt as rsaDecrypt } from "../cipher/asymmetric/rsa";
 import { encrypt as x25519Encrypt, decrypt as x25519Decrypt } from "../cipher/asymmetric/x25519";
+import { encrypt as aesXtsEncrypt, decrypt as aesXtsDecrypt } from '../cipher/symmetric/aes-xts';
 import { encrypt as aesEncrypt, decrypt as aesDecrypt } from "../cipher/symmetric/aes";
 import { encrypt as aesGcmEncrypt, decrypt as aesGcmDecrypt } from "../cipher/symmetric/aes-gcm";
 import { encrypt as speckEncrypt, decrypt as speckDecrypt } from '../cipher/symmetric/speck';
 import { encrypt as threefishEncrypt, decrypt as threefishDecrypt } from '../cipher/symmetric/threefish';
+import { encrypt as serpentEncrypt, decrypt as serpentDecrypt } from '../cipher/symmetric/serpent';
 import { encrypt as chacha20Encrypt, decrypt as chacha20Decrypt } from "../cipher/symmetric/chacha20";
 import { encrypt as desEncrypt, decrypt as desDecrypt } from "../cipher/symmetric/des";
 import { encrypt as des3Encrypt, decrypt as des3Decrypt } from "../cipher/symmetric/3des";
@@ -147,12 +151,18 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       case "3des":
         result = encryptMode ? des3Encrypt(input, key, options) : des3Decrypt(input, key, options);
         break;
+      case 'aes-xts':
+        result = encryptMode ? aesXtsEncrypt(input, key, options) : aesXtsDecrypt(input, key, options)
+        break
       case "aes":
         result = encryptMode ? aesEncrypt(input, key, options) : aesDecrypt(input, key, options);
         break;
       case "aes-gcm":
         result = encryptMode ? aesGcmEncrypt(input, key, options) : aesGcmDecrypt(input, key, options);
         break;
+      case 'serpent':
+        result = encryptMode ? serpentEncrypt(input, key, options) : serpentDecrypt(input, key, options)
+        break
       case 'speck':
         result = encryptMode ? speckEncrypt(input, key, options) : speckDecrypt(input, key, options)
         break
@@ -176,6 +186,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break;
       case 'schnorr':
         result = encryptMode ? schnorrEncrypt(input, key, options) : schnorrDecrypt(input, key, options)
+        break
+      case 'elgamal-signature':
+        result = encryptMode ? elgamalSigEncrypt(input, key, options) : elgamalSigDecrypt(input, key, options)
         break
       case "ecdsa":
         result = encryptMode ? ecdsaEncrypt(input, key, options) : ecdsaDecrypt(input, key, options);
@@ -240,6 +253,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       case "hkdf":
         result = encryptMode ? hkdfEncrypt(input, key, options) : hkdfDecrypt();
         break;
+      case 'blake2s':
+        result = encryptMode ? blake2sEncrypt(input, key, options) : blake2sDecrypt(input, key, options)
+        break
       case "pbkdf2":
         result = await deriveKey(input, {
           iterations: options?.iterations ?? 10000,

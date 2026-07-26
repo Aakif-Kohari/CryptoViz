@@ -144,6 +144,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     ],
   },
   {
+    id: 'aes-xts',
+    name: 'AES-XTS',
+    category: 'symmetric',
+    description: 'A tweakable mode (IEEE P1619) for disk-sector encryption, composed from the existing AES module — the sector number IS the tweak, so no IV needs to be stored per sector. Confidentiality-only, no authentication tag (unlike AES-GCM).',
+    defaultKey: '2b7e151628aed2a6abf7158809cf4f3c|000102030405060708090a0b0c0d0e0f',
+    defaultInput: `0|${'0'.repeat(32)}`,
+    securityStatus: 'secure',
+    keyPlaceholder: 'dataKeyHex|tweakKeyHex (must be different keys)',
+  },
+  {
     id: "aes",
     name: "AES",
     category: "symmetric",
@@ -161,6 +171,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
         default: true,
       },
     ],
+  },
+  {
+    id: 'serpent',
+    name: 'Serpent',
+    category: 'symmetric',
+    description: 'An AES finalist (1998, runner-up to Rijndael) with the largest security margin of the finalists — 32 rounds using 8 different S-boxes cycled per round, versus AES\'s single S-box.',
+    defaultKey: '000102030405060708090a0b0c0d0e0f',
+    defaultInput: '00112233445566778899aabbccddeeff',
+    securityStatus: 'secure',
+    keyPlaceholder: '32-character hex key (128-bit)',
   },
   {
     id: 'speck',
@@ -334,6 +354,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
       },
     ],
   },
+  {
+    id: 'blake2s',
+    name: 'BLAKE2s',
+    category: 'hash',
+    description: 'The 32-bit-word sibling of BLAKE2b (2012), optimized for 8- to 32-bit platforms — smaller blocks, fewer rounds, 256-bit max output. Used internally by Argon2.',
+    defaultKey: '',
+    defaultInput: 'abc',
+    securityStatus: 'secure',
+  },
   // Asymmetric
   {
     id: "rsa",
@@ -415,5 +444,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: 'hello',
     securityStatus: 'secure',
     keyPlaceholder: '32-byte private key hex (64 chars), or leave blank to generate one',
+  },
+  {
+    id: 'elgamal-signature',
+    name: 'ElGamal Signature',
+    category: 'asymmetric',
+    description: 'The ElGamal signature scheme (1985) — distinct from ElGamal encryption already in this registry. Historically the direct ancestor of DSA: DSA is this scheme computed in a smaller prime-order subgroup for shorter signatures.',
+    defaultKey: '467,2,127',
+    defaultInput: '100',
+    securityStatus: 'secure',
+    keyPlaceholder: 'p,g,x (private, sign) or p,g,y (public, verify)',
   },
 ];
