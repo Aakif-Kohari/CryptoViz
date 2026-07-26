@@ -96,6 +96,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     version: 1,
     scopes: {},
   }));
+  const KEYLESS_CIPHERS = ['atbash', 'rot13', 'sha256','sha512','md5','xxhash32','bloomfilter', 'bloom-filter']
   useEffect(() => {
     setAnnotationStore(loadStepAnnotationStore())
   }, [])
@@ -539,8 +540,17 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
                 placeholder="Enter input here..."
               />
             </div>
-            {/* Key Field (if cipher requires key) */}
-            {cipher.defaultKey !== undefined && (
+            {/* Key Field or Keyless Notice */}
+            {KEYLESS_CIPHERS.includes(cipher.id) ? (
+              <div className="flex flex-col gap-1 rounded-lg border border-zinc-200 bg-zinc-50/50 p-3 dark:border-zinc-800 dark:bg-zinc-950/40">
+                <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                  No key required for this cipher
+                </span>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  This algorithm operates using a fixed transformation or deterministic digest rule.
+                </p>
+              </div>
+            ) : cipher.defaultKey !== undefined && (
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
                   {cipher.id === "ecc"
