@@ -218,6 +218,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '32-character hex key (128-bit)',
   },
   {
+    id: 'chacha20-poly1305',
+    name: 'ChaCha20-Poly1305',
+    category: 'symmetric',
+    description: 'RFC 8439 AEAD combining the existing ChaCha20 and Poly1305 modules — the software-oriented alternative to AES-GCM, used by TLS 1.3 and WireGuard when hardware AES acceleration isn\'t available.',
+    defaultKey: '808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e|070000004041424344454647',
+    defaultInput: '4c6164696573',
+    securityStatus: 'secure',
+    keyPlaceholder: 'keyHex(32B)|nonceHex(12B)|aadHex(optional)',
+  },
+  {
     id: 'speck',
     name: 'Speck128/128',
     category: 'symmetric',
