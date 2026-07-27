@@ -258,6 +258,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '64-char hex key, optionally "|32-char hex tweak"',
   },
   {
+    id: 'gost',
+    name: 'GOST 28147-89',
+    category: 'symmetric',
+    description: 'The Soviet/Russian government standard block cipher (declassified 1994) — 256-bit key, 32-round Feistel. Uniquely, the S-boxes are a negotiated parameter, not fixed by the standard; this demo uses a published reference set.',
+    defaultKey: '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f',
+    defaultInput: '0000000000000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '64-character hex key (256-bit)',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",

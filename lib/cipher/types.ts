@@ -90,6 +90,7 @@ export type CipherName =
   | 'speck'
   | 'aes-ccm'
   | 'threefish'
+  | 'gost'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
