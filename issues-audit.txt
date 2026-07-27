@@ -224,3 +224,26 @@
 [#397] (closed) by @Jivan-Patel: [FEATURE] Add support for CoinGecko API
 [#396] (closed) by @Jivan-Patel: [BUG] Historical price chart fails to render on mobile Safari
 [#395] (closed) by @Jivan-Patel: [FEATURE] Implement Dark Mode Toggle Feature
+
+=== Audited 2026-07-27 20:14 UTC (21 new) ===
+[#452] (open) by @Aakif-Kohari: [FEATURE] Add Ed448 (EdDSA signatures over Curve448)
+[#451] (open) by @Aakif-Kohari: [FEATURE] Add XChaCha20 (extended-nonce variant of the existing ChaCha20)
+[#450] (open) by @Aakif-Kohari: [FEATURE] Add XSalsa20 (extended-nonce variant of the existing Salsa20)
+[#449] (open) by @Aakif-Kohari: [FEATURE] Add SHA-224 and SHA-384 (truncated SHA-2 variants)
+[#448] (open) by @Aakif-Kohari: [FEATURE] Add MD4 hash function (broken, historical predecessor to MD5)
+[#441] (closed) by @Nidhisharora: [FEATURE] Footer Missing on Modes Page
+[#440] (open) by @gauri9368gupta-maker: [BUG] UI: Navbar elements overlap on mobile devices
+[#435] (closed) by @Nidhisharora: [FEATURE] Enhance the navbar visibility
+[#433] (closed) by @Nidhisharora: Improve README Documentation and User Experience
+[#430] (closed) by @Aakif-Kohari: [FEATURE] Add ChaCha20-Poly1305 AEAD (composes the existing ChaCha20 and Poly1305 modules)
+[#429] (closed) by @Aakif-Kohari: [FEATURE] Add SHAKE128 and SHAKE256 (extendable-output functions)
+[#428] (closed) by @Aakif-Kohari: [FEATURE] Add X25519-based ECIES (Elliptic Curve Integrated Encryption Scheme)
+[#427] (closed) by @Aakif-Kohari: [FEATURE] Add AES-CCM authenticated encryption mode
+[#426] (closed) by @Aakif-Kohari: [FEATURE] Add GOST 28147-89 block cipher (Soviet/Russian standard)
+[#419] (closed) by @sushmitakoti661-prog: [BUG] Dark/light theme toggle has no effect — Tailwind v4 dark: variant defaults to prefers-color-scheme
+[#418] (closed) by @kuldeeprajput-dev: [FEATURE] Customizable Question Count and Timer Duration in Challenge Mode
+[#410] (closed) by @Aakif-Kohari: [FEATURE] Add AES-XTS (tweakable block-cipher mode for disk/sector encryption)
+[#409] (closed) by @Aakif-Kohari: [FEATURE] Add BLAKE2s hash function (32-bit sibling of the existing BLAKE2b)
+[#408] (closed) by @Aakif-Kohari: [FEATURE] Add ElGamal Signature Scheme (distinct from the existing ElGamal encryption module)
+[#407] (closed) by @Aakif-Kohari: [FEATURE] Add Serpent symmetric block cipher (AES finalist, 32-round S-box + bitslice design)
+[#406] (closed) by @Aakif-Kohari: [FEATURE] Add Threefish-256 block cipher (large-block ARX, Skein family)
