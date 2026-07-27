@@ -31,7 +31,7 @@ jobs:
 
             // Hardcoded: every .md file in this folder is scanned and turned
             // into issues each time the workflow runs.
-            const MD_DIRECTORY = '.github\workflows\new_issues.md';
+            const MD_DIRECTORY = '.github/workflows';
 
             // Hardcoded: these two labels already exist in the repo.
             const LABELS = ['Available for contribution', 'ECSoC26'];
