@@ -228,6 +228,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '32-character hex key (128-bit)',
   },
   {
+    id: 'aes-ccm',
+    name: 'AES-CCM',
+    category: 'symmetric',
+    description: 'Counter with CBC-MAC (NIST SP 800-38C) — an authenticated mode composed from AES, contrasted with AES-GCM: authentication here is literal CBC-MAC re-running the block cipher, not GHASH polynomial evaluation.',
+    defaultKey: '2b7e151628aed2a6abf7158809cf4f3c|000102030405060708090a0b',
+    defaultInput: '48656c6c6f2c20574f524c4421',
+    securityStatus: 'secure',
+    keyPlaceholder: 'keyHex|nonceHex(12 bytes)|aadHex(optional)',
+  },
+  {
     id: 'threefish',
     name: 'Threefish-256',
     category: 'symmetric',
