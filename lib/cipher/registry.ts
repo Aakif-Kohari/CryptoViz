@@ -530,4 +530,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'p,g,x (private, sign) or p,g,y (public, verify)',
   },
+  {
+    id: 'ecies',
+    name: 'ECIES (X25519)',
+    category: 'asymmetric',
+    description: 'Hybrid encryption: ephemeral X25519 key agreement + HKDF + AEAD, letting a sender encrypt an arbitrary-length message directly to a recipient\'s public key — no other asymmetric module here does this end-to-end.',
+    defaultKey: '',
+    defaultInput: 'A secret message for the recipient',
+    securityStatus: 'secure',
+    keyPlaceholder: 'recipient X25519 public key (encrypt) or your private key (decrypt)',
+  },
 ];
