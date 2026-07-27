@@ -30,7 +30,7 @@ interface WorkerResponse {
 }
 
 // Helper: simple XOR parity across data symbols
-function computeParity(data: number[], parityCount: number): number[] {
+export function computeParity(data: number[], parityCount: number): number[] {
   const parity: number[] = [];
   for (let i = 0; i < parityCount; i++) {
     // For demonstration we just repeat the XOR value; a real RS would generate distinct symbols.
@@ -40,13 +40,13 @@ function computeParity(data: number[], parityCount: number): number[] {
   return parity;
 }
 
-function encode(input: string, paritySymbols: number): number[] {
+export function encode(input: string, paritySymbols: number): number[] {
   const data = Array.from(input).map((c) => c.charCodeAt(0));
   const parity = computeParity(data, paritySymbols);
   return data.concat(parity);
 }
 
-function injectErrors(encoded: number[], errorCount: number): { corrupted: number[]; errorPositions: number[] } {
+export function injectErrors(encoded: number[], errorCount: number): { corrupted: number[]; errorPositions: number[] } {
   const corrupted = [...encoded];
   const positions: number[] = [];
   const maxIdx = corrupted.length - 1;
@@ -61,7 +61,7 @@ function injectErrors(encoded: number[], errorCount: number): { corrupted: numbe
   return { corrupted, errorPositions: positions };
 }
 
-function decode(corrupted: number[], paritySymbols: number): { decoded: string } {
+export function decode(corrupted: number[], paritySymbols: number): { decoded: string } {
   // Very naive recovery: assume at most paritySymbols/2 errors and that parity is simple XOR.
   // We'll recompute parity and attempt to fix single errors.
   const dataLength = corrupted.length - paritySymbols;

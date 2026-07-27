@@ -39,12 +39,12 @@ function parseHexBytes(str: string, label: string): Uint8Array {
 function bytesToHex(b: Uint8Array): string {
   return Array.from(b).map((x) => x.toString(16).padStart(2, '0')).join('')
 }
-function xor(a: Uint8Array, b: Uint8Array): Uint8Array {
+function xor(a: Uint8Array<ArrayBufferLike>, b: Uint8Array<ArrayBufferLike>): Uint8Array<ArrayBufferLike> {
   const out = new Uint8Array(16)
   for (let i = 0; i < 16; i++) out[i] = a[i] ^ b[i]
   return out
 }
-function concatBlocks(chunks: Uint8Array[]): Uint8Array {
+function concatBlocks(chunks: Uint8Array<ArrayBufferLike>[]): Uint8Array<ArrayBufferLike> {
   const totalLen = Math.ceil(chunks.reduce((s, c) => s + c.length, 0) / 16) * 16
   const out = new Uint8Array(totalLen)
   let off = 0
@@ -88,10 +88,10 @@ function encodeAadLength(len: number): Uint8Array {
   return out
 }
 
-function cbcMac(roundKeys: Uint8Array[], blocks: Uint8Array): Uint8Array {
-  let x = new Uint8Array(16)
+function cbcMac(roundKeys: Uint8Array[], blocks: Uint8Array<ArrayBufferLike>): Uint8Array<ArrayBufferLike> {
+  let x: Uint8Array<ArrayBufferLike> = new Uint8Array(16) as Uint8Array<ArrayBufferLike>
   for (let i = 0; i < blocks.length; i += 16) {
-    const block = new Uint8Array(16)
+    const block = new Uint8Array(16) as Uint8Array<ArrayBufferLike>
     block.set(blocks.subarray(i, i + 16))
     x = processBlock(xor(x, block), roundKeys, false)
   }
