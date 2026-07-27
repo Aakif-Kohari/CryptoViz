@@ -122,6 +122,8 @@ export type CipherName =
   | 'ripemd160'
   | 'blake2b'
   | 'blake3'
+  | 'shake128'
+  | 'shake256'
   | 'poly1305'
   | 'hmac'
   | 'cmac'

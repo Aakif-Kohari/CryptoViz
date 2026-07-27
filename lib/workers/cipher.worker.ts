@@ -27,6 +27,7 @@ import { encrypt as hmacEncrypt, decrypt as hmacDecrypt } from "../cipher/hash/h
 import { encrypt as cmacEncrypt, decrypt as cmacDecrypt } from '../cipher/hash/cmac'
 import { encrypt as hkdfEncrypt, decrypt as hkdfDecrypt } from "../cipher/hash/hkdf";
 import { encrypt as blake2sEncrypt, decrypt as blake2sDecrypt } from '../cipher/hash/blake2s';
+import { encryptShake128, encryptShake256, decrypt as shakeDecrypt } from '../cipher/hash/shake';
 import { encrypt as md5Encrypt, decrypt as md5Decrypt } from "../cipher/hash/md5";
 import { encrypt as poly1305Encrypt, decrypt as poly1305Decrypt } from "../cipher/hash/poly1305";
 import { encrypt as ripemd160Encrypt, decrypt as ripemd160Decrypt } from "../cipher/hash/ripemd160";
@@ -265,6 +266,12 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break;
       case 'blake2s':
         result = encryptMode ? blake2sEncrypt(input, key, options) : blake2sDecrypt(input, key, options)
+        break
+      case 'shake128':
+        result = encryptMode ? encryptShake128(input, key, options) : shakeDecrypt(input, key, options)
+        break
+      case 'shake256':
+        result = encryptMode ? encryptShake256(input, key, options) : shakeDecrypt(input, key, options)
         break
       case "pbkdf2":
         result = await deriveKey(input, {

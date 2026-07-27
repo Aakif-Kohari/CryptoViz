@@ -418,6 +418,26 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: 'abc',
     securityStatus: 'secure',
   },
+  {
+    id: 'shake128',
+    name: 'SHAKE128',
+    category: 'hash',
+    description: 'An extendable-output function (XOF, NIST FIPS 202) — unlike every other hash here, output length is a parameter you choose, not fixed. Same Keccak permutation family as SHA-3.',
+    defaultKey: '32',
+    defaultInput: 'abc',
+    securityStatus: 'secure',
+    keyPlaceholder: 'requested output length in bytes (default 32)',
+  },
+  {
+    id: 'shake256',
+    name: 'SHAKE256',
+    category: 'hash',
+    description: 'The wider-capacity sibling of SHAKE128 (NIST FIPS 202) — same extendable-output design, larger security margin.',
+    defaultKey: '32',
+    defaultInput: 'abc',
+    securityStatus: 'secure',
+    keyPlaceholder: 'requested output length in bytes (default 32)',
+  },
   // Asymmetric
   {
     id: "rsa",
