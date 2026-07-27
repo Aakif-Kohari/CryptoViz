@@ -56,6 +56,7 @@ import { encrypt as aesGcmEncrypt, decrypt as aesGcmDecrypt } from "../cipher/sy
 import { encrypt as camelliaEncrypt, decrypt as camelliaDecrypt } from "../cipher/symmetric/camellia";
 import { encrypt as speckEncrypt, decrypt as speckDecrypt } from '../cipher/symmetric/speck';
 import { encrypt as threefishEncrypt, decrypt as threefishDecrypt } from '../cipher/symmetric/threefish';
+import { encrypt as gostEncrypt, decrypt as gostDecrypt } from '../cipher/symmetric/gost';
 import { encrypt as serpentEncrypt, decrypt as serpentDecrypt } from '../cipher/symmetric/serpent';
 import { encrypt as chacha20Encrypt, decrypt as chacha20Decrypt } from "../cipher/symmetric/chacha20";
 import { encrypt as desEncrypt, decrypt as desDecrypt } from "../cipher/symmetric/des";
@@ -171,6 +172,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break
       case 'threefish':
         result = encryptMode ? threefishEncrypt(input, key, options) : threefishDecrypt(input, key, options)
+        break
+      case 'gost':
+        result = encryptMode ? gostEncrypt(input, key, options) : gostDecrypt(input, key, options)
         break
       case "rsa":
         result = encryptMode ? rsaEncrypt(input, key, options) : rsaDecrypt(input, key, options);

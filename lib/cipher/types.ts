@@ -88,6 +88,7 @@ export type CipherName =
   | 'serpent'
   | 'speck'
   | 'threefish'
+  | 'gost'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
