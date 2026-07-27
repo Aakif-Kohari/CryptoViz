@@ -8,6 +8,7 @@ import type {
 } from '../../lib/cipher/types'
 import { useCipherWorker } from '../../lib/hooks/useCipherWorker'
 import {
+  type CipherWorkerOptions,
   createCipherWorkerOptions,
   createDefaultComparisonPanelState,
   getSupportedDirections,
@@ -86,7 +87,7 @@ export default function CipherComparisonPanel({
 
     try {
       const safeDirection = normalizeComparisonDirection(cipher, direction)
-      const workerOptions = {
+      const workerOptions: CipherWorkerOptions & { signal: AbortSignal } = {
         ...createCipherWorkerOptions(cipher, options),
         signal: controller.signal,
       }
