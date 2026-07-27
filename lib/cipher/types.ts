@@ -88,6 +88,7 @@ export type CipherName =
   | 'serpent'
   | 'chacha20-poly1305'
   | 'speck'
+  | 'aes-ccm'
   | 'threefish'
   | 'rc4'
   | 'salsa20'

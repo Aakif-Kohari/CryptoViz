@@ -58,6 +58,7 @@ import { encrypt as aesGcmEncrypt, decrypt as aesGcmDecrypt } from "../cipher/sy
 import { encrypt as camelliaEncrypt, decrypt as camelliaDecrypt } from "../cipher/symmetric/camellia";
 import { encrypt as chachaPolyEncrypt, decrypt as chachaPolyDecrypt } from '../cipher/symmetric/chacha20-poly1305';
 import { encrypt as speckEncrypt, decrypt as speckDecrypt } from '../cipher/symmetric/speck';
+import { encrypt as aesCcmEncrypt, decrypt as aesCcmDecrypt } from '../cipher/symmetric/aes-ccm';
 import { encrypt as threefishEncrypt, decrypt as threefishDecrypt } from '../cipher/symmetric/threefish';
 import { encrypt as serpentEncrypt, decrypt as serpentDecrypt } from '../cipher/symmetric/serpent';
 import { encrypt as chacha20Encrypt, decrypt as chacha20Decrypt } from "../cipher/symmetric/chacha20";
@@ -174,6 +175,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break
       case 'speck':
         result = encryptMode ? speckEncrypt(input, key, options) : speckDecrypt(input, key, options)
+        break
+      case 'aes-ccm':
+        result = encryptMode ? aesCcmEncrypt(input, key, options) : aesCcmDecrypt(input, key, options)
         break
       case 'threefish':
         result = encryptMode ? threefishEncrypt(input, key, options) : threefishDecrypt(input, key, options)
