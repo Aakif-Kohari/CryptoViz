@@ -76,7 +76,6 @@ export default function StepNotes({
         Note for “{stepLabel}”
         <textarea
           id={noteId}
-          aria-label={`Note for ${stepLabel}`}
           value={draft}
           maxLength={STEP_NOTE_MAX_LENGTH}
           onChange={(event) => setDraft(event.target.value)}

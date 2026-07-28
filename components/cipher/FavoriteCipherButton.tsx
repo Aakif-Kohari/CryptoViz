@@ -52,6 +52,11 @@ export default function FavoriteCipherButton({
       type="button"
       onClick={handleToggle}
       disabled={!hasLoaded}
+      aria-label={
+        isFavorite
+          ? `Unpin ${cipherName} from favorites`
+          : `Pin ${cipherName} to favorites`
+      }
       aria-pressed={isFavorite}
       title={isFavorite ? 'Remove from pinned ciphers' : 'Pin cipher'}
       className={`inline-flex shrink-0 items-center justify-center rounded-lg border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 disabled:cursor-wait disabled:opacity-50 ${
@@ -62,11 +67,6 @@ export default function FavoriteCipherButton({
           : 'border-zinc-200 bg-white text-zinc-400 hover:border-amber-300 hover:text-amber-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-500 dark:hover:border-amber-900 dark:hover:text-amber-400'
       }`}
     >
-      <span className="sr-only">
-        {isFavorite
-          ? `Unpin ${cipherName} from favorites`
-          : `Pin ${cipherName} to favorites`}
-      </span>
       <span aria-hidden="true">{isFavorite ? '★' : '☆'}</span>
     </button>
   )

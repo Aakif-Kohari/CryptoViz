@@ -39,7 +39,6 @@ export default function ResourceFilters({
       <label htmlFor="resource-search" className="sr-only">Search resources</label>
       <input
         id="resource-search"
-        aria-label="Search resources"
         type="text"
         placeholder="Search resources..."
         value={search}

@@ -68,7 +68,6 @@ export default function ModesLab() {
           </label>
           <input
             id={textInputId}
-            aria-label="Plaintext (ASCII)"
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -87,7 +86,6 @@ export default function ModesLab() {
           </div>
           <input
             id={rangeInputId}
-            aria-label={`Flip one plaintext byte at position ${safeIndex}`}
             type="range"
             min={0}
             max={Math.max(0, text.length - 1)}
