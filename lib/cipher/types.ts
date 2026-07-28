@@ -110,6 +110,7 @@ export type CipherName =
   | 'elgamal-signature'
   | 'elgamal'
   | 'ecies'
+  | 'ed448'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
