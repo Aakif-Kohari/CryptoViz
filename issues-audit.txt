@@ -247,3 +247,54 @@
 [#408] (closed) by @Aakif-Kohari: [FEATURE] Add ElGamal Signature Scheme (distinct from the existing ElGamal encryption module)
 [#407] (closed) by @Aakif-Kohari: [FEATURE] Add Serpent symmetric block cipher (AES finalist, 32-round S-box + bitslice design)
 [#406] (closed) by @Aakif-Kohari: [FEATURE] Add Threefish-256 block cipher (large-block ARX, Skein family)
+
+=== Audited 2026-07-28 20:50 UTC (49 new) ===
+[#547] (open) by @Aakif-Kohari: [FEATURE] Add ML-DSA-65 (Dilithium) post-quantum digital signatures
+[#546] (open) by @Aakif-Kohari: [FEATURE] Add TEA (Tiny Encryption Algorithm, predecessor to the existing XTEA)
+[#545] (open) by @Aakif-Kohari: [FEATURE] Add ML-KEM-768 (Kyber) post-quantum key encapsulation
+[#544] (open) by @Aakif-Kohari: [FEATURE] Add Shamir's Secret Sharing (threshold cryptography)
+[#543] (open) by @Aakif-Kohari: [FEATURE] Add Enigma machine simulation (3-rotor, plugboard, reflector)
+[#521] (closed) by @Aditya8369: docs: Add a pull request template
+[#516] (open) by @csxark: [FEATURE] Learning Certificates
+[#515] (open) by @csxark: [FEATURE] Localization Framework
+[#514] (open) by @csxark: [FEATURE] Interactive Terminology Explorer
+[#513] (closed) by @csxark: [FEATURE] Search Suggestions
+[#512] (open) by @csxark: [FEATURE] Offline Learning Pack
+[#511] (closed) by @csxark: [FEATURE] Accessibility Improvements
+[#510] (closed) by @csxark: [FEATURE] Reading Progress Tracker
+[#509] (open) by @csxark: [FEATURE] Glossary Cross-Linking
+[#508] (open) by @csxark: [FEATURE] Cipher Collections
+[#507] (closed) by @csxark: [FEATURE] Daily Cryptography Quiz
+[#506] (open) by @csxark: [FEATURE] Encoding Error Playground
+[#505] (closed) by @csxark: [FEATURE] Padding Scheme Explorer
+[#504] (open) by @csxark: [FEATURE] S-Box Explorer
+[#503] (open) by @csxark: [FEATURE] Finite Field (GF) Visualizer
+[#502] (open) by @csxark: [FEATURE] Interactive Modular Arithmetic Playground
+[#501] (closed) by @csxark: [FEATURE] Key Size Security Estimator
+[#499] (closed) by @csxark: [FEATURE] Entropy Calculator
+[#498] (open) by @csxark: [FEATURE] Encoding Explorer
+[#497] (open) by @csxark: [FEATURE] Interactive Hex/Binary/ASCII Converter
+[#496] (open) by @csxark: [FEATURE] Cipher Lifecycle Badges
+[#495] (open) by @csxark: [FEATURE] Cryptography Myth Busters
+[#494] (closed) by @csxark: [FEATURE] Algorithm Compatibility Matrix
+[#493] (closed) by @csxark: [FEATURE] Interactive Cipher Decision Tree
+[#492] (open) by @csxark: Build Your Own Cipher Sandbox
+[#491] (open) by @csxark: Searchable Cipher Encyclopedia
+[#490] (open) by @csxark: Interactive Protocol Explorer
+[#489] (open) by @csxark: Post-Quantum Cryptography Learning Hub
+[#488] (open) by @csxark: Cipher Recommendation Assistant
+[#487] (open) by @csxark: Interactive Cryptography Roadmap
+[#486] (open) by @csxark: Standards & RFC Explorer
+[#485] (open) by @csxark: Where Is This Used?
+[#484] (open) by @csxark: Cipher Relationship Graph
+[#483] (open) by @csxark: Interactive Cryptography Timeline
+[#482] (open) by @csxark: Improve Playground Responsiveness
+[#481] (open) by @csxark: Improve Cipher Layout on Mobile
+[#480] (open) by @csxark: Expand Challenge Question Bank
+[#479] (open) by @csxark: Sync Docs UI with Website Theme
+[#478] (open) by @csxark: Curated Cryptography Video Library
+[#477] (open) by @csxark: [FEATURE] Cryptographic Case Studies
+[#476] (open) by @csxark: [FEATURE] Add Resource Filters
+[#475] (open) by @csxark: [FEATURE] Complete Cryptography Resources Library
+[#474] (closed) by @csxark: [FEATURE] Sync Every Cipher Documentation into Docs
+[#473] (open) by @csxark: [FEATURE] Build a Dedicated Cipher Visualizers Hub
