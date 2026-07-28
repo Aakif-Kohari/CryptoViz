@@ -20,6 +20,11 @@ import {
 } from '../cipher/symmetric/des'
 import { CipherError } from '../utils/errors'
 
+export const DES_BLOCK_SIZE = 8
+export const MIN_KEYSPACE_BITS = 4
+export const MAX_KEYSPACE_BITS = 24
+const BITS_PER_BYTE = 8
+
 export interface MitmStep {
   label: string
   detail: string
@@ -38,7 +43,7 @@ function desEncryptBlock(plaintextBlock: Uint8Array, keyBytes: Uint8Array): Uint
   const subkeys = generateSubkeys(keyBytes)
   const block = bytesToBlock(plaintextBlock, 0)
   const result = processBlock(block, subkeys, false)
-  const out = new Uint8Array(8)
+  const out = new Uint8Array(DES_BLOCK_SIZE)
   blockToBytes(result, out, 0)
   return out
 }
@@ -47,7 +52,7 @@ function desDecryptBlock(ciphertextBlock: Uint8Array, keyBytes: Uint8Array): Uin
   const subkeys = generateSubkeys(keyBytes)
   const block = bytesToBlock(ciphertextBlock, 0)
   const result = processBlock(block, subkeys, true)
-  const out = new Uint8Array(8)
+  const out = new Uint8Array(DES_BLOCK_SIZE)
   blockToBytes(result, out, 0)
   return out
 }
@@ -59,9 +64,9 @@ export function doubleDesEncrypt(plaintextBlock: Uint8Array, keyA: Uint8Array, k
 function keyFromInt(n: number, keySpaceBits: number): Uint8Array {
   // DES keys are 8 bytes (56 usable bits + 8 parity bits, ignored here for
   // demo purposes — this is a *reduced* keyspace search for a browser-tractable demo).
-  const bytes = new Uint8Array(8)
-  for (let i = 0; i < Math.ceil(keySpaceBits / 8); i++) {
-    bytes[7 - i] = (n >>> (i * 8)) & 0xff
+  const bytes = new Uint8Array(DES_BLOCK_SIZE)
+  for (let i = 0; i < Math.ceil(keySpaceBits / BITS_PER_BYTE); i++) {
+    bytes[DES_BLOCK_SIZE - 1 - i] = (n >>> (i * BITS_PER_BYTE)) & 0xff
   }
   return bytes
 }
@@ -83,11 +88,11 @@ export function meetInTheMiddleAttack(
   keySpaceBits: number = 16,
   onStep?: (step: MitmStep) => void
 ): MitmResult {
-  if (plaintextBlock.length !== 8 || ciphertextBlock.length !== 8) {
-    throw new CipherError('INVALID_INPUT', 'Plaintext and ciphertext blocks must each be exactly 8 bytes (one DES block).')
+  if (plaintextBlock.length !== DES_BLOCK_SIZE || ciphertextBlock.length !== DES_BLOCK_SIZE) {
+    throw new CipherError('INVALID_INPUT', `Plaintext and ciphertext blocks must each be exactly ${DES_BLOCK_SIZE} bytes (one DES block).`)
   }
-  if (keySpaceBits < 4 || keySpaceBits > 24) {
-    throw new CipherError('INVALID_INPUT', 'keySpaceBits must be between 4 and 24 for a browser-tractable demo.')
+  if (keySpaceBits < MIN_KEYSPACE_BITS || keySpaceBits > MAX_KEYSPACE_BITS) {
+    throw new CipherError('INVALID_INPUT', `keySpaceBits must be between ${MIN_KEYSPACE_BITS} and ${MAX_KEYSPACE_BITS} for a browser-tractable demo.`)
   }
 
   const steps: MitmStep[] = []
