@@ -268,6 +268,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '64-character hex key (256-bit)',
   },
   {
+    id: 'xsalsa20',
+    name: 'XSalsa20',
+    category: 'symmetric',
+    description: 'The 192-bit-nonce extension of Salsa20 (used by NaCl/libsodium) — an HSalsa20 subkey-derivation step lets you pick nonces randomly instead of managing a counter.',
+    defaultKey: '1b27556473e985d462cd51197a9a46c76009549eac6474f206c4ee0844f6838|69696ee955b62b73cd62bda875fc73d68219e0036b7a0b37',
+    defaultInput: '4c6164696573',
+    securityStatus: 'secure',
+    keyPlaceholder: 'keyHex(32B)|nonceHex(24B)',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
