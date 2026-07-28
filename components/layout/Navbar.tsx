@@ -50,6 +50,7 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'Playground', href: '/visualizer/caesar/' },
+    { name: 'Advisor', href: '/advisor' },
     { name: 'Modes', href: '/modes' },
     { name: 'Compare', href: '/compare' },
     { name: 'Matrix', href: '/matrix' },
