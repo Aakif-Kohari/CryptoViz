@@ -680,5 +680,281 @@ export const docCategories: DocCategory[] = [
       { title: "RFC 7914: The scrypt Password-Based Key Derivation Function", url: "https://datatracker.ietf.org/doc/html/rfc7914" },
       { title: "Tarsnap: Scrypt algorithm description by Colin Percival", url: "https://www.tarsnap.com/scrypt.html" }
     ]
+  },
+  {
+    type: 'cipher',
+    title: "ROT13",
+    description: "A simple letter substitution cipher that replaces a letter with the 13th letter after it in the alphabet.",
+    overview: {
+      history: "Developed in ancient Rome as a variant of the Caesar cipher, ROT13 gained prominence in the early internet era on Usenet in the 1980s as a means of hiding spoilers, punchlines, and offensive material.",
+      description: "ROT13 (Rotate by 13 places) is a special case of the Caesar cipher. Because there are 26 letters in the basic Latin alphabet, applying ROT13 twice restores the original text, meaning encryption and decryption are identical."
+    },
+    mathematics: {
+      encryptionFormula: "E(x) = (x + 13) \\pmod{26}",
+      decryptionFormula: "D(x) = (x + 13) \\pmod{26}",
+      explanation: [
+        "x is the alphabetical index of the character (0-25).",
+        "Adding 13 and taking the modulo 26 wraps the index around the alphabet.",
+        "Because 13 is exactly half of 26, the encryption and decryption operations are the exact same function."
+      ]
+    },
+    workedExample: {
+      plaintext: "HELLO",
+      parameters: "Shift = 13 (Fixed)",
+      steps: [
+        { description: "H (7) + 13 mod 26 = 20", result: "U" },
+        { description: "E (4) + 13 mod 26 = 17", result: "R" },
+        { description: "L (11) + 13 mod 26 = 24", result: "Y" },
+        { description: "L (11) + 13 mod 26 = 24", result: "Y" },
+        { description: "O (14) + 13 mod 26 = 1", result: "B" }
+      ],
+      finalCiphertext: "URYYB"
+    },
+    complexity: "O(n) time complexity where n is the length of the string. Space complexity is O(n).",
+    securityAnalysis: {
+      advantages: [
+        "Requires no key management since the shift is fixed.",
+        "Encryption and decryption use the exact same algorithm.",
+        "Extremely fast to compute."
+      ],
+      weaknesses: [
+        "Provides absolutely zero cryptographic security.",
+        "Vulnerable to frequency analysis and simple inspection.",
+        "Easily broken since the algorithm is public and has no key."
+      ]
+    },
+    realWorldApplications: [
+      "Obscuring joke punchlines or movie spoilers on forums.",
+      "Hiding email addresses from basic scraping bots.",
+      "Geocaching hint obfuscation."
+    ],
+    codeSnippets: {
+      python: "import codecs\n\ndef rot13(text):\n    return codecs.encode(text, 'rot_13')",
+      javascript: "function rot13(str) {\n  return str.replace(/[a-zA-Z]/g, function(c) {\n    return String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26);\n  });\n}"
+    },
+    playgroundLink: "/visualizer/rot13",
+    references: [
+      { title: "Wikipedia: ROT13", url: "https://en.wikipedia.org/wiki/ROT13" }
+    ]
+  },
+  {
+    type: 'cipher',
+    title: "Atbash Cipher",
+    description: "An ancient monoalphabetic substitution cipher formed by mapping the alphabet to its reverse.",
+    overview: {
+      history: "Originally created for the Hebrew alphabet in biblical times (around 500 BC), Atbash is found in several books of the Bible, including Jeremiah. The name derives from the first, last, second, and second-to-last Hebrew letters.",
+      description: "Atbash maps the first letter of the alphabet to the last, the second to the second-to-last, and so on. In English, A becomes Z, B becomes Y, etc. It is its own inverse."
+    },
+    mathematics: {
+      encryptionFormula: "E(x) = (25 - x)",
+      decryptionFormula: "D(x) = (25 - x)",
+      explanation: [
+        "x is the alphabetical index (0-25).",
+        "Subtracting x from 25 effectively mirrors the index across the center of the alphabet.",
+        "Like ROT13, encryption and decryption are identical operations."
+      ]
+    },
+    workedExample: {
+      plaintext: "HELLO",
+      parameters: "None (Fixed Mapping)",
+      steps: [
+        { description: "H (7) -> 25 - 7 = 18", result: "S" },
+        { description: "E (4) -> 25 - 4 = 21", result: "V" },
+        { description: "L (11) -> 25 - 11 = 14", result: "O" },
+        { description: "L (11) -> 25 - 11 = 14", result: "O" },
+        { description: "O (14) -> 25 - 14 = 11", result: "L" }
+      ],
+      finalCiphertext: "SVOOL"
+    },
+    complexity: "O(n) time complexity, O(n) space complexity.",
+    securityAnalysis: {
+      advantages: [
+        "Simple to implement by hand.",
+        "Self-reciprocal: encryption and decryption are the same."
+      ],
+      weaknesses: [
+        "No key space; the mapping is entirely fixed.",
+        "Fully vulnerable to frequency analysis.",
+        "Provides no real security."
+      ]
+    },
+    realWorldApplications: [
+      "Historical biblical texts and theological study.",
+      "Recreational puzzles and geocaching.",
+      "Basic data obfuscation."
+    ],
+    codeSnippets: {
+      python: "def atbash(text):\n    result = ''\n    for char in text:\n        if char.isalpha():\n            offset = 65 if char.isupper() else 97\n            result += chr(25 - (ord(char) - offset) + offset)\n        else:\n            result += char\n    return result",
+      javascript: "function atbash(text) {\n  return text.replace(/[a-zA-Z]/g, (char) => {\n    const base = char <= 'Z' ? 65 : 97;\n    return String.fromCharCode(25 - (char.charCodeAt(0) - base) + base);\n  });\n}"
+    },
+    playgroundLink: "/visualizer/atbash",
+    references: [
+      { title: "Wikipedia: Atbash", url: "https://en.wikipedia.org/wiki/Atbash" }
+    ]
+  },
+  {
+    type: 'cipher',
+    title: "Playfair Cipher",
+    description: "A polygraphic substitution cipher that encrypts pairs of letters using a 5x5 key matrix.",
+    overview: {
+      history: "Invented by Charles Wheatstone in 1854 but named after Lord Playfair who promoted its use. It was used by British forces in the Second Boer War and World War I for tactical secrecy because it could be quickly computed without special equipment.",
+      description: "Playfair operates on digrams (pairs of letters). It constructs a 5x5 grid using a keyword, filling the rest of the matrix with the remaining alphabet letters (usually merging I and J). Digrams are then substituted based on their rectangular relationship in the grid."
+    },
+    mathematics: {
+      encryptionFormula: "Based on 5x5 matrix geometric substitution rules",
+      decryptionFormula: "Reverse geometric substitution rules",
+      explanation: [
+        "If the letters are in the same row, replace them with letters to their immediate right.",
+        "If they are in the same column, replace them with letters immediately below.",
+        "If they form a rectangle, replace each with the letter on the same row but in the other corner of the rectangle.",
+        "If the letters are identical, a filler letter (usually X) is inserted between them before encryption."
+      ]
+    },
+    workedExample: {
+      plaintext: "HE LL OX",
+      parameters: "Keyword = 'PLAYFAIR'",
+      steps: [
+        { description: "Matrix generated with PLAYFAIR (I/J combined).", result: "Grid formed." },
+        { description: "Digram HE forms a rectangle", result: "KU" },
+        { description: "Digram LL requires a filler X -> LX", result: "YV" },
+        { description: "Remaining LO forms a rectangle", result: "RN" }
+      ],
+      finalCiphertext: "KUYVRN"
+    },
+    complexity: "O(n) time complexity where n is plaintext length. O(1) space for the 5x5 matrix.",
+    securityAnalysis: {
+      advantages: [
+        "Obscures single-letter frequencies, defeating standard frequency analysis.",
+        "Can be performed entirely by hand in the field."
+      ],
+      weaknesses: [
+        "Digram frequencies are still preserved and can be analyzed.",
+        "Vulnerable to known-plaintext attacks.",
+        "Small key space (5x5 matrix combinations) easily broken by modern computers."
+      ]
+    },
+    realWorldApplications: [
+      "Historically used in WWI military communications.",
+      "Amateur radio and cryptographic puzzles."
+    ],
+    codeSnippets: {
+      python: "# Conceptual snippet due to algorithm length\ndef generate_playfair_matrix(key):\n    # Generate 5x5 grid skipping J and handling duplicates\n    pass\n\ndef playfair_encrypt(text, matrix):\n    # Apply geometric substitution rules to digrams\n    pass",
+      javascript: "// Playfair logic requires grid generation and pairing rules\nfunction playfairEncrypt(text, keyword) {\n  // 1. Generate 5x5 grid\n  // 2. Format text into pairs (adding X if duplicate)\n  // 3. Apply Row/Column/Rectangle rules\n  return 'IMPLEMENTATION_STUB';\n}"
+    },
+    playgroundLink: "/visualizer/playfair",
+    references: [
+      { title: "Wikipedia: Playfair Cipher", url: "https://en.wikipedia.org/wiki/Playfair_cipher" }
+    ]
+  },
+  {
+    type: 'cipher',
+    title: "XOR Cipher",
+    description: "A simple additive stream cipher that applies a bitwise exclusive OR (XOR) operation to the plaintext and key.",
+    overview: {
+      history: "The XOR operation is a fundamental logic gate in computing. Its use in cryptography dates back to the advent of digital logic, forming the foundation of many modern symmetric stream and block ciphers.",
+      description: "The cipher iterates over the plaintext and applies the bitwise XOR operation against a repeating key. Because XOR is its own inverse, applying the same key to the ciphertext recovers the original plaintext."
+    },
+    mathematics: {
+      encryptionFormula: "C = P \\oplus K",
+      decryptionFormula: "P = C \\oplus K",
+      explanation: [
+        "P is the plaintext byte, K is the key byte, and C is the ciphertext byte.",
+        "\\oplus represents the bitwise exclusive OR logic operation.",
+        "If the key is shorter than the plaintext, it is repeated cyclically.",
+        "A bitwise XOR evaluates to 1 if the bits are different, and 0 if they are the same."
+      ]
+    },
+    workedExample: {
+      plaintext: "Cat",
+      parameters: "Key = 'k'",
+      steps: [
+        { description: "'C' (0x43) XOR 'k' (0x6B)", result: "0x28" },
+        { description: "'a' (0x61) XOR 'k' (0x6B)", result: "0x0A" },
+        { description: "'t' (0x74) XOR 'k' (0x6B)", result: "0x1F" }
+      ],
+      finalCiphertext: "0x28 0x0A 0x1F"
+    },
+    complexity: "O(n) time complexity where n is the length of the plaintext.",
+    securityAnalysis: {
+      advantages: [
+        "Extremely fast and simple to implement in hardware or software.",
+        "Perfectly secure (information-theoretic security) if the key is truly random, as long as the plaintext, and never reused (forming a One-Time Pad)."
+      ],
+      weaknesses: [
+        "If the key is short and repeats, it is highly vulnerable to frequency analysis and known-plaintext attacks.",
+        "Provides no integrity checking; vulnerable to bit-flipping attacks."
+      ]
+    },
+    realWorldApplications: [
+      "A foundational component inside complex algorithms like AES, DES, and ChaCha20.",
+      "Malware obfuscation to evade basic static signature analysis.",
+      "Simple data masking where high security is not required."
+    ],
+    codeSnippets: {
+      python: "def xor_encrypt_decrypt(data, key):\n    return bytearray([b ^ key[i % len(key)] for i, b in enumerate(data)])",
+      javascript: "function xorEncryptDecrypt(dataString, keyString) {\n  let output = '';\n  for (let i = 0; i < dataString.length; i++) {\n    const charCode = dataString.charCodeAt(i) ^ keyString.charCodeAt(i % keyString.length);\n    output += String.fromCharCode(charCode);\n  }\n  return output;\n}"
+    },
+    playgroundLink: "/visualizer/xor",
+    references: [
+      { title: "Wikipedia: XOR cipher", url: "https://en.wikipedia.org/wiki/XOR_cipher" }
+    ]
+  },
+  {
+    type: 'cipher',
+    title: "One-Time Pad (OTP)",
+    description: "An unbreakable encryption technique that requires a truly random, single-use key that is at least as long as the message.",
+    overview: {
+      history: "Patented by Gilbert Vernam in 1919 and proven to be perfectly secure by Claude Shannon in 1945, OTP was used heavily during the Cold War by intelligence agencies via physical paper pads.",
+      description: "OTP is an additive cipher (often using XOR in digital contexts). Its absolute security relies on four strict rules: the key must be completely random, as long as the plaintext, never reused, and kept entirely secret."
+    },
+    mathematics: {
+      encryptionFormula: "C_i = P_i \\oplus K_i",
+      decryptionFormula: "P_i = C_i \\oplus K_i",
+      explanation: [
+        "P_i is the ith character of the plaintext.",
+        "K_i is the ith character of the perfectly random key.",
+        "In digital systems, the operation is typically bitwise XOR.",
+        "Shannon proved that if K is uniformly distributed, C is perfectly uniformly distributed and yields zero information about P."
+      ]
+    },
+    workedExample: {
+      plaintext: "HELLO",
+      parameters: "Random Key = 'XMCKL'",
+      steps: [
+        { description: "H (7) + X (23) mod 26 = 4", result: "E" },
+        { description: "E (4) + M (12) mod 26 = 16", result: "Q" },
+        { description: "L (11) + C (2) mod 26 = 13", result: "N" },
+        { description: "L (11) + K (10) mod 26 = 21", result: "V" },
+        { description: "O (14) + L (11) mod 26 = 25", result: "Z" }
+      ],
+      finalCiphertext: "EQNVZ"
+    },
+    complexity: "O(n) time complexity.",
+    securityAnalysis: {
+      advantages: [
+        "Provides perfect, information-theoretic secrecy.",
+        "Immune to all brute-force and quantum computing attacks."
+      ],
+      weaknesses: [
+        "Key management is extremely difficult (the key distribution problem).",
+        "If a key is reused (a 'two-time pad'), the system immediately fails.",
+        "Requires a true random number generator (TRNG).",
+        "No message integrity (vulnerable to malleability)."
+      ]
+    },
+    realWorldApplications: [
+      "Top-secret government and military communications.",
+      "Numbers stations broadcasting espionage communications.",
+      "Quantum key distribution (QKD) leverages OTP for its provable security."
+    ],
+    codeSnippets: {
+      python: "import secrets\n\ndef generate_otp(length):\n    return [secrets.randbelow(256) for _ in range(length)]\n\ndef otp_encrypt(data_bytes, key_bytes):\n    assert len(data_bytes) == len(key_bytes)\n    return bytearray([d ^ k for d, k in zip(data_bytes, key_bytes)])",
+      javascript: "function generateOTP(length) {\n  return crypto.getRandomValues(new Uint8Array(length));\n}\n\nfunction otpEncrypt(dataBytes, keyBytes) {\n  if (dataBytes.length !== keyBytes.length) throw new Error('Key length mismatch');\n  const out = new Uint8Array(dataBytes.length);\n  for (let i = 0; i < dataBytes.length; i++) {\n    out[i] = dataBytes[i] ^ keyBytes[i];\n  }\n  return out;\n}"
+    },
+    playgroundLink: "/visualizer/otp",
+    references: [
+      { title: "Wikipedia: One-time pad", url: "https://en.wikipedia.org/wiki/One-time_pad" },
+      { title: "Claude Shannon: Communication Theory of Secrecy Systems", url: "https://archive.org/details/bellsystemtechni28amerrich/page/656/mode/2up" }
+    ]
   }
 ];
