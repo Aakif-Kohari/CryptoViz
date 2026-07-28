@@ -68,6 +68,39 @@ export default function DocumentationPage() {
   const isBookmarked = progress.bookmarks.includes(activeSlug);
   const isCompleted = progress.completed.includes(activeSlug);
 
+  // Automatic reading progress detection
+  useEffect(() => {
+    if (!hasLoaded || isCompleted) return;
+
+    let timeoutId: NodeJS.Timeout;
+
+    const checkCompletion = () => {
+      const scrollPos = window.scrollY + window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+
+      // 95% threshold or close to bottom
+      if (scrollPos >= docHeight * 0.95 || docHeight - scrollPos < 100) {
+        toggleCompleted(activeSlug);
+      }
+    };
+
+    const handleScroll = () => {
+      clearTimeout(timeoutId);
+      // Debounce: ensure user has stopped scrolling (reading) for 1 second near the bottom
+      timeoutId = setTimeout(checkCompletion, 1000);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Initial check for short documents
+    timeoutId = setTimeout(checkCompletion, 2000);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(timeoutId);
+    };
+  }, [activeSlug, isCompleted, hasLoaded, toggleCompleted]);
+
   // Next / Previous Navigation items
   const currentIndex = docCategories.findIndex(
     (c) => c.title === activeSection.title,
