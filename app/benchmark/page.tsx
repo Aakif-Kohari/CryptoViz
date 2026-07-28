@@ -22,6 +22,7 @@ const ComparisonChart = dynamic(() => import('@/components/benchmark/ComparisonC
   ssr: false, 
   loading: () => <div className="h-96 flex items-center justify-center rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"><p className="text-zinc-500 dark:text-zinc-400">Loading chart components...</p></div> 
 });
+import CpuInformationPanel from "@/components/benchmark/CpuInformationPanel";
 import DeviceInfoDisplay from "@/components/benchmark/DeviceInfoDisplay";
 import ExportButton from "@/components/benchmark/ExportButton";
 import CategoryTabs from "@/components/benchmark/CategoryTabs";
@@ -350,9 +351,14 @@ export default function BenchmarkPage() {
               onBenchmarkStart={handleBenchmarkStart}
             />
             {deviceInfo && (
-              <DeviceInfoDisplay
-                deviceInfo={session?.deviceInfo ?? deviceInfo}
-              />
+              <div className="space-y-6">
+                <CpuInformationPanel
+                  deviceInfo={session?.deviceInfo ?? deviceInfo}
+                />
+                <DeviceInfoDisplay
+                  deviceInfo={session?.deviceInfo ?? deviceInfo}
+                />
+              </div>
             )}
           </div>
         </section>
