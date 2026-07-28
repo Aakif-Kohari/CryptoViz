@@ -458,6 +458,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'requested output length in bytes (default 32)',
   },
+  {
+    id: 'md4',
+    name: 'MD4',
+    category: 'hash',
+    description: 'The direct predecessor to MD5 (1990) — fully broken today. Simpler than MD5: only 3 rounds (vs MD5\'s 4) and no additive per-step constants, illustrating exactly what MD5 was designed to fix.',
+    defaultKey: '',
+    defaultInput: 'abc',
+    securityStatus: 'broken',
+  },
   // Asymmetric
   {
     id: "rsa",

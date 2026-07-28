@@ -127,6 +127,7 @@ export type CipherName =
   | 'blake3'
   | 'shake128'
   | 'shake256'
+  | 'md4'
   | 'poly1305'
   | 'hmac'
   | 'cmac'
