@@ -11,6 +11,8 @@ export interface VisualizerPermalinkState {
     demoMode: boolean
     bobSecret: string
     padding?: boolean
+    aesMode?: string
+    autoCompute?: boolean
   }
 }
 
@@ -25,6 +27,8 @@ export interface ParsedVisualizerPermalink {
     demoMode?: boolean
     bobSecret?: string
     padding?: boolean
+    aesMode?: string
+    autoCompute?: boolean
   }
 }
 
@@ -73,6 +77,10 @@ export function parseVisualizerPermalink(
         ? params.get('bobSecret') ?? ''
         : undefined,
       padding: parseBoolean(params.get('padding')),
+      aesMode: params.has('aesMode')
+        ? params.get('aesMode') ?? ''
+        : undefined,
+      autoCompute: parseBoolean(params.get('autoCompute')),
     },
   }
 }
@@ -92,6 +100,12 @@ export function buildVisualizerPermalink(
   url.searchParams.set('bobSecret', state.options.bobSecret)
   if (state.options.padding !== undefined) {
     url.searchParams.set('padding', state.options.padding ? '1' : '0')
+  }
+  if (state.options.aesMode !== undefined) {
+    url.searchParams.set('aesMode', state.options.aesMode)
+  }
+  if (state.options.autoCompute !== undefined) {
+    url.searchParams.set('autoCompute', state.options.autoCompute ? '1' : '0')
   }
   return url.toString()
 }
