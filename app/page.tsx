@@ -99,6 +99,21 @@ export default function Home() {
       link: "/merkle/",
       glowClass: "hover:border-[#00C2AE]/50 hover:shadow-[0_0_30px_rgba(0,194,174,0.1)]"
     },
+    {
+      title: "Key Size Security Estimator",
+      difficulty: "Beginner",
+      time: "10 min",
+      popular: false,
+      description:
+        "Compare the relative security of different cryptographic key sizes across Symmetric, RSA, and ECC algorithm families.",
+      icon: (
+        <svg className="h-6 w-6 text-[#00C2AE]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+        </svg>
+      ),
+      link: "/key-size/",
+      glowClass: "hover:border-[#00C2AE]/50 hover:shadow-[0_0_30px_rgba(0,194,174,0.1)]"
+    },
   ];
 
   return (
