@@ -607,4 +607,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'recipient X25519 public key (encrypt) or your private key (decrypt)',
   },
+  {
+    id: 'ed448',
+    name: 'Ed448',
+    category: 'asymmetric',
+    description: 'EdDSA signatures over Curve448 (RFC 8032) — the higher-security-margin sibling of Ed25519, using SHAKE256 internally instead of SHA-512. Completes the Curve25519/Curve448 x agreement/signing grid alongside x25519, x448, and ed25519.',
+    defaultKey: '',
+    defaultInput: 'hello',
+    securityStatus: 'secure',
+    keyPlaceholder: '57-byte private key hex (114 chars), or leave blank to generate one',
+  },
 ];
