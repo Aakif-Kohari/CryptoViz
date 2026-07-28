@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import type { CipherDefinition, CipherOptionValue } from '../../lib/cipher/registry'
 import type { CipherResult } from '../../lib/cipher/types'
@@ -81,6 +82,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const [key, setKey] = useState(cipher.defaultKey);
   const [action, setAction] = useState<"encrypt" | "decrypt">("encrypt");
   const [autoCompute, setAutoCompute] = useState(true);
+  const router = useRouter();
   // Custom options states
   const [hexInput, setHexInput] = useState(true);
   const [rounds, setRounds] = useState(4);
@@ -115,6 +117,8 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     if (shared.options.demoMode !== undefined) setDemoMode(shared.options.demoMode)
     if (shared.options.bobSecret !== undefined) setBobSecret(shared.options.bobSecret)
     if (shared.options.padding !== undefined) setPadding(shared.options.padding)
+    if (shared.options.aesMode !== undefined) setAesMode(shared.options.aesMode)
+    if (shared.options.autoCompute !== undefined) setAutoCompute(shared.options.autoCompute)
     pendingSharedStepRef.current = shared.step ?? null
   }, [cipher.id])
   // Sync playground state into the URL (debounced) so refresh/share preserves the session.
@@ -125,12 +129,12 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         key,
         direction: cipher.id === 'dh' ? 'encrypt' : action,
         step: currentStep,
-        options: { hexInput, rounds, demoMode, bobSecret, padding },
+        options: { hexInput, rounds, demoMode, bobSecret, padding, aesMode, autoCompute },
       })
-      window.history.replaceState(window.history.state, '', permalink)
+      router.replace(permalink, { scroll: false })
     }, 300)
     return () => clearTimeout(debounceId)
-  }, [input, key, action, hexInput, rounds, demoMode, bobSecret, aesMode, padding, currentStep, cipher.id])
+  }, [input, key, action, hexInput, rounds, demoMode, bobSecret, aesMode, padding, autoCompute, currentStep, cipher.id, router])
   // Reset inputs when cipher changes
   useEffect(() => {
     if (abortControllerRef.current) {
@@ -212,7 +216,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   };
   const handleRun = async () => {
     const cleanUrl = updateStepInCurrentUrl(window.location.href, null);
-    window.history.replaceState(window.history.state, '', cleanUrl);
+    router.replace(cleanUrl, { scroll: false });
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -381,7 +385,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     setCurrentStep(safeStep)
     if (result?.steps?.length) {
       const nextUrl = updateStepInCurrentUrl(window.location.href, safeStep)
-      window.history.replaceState(window.history.state, '', nextUrl)
+      router.replace(nextUrl, { scroll: false })
     }
   }
   const handleCopyStepLink = async () => {

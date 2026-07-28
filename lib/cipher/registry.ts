@@ -278,6 +278,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '64-character hex key (256-bit)',
   },
   {
+    id: 'xsalsa20',
+    name: 'XSalsa20',
+    category: 'symmetric',
+    description: 'The 192-bit-nonce extension of Salsa20 (used by NaCl/libsodium) — an HSalsa20 subkey-derivation step lets you pick nonces randomly instead of managing a counter.',
+    defaultKey: '1b27556473e985d462cd51197a9a46c76009549eac6474f206c4ee0844f6838|69696ee955b62b73cd62bda875fc73d68219e0036b7a0b37',
+    defaultInput: '4c6164696573',
+    securityStatus: 'secure',
+    keyPlaceholder: 'keyHex(32B)|nonceHex(24B)',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
@@ -449,6 +459,24 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
   },
   {
+    id: 'sha224',
+    name: 'SHA-224',
+    category: 'hash',
+    description: 'A truncated SHA-2 family member (FIPS 180-4) with its OWN initial hash value — not simply SHA-256\'s output cut short, which is a deliberate design choice to prevent leaking one digest from the other.',
+    defaultKey: '',
+    defaultInput: 'abc',
+    securityStatus: 'secure',
+  },
+  {
+    id: 'sha384',
+    name: 'SHA-384',
+    category: 'hash',
+    description: 'The 384-bit truncated member of the SHA-512 family (FIPS 180-4), with its own distinct initial hash value, same design principle as SHA-224 relative to SHA-256.',
+    defaultKey: '',
+    defaultInput: 'abc',
+    securityStatus: 'secure',
+  },
+  {
     id: 'shake128',
     name: 'SHAKE128',
     category: 'hash',
@@ -467,6 +495,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: 'abc',
     securityStatus: 'secure',
     keyPlaceholder: 'requested output length in bytes (default 32)',
+  },
+  {
+    id: 'md4',
+    name: 'MD4',
+    category: 'hash',
+    description: 'The direct predecessor to MD5 (1990) — fully broken today. Simpler than MD5: only 3 rounds (vs MD5\'s 4) and no additive per-step constants, illustrating exactly what MD5 was designed to fix.',
+    defaultKey: '',
+    defaultInput: 'abc',
+    securityStatus: 'broken',
   },
   // Asymmetric
   {

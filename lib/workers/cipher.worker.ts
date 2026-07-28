@@ -27,7 +27,9 @@ import { encrypt as hmacEncrypt, decrypt as hmacDecrypt } from "../cipher/hash/h
 import { encrypt as cmacEncrypt, decrypt as cmacDecrypt } from '../cipher/hash/cmac'
 import { encrypt as hkdfEncrypt, decrypt as hkdfDecrypt } from "../cipher/hash/hkdf";
 import { encrypt as blake2sEncrypt, decrypt as blake2sDecrypt } from '../cipher/hash/blake2s';
+import { encryptSha224, encryptSha384, decrypt as sha2TruncDecrypt } from '../cipher/hash/sha2-truncated'
 import { encryptShake128, encryptShake256, decrypt as shakeDecrypt } from '../cipher/hash/shake';
+import { encrypt as md4Encrypt, decrypt as md4Decrypt } from '../cipher/hash/md4'
 import { encrypt as md5Encrypt, decrypt as md5Decrypt } from "../cipher/hash/md5";
 import { encrypt as poly1305Encrypt, decrypt as poly1305Decrypt } from "../cipher/hash/poly1305";
 import { encrypt as ripemd160Encrypt, decrypt as ripemd160Decrypt } from "../cipher/hash/ripemd160";
@@ -62,6 +64,7 @@ import { encrypt as aesCcmEncrypt, decrypt as aesCcmDecrypt } from '../cipher/sy
 import { encrypt as threefishEncrypt, decrypt as threefishDecrypt } from '../cipher/symmetric/threefish';
 import { encrypt as xchacha20Encrypt, decrypt as xchacha20Decrypt } from '../cipher/symmetric/xchacha20'
 import { encrypt as gostEncrypt, decrypt as gostDecrypt } from '../cipher/symmetric/gost';
+import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20'
 import { encrypt as serpentEncrypt, decrypt as serpentDecrypt } from '../cipher/symmetric/serpent';
 import { encrypt as chacha20Encrypt, decrypt as chacha20Decrypt } from "../cipher/symmetric/chacha20";
 import { encrypt as desEncrypt, decrypt as desDecrypt } from "../cipher/symmetric/des";
@@ -189,6 +192,8 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break
       case 'xchacha20':
         result = encryptMode ? xchacha20Encrypt(input, key, options) : xchacha20Decrypt(input, key, options)
+      case 'xsalsa20':
+        result = encryptMode ? xsalsa20Encrypt(input, key, options) : xsalsa20Decrypt(input, key, options)
         break
       case "rsa":
         result = encryptMode ? rsaEncrypt(input, key, options) : rsaDecrypt(input, key, options);
@@ -283,11 +288,20 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       case 'blake2s':
         result = encryptMode ? blake2sEncrypt(input, key, options) : blake2sDecrypt(input, key, options)
         break
+      case 'sha224':
+        result = encryptMode ? encryptSha224(input, key, options) : sha2TruncDecrypt(input, key, options)
+        break
+      case 'sha384':
+        result = encryptMode ? encryptSha384(input, key, options) : sha2TruncDecrypt(input, key, options)
+        break
       case 'shake128':
         result = encryptMode ? encryptShake128(input, key, options) : shakeDecrypt(input, key, options)
         break
       case 'shake256':
         result = encryptMode ? encryptShake256(input, key, options) : shakeDecrypt(input, key, options)
+        break
+      case 'md4':
+        result = encryptMode ? md4Encrypt(input, key, options) : md4Decrypt(input, key, options)
         break
       case "pbkdf2":
         result = await deriveKey(input, {
