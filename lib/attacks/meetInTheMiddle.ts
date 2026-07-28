@@ -62,6 +62,22 @@ export function doubleDesEncrypt(plaintextBlock: Uint8Array, keyA: Uint8Array, k
 }
 
 function keyFromInt(n: number, keySpaceBits: number): Uint8Array {
+  if (n < 0 || !Number.isInteger(n)) {
+    throw new CipherError(
+      'INVALID_INPUT',
+      'Key value must be a non-negative integer.'
+    )
+  }
+
+  const maxKeyValue = (2 ** keySpaceBits) - 1
+
+  if (n > maxKeyValue) {
+    throw new CipherError(
+      'INVALID_INPUT',
+      `Key value exceeds the supported ${keySpaceBits}-bit keyspace.`
+    )
+  }
+
   // DES keys are 8 bytes (56 usable bits + 8 parity bits, ignored here for
   // demo purposes — this is a *reduced* keyspace search for a browser-tractable demo).
   const bytes = new Uint8Array(DES_BLOCK_SIZE)
