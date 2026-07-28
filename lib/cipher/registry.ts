@@ -258,6 +258,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '64-char hex key, optionally "|32-char hex tweak"',
   },
   {
+    id: 'xchacha20',
+    name: 'XChaCha20',
+    category: 'symmetric',
+    description: 'The 192-bit-nonce extension of ChaCha20 (used by libsodium) — an HChaCha20 subkey-derivation step, the ChaCha20 sibling of this batch\'s XSalsa20, lets you pick nonces randomly instead of managing a counter.',
+    defaultKey: '808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e|404142434445464748494a4b4c4d4e4f5051525354555657',
+    defaultInput: '4c6164696573',
+    securityStatus: 'secure',
+    keyPlaceholder: 'keyHex(32B)|nonceHex(24B)',
+  },
+  {
     id: 'gost',
     name: 'GOST 28147-89',
     category: 'symmetric',
