@@ -111,6 +111,7 @@ export type CipherName =
   | 'schnorr'
   | 'elgamal-signature'
   | 'elgamal'
+  | 'ml-dsa'
   | 'ecies'
   | 'ed448'
   | 'ed25519'
