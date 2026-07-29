@@ -16,6 +16,7 @@ const projectLinks = [
 
 const resourceLinks = [
   { name: "Resources", href: "/resources" },
+  { name: "Glossary Explorer", href: "/glossary" },
   { name: "Blog", href: "/blog" },
   { name: "GitHub Repository", href: "https://github.com/csxark/CryptoViz" },
   { name: "Contribution Guide", href: "https://github.com/csxark/CryptoViz/blob/main/CONTRIBUTING.md" },
