@@ -1,0 +1,24 @@
+---
+title: "Cipher Lifecycle Badges"
+description: "Documentation guide for algorithm security lifecycle statuses, badge classifications, and NIST SP 800-57 alignment."
+---
+
+# Cipher Lifecycle Badges
+
+CryptoViz classifies every algorithm in the registry using a standardized **Cipher Lifecycle Badge** system. These security statuses align with guidelines from NIST SP 800-57 (Recommendation for Key Management) and modern cryptanalysis benchmarks.
+
+## Security Status Classifications
+
+- **Recommended**: Actively recommended by NIST, IETF, or standard bodies for new cryptographic deployments (e.g. AES, ChaCha20-Poly1305, SHA-256, Bcrypt).
+- **Secure**: Cryptographically sound with no known practical attacks in current deployment scenarios (e.g. RSA-2048, ECC P-256, SHA-512, Camellia).
+- **Experimental**: Standardized or novel primitives that are undergoing active evaluation or variable parameterization (e.g. SHAKE128, SHAKE256 XOFs).
+- **Legacy**: Older algorithms retained primarily for backward compatibility or protocol interoperability; not recommended for new applications.
+- **Deprecated**: Formally withdrawn by standards bodies due to security margins below modern safety thresholds (e.g. 3DES, 56-bit XOR, XXHash).
+- **Broken**: Cryptographically broken by practical collision, key recovery, or structural attack vectors (e.g. MD5, MD4, DES, Caesar, Vigenère).
+
+## Component Integration
+
+The `CipherLifecycleBadge` component is integrated across:
+- **Visualizer Directory (`/visualizer`)**: Displayed on algorithm selection cards.
+- **Cipher Playgrounds (`/visualizer/[cipher]`)**: Displayed in the header of each interactive playground.
+- **Lifecycle Matrix (`/cipher-lifecycle`)**: Dedicated explorer and filter interface.

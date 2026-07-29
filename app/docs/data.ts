@@ -88,6 +88,12 @@ export const docCategories: DocCategory[] = [
     content: "CryptoViz automatically parses documentation content to detect cryptographic terminology such as Symmetric Encryption, Nonce, SHA-256, Initialization Vector, and KDF. Matched terms are highlighted with interactive definition popovers and direct links to the Glossary Explorer."
   },
   {
+    type: 'general',
+    title: "Cipher Lifecycle Badges",
+    description: "Overview of standardized security status badges (Recommended, Secure, Experimental, Legacy, Deprecated, Broken) and NIST SP 800-57 guidelines.",
+    content: "CryptoViz tags every algorithm with a standardized security lifecycle badge. Badges indicate NIST recommendations, security strength, known vulnerabilities, and legacy status."
+  },
+  {
     type: 'cipher',
     title: "Caesar Cipher",
     description: "A classical substitution cipher that shifts characters by a fixed number of positions down the alphabet.",

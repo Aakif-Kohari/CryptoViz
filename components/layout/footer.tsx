@@ -17,6 +17,7 @@ const projectLinks = [
 const resourceLinks = [
   { name: "Resources", href: "/resources" },
   { name: "Glossary Explorer", href: "/glossary" },
+  { name: "Cipher Lifecycle Badges", href: "/cipher-lifecycle" },
   { name: "Blog", href: "/blog" },
   { name: "GitHub Repository", href: "https://github.com/csxark/CryptoViz" },
   { name: "Contribution Guide", href: "https://github.com/csxark/CryptoViz/blob/main/CONTRIBUTING.md" },

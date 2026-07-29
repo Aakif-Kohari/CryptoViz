@@ -61,6 +61,7 @@ export default function Navbar() {
     { name: 'Challenge', href: '/challenge' },
     { name: 'Docs', href: '/docs' },
     { name: 'Glossary', href: '/glossary' },
+    { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
     { name: 'Resources', href: '/resources' },
   ];
 

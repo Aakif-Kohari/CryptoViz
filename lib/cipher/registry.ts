@@ -7,7 +7,7 @@ export interface CipherDefinition {
   description: string;
   defaultKey: string;
   defaultInput: string;
-  securityStatus: "secure" | "legacy" | "deprecated" | "broken";
+  securityStatus: "recommended" | "secure" | "legacy" | "deprecated" | "broken" | "experimental";
   keyPlaceholder?: string;
   options?: {
     name: string;
@@ -161,7 +161,7 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
       "Advanced Encryption Standard. A highly secure, standard block cipher supporting key sizes of 128, 192, or 256 bits.",
     defaultKey: "000102030405060708090a0b0c0d0e0f",
     defaultInput: "00112233445566778899aabbccddeeff",
-    securityStatus: "secure",
+    securityStatus: "recommended",
     keyPlaceholder: "32/48/64-character hex key",
     options: [
       {
@@ -224,7 +224,7 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     description: 'RFC 8439 AEAD combining the existing ChaCha20 and Poly1305 modules — the software-oriented alternative to AES-GCM, used by TLS 1.3 and WireGuard when hardware AES acceleration isn\'t available.',
     defaultKey: '808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e|070000004041424344454647',
     defaultInput: '4c6164696573',
-    securityStatus: 'secure',
+    securityStatus: 'recommended',
     keyPlaceholder: 'keyHex(32B)|nonceHex(12B)|aadHex(optional)',
   },
   {
@@ -295,7 +295,7 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
       "Secure Hash Algorithm 2. Produces a unique 256-bit hash output representing the input message.",
     defaultKey: "",
     defaultInput: "abc",
-    securityStatus: "secure",
+    securityStatus: "recommended",
   },
   {
     id: "sha512",
@@ -355,7 +355,7 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
       "A password hashing function incorporating a salt and cost factor, designed to be slow to prevent brute force.",
     defaultKey: "password",
     defaultInput: "password",
-    securityStatus: "secure",
+    securityStatus: "recommended",
     options: [
       {
         name: "Rounds (Cost)",
@@ -483,7 +483,7 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     description: 'An extendable-output function (XOF, NIST FIPS 202) — unlike every other hash here, output length is a parameter you choose, not fixed. Same Keccak permutation family as SHA-3.',
     defaultKey: '32',
     defaultInput: 'abc',
-    securityStatus: 'secure',
+    securityStatus: 'experimental',
     keyPlaceholder: 'requested output length in bytes (default 32)',
   },
   {
@@ -493,7 +493,7 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     description: 'The wider-capacity sibling of SHAKE128 (NIST FIPS 202) — same extendable-output design, larger security margin.',
     defaultKey: '32',
     defaultInput: 'abc',
-    securityStatus: 'secure',
+    securityStatus: 'experimental',
     keyPlaceholder: 'requested output length in bytes (default 32)',
   },
   {
