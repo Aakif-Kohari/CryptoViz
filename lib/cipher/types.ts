@@ -93,6 +93,7 @@ export type CipherName =
   | 'xchacha20'
   | 'gost'
   | 'xsalsa20'
+  | 'tea'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
