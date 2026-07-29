@@ -1,0 +1,23 @@
+---
+title: "Cryptography Myth Busters"
+description: "Educational guide on common cryptography misconceptions, technical realities, and the Myth Busters module."
+---
+
+# Cryptography Myth Busters
+
+The **Cryptography Myth Busters** module in CryptoViz is an interactive educational framework designed to dismantle common security fallacies, correct misunderstandings about cryptographic primitives, and enforce modern security principles.
+
+## Core Myths Addressed
+
+1. **Base64 is Encryption**: Base64 is an encoding format for text representation of binary bytes. It uses zero secret keys and provides zero confidentiality.
+2. **Key Size Equivalence**: Symmetric keys (AES-256) cannot be compared 1:1 to asymmetric keys (RSA-2048). RSA-2048 provides roughly 112 bits of security strength due to sub-exponential factoring algorithms.
+3. **Hashing vs. Encryption**: Hashing is a one-way irreversible digest function; encryption is a two-way reversible transformation using a secret key.
+4. **Proprietary Secret Ciphers**: Kerckhoffs's principle dictates that security must rely solely on key secrecy. Custom secret algorithms fail cryptanalysis.
+5. **Salting Mechanics**: Salts are unique, non-secret inputs stored in plain text to defeat pre-computed rainbow table attacks.
+6. **Quantum Security**: Quantum computers (Grover's algorithm) halve symmetric key security. AES-256 retains 128-bit quantum security, remaining uncrackable for centuries.
+
+## Features
+
+- **Interactive Myth Hub (`/myth-busters`)**: Filter, search, and inspect common myths with BUSTED badges, difficulty tags, and playground links.
+- **Reality Check Quiz**: Test your understanding against real-world security scenarios with instant explanations and score tracking.
+- **Detail Drawer Modal**: Deep-dive technical explanations, attack vectors, and Kerckhoffs's principle benchmarks.
