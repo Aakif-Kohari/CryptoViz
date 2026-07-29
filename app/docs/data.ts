@@ -82,6 +82,12 @@ export const docCategories: DocCategory[] = [
     content: "Experiencing setup discrepancies? Run a strict 'npm ci' to ensure a complete and exact rebuild of the package lock definitions. Verify your local runtime environment strictly aligns with modern LTS node standards."
   },
   {
+    type: 'general',
+    title: "Offline Learning Packs",
+    description: "Overview of offline docs, PWA Service Worker caching, and single-file HTML standalone visualizer bundles.",
+    content: "CryptoViz features an Offline Learning Pack hub allowing users to pre-cache algorithm specifications, documentation guides, and interactive cipher sandboxes. Single-file HTML apps can be exported and executed locally without an active network connection."
+  },
+  {
     type: 'cipher',
     title: "Caesar Cipher",
     description: "A classical substitution cipher that shifts characters by a fixed number of positions down the alphabet.",

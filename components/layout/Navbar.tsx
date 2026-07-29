@@ -60,6 +60,7 @@ export default function Navbar() {
     { name: 'Padding', href: '/padding' },
     { name: 'Challenge', href: '/challenge' },
     { name: 'Docs', href: '/docs' },
+    { name: 'Offline', href: '/offline' },
     { name: 'Resources', href: '/resources' },
   ];
 

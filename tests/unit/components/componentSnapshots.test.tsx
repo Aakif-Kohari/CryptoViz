@@ -2,9 +2,9 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import SkeletonCard from "@/components/ui/SkeletonCard";
-import StepAnimator from "@/components/ui/StepAnimator";
+import StepAnimator from "@/components/cipher/StepAnimator";
 import PlayfairGrid from "@/components/cipher/PlayfairGrid";
-import ByteHeatmap from "@/components/avalanche/ByteHeatmap";
+import ByteHeatmap from "@/components/ui/ByteHeatmap";
 
 describe("Visualization Component Snapshot Tests", () => {
   it("matches snapshot for SkeletonCard component", () => {
@@ -14,14 +14,13 @@ describe("Visualization Component Snapshot Tests", () => {
 
   it("matches snapshot for StepAnimator component", () => {
     const steps = [
-      { title: "Initialize Cipher", detail: "Set initial state" },
-      { title: "Shift Bytes", detail: "Shift by key offset 3" },
+      { index: 0, label: "Initialize Cipher", inputState: "A", outputState: "A", note: "Set initial state" },
+      { index: 1, label: "Shift Bytes", inputState: "A", outputState: "D", note: "Shift by key offset 3" },
     ];
     const { asFragment } = render(
       <StepAnimator
         steps={steps}
         currentStep={0}
-        isPlaying={false}
         onStepChange={() => {}}
       />,
     );
@@ -41,11 +40,11 @@ describe("Visualization Component Snapshot Tests", () => {
   });
 
   it("matches snapshot for ByteHeatmap component", () => {
-    const data = [
-      { byteIndex: 0, bitDiffCount: 3, flipPercentage: 0.375 },
-      { byteIndex: 1, bitDiffCount: 6, flipPercentage: 0.75 },
+    const bytes = [
+      { index: 0, hex: "41", changed: true, changedBits: 3 },
+      { index: 1, hex: "42", changed: true, changedBits: 6 },
     ];
-    const { asFragment } = render(<ByteHeatmap data={data} />);
+    const { asFragment } = render(<ByteHeatmap bytes={bytes} />);
     expect(asFragment()).toMatchSnapshot();
   });
 });
