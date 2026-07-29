@@ -88,6 +88,12 @@ export const docCategories: DocCategory[] = [
     content: "CryptoViz automatically parses documentation content to detect cryptographic terminology such as Symmetric Encryption, Nonce, SHA-256, Initialization Vector, and KDF. Matched terms are highlighted with interactive definition popovers and direct links to the Glossary Explorer."
   },
   {
+    type: 'general',
+    title: "Cryptography Myth Busters",
+    description: "Educational pages correcting prevalent misconceptions about encoding, hashing, key lengths, and quantum security.",
+    content: "CryptoViz features a Cryptography Myth Busters module designed to debunk security fallacies (such as 'Base64 is Encryption' or 'RSA-2048 is 8x Stronger than AES-256'). Includes an interactive Reality Check Quiz and technical reality breakdowns."
+  },
+  {
     type: 'cipher',
     title: "Caesar Cipher",
     description: "A classical substitution cipher that shifts characters by a fixed number of positions down the alphabet.",
