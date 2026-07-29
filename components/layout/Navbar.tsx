@@ -61,6 +61,7 @@ export default function Navbar() {
     { name: 'Challenge', href: '/challenge' },
     { name: 'Docs', href: '/docs' },
     { name: 'Offline', href: '/offline' },
+    { name: 'Glossary', href: '/glossary' },
     { name: 'Resources', href: '/resources' },
   ];
 

@@ -88,6 +88,12 @@ export const docCategories: DocCategory[] = [
     content: "CryptoViz features an Offline Learning Pack hub allowing users to pre-cache algorithm specifications, documentation guides, and interactive cipher sandboxes. Single-file HTML apps can be exported and executed locally without an active network connection."
   },
   {
+    type: 'general',
+    title: "Glossary Cross-Linking",
+    description: "Overview of automatic terminology detection, definition tooltips, and the interactive Glossary Explorer.",
+    content: "CryptoViz automatically parses documentation content to detect cryptographic terminology such as Symmetric Encryption, Nonce, SHA-256, Initialization Vector, and KDF. Matched terms are highlighted with interactive definition popovers and direct links to the Glossary Explorer."
+  },
+  {
     type: 'cipher',
     title: "Caesar Cipher",
     description: "A classical substitution cipher that shifts characters by a fixed number of positions down the alphabet.",
