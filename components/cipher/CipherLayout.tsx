@@ -7,6 +7,7 @@ import { useCipherWorker } from '../../lib/hooks/useCipherWorker'
 import type { AnimationSpeed } from './StepAnimator'
 import WorkspacePresetManager from './WorkspacePresetManager'
 import ConversionHistory from './ConversionHistory'
+import WhereIsThisUsed from "./WhereIsThisUsed";
 import StepNotes from './StepNotes'
 import BookmarkedSteps from './BookmarkedSteps'
 import type { WorkspacePreset } from '../../lib/utils/workspacePresets'
@@ -883,6 +884,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           )}
         </div>
       </div>
+      <WhereIsThisUsed cipherId={cipher.id} />
     </div>
   );
 }
