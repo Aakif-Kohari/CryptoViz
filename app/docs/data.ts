@@ -92,6 +92,9 @@ export const docCategories: DocCategory[] = [
     title: "Cipher Lifecycle Badges",
     description: "Overview of standardized security status badges (Recommended, Secure, Experimental, Legacy, Deprecated, Broken) and NIST SP 800-57 guidelines.",
     content: "CryptoViz tags every algorithm with a standardized security lifecycle badge. Badges indicate NIST recommendations, security strength, known vulnerabilities, and legacy status."
+    title: "Cryptography Myth Busters",
+    description: "Educational pages correcting prevalent misconceptions about encoding, hashing, key lengths, and quantum security.",
+    content: "CryptoViz features a Cryptography Myth Busters module designed to debunk security fallacies (such as 'Base64 is Encryption' or 'RSA-2048 is 8x Stronger than AES-256'). Includes an interactive Reality Check Quiz and technical reality breakdowns."
   },
   {
     type: 'cipher',
