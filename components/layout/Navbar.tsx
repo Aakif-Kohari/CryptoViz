@@ -59,6 +59,7 @@ export default function Navbar() {
     { name: 'Merkle Tree', href: '/merkle' },
     { name: 'Padding', href: '/padding' },
     { name: 'Challenge', href: '/challenge' },
+    { name : 'Rainbow Table', href: '/rainbow-table' },
     { name: 'Docs', href: '/docs' },
     { name: 'Glossary', href: '/glossary' },
     { name: 'Resources', href: '/resources' },
