@@ -608,6 +608,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'recipient X25519 public key (encrypt) or your private key (decrypt)',
   },
   {
+    id: 'ml-kem',
+    name: 'ML-KEM-768',
+    category: 'asymmetric',
+    description: 'Post-quantum key encapsulation (NIST FIPS 203, formerly Kyber), based on the Module Learning With Errors lattice problem — secure against both classical and quantum attackers, unlike every other asymmetric module here.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+    keyPlaceholder: 'recipient public key (encapsulate) or private key (decapsulate)',
+  },
+  {
     id: 'ed448',
     name: 'Ed448',
     category: 'asymmetric',
