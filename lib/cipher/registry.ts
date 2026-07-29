@@ -617,4 +617,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: '57-byte private key hex (114 chars), or leave blank to generate one',
   },
+  {
+    id: 'shamir-secret-sharing',
+    name: "Shamir's Secret Sharing",
+    category: 'asymmetric',
+    description: 'A threshold scheme (1979): splits a secret into N shares such that any K reconstruct it, but K-1 reveal nothing. Uses GF(256) polynomial arithmetic — a different mathematical toolkit from every other module here.',
+    defaultKey: '5,3',
+    defaultInput: 'deadbeef',
+    securityStatus: 'secure',
+    keyPlaceholder: 'totalShares,threshold (split) — leave blank for combine',
+  },
 ];

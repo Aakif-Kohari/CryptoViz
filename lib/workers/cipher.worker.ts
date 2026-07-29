@@ -47,7 +47,8 @@ import { encrypt as schnorrEncrypt, decrypt as schnorrDecrypt } from '../cipher/
 import { encrypt as elgamalSigEncrypt, decrypt as elgamalSigDecrypt } from '../cipher/asymmetric/elgamal-signature';
 import { encrypt as eciesEncrypt, decrypt as eciesDecrypt } from '../cipher/asymmetric/ecies';
 import { encrypt as ecdsaEncrypt, decrypt as ecdsaDecrypt } from "../cipher/asymmetric/ecdsa";
-import { encrypt as ed448Encrypt, decrypt as ed448Decrypt } from '../cipher/asymmetric/ed448'
+import { encrypt as ed448Encrypt, decrypt as ed448Decrypt } from '../cipher/asymmetric/ed448';
+import { encrypt as shamirSplit, decrypt as shamirCombine } from '../cipher/asymmetric/shamir-secret-sharing';
 import { encrypt as ed25519Encrypt, decrypt as ed25519Decrypt } from "../cipher/asymmetric/ed25519";
 import { encrypt as elgamalEncrypt, decrypt as elgamalDecrypt } from "../cipher/asymmetric/elgamal";
 import { encrypt as merkleHellmanEncrypt, decrypt as merkleHellmanDecrypt } from "../cipher/asymmetric/merkle-hellman";
@@ -225,6 +226,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break;
       case 'ed448':
         result = encryptMode ? ed448Encrypt(input, key, options) : ed448Decrypt(input, key, options)
+        break
+      case 'shamir-secret-sharing':
+        result = encryptMode ? shamirSplit(input, key, options) : shamirCombine(input, key, options)
         break
       case "ed25519":
         result = encryptMode ? ed25519Encrypt(input, key, options) : ed25519Decrypt(input, key, options);

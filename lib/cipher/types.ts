@@ -113,6 +113,7 @@ export type CipherName =
   | 'elgamal'
   | 'ecies'
   | 'ed448'
+  | 'shamir-secret-sharing'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
