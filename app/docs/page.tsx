@@ -18,6 +18,7 @@ import { DocumentationProgressActions } from "./components/DocumentationProgress
 import { LearningProgressPanel } from "./components/LearningProgressPanel";
 import { useDocumentationProgress } from "./components/useDocumentationProgress";
 import { getTitleScore, getDescriptionScore } from "../../lib/utils/fuzzySearch";
+import GlossaryTextRenderer from "../../components/glossary/GlossaryTextRenderer";
 
 interface SearchItem {
   category: DocCategory;
@@ -223,6 +224,18 @@ export default function DocumentationPage() {
               {node}
             </code>
           );
+        } else if (typeof part === "string") {
+          node = <GlossaryTextRenderer key={idx} content={part} />;
+          if (isBold) {
+            node = (
+              <strong
+                key={idx}
+                className="font-semibold text-zinc-900 dark:text-white"
+              >
+                {node}
+              </strong>
+            );
+          }
         } else if (isBold) {
           node = (
             <strong

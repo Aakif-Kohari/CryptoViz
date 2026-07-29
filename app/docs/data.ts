@@ -82,6 +82,12 @@ export const docCategories: DocCategory[] = [
     content: "Experiencing setup discrepancies? Run a strict 'npm ci' to ensure a complete and exact rebuild of the package lock definitions. Verify your local runtime environment strictly aligns with modern LTS node standards."
   },
   {
+    type: 'general',
+    title: "Glossary Cross-Linking",
+    description: "Overview of automatic terminology detection, definition tooltips, and the interactive Glossary Explorer.",
+    content: "CryptoViz automatically parses documentation content to detect cryptographic terminology such as Symmetric Encryption, Nonce, SHA-256, Initialization Vector, and KDF. Matched terms are highlighted with interactive definition popovers and direct links to the Glossary Explorer."
+  },
+  {
     type: 'cipher',
     title: "Caesar Cipher",
     description: "A classical substitution cipher that shifts characters by a fixed number of positions down the alphabet.",
