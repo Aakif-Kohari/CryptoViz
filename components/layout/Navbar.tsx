@@ -72,17 +72,15 @@ export default function Navbar() {
       role="navigation"
       aria-label="Main navigation"
     >
-      <div className="mx-auto flex h-[88px] max-w-[1450px] items-center justify-between px-8 lg:px-12">
-
+      <div className="mx-auto flex h-[88px] max-w-[1450px] items-center justify-between px-4 sm:px-6 lg:px-12">
         {/* Logo */}
 
         <Link
           href="/"
-          className="group flex items-center gap-4 transition-all duration-300"
-        >
+          className="group flex items-center gap-3 sm:gap-4 transition-all duration-300"        >
           <div
             className="
-            flex h-12 w-12 items-center justify-center
+            flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center
             rounded-2xl
             bg-gradient-to-br
             from-teal-500
@@ -97,7 +95,7 @@ export default function Navbar() {
           "
           >
             <svg
-              className="h-7 w-7"
+              className="h-5 w-5 sm:h-7 sm:w-7"
               fill="none"
               stroke="currentColor"
               strokeWidth="2.4"
@@ -112,12 +110,12 @@ export default function Navbar() {
           </div>
 
           <div className="flex flex-col leading-none">
-            <span className="text-[28px] font-black tracking-tight text-zinc-900 dark:text-white">
+            <span className="text-xl sm:text-[28px] font-black tracking-tight text-zinc-900 dark:text-white">
               Crypto
               <span className="text-teal-500">Viz</span>
             </span>
 
-          
+
           </div>
         </Link>
 
@@ -140,10 +138,9 @@ export default function Navbar() {
                   transition-all
                   duration-300
 
-                  ${
-                    isActive
-                      ? 'text-teal-500'
-                      : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
+                  ${isActive
+                    ? 'text-teal-500'
+                    : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
                   }
                 `}
               >
@@ -160,10 +157,9 @@ export default function Navbar() {
                     transition-all
                     duration-300
 
-                    ${
-                      isActive
-                        ? 'w-full -translate-x-1/2'
-                        : 'w-0 -translate-x-1/2 group-hover:w-full'
+                    ${isActive
+                      ? 'w-full -translate-x-1/2'
+                      : 'w-0 -translate-x-1/2 group-hover:w-full'
                     }
                   `}
                 />
@@ -174,16 +170,18 @@ export default function Navbar() {
 
         {/* Right Side */}
 
-        <div className="flex items-center gap-4">
-                    {/* Theme Toggle */}
+        <div className="flex items-center gap-2 sm:gap-4">
+          {/* Theme Toggle */}
 
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
             className="
               flex
-              h-12
-              w-12
+              h-10
+              w-10
+              sm:h-12
+              sm:w-12
               items-center
               justify-center
               rounded-2xl
@@ -202,7 +200,7 @@ export default function Navbar() {
           >
             {theme === 'dark' ? (
               <svg
-                className="h-5 w-5 text-yellow-400"
+                className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -241,8 +239,10 @@ export default function Navbar() {
             className="
               flex
               xl:hidden
-              h-12
-              w-12
+              h-10
+              w-10
+              sm:h-12
+              sm:w-12
               items-center
               justify-center
               rounded-2xl
@@ -260,7 +260,7 @@ export default function Navbar() {
             "
           >
             <svg
-              className="h-6 w-6 text-zinc-700 dark:text-zinc-200"
+              className="h-5 w-5 sm:h-6 sm:w-6 text-zinc-700 dark:text-zinc-200"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -320,10 +320,9 @@ export default function Navbar() {
                     transition-all
                     duration-300
 
-                    ${
-                      isActive
-                        ? 'bg-teal-500 text-white'
-                        : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900'
+                    ${isActive
+                      ? 'bg-teal-500 text-white'
+                      : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900'
                     }
                   `}
                 >
@@ -331,7 +330,7 @@ export default function Navbar() {
                 </Link>
               )
             })}
-                      </div>
+          </div>
         </div>
       )}
     </nav>
