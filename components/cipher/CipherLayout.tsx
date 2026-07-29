@@ -29,6 +29,7 @@ import {
   updateStepInCurrentUrl,
 } from '../../lib/utils/visualizerPermalink'
 import TraceTransferControls from './TraceTransferControls'
+import CipherLifecycleBadge from './CipherLifecycleBadge'
 import {
   loadConversionHistory,
   saveConversionHistory,
@@ -511,13 +512,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <span
-            className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider ${getStatusBadge(
-              cipher.securityStatus,
-            )}`}
-          >
-            {cipher.securityStatus}
-          </span>
+          <CipherLifecycleBadge status={cipher.securityStatus} size="sm" />
           <span className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
             {cipher.category}
           </span>
