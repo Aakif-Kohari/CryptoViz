@@ -3,6 +3,7 @@ import Navbar from '../../components/layout/Navbar'
 import FavoriteCipherButton from '../../components/cipher/FavoriteCipherButton'
 import PinnedCiphers from '../../components/cipher/PinnedCiphers'
 import RecentlyViewedCiphers from '../../components/cipher/RecentlyViewedCiphers'
+import CipherLifecycleBadge from '../../components/cipher/CipherLifecycleBadge'
 import {
   CIPHER_REGISTRY,
   type CipherDefinition,
@@ -20,17 +21,6 @@ const categoryDescriptions: Record<CipherDefinition['category'], string> = {
   symmetric: 'Study shared-key encryption, block ciphers, and stream operations.',
   asymmetric: 'Understand public-key cryptography and secure key exchange.',
   hash: 'Inspect hashing, message authentication, and password derivation.',
-}
-
-const statusStyles: Record<CipherDefinition['securityStatus'], string> = {
-  secure:
-    'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-400',
-  legacy:
-    'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950/30 dark:text-blue-400',
-  deprecated:
-    'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-400',
-  broken:
-    'border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400',
 }
 
 export default function VisualizerIndex() {
@@ -105,11 +95,9 @@ export default function VisualizerIndex() {
                       />
                     </div>
 
-                    <span
-                      className={`mt-3 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${statusStyles[cipher.securityStatus]}`}
-                    >
-                      {cipher.securityStatus}
-                    </span>
+                    <div className="mt-3">
+                      <CipherLifecycleBadge status={cipher.securityStatus} />
+                    </div>
 
                     <p className="mt-3 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
                       {cipher.description}

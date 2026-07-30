@@ -83,9 +83,24 @@ export const docCategories: DocCategory[] = [
   },
   {
     type: 'general',
+    title: "Offline Learning Packs",
+    description: "Overview of offline docs, PWA Service Worker caching, and single-file HTML standalone visualizer bundles.",
+    content: "CryptoViz features an Offline Learning Pack hub allowing users to pre-cache algorithm specifications, documentation guides, and interactive cipher sandboxes. Single-file HTML apps can be exported and executed locally without an active network connection."
+  },
+  {
+    type: 'general',
     title: "Glossary Cross-Linking",
     description: "Overview of automatic terminology detection, definition tooltips, and the interactive Glossary Explorer.",
     content: "CryptoViz automatically parses documentation content to detect cryptographic terminology such as Symmetric Encryption, Nonce, SHA-256, Initialization Vector, and KDF. Matched terms are highlighted with interactive definition popovers and direct links to the Glossary Explorer."
+  },
+  {
+    type: 'general',
+    title: "Cipher Lifecycle Badges",
+    description: "Overview of standardized security status badges (Recommended, Secure, Experimental, Legacy, Deprecated, Broken) and NIST SP 800-57 guidelines.",
+    content: "CryptoViz tags every algorithm with a standardized security lifecycle badge. Badges indicate NIST recommendations, security strength, known vulnerabilities, and legacy status."
+    title: "Cryptography Myth Busters",
+    description: "Educational pages correcting prevalent misconceptions about encoding, hashing, key lengths, and quantum security.",
+    content: "CryptoViz features a Cryptography Myth Busters module designed to debunk security fallacies (such as 'Base64 is Encryption' or 'RSA-2048 is 8x Stronger than AES-256'). Includes an interactive Reality Check Quiz and technical reality breakdowns."
   },
   {
     type: 'cipher',

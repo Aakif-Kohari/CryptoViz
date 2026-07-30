@@ -60,7 +60,10 @@ export default function Navbar() {
     { name: 'Padding', href: '/padding' },
     { name: 'Challenge', href: '/challenge' },
     { name: 'Docs', href: '/docs' },
+    { name: 'Offline', href: '/offline' },
     { name: 'Glossary', href: '/glossary' },
+    { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+    { name: 'Myth Busters', href: '/myth-busters' },
     { name: 'Resources', href: '/resources' },
   ];
 
