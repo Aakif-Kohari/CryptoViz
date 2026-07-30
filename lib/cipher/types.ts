@@ -114,6 +114,7 @@ export type CipherName =
   | 'elgamal-signature'
   | 'elgamal'
   | 'ecies'
+  | 'ml-kem'
   | 'ed448'
   | 'shamir-secret-sharing'
   | 'ed25519'
