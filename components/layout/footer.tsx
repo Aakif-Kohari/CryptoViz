@@ -20,6 +20,7 @@ const resourceLinks = [
   { name: "Glossary Explorer", href: "/glossary" },
   { name: "Cipher Lifecycle Badges", href: "/cipher-lifecycle" },
   { name: "Myth Busters", href: "/myth-busters" },
+  { name: "Encoding Error Playground", href: "/encoding-errors" },
   { name: "Blog", href: "/blog" },
   { name: "GitHub Repository", href: "https://github.com/csxark/CryptoViz" },
   { name: "Contribution Guide", href: "https://github.com/csxark/CryptoViz/blob/main/CONTRIBUTING.md" },
