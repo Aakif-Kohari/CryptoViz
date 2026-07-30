@@ -618,6 +618,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'p,g,x (private, sign) or p,g,y (public, verify)',
   },
   {
+    id: 'ml-dsa',
+    name: 'ML-DSA-65',
+    category: 'asymmetric',
+    description: 'Post-quantum digital signatures (NIST FIPS 204, formerly Dilithium), pairing with ML-KEM the same way Ed25519 pairs with X25519 classically — except the hard problem here is lattice-based (Module-LWE/SIS), not elliptic-curve discrete log.',
+    defaultKey: '',
+    defaultInput: 'hello',
+    securityStatus: 'secure',
+    keyPlaceholder: 'private key (sign) or "publicKey|signature" (verify)',
+  },
+  {
     id: 'ecies',
     name: 'ECIES (X25519)',
     category: 'asymmetric',

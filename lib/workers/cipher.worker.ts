@@ -45,6 +45,7 @@ import { encrypt as x448Encrypt, decrypt as x448Decrypt } from '../cipher/asymme
 import { encrypt as eccEncrypt, decrypt as eccDecrypt } from "../cipher/asymmetric/ecc";
 import { encrypt as schnorrEncrypt, decrypt as schnorrDecrypt } from '../cipher/asymmetric/schnorr';
 import { encrypt as elgamalSigEncrypt, decrypt as elgamalSigDecrypt } from '../cipher/asymmetric/elgamal-signature';
+import { encrypt as mlDsaEncrypt, decrypt as mlDsaDecrypt } from '../cipher/asymmetric/ml-dsa';
 import { encrypt as eciesEncrypt, decrypt as eciesDecrypt } from '../cipher/asymmetric/ecies';
 import { encrypt as mlKemEncapsulate, decrypt as mlKemDecapsulate } from '../cipher/asymmetric/ml-kem';
 import { encrypt as ecdsaEncrypt, decrypt as ecdsaDecrypt } from "../cipher/asymmetric/ecdsa";
@@ -227,6 +228,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break
       case 'elgamal-signature':
         result = encryptMode ? elgamalSigEncrypt(input, key, options) : elgamalSigDecrypt(input, key, options)
+        break
+      case 'ml-dsa':
+        result = encryptMode ? mlDsaEncrypt(input, key, options) : mlDsaDecrypt(input, key, options)
         break
       case 'ecies':
         result = encryptMode ? eciesEncrypt(input, key, options) : eciesDecrypt(input, key, options)
