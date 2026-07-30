@@ -57,6 +57,7 @@ export default function Navbar() {
     { name: 'Matrix', href: '/matrix' },
     { name: 'Benchmark', href: '/benchmark' },
     { name: 'Avalanche', href: '/avalanche' },
+    { name: 'S-Box Explorer', href: '/sbox' },
     { name: 'Merkle Tree', href: '/merkle' },
     { name: 'Padding', href: '/padding' },
     { name: 'Challenge', href: '/challenge' },
