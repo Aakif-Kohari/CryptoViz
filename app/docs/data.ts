@@ -112,6 +112,13 @@ export const docCategories: DocCategory[] = [
     content: "CryptoViz includes an Encoding Error Playground allowing users to inject deliberate encoding faults, inspect byte-level offsets, simulate Mojibake character set mismatches, and auto-repair corrupt strings."
   },
   {
+    type: 'general',
+    title: "Expanded Challenge Question Bank",
+    description: "Comprehensive bank of 300+ curated cryptography questions across classical, symmetric, asymmetric, hash, and attack categories.",
+    content: "The Challenge Question Bank (/challenge) provides over 300 curated questions filterable by mathematical category and difficulty level with hints and step-by-step explanations."
+  },
+
+  {
     type: 'cipher',
     title: "Caesar Cipher",
     description: "A classical substitution cipher that shifts characters by a fixed number of positions down the alphabet.",
