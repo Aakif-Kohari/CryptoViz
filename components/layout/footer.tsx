@@ -16,6 +16,7 @@ const projectLinks = [
 
 const resourceLinks = [
   { name: "Resources", href: "/resources" },
+  { name: "Offline Learning Packs", href: "/offline" },
   { name: "Glossary Explorer", href: "/glossary" },
   { name: "Cipher Lifecycle Badges", href: "/cipher-lifecycle" },
   { name: "Myth Busters", href: "/myth-busters" },
