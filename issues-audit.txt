@@ -298,3 +298,21 @@
 [#475] (open) by @csxark: [FEATURE] Complete Cryptography Resources Library
 [#474] (closed) by @csxark: [FEATURE] Sync Every Cipher Documentation into Docs
 [#473] (open) by @csxark: [FEATURE] Build a Dedicated Cipher Visualizers Hub
+
+=== Audited 2026-07-30 19:58 UTC (16 new) ===
+[#603] (closed) by @MOHITKOURAV01: [FEATURE] Add NIST SP 800-90A DRBG Internals Visualizer — HMAC-DRBG and CTR-DRBG state machines with backtracking resistance
+[#602] (open) by @MOHITKOURAV01: [FEATURE] Add Zero-Knowledge Proof / Sigma-Protocol Playground — Schnorr identification, knowledge extractor, ZK simulator and Fiat–Shamir
+[#601] (closed) by @MOHITKOURAV01: [FEATURE] Add Many-Time Pad / Keystream Reuse Workbench — crib dragging and the space heuristic
+[#600] (closed) by @MOHITKOURAV01: [FEATURE] Add AES-GCM Nonce Reuse (Forbidden Attack) Playground — recover the GHASH auth key H in GF(2^128) and forge tags
+[#599] (open) by @MOHITKOURAV01: [FEATURE] Add RSA Attack Playground — Fermat factorization, Wiener's attack, common modulus and Håstad broadcast
+[#589] (closed) by @MOHITKOURAV01: [FEATURE] Add Elliptic Curve Point Arithmetic Playground — group law, double-and-add ladder, subgroup structure and ECDLP over small F_p
+[#588] (closed) by @MOHITKOURAV01: [FEATURE] Add Randomness Quality Test Suite (NIST SP 800-22 battery) comparing crypto.getRandomValues, Math.random and a weak LCG
+[#587] (closed) by @MOHITKOURAV01: [FEATURE] Add ASN.1 / DER Structure Decoder — PEM to TLV tree with OID resolution and byte-range highlighting
+[#586] (closed) by @MOHITKOURAV01: [FEATURE] Add TOTP/HOTP Authenticator Visualizer (RFC 4226 / RFC 6238) with dynamic-truncation trace and clock-skew explorer
+[#585] (closed) by @MOHITKOURAV01: [FEATURE] Add Vigenère Cryptanalysis Workbench — Kasiski examination + Index of Coincidence + per-column chi-squared key recovery
+[#578] (open) by @Aakif-Kohari: [FEATURE] Add Twofish symmetric block cipher (AES finalist, 128-bit block, key-dependent S-boxes, MDS matrix)
+[#577] (open) by @Aakif-Kohari: [FEATURE] Add RC2 variable-key-size block cipher (RFC 2268, historically significant, used in early TLS/S/MIME)
+[#576] (open) by @Aakif-Kohari: [FEATURE] Add ASCON-128 authenticated encryption (NIST SP 800-232, 2023 Lightweight Crypto Standard)
+[#575] (open) by @Aakif-Kohari: [FEATURE] Add SM4 symmetric block cipher (Chinese national standard, GB/T 32907-2016, ISO/IEC 18033-3)
+[#574] (open) by @Aakif-Kohari: [FEATURE] Add Blowfish symmetric block cipher (64-bit block, 32–448-bit key, 16-round Feistel)
+[#559] (open) by @durdana3105: [BUG] Refactor Cipher Modules into a Plugin-Based Architecture for Extensible Algorithm Support
