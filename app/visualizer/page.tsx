@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import Navbar from '../../components/layout/Navbar'
 import FavoriteCipherButton from '../../components/cipher/FavoriteCipherButton'
