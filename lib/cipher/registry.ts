@@ -278,6 +278,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '64-character hex key (256-bit)',
   },
   {
+    id: 'enigma',
+    name: 'Enigma (I, 3-rotor)',
+    category: 'symmetric', // confirm against how other classical ciphers (playfair, vigenere, etc.) are categorized
+    description: 'The historical WWII 3-rotor Wehrmacht cipher machine, with plugboard and reflector. Self-reciprocal (same settings encrypt and decrypt), and — a real historical weakness — no letter ever maps to itself.',
+    defaultKey: 'I,II,III|A,A,A|1,1,1|',
+    defaultInput: 'HELLOWORLD',
+    securityStatus: 'broken',
+    keyPlaceholder: 'rotors|positions|ringSettings|plugPairs — e.g. I,II,III|A,A,A|1,1,1|AB,CD',
+  },
+  {
     id: 'xsalsa20',
     name: 'XSalsa20',
     category: 'symmetric',
