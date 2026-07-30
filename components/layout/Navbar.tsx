@@ -63,10 +63,12 @@ export default function Navbar() {
     { name: 'Offline', href: '/offline' },
     { name: 'Glossary', href: '/glossary' },
     { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+    { name: 'Case Studies', href: '/case-studies' },
     { name: 'Myth Busters', href: '/myth-busters' },
     { name: 'Encoding Errors', href: '/encoding-errors' },
     { name: 'Resources', href: '/resources' },
   ];
+
 
   return (
     <nav
