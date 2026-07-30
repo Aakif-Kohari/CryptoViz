@@ -49,6 +49,7 @@ export default function Navbar() {
   }
 
   const navLinks = [
+    { name: 'Visualizers', href: '/visualizer' },
     { name: 'Playground', href: '/visualizer/caesar/' },
     { name: 'Advisor', href: '/advisor' },
     { name: 'Modes', href: '/modes' },
@@ -130,8 +131,10 @@ export default function Navbar() {
         <div className="hidden items-center gap-10 xl:flex">
           {navLinks.map((link) => {
             const isActive =
-              pathname.startsWith(link.href) &&
-              link.href !== '#'
+              link.href === '/visualizer'
+                ? pathname === '/visualizer' || pathname === '/visualizer/'
+                : pathname.startsWith(link.href) && link.href !== '#'
+
 
             return (
               <Link
@@ -309,8 +312,9 @@ export default function Navbar() {
           <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6">
             {navLinks.map((link) => {
               const isActive =
-                pathname.startsWith(link.href) &&
-                link.href !== '#'
+                link.href === '/visualizer'
+                  ? pathname === '/visualizer' || pathname === '/visualizer/'
+                  : pathname.startsWith(link.href) && link.href !== '#'
 
               return (
                 <Link
