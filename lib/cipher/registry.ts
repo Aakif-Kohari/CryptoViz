@@ -288,6 +288,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'keyHex(32B)|nonceHex(24B)',
   },
   {
+    id: 'tea',
+    name: 'TEA',
+    category: 'symmetric',
+    description: 'The original 1994 predecessor to XTEA (also in this registry). Simple ARX Feistel cipher, no S-boxes — but has a documented equivalent-key weakness (4 related keys produce identical ciphertext), which XTEA\'s extra key mixing was designed specifically to fix.',
+    defaultKey: '00000001000000020000000300000004',
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '32-character hex key (128-bit)',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
