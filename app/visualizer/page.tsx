@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import Navbar from '../../components/layout/Navbar'
 import FavoriteCipherButton from '../../components/cipher/FavoriteCipherButton'
@@ -8,6 +10,8 @@ import {
   CIPHER_REGISTRY,
   type CipherDefinition,
 } from '../../lib/cipher/registry'
+import DecisionTree from '../../components/advisor/DecisionTree'
+import { useState } from 'react'
 
 const categoryLabels: Record<CipherDefinition['category'], string> = {
   classical: 'Classical',
@@ -24,6 +28,8 @@ const categoryDescriptions: Record<CipherDefinition['category'], string> = {
 }
 
 export default function VisualizerIndex() {
+  const [activeTab, setActiveTab] = useState<'library' | 'advisor'>('library')
+
   const categories = (
     ['classical', 'symmetric', 'asymmetric', 'hash'] as const
   ).map((category) => ({
@@ -47,12 +53,41 @@ export default function VisualizerIndex() {
           </h1>
           <p className="mt-4 text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
             Pin frequently used algorithms, revisit recent ciphers, and inspect
-            each operation through an interactive step-by-step trace.
+            each operation through an interactive step-by-step trace. Or, use the Advisor to find the right algorithm for your use case.
           </p>
+
+          <div className="mt-8 flex gap-4 border-b border-zinc-200 dark:border-zinc-800">
+            <button
+              onClick={() => setActiveTab('library')}
+              className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${
+                activeTab === 'library'
+                  ? 'border-teal-500 text-teal-600 dark:text-teal-400'
+                  : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
+              }`}
+            >
+              Algorithm Library
+            </button>
+            <button
+              onClick={() => setActiveTab('advisor')}
+              className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${
+                activeTab === 'advisor'
+                  ? 'border-teal-500 text-teal-600 dark:text-teal-400'
+                  : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
+              }`}
+            >
+              Cipher Advisor
+            </button>
+          </div>
         </header>
 
-        <PinnedCiphers ciphers={CIPHER_REGISTRY} />
-        <RecentlyViewedCiphers ciphers={CIPHER_REGISTRY} />
+        {activeTab === 'advisor' ? (
+          <div className="py-8">
+            <DecisionTree />
+          </div>
+        ) : (
+          <>
+            <PinnedCiphers ciphers={CIPHER_REGISTRY} />
+            <RecentlyViewedCiphers ciphers={CIPHER_REGISTRY} />
 
         <div className="space-y-10">
           {categories.map(({ category, ciphers }) => (
@@ -115,6 +150,8 @@ export default function VisualizerIndex() {
             </section>
           ))}
         </div>
+          </>
+        )}
       </main>
     </div>
   )

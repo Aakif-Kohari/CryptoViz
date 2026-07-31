@@ -52,10 +52,12 @@ export default function Navbar() {
     { name: 'Playground', href: '/visualizer/caesar/' },
     { name: 'Advisor', href: '/advisor' },
     { name: 'Modes', href: '/modes' },
+    { name: 'Protocols', href: '/protocols' },
     { name: 'Compare', href: '/compare' },
     { name: 'Matrix', href: '/matrix' },
     { name: 'Benchmark', href: '/benchmark' },
     { name: 'Avalanche', href: '/avalanche' },
+    { name: 'S-Box Explorer', href: '/sbox' },
     { name: 'Merkle Tree', href: '/merkle' },
     { name: 'Padding', href: '/padding' },
     { name: 'Challenge', href: '/challenge' },
@@ -63,10 +65,12 @@ export default function Navbar() {
     { name: 'Offline', href: '/offline' },
     { name: 'Glossary', href: '/glossary' },
     { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+    { name: 'Case Studies', href: '/case-studies' },
     { name: 'Myth Busters', href: '/myth-busters' },
     { name: 'Encoding Errors', href: '/encoding-errors' },
     { name: 'Resources', href: '/resources' },
   ];
+
 
   return (
     <nav

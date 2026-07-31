@@ -46,7 +46,7 @@ export default function QuestionCard({ node, onAnswer }: QuestionCardProps) {
         {node.options.map((option) => (
           <button
             key={option.id}
-            onClick={() => onAnswer(option.nextId, option.summary)}
+            onClick={() => onAnswer(option.nextId, option.label)}
             className="
               flex
               w-full
