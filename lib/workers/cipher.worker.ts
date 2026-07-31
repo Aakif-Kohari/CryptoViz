@@ -72,6 +72,7 @@ import { encrypt as enigmaEncrypt, decrypt as enigmaDecrypt } from '../cipher/sy
 import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20';
 
 import { encrypt as teaEncrypt, decrypt as teaDecrypt } from '../cipher/symmetric/tea';
+import { encrypt as blowfishEncrypt, decrypt as blowfishDecrypt } from '../cipher/symmetric/blowfish';
 import { encrypt as serpentEncrypt, decrypt as serpentDecrypt } from '../cipher/symmetric/serpent';
 import { encrypt as chacha20Encrypt, decrypt as chacha20Decrypt } from "../cipher/symmetric/chacha20";
 import { encrypt as desEncrypt, decrypt as desDecrypt } from "../cipher/symmetric/des";
@@ -207,6 +208,10 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break
       case 'tea':
         result = encryptMode ? teaEncrypt(input, key, options) : teaDecrypt(input, key, options)
+        break
+      case 'blowfish':
+        result = encryptMode ? blowfishEncrypt(input, key, options) : blowfishDecrypt(input, key, options);
+        break
         break
       case "rsa":
         result = encryptMode ? rsaEncrypt(input, key, options) : rsaDecrypt(input, key, options);

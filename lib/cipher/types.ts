@@ -95,6 +95,7 @@ export type CipherName =
   | 'enigma'
   | 'xsalsa20'
   | 'tea'
+  | 'blowfish'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
