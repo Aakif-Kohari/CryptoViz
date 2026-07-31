@@ -1,9 +1,17 @@
 export type DocType = 'general' | 'cipher';
+export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
+export type LearningTrack = 'beginner' | 'intermediate' | 'advanced';
 
 export interface BaseCategory {
   title: string;
   description: string;
   type?: DocType;
+  // Learning metadata
+  difficulty?: DifficultyLevel;
+  readingTimeMinutes?: number;
+  prerequisites?: string[];
+  recommendedNext?: string[];
+  tracks?: LearningTrack[];
 }
 
 export interface GeneralDocCategory extends BaseCategory {
@@ -49,25 +57,44 @@ export const docCategories: DocCategory[] = [
     type: 'general',
     title: "Getting Started",
     description: "An overview of the CryptoViz visualization architecture and baseline requirements.",
-    content: "CryptoViz is a real-time cryptocurrency data visualization dashboard. It delivers an intuitive environment engineered to break down complex cryptographic concepts and cipher execution models into clear, human-readable algorithmic visualizations."
+    content: "CryptoViz is a real-time cryptocurrency data visualization dashboard. It delivers an intuitive environment engineered to break down complex cryptographic concepts and cipher execution models into clear, human-readable algorithmic visualizations.",
+    difficulty: 'beginner',
+    readingTimeMinutes: 3,
+    tracks: ['beginner'],
+    recommendedNext: ['installation-setup', 'features-overview']
   },
   {
     type: 'general',
     title: "Installation & Setup",
     description: "The execution scripts needed to clone, provision, and deploy the application locally.",
-    content: "1. Clone the project code framework from the source repository:\ngit clone https://github.com/csxark/CryptoViz.git\n2. Initialize dependencies using the node package manager:\nnpm install\n3. Boot the local development proxy network environment:\nnpm run dev"
+    content: "1. Clone the project code framework from the source repository:\ngit clone https://github.com/csxark/CryptoViz.git\n2. Initialize dependencies using the node package manager:\nnpm install\n3. Boot the local development proxy network environment:\nnpm run dev",
+    difficulty: 'beginner',
+    readingTimeMinutes: 5,
+    tracks: ['beginner'],
+    prerequisites: ['getting-started'],
+    recommendedNext: ['features-overview', 'project-architecture']
   },
   {
     type: 'general',
     title: "Features Overview",
     description: "A functional layout map of the underlying cipher playgrounds and dynamic grids.",
-    content: "• Comprehensive algorithm simulation sandboxes covering symmetric and asymmetric logic profiles.\n• Step-by-step state animations tracking internal matrix transformations.\n• Performance-optimized charts graphing metric data without dropping UI frames."
+    content: "• Comprehensive algorithm simulation sandboxes covering symmetric and asymmetric logic profiles.\n• Step-by-step state animations tracking internal matrix transformations.\n• Performance-optimized charts graphing metric data without dropping UI frames.",
+    difficulty: 'beginner',
+    readingTimeMinutes: 4,
+    tracks: ['beginner'],
+    prerequisites: ['getting-started'],
+    recommendedNext: ['project-architecture', 'caesar-cipher']
   },
   {
     type: 'general',
     title: "Project Architecture",
     description: "An analytical breakdown of the system layout, module constraints, and thread offloading.",
-    content: "The application relies on Next.js, React context modules, and Tailwind utility presets. High-latency cryptographic calculations are intelligently partitioned onto dedicated background execution scopes utilizing independent Web Workers (cipher.worker.ts) to guarantee zero rendering blockades."
+    content: "The application relies on Next.js, React context modules, and Tailwind utility presets. High-latency cryptographic calculations are intelligently partitioned onto dedicated background execution scopes utilizing independent Web Workers (cipher.worker.ts) to guarantee zero rendering blockades.",
+    difficulty: 'intermediate',
+    readingTimeMinutes: 8,
+    tracks: ['beginner', 'intermediate'],
+    prerequisites: ['installation-setup'],
+    recommendedNext: ['worker-architecture', 'visualization-development-guide']
   },
   {
     type: 'general',
@@ -128,6 +155,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "Caesar Cipher",
     description: "A classical substitution cipher that shifts characters by a fixed number of positions down the alphabet.",
+    difficulty: 'beginner',
+    readingTimeMinutes: 12,
+    tracks: ['beginner'],
+    prerequisites: ['getting-started'],
+    recommendedNext: ['vigenere-cipher', 'frequency-analysis'],
     overview: {
       history: "Named after Julius Caesar, who used it to communicate securely with his generals, the Caesar cipher is one of the oldest and most famous encryption algorithms. While extremely simple by modern standards, it laid the foundational principles for symmetric encryption.",
       description: "The Caesar cipher is a substitution cipher where each letter in the plaintext is 'shifted' a certain number of places down the alphabet. For example, with a shift of 1, A would be replaced by B, B would become C, and so on."
@@ -183,6 +215,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "Rail Fence Cipher",
     description: "A classical transposition cipher that rearranges the plaintext characters in a zigzag pattern.",
+    difficulty: 'beginner',
+    readingTimeMinutes: 10,
+    tracks: ['beginner'],
+    prerequisites: ['caesar-cipher'],
+    recommendedNext: ['vigenere-cipher', 'playfair-cipher'],
     overview: {
       history: "The exact origins of the Rail Fence cipher are unknown, but it has been used historically as a rudimentary way to obscure messages without needing an alphabet shift. It belongs to the broader category of transposition ciphers, where the letters themselves aren't changed, just their positions.",
       description: "Also known as the zigzag cipher, the plaintext is written downwards on successive 'rails' of an imaginary fence, then moving up when we reach the bottom, and down again when we reach the top. The message is then read off in rows."
@@ -236,6 +273,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "AES",
     description: "Advanced Encryption Standard (AES) is a symmetric block cipher established by the U.S. NIST in 2001.",
+    difficulty: 'intermediate',
+    readingTimeMinutes: 20,
+    tracks: ['intermediate'],
+    prerequisites: ['project-architecture', 'caesar-cipher'],
+    recommendedNext: ['sha-256', 'hmac-sha256'],
     overview: {
       history: "Developed by two Belgian cryptographers, Joan Daemen and Vincent Rijmen (under the name Rijndael), AES was selected by NIST in 2001 to replace the older Data Encryption Standard (DES). It is now the globally accepted standard for symmetric encryption.",
       description: "AES is a block cipher that operates on 128-bit blocks of data. It relies on a Substitution-Permutation Network (SPN) architecture rather than a Feistel network. AES performs multiple 'rounds' of transformations to encrypt the data securely."
@@ -293,6 +335,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "Vigenère Cipher",
     description: "A method of encrypting alphabetic text by using a series of interwoven Caesar ciphers based on the letters of a keyword.",
+    difficulty: 'beginner',
+    readingTimeMinutes: 15,
+    tracks: ['beginner'],
+    prerequisites: ['caesar-cipher'],
+    recommendedNext: ['rail-fence-cipher', 'aes'],
     overview: {
       history: "Invented by Giovan Battista Bellaso in 1553, but later misattributed to Blaise de Vigenère in the 19th century, it was known as 'le chiffre indéchiffrable' (the indecipherable cipher) for over three centuries until Charles Babbage cracked it.",
       description: "It is a polyalphabetic substitution cipher. Instead of using a single shift like the Caesar cipher, it uses a keyword to determine a different shift for each letter of the plaintext. The keyword is repeated to match the length of the plaintext."
@@ -347,6 +394,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "DES",
     description: "Data Encryption Standard (DES) is a symmetric-key block cipher published by NIST.",
+    difficulty: 'intermediate',
+    readingTimeMinutes: 18,
+    tracks: ['intermediate'],
+    prerequisites: ['caesar-cipher', 'aes'],
+    recommendedNext: ['aes', 'sha-256'],
     overview: {
       history: "Developed in the early 1970s at IBM and based on an earlier design by Horst Feistel, it was submitted to the National Bureau of Standards (NBS) and approved as a federal standard in 1977.",
       description: "DES operates on 64-bit blocks of plaintext using a 56-bit key. It relies on a Feistel network structure consisting of 16 identical rounds of substitution and permutation."
@@ -400,6 +452,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "SHA-256",
     description: "A cryptographic hash function that outputs a 256-bit digest, part of the SHA-2 family.",
+    difficulty: 'intermediate',
+    readingTimeMinutes: 15,
+    tracks: ['intermediate'],
+    prerequisites: ['aes', 'caesar-cipher'],
+    recommendedNext: ['hmac-sha256', 'scrypt-kdf'],
     overview: {
       history: "Designed by the United States National Security Agency (NSA) and published in 2001 by NIST as a U.S. Federal Information Processing Standard (FIPS).",
       description: "Unlike encryption algorithms, SHA-256 is a one-way hash function. It takes an input of any size and deterministically produces a fixed-size 256-bit (32-byte) hash. It's built using the Merkle-Damgård construction."
@@ -508,6 +565,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "RSA-2048",
     description: "A widely used public-key cryptosystem for secure data transmission based on the factoring of large prime numbers.",
+    difficulty: 'advanced',
+    readingTimeMinutes: 25,
+    tracks: ['advanced'],
+    prerequisites: ['sha-256', 'aes'],
+    recommendedNext: ['merkle-trees', 'diffie-hellman'],
     overview: {
       history: "Developed in 1977 by Ron Rivest, Adi Shamir, and Leonard Adleman at MIT. The acronym RSA comes from their surnames. It revolutionized cryptography by introducing asymmetric public-key concepts into mainstream use.",
       description: "RSA uses two distinct keys: a public key for encryption (which can be shared openly) and a private key for decryption (which must be kept secret). RSA-2048 utilizes a 2048-bit modulus, which is currently considered highly secure against classical computing attacks."
@@ -563,6 +625,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "Merkle Trees",
     description: "A cryptographic tree structure designed to securely and efficiently verify the contents of large data sets.",
+    difficulty: 'advanced',
+    readingTimeMinutes: 18,
+    tracks: ['advanced'],
+    prerequisites: ['sha-256'],
+    recommendedNext: ['rsa-2048', 'hmac-sha256'],
     overview: {
       history: "Proposed by Ralph Merkle in 1979 and patented in 1980, Merkle Trees are a foundational concept in computer science. They are heavily utilized in peer-to-peer file systems like BitTorrent and IPFS, version control systems like Git, and modern blockchains like Bitcoin and Ethereum.",
       description: "A Merkle Tree is a binary tree where every leaf node is the hash of a data block, and every non-leaf (internal) node is the hash of its children concatenated together. It allows verifying that a specific data block exists inside a larger tree structure by providing only a logarithmic number of sibling hashes, known as a Merkle Proof."
@@ -617,6 +684,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "HMAC-SHA256",
     description: "Keyed-Hash Message Authentication Code using SHA-256 to verify data integrity and authenticity.",
+    difficulty: 'intermediate',
+    readingTimeMinutes: 12,
+    tracks: ['intermediate'],
+    prerequisites: ['sha-256'],
+    recommendedNext: ['scrypt-kdf', 'aes'],
     overview: {
       history: "First proposed in 1996 by Mihir Bellare, Ran Canetti, and Hugo Krawczyk, and formalized in RFC 2104. It was designed to solve the vulnerabilities of simple MAC designs like H(K || m) which are susceptible to length extension attacks.",
       description: "HMAC is a cryptographic construction for calculating a message authentication code involving a cryptographic hash function in combination with a secret key. It computes the hash twice using nested padding constants (ipad and opad) to bind the message state securely to the key."
@@ -672,6 +744,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "Scrypt KDF",
     description: "A memory-hard key derivation function designed to prevent GPU/ASIC-based hardware brute-force attacks.",
+    difficulty: 'intermediate',
+    readingTimeMinutes: 14,
+    tracks: ['intermediate'],
+    prerequisites: ['hmac-sha256', 'sha-256'],
+    recommendedNext: ['aes', 'rsa-2048'],
     overview: {
       history: "Created by Colin Percival in 2009 for the Tarsnap secure backup service, Scrypt was designed to require significantly more memory than bcrypt or PBKDF2, making custom hardware implementations (ASICs) prohibitively expensive to build.",
       description: "Scrypt is a password-based key derivation function. It starts by stretching the password/salt using PBKDF2, mixes it with a sequential memory loop (ROMix) utilizing Salsa20/8 core steps, performs data-dependent random reads, and runs a final PBKDF2 step to derive the output key. This design enforces memory-hardness."
@@ -1001,3 +1078,104 @@ export const docCategories: DocCategory[] = [
     ]
   }
 ];
+
+export interface LearningTrackConfig {
+  id: LearningTrack;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  docSlugs: string[];
+}
+
+export const learningTracks: LearningTrackConfig[] = [
+  {
+    id: 'beginner',
+    name: 'Beginner Track',
+    description: 'Start your cryptography journey with fundamental concepts and classical ciphers.',
+    icon: '🌱',
+    color: 'teal',
+    docSlugs: [
+      'getting-started',
+      'installation-setup',
+      'features-overview',
+      'caesar-cipher',
+      'vigenere-cipher',
+      'base64-encoding',
+      'project-architecture'
+    ]
+  },
+  {
+    id: 'intermediate',
+    name: 'Intermediate Track',
+    description: 'Explore modern symmetric encryption, hash functions, and cryptographic protocols.',
+    icon: '🚀',
+    color: 'blue',
+    docSlugs: [
+      'aes-256',
+      'sha-256',
+      'hmac',
+      'key-derivation-functions',
+      'modes-of-operation',
+      'padding-oracle-attack',
+      'timing-attacks'
+    ]
+  },
+  {
+    id: 'advanced',
+    name: 'Advanced Track',
+    description: 'Master asymmetric cryptography, advanced protocols, and security analysis.',
+    icon: '🎯',
+    color: 'purple',
+    docSlugs: [
+      'rsa-2048',
+      'diffie-hellman',
+      'elliptic-curve-cryptography',
+      'merkle-trees',
+      'zero-knowledge-proofs',
+      'post-quantum-cryptography',
+      'side-channel-attacks'
+    ]
+  }
+];
+
+export function getDocSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+export function getDocBySlug(slug: string): DocCategory | undefined {
+  return docCategories.find(doc => getDocSlug(doc.title) === slug);
+}
+
+export function getDocsForTrack(trackId: LearningTrack): DocCategory[] {
+  const track = learningTracks.find(t => t.id === trackId);
+  if (!track) return [];
+  
+  return track.docSlugs
+    .map(slug => getDocBySlug(slug))
+    .filter((doc): doc is DocCategory => doc !== undefined);
+}
+
+export function calculateReadingTime(content: string): number {
+  const wordsPerMinute = 200;
+  const wordCount = content.split(/\s+/).length;
+  return Math.ceil(wordCount / wordsPerMinute);
+}
+
+export function getTrackProgress(
+  trackId: LearningTrack,
+  completedSlugs: Set<string>
+): { completed: number; total: number; percent: number } {
+  const track = learningTracks.find(t => t.id === trackId);
+  if (!track) return { completed: 0, total: 0, percent: 0 };
+  
+  const completed = track.docSlugs.filter(slug => completedSlugs.has(slug)).length;
+  const total = track.docSlugs.length;
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+  
+  return { completed, total, percent };
+}
