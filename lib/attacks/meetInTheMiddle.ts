@@ -107,9 +107,16 @@ export function meetInTheMiddleAttack(
   if (plaintextBlock.length !== DES_BLOCK_SIZE || ciphertextBlock.length !== DES_BLOCK_SIZE) {
     throw new CipherError('INVALID_INPUT', `Plaintext and ciphertext blocks must each be exactly ${DES_BLOCK_SIZE} bytes (one DES block).`)
   }
-  if (keySpaceBits < MIN_KEYSPACE_BITS || keySpaceBits > MAX_KEYSPACE_BITS) {
-    throw new CipherError('INVALID_INPUT', `keySpaceBits must be between ${MIN_KEYSPACE_BITS} and ${MAX_KEYSPACE_BITS} for a browser-tractable demo.`)
-  }
+ if (
+  !Number.isInteger(keySpaceBits) ||
+  keySpaceBits < MIN_KEYSPACE_BITS ||
+  keySpaceBits > MAX_KEYSPACE_BITS
+) {
+  throw new CipherError(
+    "INVALID_INPUT",
+    `keySpaceBits must be an integer between ${MIN_KEYSPACE_BITS} and ${MAX_KEYSPACE_BITS} for a browser-tractable demo.`
+  )
+}
 
   const steps: MitmStep[] = []
   const spaceSize = 2 ** keySpaceBits
