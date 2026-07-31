@@ -70,6 +70,7 @@ import { encrypt as xchacha20Encrypt, decrypt as xchacha20Decrypt } from '../cip
 import { encrypt as gostEncrypt, decrypt as gostDecrypt } from '../cipher/symmetric/gost';
 import { encrypt as enigmaEncrypt, decrypt as enigmaDecrypt } from '../cipher/symmetric/enigma';
 import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20';
+import { encrypt as asconEncypt, decrypt as asconDecrypt } from '../cipher/symmetric/ascon';
 
 import { encrypt as sm4Encrypt, decrypt as sm4Decrypt } from '../cipher/symmetric/sm4';
 import { encrypt as teaEncrypt, decrypt as teaDecrypt } from '../cipher/symmetric/tea';
@@ -204,9 +205,12 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break
       case 'xchacha20':
         result = encryptMode ? xchacha20Encrypt(input, key, options) : xchacha20Decrypt(input, key, options)
+        break
       case 'xsalsa20':
         result = encryptMode ? xsalsa20Encrypt(input, key, options) : xsalsa20Decrypt(input, key, options)
         break
+      case 'ascon':
+        result = encryptMode ? asconEncypt(input, key, options) : asconDecrypt(input, key, options)
       case 'sm4':
         result = encryptMode ? sm4Encrypt(input, key, options) : sm4Decrypt(input, key, options)
         break
