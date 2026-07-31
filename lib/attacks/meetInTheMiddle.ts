@@ -38,23 +38,32 @@ export interface MitmResult {
   attemptsUntilMatch: number
   steps: MitmStep[]
 }
-
-function desEncryptBlock(plaintextBlock: Uint8Array, keyBytes: Uint8Array): Uint8Array {
+function processDesBlock(
+  blockBytes: Uint8Array,
+  keyBytes: Uint8Array,
+  decrypt: boolean
+): Uint8Array {
   const subkeys = generateSubkeys(keyBytes)
-  const block = bytesToBlock(plaintextBlock, 0)
-  const result = processBlock(block, subkeys, false)
+  const block = bytesToBlock(blockBytes, 0)
+  const result = processBlock(block, subkeys, decrypt)
+
   const out = new Uint8Array(DES_BLOCK_SIZE)
   blockToBytes(result, out, 0)
+
   return out
 }
+function desEncryptBlock(
+  plaintextBlock: Uint8Array,
+  keyBytes: Uint8Array
+): Uint8Array {
+  return processDesBlock(plaintextBlock, keyBytes, false)
+}
 
-function desDecryptBlock(ciphertextBlock: Uint8Array, keyBytes: Uint8Array): Uint8Array {
-  const subkeys = generateSubkeys(keyBytes)
-  const block = bytesToBlock(ciphertextBlock, 0)
-  const result = processBlock(block, subkeys, true)
-  const out = new Uint8Array(DES_BLOCK_SIZE)
-  blockToBytes(result, out, 0)
-  return out
+function desDecryptBlock(
+  ciphertextBlock: Uint8Array,
+  keyBytes: Uint8Array
+): Uint8Array {
+  return processDesBlock(ciphertextBlock, keyBytes, true)
 }
 
 export function doubleDesEncrypt(plaintextBlock: Uint8Array, keyA: Uint8Array, keyB: Uint8Array): Uint8Array {
