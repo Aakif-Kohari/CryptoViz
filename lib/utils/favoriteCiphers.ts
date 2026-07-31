@@ -9,6 +9,10 @@ export const FAVORITE_CIPHERS_STORAGE_KEY = 'cryptoviz-favorite-ciphers'
 export const FAVORITE_CIPHERS_CHANGED_EVENT = 'cryptoviz:favorite-ciphers-changed'
 export const MAX_FAVORITE_CIPHERS = 20
 
+function isBrowser(): boolean {
+  return typeof window !== 'undefined'
+}
+
 function readStorage(): string[] {
   const parsed = safeGetItemJson<unknown>(FAVORITE_CIPHERS_STORAGE_KEY, null)
   return parsed !== null ? normalizeFavoriteCipherIds(parsed) : []
