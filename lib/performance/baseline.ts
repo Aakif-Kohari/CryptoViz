@@ -4,6 +4,7 @@
  * Works in both browser (localStorage) and Node.js (file system) environments.
  */
 
+import { safeGetItem, safeSetItem, safeRemoveItem } from '../utils/storage'
 import type {
   PerformanceBaseline,
   PerformanceProfile,
@@ -36,7 +37,7 @@ export class BaselineManager {
   static loadBaselines(): Map<string, PerformanceBaseline> {
     try {
       if (this.isBrowser()) {
-        const data = localStorage.getItem(STORAGE_KEY)
+        const data = safeGetItem(STORAGE_KEY)
         if (!data) return new Map()
 
         const baselines: PerformanceBaseline[] = JSON.parse(data, (key, value) => {
@@ -89,7 +90,7 @@ export class BaselineManager {
       const data = JSON.stringify(Array.from(baselines.values()), null, 2)
 
       if (this.isBrowser()) {
-        localStorage.setItem(STORAGE_KEY, data)
+        safeSetItem(STORAGE_KEY, data)
       } else {
         // Node.js environment
         // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -165,7 +166,7 @@ export class BaselineManager {
   static clearBaselines(): void {
     try {
       if (this.isBrowser()) {
-        localStorage.removeItem(STORAGE_KEY)
+        safeRemoveItem(STORAGE_KEY)
       } else {
         // Node.js environment
         // eslint-disable-next-line @typescript-eslint/no-require-imports

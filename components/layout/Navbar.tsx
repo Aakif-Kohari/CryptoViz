@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 
+import { safeGetItem, safeSetItem } from '../../lib/utils/storage'
+
 export default function Navbar() {
   const pathname = usePathname()
 
@@ -12,7 +14,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as
+    const savedTheme = safeGetItem('theme') as
       | 'light'
       | 'dark'
       | null
@@ -39,7 +41,7 @@ export default function Navbar() {
 
     setTheme(nextTheme)
 
-    localStorage.setItem('theme', nextTheme)
+    safeSetItem('theme', nextTheme)
 
     if (nextTheme === 'dark') {
       document.documentElement.classList.add('dark')
