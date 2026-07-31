@@ -131,7 +131,7 @@ async function decryptCore(input: string, recipientPrivKeyHex: string, instrumen
     })
   }
 
-  let aeadResult: any
+  let aeadResult: CipherResult
   try {
     aeadResult = await aesGcmDecrypt(aeadCiphertext, bytesToHex(symKey))
   } catch (err) {
