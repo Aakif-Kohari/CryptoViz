@@ -278,6 +278,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '64-character hex key (256-bit)',
   },
   {
+    id: 'rc2',
+    name: 'RC2',
+    category: 'symmetric',
+    description:
+      'Ron Rivest\'s 1987 variable-key block cipher (RFC 2268). First cipher exportable from the US under 1990s export controls via "effective key bits" parameter. Used in SSL 2/3, TLS, and S/MIME. Mix-and-mash round structure. Historical/educational only — broken at ≤40-bit effective keys.',
+    defaultKey: '0000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'broken',
+    keyPlaceholder: '1–128 byte key as hex',
+  },
+  {
     id: 'enigma',
     name: 'Enigma (I, 3-rotor)',
     category: 'symmetric', // confirm against how other classical ciphers (playfair, vigenere, etc.) are categorized

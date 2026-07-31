@@ -92,6 +92,7 @@ export type CipherName =
   | 'threefish'
   | 'xchacha20'
   | 'gost'
+  | 'rc2'
   | 'enigma'
   | 'xsalsa20'
   | 'tea'
