@@ -1,18 +1,22 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { isDevelopmentMode } from '@/lib/utils/env'
 
+
+import { safeGetItem, safeSetItem } from '../../lib/utils/storage'
 
 export default function Navbar() {
   const pathname = usePathname()
 
   const [theme, setTheme] = useState<'light' | 'dark'>('dark')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const mobileMenuBtnRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as
+    const savedTheme = safeGetItem('theme') as
       | 'light'
       | 'dark'
       | null
@@ -34,12 +38,27 @@ export default function Navbar() {
     }
   }, [])
 
+  // Close mobile menu on Escape key
+  useEffect(() => {
+    if (!isMobileMenuOpen) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMobileMenuOpen(false)
+        mobileMenuBtnRef.current?.focus()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isMobileMenuOpen])
+
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark'
 
     setTheme(nextTheme)
 
-    localStorage.setItem('theme', nextTheme)
+    safeSetItem('theme', nextTheme)
 
     if (nextTheme === 'dark') {
       document.documentElement.classList.add('dark')
@@ -48,25 +67,44 @@ export default function Navbar() {
     }
   }
 
+  const allNavLinks = [
   const navLinks = [
+    { name: 'Visualizers', href: '/visualizer' },
     { name: 'Playground', href: '/visualizer/caesar/' },
     { name: 'Advisor', href: '/advisor' },
     { name: 'Modes', href: '/modes' },
+    { name: 'Protocols', href: '/protocols' },
     { name: 'Compare', href: '/compare' },
     { name: 'Matrix', href: '/matrix' },
     { name: 'Benchmark', href: '/benchmark' },
     { name: 'Avalanche', href: '/avalanche' },
+    { name: 'S-Box Explorer', href: '/sbox' },
     { name: 'Merkle Tree', href: '/merkle' },
     { name: 'Padding', href: '/padding' },
     { name: 'Challenge', href: '/challenge' },
+    { name : 'Rainbow Table', href: '/rainbow-table' },
     { name: 'Docs', href: '/docs' },
     { name: 'Offline', href: '/offline' },
     { name: 'Glossary', href: '/glossary' },
-    { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+{ name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+    { name: 'Cipher Graph', href: '/timeline' },
+    { name: 'Case Studies', href: '/case-studies' },
     { name: 'Myth Busters', href: '/myth-busters' },
     { name: 'Encoding Errors', href: '/encoding-errors' },
-    { name: 'Resources', href: '/resources' },
+{ name: 'Resources', href: '/resources' },
+    { name: 'Timeline', href: '/timeline' },
   ];
+
+  const developerOnlyLinks = [
+    { name: 'Benchmark History', href: '/benchmarks/history' },
+    { name: 'Integration Tests', href: '/tests/integration' },
+    { name: 'Snapshot Tests', href: '/tests/snapshots' },
+    { name: 'Worker Tests', href: '/tests/worker' },
+  ];
+
+  const navLinks = isDevelopmentMode()
+    ? [...allNavLinks, ...developerOnlyLinks]
+    : allNavLinks;
 
   return (
     <nav
@@ -126,8 +164,10 @@ export default function Navbar() {
         <div className="hidden items-center gap-10 xl:flex">
           {navLinks.map((link) => {
             const isActive =
-              pathname.startsWith(link.href) &&
-              link.href !== '#'
+              link.href === '/visualizer'
+                ? pathname === '/visualizer' || pathname === '/visualizer/'
+                : pathname.startsWith(link.href) && link.href !== '#'
+
 
             return (
               <Link
@@ -234,6 +274,7 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
 
           <button
+            ref={mobileMenuBtnRef}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
             aria-expanded={isMobileMenuOpen}
@@ -305,8 +346,9 @@ export default function Navbar() {
           <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6">
             {navLinks.map((link) => {
               const isActive =
-                pathname.startsWith(link.href) &&
-                link.href !== '#'
+                link.href === '/visualizer'
+                  ? pathname === '/visualizer' || pathname === '/visualizer/'
+                  : pathname.startsWith(link.href) && link.href !== '#'
 
               return (
                 <Link
