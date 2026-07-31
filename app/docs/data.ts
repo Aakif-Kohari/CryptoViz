@@ -124,8 +124,6 @@ export const docCategories: DocCategory[] = [
     content: "The Cipher Visualizers Hub (/visualizer) provides a centralized interactive index for over 50 algorithm visualizers and specialized demonstration sandboxes. Users can filter ciphers by mathematical category (Classical, Symmetric, Asymmetric, Hash, Specialized Demos), NIST security status (Recommended, Secure, Legacy, Broken, etc.), or search by algorithm keywords."
   },
 
-  },
-
   {
     type: 'cipher',
     title: "Caesar Cipher",
