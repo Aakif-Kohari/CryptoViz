@@ -67,9 +67,12 @@ import { encrypt as speckEncrypt, decrypt as speckDecrypt } from '../cipher/symm
 import { encrypt as aesCcmEncrypt, decrypt as aesCcmDecrypt } from '../cipher/symmetric/aes-ccm';
 import { encrypt as threefishEncrypt, decrypt as threefishDecrypt } from '../cipher/symmetric/threefish';
 import { encrypt as xchacha20Encrypt, decrypt as xchacha20Decrypt } from '../cipher/symmetric/xchacha20'
+import { encrypt as twofishEncrypt, decrypt as twofishDecrypt } from '../cipher/symmetric/twofish';
 import { encrypt as gostEncrypt, decrypt as gostDecrypt } from '../cipher/symmetric/gost';
+import { encrypt as rc2Encrypt, decrypt as rc2Decrypt } from '../cipher/symmetric/rc2';
 import { encrypt as enigmaEncrypt, decrypt as enigmaDecrypt } from '../cipher/symmetric/enigma';
 import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20';
+import { encrypt as asconEncypt, decrypt as asconDecrypt } from '../cipher/symmetric/ascon';
 
 import { encrypt as sm4Encrypt, decrypt as sm4Decrypt } from '../cipher/symmetric/sm4';
 import { encrypt as teaEncrypt, decrypt as teaDecrypt } from '../cipher/symmetric/tea';
