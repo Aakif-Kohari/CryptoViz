@@ -86,7 +86,7 @@ function fromWordPairs(pairs: [number, number][]): Uint8Array {
 }
 
 function parseInput(input: string, options: CipherOptions): Uint8Array {
-  const useHex = (options as any).hexInput ?? true
+  const useHex = options.hexInput !== undefined ? options.hexInput : true
   const bytes = useHex ? hexToBytes(input) : utf8ToBytes(input)
   if (bytes.length === 0) throw new CipherError('INPUT_REQUIRED', 'Input cannot be empty')
   if (bytes.length > 4096) throw new CipherError('INPUT_TOO_LONG', 'Input exceeds 4096 byte limit')
