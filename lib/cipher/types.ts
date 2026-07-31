@@ -91,6 +91,7 @@ export type CipherName =
   | 'aes-ccm'
   | 'threefish'
   | 'xchacha20'
+  | 'twofish'
   | 'gost'
   | 'rc2'
   | 'enigma'
