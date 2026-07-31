@@ -67,6 +67,7 @@ import { encrypt as speckEncrypt, decrypt as speckDecrypt } from '../cipher/symm
 import { encrypt as aesCcmEncrypt, decrypt as aesCcmDecrypt } from '../cipher/symmetric/aes-ccm';
 import { encrypt as threefishEncrypt, decrypt as threefishDecrypt } from '../cipher/symmetric/threefish';
 import { encrypt as xchacha20Encrypt, decrypt as xchacha20Decrypt } from '../cipher/symmetric/xchacha20'
+import { encrypt as twofishEncrypt, decrypt as twofishDecrypt } from '../cipher/symmetric/twofish';
 import { encrypt as gostEncrypt, decrypt as gostDecrypt } from '../cipher/symmetric/gost';
 import { encrypt as rc2Encrypt, decrypt as rc2Decrypt } from '../cipher/symmetric/rc2';
 import { encrypt as enigmaEncrypt, decrypt as enigmaDecrypt } from '../cipher/symmetric/enigma';
@@ -197,6 +198,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break
       case 'threefish':
         result = encryptMode ? threefishEncrypt(input, key, options) : threefishDecrypt(input, key, options)
+        break
+      case 'twofish':
+        result = encryptMode ? twofishEncrypt(input, key, options) : twofishDecrypt(input, key, options)
         break
       case 'gost':
         result = encryptMode ? gostEncrypt(input, key, options) : gostDecrypt(input, key, options)

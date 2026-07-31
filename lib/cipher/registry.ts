@@ -268,6 +268,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'keyHex(32B)|nonceHex(24B)',
   },
   {
+    id: 'twofish',
+    name: 'Twofish',
+    category: 'symmetric',
+    description:
+      'AES finalist by Bruce Schneier et al. (1998). 128-bit block, 128/192/256-bit keys, 16-round Feistel. Uses key-dependent S-boxes (derived via RS matrix over GF(2^8)), MDS matrix diffusion, PHT, and 40 subkeys. Used in GnuPG and VeraCrypt. Never broken.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+  },
+  {
     id: 'gost',
     name: 'GOST 28147-89',
     category: 'symmetric',
