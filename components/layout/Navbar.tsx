@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { isDevelopmentMode } from '@/lib/utils/env'
 
 
 export default function Navbar() {
@@ -48,7 +49,7 @@ export default function Navbar() {
     }
   }
 
-  const navLinks = [
+  const allNavLinks = [
     { name: 'Playground', href: '/visualizer/caesar/' },
     { name: 'Advisor', href: '/advisor' },
     { name: 'Modes', href: '/modes' },
@@ -67,6 +68,17 @@ export default function Navbar() {
     { name: 'Encoding Errors', href: '/encoding-errors' },
     { name: 'Resources', href: '/resources' },
   ];
+
+  const developerOnlyLinks = [
+    { name: 'Benchmark History', href: '/benchmarks/history' },
+    { name: 'Integration Tests', href: '/tests/integration' },
+    { name: 'Snapshot Tests', href: '/tests/snapshots' },
+    { name: 'Worker Tests', href: '/tests/worker' },
+  ];
+
+  const navLinks = isDevelopmentMode()
+    ? [...allNavLinks, ...developerOnlyLinks]
+    : allNavLinks;
 
   return (
     <nav
