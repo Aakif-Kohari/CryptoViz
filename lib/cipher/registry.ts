@@ -298,6 +298,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'keyHex(32B)|nonceHex(24B)',
   },
   {
+    id: 'sm4',
+    name: 'SM4',
+    category: 'symmetric',
+    description:
+      'Chinese national standard block cipher (GB/T 32907-2016, ISO/IEC 18033-3, RFC 8998). Mandatory in Chinese internet and financial infrastructure; now part of TLS 1.3 cipher suites. 128-bit block, 128-bit key, 32-round SPN with a single S-box and linear transform.',
+    defaultKey: '0123456789abcdeffedcba9876543210',
+    defaultInput: '0123456789abcdeffedcba9876543210',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'tea',
     name: 'TEA',
     category: 'symmetric',
