@@ -22,7 +22,8 @@ const resourceLinks = [
   { name: "Myth Busters", href: "/myth-busters" },
   { name: "Encoding Error Playground", href: "/encoding-errors" },
   { name: "Blog", href: "/blog" },
-  { name: "GitHub Repository", href: "https://github.com/csxark/CryptoViz" },
+{ name: "GitHub Repository", href: "https://github.com/csxark/CryptoViz" },
+  { name: "Cryptography Timeline", href: "/timeline" },
   { name: "Contribution Guide", href: "https://github.com/csxark/CryptoViz/blob/main/CONTRIBUTING.md" },
   { name: "Discord", href: "#" },
 ];

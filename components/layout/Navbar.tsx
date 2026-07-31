@@ -69,7 +69,8 @@ export default function Navbar() {
     { name: 'Case Studies', href: '/case-studies' },
     { name: 'Myth Busters', href: '/myth-busters' },
     { name: 'Encoding Errors', href: '/encoding-errors' },
-    { name: 'Resources', href: '/resources' },
+{ name: 'Resources', href: '/resources' },
+    { name: 'Timeline', href: '/timeline' },
   ];
 
 
