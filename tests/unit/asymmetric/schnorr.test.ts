@@ -1,9 +1,13 @@
 import { describe, it, expect } from 'vitest'
-import { encrypt, decrypt } from '@/lib/cipher/asymmetric/schnorr'
+import { encrypt, decrypt, TEST_VECTORS } from '@/lib/cipher/asymmetric/schnorr'
 
 describe('Schnorr signatures (BIP340)', () => {
   const privKey = '0303030303030303030303030303030303030303030303030303030303030303'.slice(0, 64)
   const message = 'ECSoC26 schnorr test'
+
+  it.each(TEST_VECTORS)('matches known vector: $description', ({ input, key, expected }) => {
+    expect(encrypt(input, key).output).toBe(expected)
+  })
 
   it('signs and verifies a round trip', () => {
     const signed = encrypt(message, privKey, { instrument: true })
