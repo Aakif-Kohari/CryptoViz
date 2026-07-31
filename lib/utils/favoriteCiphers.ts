@@ -1,45 +1,25 @@
 import { CIPHER_REGISTRY } from '../cipher/registry'
+import {
+  safeGetItemJson,
+  safeSetItemJson,
+  safeRemoveItem,
+} from './storage'
 
 export const FAVORITE_CIPHERS_STORAGE_KEY = 'cryptoviz-favorite-ciphers'
 export const FAVORITE_CIPHERS_CHANGED_EVENT = 'cryptoviz:favorite-ciphers-changed'
 export const MAX_FAVORITE_CIPHERS = 20
 
-function isBrowser(): boolean {
-  return typeof window !== 'undefined'
-}
-
 function readStorage(): string[] {
-  if (!isBrowser()) return []
-
-  try {
-    const raw = window.localStorage.getItem(FAVORITE_CIPHERS_STORAGE_KEY)
-    return raw ? normalizeFavoriteCipherIds(JSON.parse(raw)) : []
-  } catch {
-    return []
-  }
+  const parsed = safeGetItemJson<unknown>(FAVORITE_CIPHERS_STORAGE_KEY, null)
+  return parsed !== null ? normalizeFavoriteCipherIds(parsed) : []
 }
 
 function writeStorage(ids: string[]): void {
-  if (!isBrowser()) return
-
-  try {
-    window.localStorage.setItem(
-      FAVORITE_CIPHERS_STORAGE_KEY,
-      JSON.stringify(ids),
-    )
-  } catch {
-    // Storage may be unavailable in private mode or when quota is full.
-  }
+  safeSetItemJson(FAVORITE_CIPHERS_STORAGE_KEY, ids)
 }
 
 function removeStorage(): void {
-  if (!isBrowser()) return
-
-  try {
-    window.localStorage.removeItem(FAVORITE_CIPHERS_STORAGE_KEY)
-  } catch {
-    // Clearing favorites should remain a no-op when storage is unavailable.
-  }
+  safeRemoveItem(FAVORITE_CIPHERS_STORAGE_KEY)
 }
 
 export function getSupportedCipherIds(): ReadonlySet<string> {
