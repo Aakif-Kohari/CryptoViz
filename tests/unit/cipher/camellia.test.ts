@@ -10,7 +10,7 @@ describe('Camellia Cipher', () => {
     const plaintext = toByteArray('0123456789abcdeffedcba9876543210', 'hex')
     const expectedCiphertext = '67673138549669730857065648eabe43'
 
-    const res = encrypt(plaintext, key, { mode: 'ECB', padding: false })
+    const res = encrypt(plaintext, key, { mode: 'ECB', padding: 'None' })
     expect(res.output).toBe(expectedCiphertext)
   })
 
@@ -19,7 +19,7 @@ describe('Camellia Cipher', () => {
     const ciphertext = toByteArray('67673138549669730857065648eabe43', 'hex')
     const expectedPlaintext = '0123456789abcdeffedcba9876543210'
 
-    const res = decrypt(ciphertext, key, { mode: 'ECB', padding: false })
+    const res = decrypt(ciphertext, key, { mode: 'ECB', padding: 'None' })
     expect(res.output).toBe(expectedPlaintext)
   })
 
@@ -28,7 +28,7 @@ describe('Camellia Cipher', () => {
     const plaintext = toByteArray('0123456789abcdeffedcba9876543210', 'hex')
     const expectedCiphertext = 'b4993401b3e996f84ee5cee7d79b09b9'
 
-    const res = encrypt(plaintext, key, { mode: 'ECB', padding: false })
+    const res = encrypt(plaintext, key, { mode: 'ECB', padding: 'None' })
     expect(res.output).toBe(expectedCiphertext)
   })
 
@@ -37,7 +37,7 @@ describe('Camellia Cipher', () => {
     const plaintext = toByteArray('0123456789abcdeffedcba9876543210', 'hex')
     const expectedCiphertext = '9acc237dff16d76c20ef7c919e3a7509'
 
-    const res = encrypt(plaintext, key, { mode: 'ECB', padding: false })
+    const res = encrypt(plaintext, key, { mode: 'ECB', padding: 'None' })
     expect(res.output).toBe(expectedCiphertext)
   })
 
@@ -46,7 +46,7 @@ describe('Camellia Cipher', () => {
     const ciphertext = toByteArray('9acc237dff16d76c20ef7c919e3a7509', 'hex')
     const expectedPlaintext = '0123456789abcdeffedcba9876543210'
 
-    const res = decrypt(ciphertext, key, { mode: 'ECB', padding: false })
+    const res = decrypt(ciphertext, key, { mode: 'ECB', padding: 'None' })
     expect(res.output).toBe(expectedPlaintext)
   })
 
@@ -54,8 +54,8 @@ describe('Camellia Cipher', () => {
     const key = toByteArray('0123456789abcdeffedcba9876543210', 'hex')
     const plaintext = toByteArray('0123456789abcdeffedcba98765432100123456789abcdeffedcba9876543210', 'hex')
 
-    const encRes = encrypt(plaintext, key, { mode: 'CBC', padding: false })
-    const decRes = decrypt(toByteArray(encRes.output, 'hex'), key, { mode: 'CBC', padding: false })
+    const encRes = encrypt(plaintext, key, { mode: 'CBC', padding: 'None' })
+    const decRes = decrypt(toByteArray(encRes.output, 'hex'), key, { mode: 'CBC', padding: 'None' })
 
     expect(decRes.output).toBe('0123456789abcdeffedcba98765432100123456789abcdeffedcba9876543210')
   })
@@ -81,13 +81,13 @@ describe('Camellia Cipher', () => {
     it('throws error on decrypt with unaligned input when padding is disabled', () => {
       const key = 'camelliakey12345'
       const invalidCiphertext = '123456789012345678901234567890'
-      expect(() => decrypt(invalidCiphertext, key, { mode: 'ECB', padding: false })).toThrowError(CipherError)
+      expect(() => decrypt(invalidCiphertext, key, { mode: 'ECB', padding: 'None' })).toThrowError(CipherError)
     })
 
     it('throws error on encrypt with unaligned input when padding is disabled', () => {
       const key = 'camelliakey12345'
       const invalidPlaintext = 'unalignedPlaintext'
-      expect(() => encrypt(invalidPlaintext, key, { mode: 'ECB', padding: false })).toThrowError(CipherError)
+      expect(() => encrypt(invalidPlaintext, key, { mode: 'ECB', padding: 'None' })).toThrowError(CipherError)
     })
 
     it('supports CBC mode encryption/decryption with custom IV', () => {

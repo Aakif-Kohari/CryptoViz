@@ -50,7 +50,7 @@ function computeTag(message: Uint8Array, key: Uint8Array, steps: CipherStep[] | 
 
 function run(input: string, key: string, options: CipherOptions): CipherResult {
   const start = performance.now()
-  const useHex = (options as any).hexInput ?? true
+  const useHex = options.hexInput !== undefined ? options.hexInput : true
   const message = useHex ? hexToBytes(input) : utf8ToBytes(input)
   if (message.length === 0) throw new CipherError('INPUT_REQUIRED', 'Input cannot be empty')
   if (message.length > 4096) throw new CipherError('INPUT_TOO_LONG', 'Input exceeds 4096 byte limit')
