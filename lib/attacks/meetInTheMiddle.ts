@@ -129,11 +129,32 @@ export function meetInTheMiddleAttack(
   )
 
   const forwardTable = new Map<string, number>()
-  for (let k1 = 0; k1 < spaceSize; k1++) {
-    const candidateKey = keyFromInt(k1, keySpaceBits)
-    const intermediate = desEncryptBlock(plaintextBlock, candidateKey)
-    forwardTable.set(bytesToHex(intermediate), k1)
+
+// Emit progress every 5% (minimum once every iteration for very small keyspaces)
+const progressInterval = Math.max(1, Math.floor(spaceSize / 20))
+let lastReportedProgress = -1
+
+for (let k1 = 0; k1 < spaceSize; k1++) {
+  const candidateKey = keyFromInt(k1, keySpaceBits)
+  const intermediate = desEncryptBlock(plaintextBlock, candidateKey)
+  forwardTable.set(bytesToHex(intermediate), k1)
+
+  if (
+    k1 === spaceSize - 1 ||
+    k1 % progressInterval === 0
+  ) {
+    const progress = Math.floor(((k1 + 1) / spaceSize) * 100)
+
+    if (progress !== lastReportedProgress) {
+      lastReportedProgress = progress
+
+      emit({
+        label: 'Forward pass progress',
+        detail: `Generated ${k1 + 1} of ${spaceSize.toLocaleString()} lookup entries (${progress}%).`,
+      })
+    }
   }
+}
 
   emitStep(
     'Backward pass',
