@@ -94,6 +94,7 @@ export type CipherName =
   | 'gost'
   | 'enigma'
   | 'xsalsa20'
+  | 'sm4'
   | 'tea'
   | 'rc4'
   | 'salsa20'
