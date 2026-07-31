@@ -308,6 +308,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '32-character hex key (128-bit)',
   },
   {
+    id: 'blowfish',
+    name: 'Blowfish',
+    category: 'symmetric',
+    description:
+      'Bruce Schneier\'s 1993 Feistel block cipher — pre-AES era workhorse used in SSH, OpenSSH, and the bcrypt key schedule. Unique for its key-dependent S-box structure: the 4×256 S-boxes are entirely re-derived from each key, making it immune to weak-key attacks that plagued DES.',
+    defaultKey: '0123456789abcdef',
+    defaultInput: 'fedcba9876543210',
+    securityStatus: 'legacy',
+    keyPlaceholder: '4–56 byte key as hex (8–112 hex chars)',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
