@@ -112,6 +112,19 @@ export const docCategories: DocCategory[] = [
     content: "CryptoViz includes an Encoding Error Playground allowing users to inject deliberate encoding faults, inspect byte-level offsets, simulate Mojibake character set mismatches, and auto-repair corrupt strings."
   },
   {
+    type: 'general',
+    title: "Cryptographic Case Studies",
+    description: "Deep-dive technical analysis of real-world cryptographic failures, Enigma, Heartbleed, WannaCry, Debian OpenSSL, DigiNotar, Sony PS3, and SHA-1 collisions.",
+    content: "The Cryptographic Case Studies module (/case-studies) provides technical root cause analyses, incident timelines, and key engineering takeaways for historical and modern cryptographic breaches."
+  },
+  {
+    type: 'general',
+    title: "Cipher Visualizers Hub",
+    description: "Overview of the dedicated Cipher Visualizers Hub with search, category filtering, security status badges, and interactive sandboxes.",
+    content: "The Cipher Visualizers Hub (/visualizer) provides a centralized interactive index for over 50 algorithm visualizers and specialized demonstration sandboxes. Users can filter ciphers by mathematical category (Classical, Symmetric, Asymmetric, Hash, Specialized Demos), NIST security status (Recommended, Secure, Legacy, Broken, etc.), or search by algorithm keywords."
+  },
+
+  {
     type: 'cipher',
     title: "Caesar Cipher",
     description: "A classical substitution cipher that shifts characters by a fixed number of positions down the alphabet.",

@@ -50,13 +50,17 @@ export default function Navbar() {
   }
 
   const allNavLinks = [
+  const navLinks = [
+    { name: 'Visualizers', href: '/visualizer' },
     { name: 'Playground', href: '/visualizer/caesar/' },
     { name: 'Advisor', href: '/advisor' },
     { name: 'Modes', href: '/modes' },
+    { name: 'Protocols', href: '/protocols' },
     { name: 'Compare', href: '/compare' },
     { name: 'Matrix', href: '/matrix' },
     { name: 'Benchmark', href: '/benchmark' },
     { name: 'Avalanche', href: '/avalanche' },
+    { name: 'S-Box Explorer', href: '/sbox' },
     { name: 'Merkle Tree', href: '/merkle' },
     { name: 'Padding', href: '/padding' },
     { name: 'Challenge', href: '/challenge' },
@@ -64,6 +68,7 @@ export default function Navbar() {
     { name: 'Offline', href: '/offline' },
     { name: 'Glossary', href: '/glossary' },
     { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+    { name: 'Case Studies', href: '/case-studies' },
     { name: 'Myth Busters', href: '/myth-busters' },
     { name: 'Encoding Errors', href: '/encoding-errors' },
     { name: 'Resources', href: '/resources' },
@@ -138,8 +143,10 @@ export default function Navbar() {
         <div className="hidden items-center gap-10 xl:flex">
           {navLinks.map((link) => {
             const isActive =
-              pathname.startsWith(link.href) &&
-              link.href !== '#'
+              link.href === '/visualizer'
+                ? pathname === '/visualizer' || pathname === '/visualizer/'
+                : pathname.startsWith(link.href) && link.href !== '#'
+
 
             return (
               <Link
@@ -317,8 +324,9 @@ export default function Navbar() {
           <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6">
             {navLinks.map((link) => {
               const isActive =
-                pathname.startsWith(link.href) &&
-                link.href !== '#'
+                link.href === '/visualizer'
+                  ? pathname === '/visualizer' || pathname === '/visualizer/'
+                  : pathname.startsWith(link.href) && link.href !== '#'
 
               return (
                 <Link

@@ -67,10 +67,16 @@ import { encrypt as speckEncrypt, decrypt as speckDecrypt } from '../cipher/symm
 import { encrypt as aesCcmEncrypt, decrypt as aesCcmDecrypt } from '../cipher/symmetric/aes-ccm';
 import { encrypt as threefishEncrypt, decrypt as threefishDecrypt } from '../cipher/symmetric/threefish';
 import { encrypt as xchacha20Encrypt, decrypt as xchacha20Decrypt } from '../cipher/symmetric/xchacha20'
+import { encrypt as twofishEncrypt, decrypt as twofishDecrypt } from '../cipher/symmetric/twofish';
 import { encrypt as gostEncrypt, decrypt as gostDecrypt } from '../cipher/symmetric/gost';
+import { encrypt as rc2Encrypt, decrypt as rc2Decrypt } from '../cipher/symmetric/rc2';
 import { encrypt as enigmaEncrypt, decrypt as enigmaDecrypt } from '../cipher/symmetric/enigma';
 import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20';
+import { encrypt as asconEncypt, decrypt as asconDecrypt } from '../cipher/symmetric/ascon';
+
+import { encrypt as sm4Encrypt, decrypt as sm4Decrypt } from '../cipher/symmetric/sm4';
 import { encrypt as teaEncrypt, decrypt as teaDecrypt } from '../cipher/symmetric/tea';
+import { encrypt as blowfishEncrypt, decrypt as blowfishDecrypt } from '../cipher/symmetric/blowfish';
 import { encrypt as serpentEncrypt, decrypt as serpentDecrypt } from '../cipher/symmetric/serpent';
 import { encrypt as chacha20Encrypt, decrypt as chacha20Decrypt } from "../cipher/symmetric/chacha20";
 import { encrypt as desEncrypt, decrypt as desDecrypt } from "../cipher/symmetric/des";
@@ -193,19 +199,35 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       case 'threefish':
         result = encryptMode ? threefishEncrypt(input, key, options) : threefishDecrypt(input, key, options)
         break
+      case 'twofish':
+        result = encryptMode ? twofishEncrypt(input, key, options) : twofishDecrypt(input, key, options)
+        break
       case 'gost':
         result = encryptMode ? gostEncrypt(input, key, options) : gostDecrypt(input, key, options)
+        break
+      case 'rc2':
+        result = encryptMode ? rc2Encrypt(input, key, options) : rc2Decrypt(input, key, options)
         break
       case 'enigma':
         result = encryptMode ? enigmaEncrypt(input, key, options) : enigmaDecrypt(input, key, options)
         break
       case 'xchacha20':
         result = encryptMode ? xchacha20Encrypt(input, key, options) : xchacha20Decrypt(input, key, options)
+        break
       case 'xsalsa20':
         result = encryptMode ? xsalsa20Encrypt(input, key, options) : xsalsa20Decrypt(input, key, options)
         break
+      case 'ascon':
+        result = encryptMode ? asconEncypt(input, key, options) : asconDecrypt(input, key, options)
+      case 'sm4':
+        result = encryptMode ? sm4Encrypt(input, key, options) : sm4Decrypt(input, key, options)
+        break
       case 'tea':
         result = encryptMode ? teaEncrypt(input, key, options) : teaDecrypt(input, key, options)
+        break
+      case 'blowfish':
+        result = encryptMode ? blowfishEncrypt(input, key, options) : blowfishDecrypt(input, key, options);
+        break
         break
       case "rsa":
         result = encryptMode ? rsaEncrypt(input, key, options) : rsaDecrypt(input, key, options);
