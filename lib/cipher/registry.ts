@@ -288,6 +288,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'rotors|positions|ringSettings|plugPairs — e.g. I,II,III|A,A,A|1,1,1|AB,CD',
   },
   {
+    id: 'ascon',
+    name: 'ASCON-128',
+    category: 'symmetric',
+    description:
+      'NIST-selected lightweight cryptography standard (SP 800-232, 2023). Authenticated encryption with associated data (AEAD) — encrypts and authenticates simultaneously using a 320-bit sponge permutation. Designed for IoT and constrained devices. Output = nonce + ciphertext + 128-bit tag.',
+    defaultKey: '000102030405060708090a0b0c0d0e0f',
+    defaultInput: '48656c6c6f20576f726c64',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'xsalsa20',
     name: 'XSalsa20',
     category: 'symmetric',
