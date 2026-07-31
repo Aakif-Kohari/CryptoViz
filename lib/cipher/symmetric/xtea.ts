@@ -93,12 +93,28 @@ function xteaBlockDecrypt(v0: number, v1: number, key: [number, number, number, 
   return [v0 >>> 0, v1 >>> 0]
 }
 
-function xteaCore(input: string, key: string, decrypt: boolean, instrument: boolean): CipherResult {
+function xteaCore(input: string, key: string, decrypt: boolean, instrument: boolean, options: CipherOptions = {}): CipherResult {
   const start = performance.now()
   const keyWords = parseKey(key)
-  const bytes = parseHexInput(input)
-  const numBlocks = bytes.length / 8
 
+  let bytes: Uint8Array
+  if (decrypt) {
+    const clean = input.replace(/\s+/g, '').toLowerCase()
+    if (!/^[0-9a-f]*$/.test(clean) || clean.length % 16 !== 0) {
+      throw new CipherError('INVALID_INPUT', 'XTEA decryption input must be a valid hex string with length a multiple of 16 hex characters (8 bytes).')
+    }
+    bytes = toByteArray(clean, 'hex')
+  } else {
+    bytes = toByteArray(input, options.encoding || 'utf8')
+    const remainder = bytes.length % 8
+    if (remainder !== 0) {
+      const padded = new Uint8Array(bytes.length + (8 - remainder))
+      padded.set(bytes)
+      bytes = padded
+    }
+  }
+
+  const numBlocks = bytes.length / 8
   const steps: CipherStep[] = []
   if (instrument) {
     steps.push({
@@ -112,7 +128,7 @@ function xteaCore(input: string, key: string, decrypt: boolean, instrument: bool
     })
   }
 
-  let outHex = ''
+  const outBytes = new Uint8Array(bytes.length)
   for (let b = 0; b < numBlocks; b++) {
     const off = b * 8
     const v0 = bytesToWord(bytes, off)
@@ -120,9 +136,16 @@ function xteaCore(input: string, key: string, decrypt: boolean, instrument: bool
     const inHex = wordToHex(v0) + wordToHex(v1)
 
     const [o0, o1] = decrypt ? xteaBlockDecrypt(v0, v1, keyWords) : xteaBlockEncrypt(v0, v1, keyWords)
-    const outBlockHex = wordToHex(o0) + wordToHex(o1)
-    outHex += outBlockHex
+    outBytes[off] = (o0 >>> 24) & 0xff
+    outBytes[off + 1] = (o0 >>> 16) & 0xff
+    outBytes[off + 2] = (o0 >>> 8) & 0xff
+    outBytes[off + 3] = o0 & 0xff
+    outBytes[off + 4] = (o1 >>> 24) & 0xff
+    outBytes[off + 5] = (o1 >>> 16) & 0xff
+    outBytes[off + 6] = (o1 >>> 8) & 0xff
+    outBytes[off + 7] = o1 & 0xff
 
+    const outBlockHex = wordToHex(o0) + wordToHex(o1)
     if (instrument) {
       steps.push({
         index: steps.length,
@@ -135,9 +158,13 @@ function xteaCore(input: string, key: string, decrypt: boolean, instrument: bool
     }
   }
 
+  const output = decrypt
+    ? fromByteArray(outBytes, options.encoding || 'utf8')
+    : fromByteArray(outBytes, 'hex')
+
   return {
-    output: outHex,
-    outputEncoding: 'hex',
+    output,
+    outputEncoding: decrypt ? (options.encoding || 'utf8') : 'hex',
     steps,
     metadata: METADATA,
     durationMs: performance.now() - start,
@@ -146,12 +173,12 @@ function xteaCore(input: string, key: string, decrypt: boolean, instrument: bool
 
 export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
   validateInput(input)
-  return xteaCore(input, key, false, !!options.instrument)
+  return xteaCore(input, key, false, !!options.instrument, options)
 }
 
 export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
   validateInput(input)
-  return xteaCore(input, key, true, !!options.instrument)
+  return xteaCore(input, key, true, !!options.instrument, options)
 }
 
 export const TEST_VECTORS: TestVector[] = [

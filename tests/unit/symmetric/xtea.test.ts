@@ -4,14 +4,21 @@ import { CipherError } from '@/lib/utils'
 
 describe('XTEA', () => {
   it.each(TEST_VECTORS)('matches known vector: $description', ({ input, key, expected }) => {
-    expect(encrypt(input, key).output.toUpperCase()).toBe(expected.toUpperCase())
+    expect(encrypt(input, key, { encoding: 'hex' }).output.toUpperCase()).toBe(expected.toUpperCase())
+  })
+
+  it('round-trips arbitrary text input', () => {
+    const key = '000102030405060708090a0b0c0d0e0f'
+    const pt = 'Hello, XTEA cipher!'
+    const ct = encrypt(pt, key)
+    expect(decrypt(ct.output, key).output.slice(0, pt.length)).toBe(pt)
   })
 
   it('round-trips arbitrary 8-byte-aligned hex input', () => {
     const key = '000102030405060708090a0b0c0d0e0f'
     const pt = 'deadbeefcafebabe'
-    const ct = encrypt(pt, key)
-    expect(decrypt(ct.output, key).output).toBe(pt)
+    const ct = encrypt(pt, key, { encoding: 'hex' })
+    expect(decrypt(ct.output, key, { encoding: 'hex' }).output).toBe(pt)
   })
 
   it('throws INPUT_REQUIRED on empty input', () => {
