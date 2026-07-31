@@ -316,3 +316,42 @@
 [#575] (open) by @Aakif-Kohari: [FEATURE] Add SM4 symmetric block cipher (Chinese national standard, GB/T 32907-2016, ISO/IEC 18033-3)
 [#574] (open) by @Aakif-Kohari: [FEATURE] Add Blowfish symmetric block cipher (64-bit block, 32–448-bit key, 16-round Feistel)
 [#559] (open) by @durdana3105: [BUG] Refactor Cipher Modules into a Plugin-Based Architecture for Extensible Algorithm Support
+
+=== Audited 2026-07-31 14:19 UTC (37 new) ===
+[#645] (open) by @Aakif-Kohari: [FEATURE] Add Skein-256 cryptographic hash (SHA-3 finalist, Threefish-256-based UBI chaining, NIST competition)
+[#644] (open) by @Aakif-Kohari: [FEATURE] Add Trivium stream cipher (eSTREAM Phase 3 portfolio, 288-bit state, three non-linear feedback shift registers)
+[#643] (open) by @Aakif-Kohari: [FEATURE] Add PRESENT ultra-lightweight block cipher (ISO/IEC 29192-2, 64-bit block, 4-bit S-box, 31-round SPN, 80/128-bit key)
+[#642] (open) by @Aakif-Kohari: [FEATURE] Add LEA-128 lightweight encryption algorithm (Korean standard, ARX cipher, IETF RFC 9998, 24-round)
+[#641] (open) by @Aakif-Kohari: [FEATURE] Add SIMON-128/128 lightweight block cipher (NSA 2013, 64-bit words, 68-round Feistel with bitwise AND)
+[#635] (open) by @csxark: Simplify Repetitive Page Layouts
+[#634] (open) by @csxark: Introduce Breadcrumbs Across Learning Pages
+[#633] (open) by @csxark: Improve Learning Progression
+[#632] (open) by @csxark: Transform Visualizer into a Workspace
+[#631] (open) by @csxark: Hide Internal Developer Routes
+[#630] (open) by @csxark: Refine Footer Experience
+[#629] (open) by @csxark: Convert Docs into Guided Learning
+[#628] (open) by @csxark: Build a Unified Reference Hub
+[#627] (open) by @csxark: Redesign Global Navigation Around User Goals
+[#626] (open) by @csxark: Create a Guided 'Start Here' User Journey
+[#625] (open) by @csxark: Introduce CI Quality Gates
+[#624] (open) by @csxark: Reduce Implementation Drift
+[#623] (open) by @csxark: Improve Keyboard Navigation
+[#622] (open) by @csxark: Optimize Worker Cache
+[#621] (open) by @csxark: Centralize Input Validation
+[#620] (open) by @csxark: Remove Dead Code
+[#619] (open) by @csxark: Synchronize Docs with Implementation
+[#618] (open) by @csxark: Eliminate Broad any Usage
+[#617] (open) by @csxark: Harden localStorage Wrapper
+[#616] (open) by @csxark: Lazy-load Cipher Modules
+[#615] (open) by @csxark: Verify Placeholder Crypto Vectors
+[#614] (open) by @csxark: Refactor Worker Dispatch Layer
+[#613] (open) by @csxark: Remove dangerouslySetInnerHTML
+[#612] (open) by @csxark: Improve Advisor Focus Accessibility
+[#611] (open) by @csxark: Stabilize Failing Test Suite
+[#610] (open) by @csxark: Correct XTEA Implementation
+[#609] (open) by @csxark: Correct Serpent Implementation
+[#608] (open) by @csxark: Correct RC6 Implementation
+[#607] (open) by @csxark: Fix Salsa20 API & Test Vector Mismatch
+[#606] (open) by @csxark: Implement Skipjack Decryption Support
+[#605] (open) by @Ayush-0918: [FEATURE] Constant-Time Comparison Utilities
+[#604] (closed) by @Ayush-0918: [FEATURE]Add Comprehensive Cipher Performance Profiling and Regression Testing Framework
