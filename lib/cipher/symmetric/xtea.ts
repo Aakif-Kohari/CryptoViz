@@ -10,7 +10,7 @@
  */
 
 import type { CipherResult, CipherStep, CipherOptions, TestVector } from '../types'
-import { CipherError, validateInput, validateKey } from '../../utils'
+import { CipherError, validateInput, validateKey, toByteArray, fromByteArray } from '../../utils'
 
 const METADATA = {
   name: 'XTEA',
@@ -112,6 +112,10 @@ function xteaCore(input: string, key: string, decrypt: boolean, instrument: bool
       padded.set(bytes)
       bytes = padded
     }
+  }
+
+  if (bytes.length > 4096) {
+    throw new CipherError('INPUT_TOO_LONG', 'Input exceeds maximum allowed size of 4096 bytes.')
   }
 
   const numBlocks = bytes.length / 8
