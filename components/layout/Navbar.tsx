@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const [theme, setTheme] = useState<'light' | 'dark'>('dark')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const mobileMenuBtnRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as
@@ -33,6 +34,21 @@ export default function Navbar() {
       document.documentElement.classList.remove('dark')
     }
   }, [])
+
+  // Close mobile menu on Escape key
+  useEffect(() => {
+    if (!isMobileMenuOpen) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMobileMenuOpen(false)
+        mobileMenuBtnRef.current?.focus()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isMobileMenuOpen])
 
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark'
@@ -241,6 +257,7 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
 
           <button
+            ref={mobileMenuBtnRef}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
             aria-expanded={isMobileMenuOpen}
