@@ -67,9 +67,12 @@ import { encrypt as speckEncrypt, decrypt as speckDecrypt } from '../cipher/symm
 import { encrypt as aesCcmEncrypt, decrypt as aesCcmDecrypt } from '../cipher/symmetric/aes-ccm';
 import { encrypt as threefishEncrypt, decrypt as threefishDecrypt } from '../cipher/symmetric/threefish';
 import { encrypt as xchacha20Encrypt, decrypt as xchacha20Decrypt } from '../cipher/symmetric/xchacha20'
+import { encrypt as twofishEncrypt, decrypt as twofishDecrypt } from '../cipher/symmetric/twofish';
 import { encrypt as gostEncrypt, decrypt as gostDecrypt } from '../cipher/symmetric/gost';
+import { encrypt as rc2Encrypt, decrypt as rc2Decrypt } from '../cipher/symmetric/rc2';
 import { encrypt as enigmaEncrypt, decrypt as enigmaDecrypt } from '../cipher/symmetric/enigma';
 import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20';
+import { encrypt as asconEncypt, decrypt as asconDecrypt } from '../cipher/symmetric/ascon';
 
 import { encrypt as sm4Encrypt, decrypt as sm4Decrypt } from '../cipher/symmetric/sm4';
 import { encrypt as teaEncrypt, decrypt as teaDecrypt } from '../cipher/symmetric/tea';
@@ -91,10 +94,131 @@ import { deriveKey } from "../kdf/pbkdf2";
 import { deriveScryptKey } from "../kdf/scrypt";
 import { CipherError } from "../utils/errors";
 import type { WorkerRequest, WorkerResponse } from "../../types/worker";
+import type { CipherResult } from "../cipher/types";
 
-type WorkerRequestMessage = WorkerRequest | Uint8Array;
+type CipherHandler = (input: string, key: string, options?: any) => any;
 
-const workerScope = self as unknown as Worker;
+interface CipherDispatcher {
+  encrypt: CipherHandler;
+  decrypt: CipherHandler;
+}
+
+const DISPATCHER_REGISTRY: Record<string, CipherDispatcher> = {
+  caesar: { encrypt: caesarEncrypt, decrypt: caesarDecrypt },
+  rot13: { encrypt: rot13Encrypt, decrypt: rot13Decrypt },
+  vigenere: { encrypt: vigenereEncrypt, decrypt: vigenereDecrypt },
+  atbash: { encrypt: atbashEncrypt, decrypt: atbashDecrypt },
+  playfair: { encrypt: playfairEncrypt, decrypt: playfairDecrypt },
+  railfence: { encrypt: railfenceEncrypt, decrypt: railfenceDecrypt },
+  beaufort: { encrypt: beaufortEncrypt, decrypt: beaufortDecrypt },
+  hill: { encrypt: hillEncrypt, decrypt: hillDecrypt },
+  "columnar-transposition": { encrypt: columnarEncrypt, decrypt: columnarDecrypt },
+  autokey: { encrypt: autokeyEncrypt, decrypt: autokeyDecrypt },
+  porta: { encrypt: portaEncrypt, decrypt: portaDecrypt },
+  adfgvx: { encrypt: adfgvxEncrypt, decrypt: adfgvxDecrypt },
+  bifid: { encrypt: bifidEncrypt, decrypt: bifidDecrypt },
+  "four-square": { encrypt: fourSquareEncrypt, decrypt: fourSquareDecrypt },
+  nihilist: { encrypt: nihilistEncrypt, decrypt: nihilistDecrypt },
+  polybius: { encrypt: polybiusEncrypt, decrypt: polybiusDecrypt },
+  xor: { encrypt: xorEncrypt, decrypt: xorDecrypt },
+  otp: { encrypt: otpEncrypt, decrypt: otpDecrypt },
+  des: { encrypt: desEncrypt, decrypt: desDecrypt },
+  "3des": { encrypt: des3Encrypt, decrypt: des3Decrypt },
+  "aes-xts": { encrypt: aesXtsEncrypt, decrypt: aesXtsDecrypt },
+  aes: { encrypt: aesEncrypt, decrypt: aesDecrypt },
+  "aes-gcm": { encrypt: aesGcmEncrypt, decrypt: aesGcmDecrypt },
+  serpent: { encrypt: serpentEncrypt, decrypt: serpentDecrypt },
+  "chacha20-poly1305": { encrypt: chachaPolyEncrypt, decrypt: chachaPolyDecrypt },
+  speck: { encrypt: speckEncrypt, decrypt: speckDecrypt },
+  "aes-ccm": { encrypt: aesCcmEncrypt, decrypt: aesCcmDecrypt },
+  threefish: { encrypt: threefishEncrypt, decrypt: threefishDecrypt },
+  gost: { encrypt: gostEncrypt, decrypt: gostDecrypt },
+  enigma: { encrypt: enigmaEncrypt, decrypt: enigmaDecrypt },
+  xchacha20: { encrypt: xchacha20Encrypt, decrypt: xchacha20Decrypt },
+  xsalsa20: { encrypt: xsalsa20Encrypt, decrypt: xsalsa20Decrypt },
+  sm4: { encrypt: sm4Encrypt, decrypt: sm4Decrypt },
+  tea: { encrypt: teaEncrypt, decrypt: teaDecrypt },
+  blowfish: { encrypt: blowfishEncrypt, decrypt: blowfishDecrypt },
+  rsa: { encrypt: rsaEncrypt, decrypt: rsaDecrypt },
+  dsa: { encrypt: dsaEncrypt, decrypt: dsaDecrypt },
+  dh: { encrypt: dhEncrypt, decrypt: dhDecrypt },
+  x448: { encrypt: x448Encrypt, decrypt: x448Decrypt },
+  ecc: { encrypt: eccEncrypt, decrypt: eccDecrypt },
+  schnorr: { encrypt: schnorrEncrypt, decrypt: schnorrDecrypt },
+  "elgamal-signature": { encrypt: elgamalSigEncrypt, decrypt: elgamalSigDecrypt },
+  "ml-dsa": { encrypt: mlDsaEncrypt, decrypt: mlDsaDecrypt },
+  ecies: { encrypt: eciesEncrypt, decrypt: eciesDecrypt },
+  "ml-kem": { encrypt: mlKemEncapsulate, decrypt: mlKemDecapsulate },
+  ecdsa: { encrypt: ecdsaEncrypt, decrypt: ecdsaDecrypt },
+  ed448: { encrypt: ed448Encrypt, decrypt: ed448Decrypt },
+  "shamir-secret-sharing": { encrypt: shamirSplit, decrypt: shamirCombine },
+  ed25519: { encrypt: ed25519Encrypt, decrypt: ed25519Decrypt },
+  elgamal: { encrypt: elgamalEncrypt, decrypt: elgamalDecrypt },
+  "merkle-hellman": { encrypt: merkleHellmanEncrypt, decrypt: merkleHellmanDecrypt },
+  paillier: { encrypt: paillierEncrypt, decrypt: paillierDecrypt },
+  rabin: { encrypt: rabinEncrypt, decrypt: rabinDecrypt },
+  x25519: { encrypt: x25519Encrypt, decrypt: x25519Decrypt },
+  sha256: { encrypt: sha256Encrypt, decrypt: sha256Decrypt },
+  sm3: { encrypt: sm3Encrypt, decrypt: sm3Decrypt },
+  sha512: { encrypt: sha512Encrypt, decrypt: sha512Decrypt },
+  md5: { encrypt: md5Encrypt, decrypt: md5Decrypt },
+  hmac: { encrypt: hmacEncrypt, decrypt: hmacDecrypt },
+  cmac: { encrypt: cmacEncrypt, decrypt: cmacDecrypt },
+  bcrypt: { encrypt: bcryptEncrypt, decrypt: bcryptDecrypt },
+  xxhash: { encrypt: xxhashEncrypt, decrypt: xxhashDecrypt },
+  sha3: { encrypt: sha3Encrypt, decrypt: sha3Decrypt },
+  ripemd160: { encrypt: ripemd160Encrypt, decrypt: ripemd160Decrypt },
+  blake2b: { encrypt: blake2bEncrypt, decrypt: blake2bDecrypt },
+  blake3: { encrypt: blake3Encrypt, decrypt: blake3Decrypt },
+  poly1305: { encrypt: poly1305Encrypt, decrypt: poly1305Decrypt },
+  sha1: { encrypt: sha1Encrypt, decrypt: sha1Decrypt },
+  hkdf: { encrypt: hkdfEncrypt, decrypt: hkdfDecrypt },
+  blake2s: { encrypt: blake2sEncrypt, decrypt: blake2sDecrypt },
+  sha224: { encrypt: encryptSha224, decrypt: sha2TruncDecrypt },
+  sha384: { encrypt: encryptSha384, decrypt: sha2TruncDecrypt },
+  shake128: { encrypt: encryptShake128, decrypt: shakeDecrypt },
+  shake256: { encrypt: encryptShake256, decrypt: shakeDecrypt },
+  md4: { encrypt: md4Encrypt, decrypt: md4Decrypt },
+  pbkdf2: {
+    encrypt: (input, _key, options) => deriveKey(input, {
+      iterations: options?.iterations ?? 10000,
+      hash: options?.hash ?? "SHA-256",
+      keyLength: options?.keyLength ?? 32,
+      salt: options?.salt,
+    }),
+    decrypt: (input, _key, options) => deriveKey(input, {
+      iterations: options?.iterations ?? 10000,
+      hash: options?.hash ?? "SHA-256",
+      keyLength: options?.keyLength ?? 32,
+      salt: options?.salt,
+    }),
+  },
+  scrypt: {
+    encrypt: (input, _key, options) => deriveScryptKey(input, {
+      N: options?.N ?? 16384,
+      r: options?.r ?? 8,
+      p: options?.p ?? 1,
+      dkLen: options?.dkLen ?? 32,
+      salt: options?.salt,
+    }),
+    decrypt: (input, _key, options) => deriveScryptKey(input, {
+      N: options?.N ?? 16384,
+      r: options?.r ?? 8,
+      p: options?.p ?? 1,
+      dkLen: options?.dkLen ?? 32,
+      salt: options?.salt,
+    }),
+  },
+  rc4: { encrypt: rc4Encrypt, decrypt: rc4Decrypt },
+  salsa20: { encrypt: salsa20Encrypt, decrypt: salsa20Decrypt },
+  skipjack: { encrypt: skipjackEncrypt, decrypt: skipjackDecrypt },
+  chacha20: { encrypt: chacha20Encrypt, decrypt: chacha20Decrypt },
+  rc5: { encrypt: rc5Encrypt, decrypt: rc5Decrypt },
+  xtea: { encrypt: xteaEncrypt, decrypt: xteaDecrypt },
+  rc6: { encrypt: rc6Encrypt, decrypt: rc6Decrypt },
+  camellia: { encrypt: camelliaEncrypt, decrypt: camelliaDecrypt },
+  idea: { encrypt: ideaEncrypt, decrypt: ideaDecrypt },
+};
 
 workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequestMessage>) => {
   const startTime = performance.now();
@@ -108,8 +232,10 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
   const { cipherId, input, key, options } = payload;
 
   try {
-    let result: unknown;
     const encryptMode = type === "encrypt";
+    const dispatcher = DISPATCHER_REGISTRY[cipherId];
+    if (!dispatcher) {
+      throw new Error(`Unsupported cipher ID: ${cipherId}`);
 
     switch (cipherId) {
       case "caesar":
@@ -196,17 +322,26 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       case 'threefish':
         result = encryptMode ? threefishEncrypt(input, key, options) : threefishDecrypt(input, key, options)
         break
+      case 'twofish':
+        result = encryptMode ? twofishEncrypt(input, key, options) : twofishDecrypt(input, key, options)
+        break
       case 'gost':
         result = encryptMode ? gostEncrypt(input, key, options) : gostDecrypt(input, key, options)
+        break
+      case 'rc2':
+        result = encryptMode ? rc2Encrypt(input, key, options) : rc2Decrypt(input, key, options)
         break
       case 'enigma':
         result = encryptMode ? enigmaEncrypt(input, key, options) : enigmaDecrypt(input, key, options)
         break
       case 'xchacha20':
         result = encryptMode ? xchacha20Encrypt(input, key, options) : xchacha20Decrypt(input, key, options)
+        break
       case 'xsalsa20':
         result = encryptMode ? xsalsa20Encrypt(input, key, options) : xsalsa20Decrypt(input, key, options)
         break
+      case 'ascon':
+        result = encryptMode ? asconEncypt(input, key, options) : asconDecrypt(input, key, options)
       case 'sm4':
         result = encryptMode ? sm4Encrypt(input, key, options) : sm4Decrypt(input, key, options)
         break
@@ -339,19 +474,19 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break
       case "pbkdf2":
         result = await deriveKey(input, {
-          iterations: options?.iterations ?? 10000,
-          hash: options?.hash ?? "SHA-256",
-          keyLength: options?.keyLength ?? 32,
-          salt: options?.salt,
+          iterations: typeof options?.iterations === 'number' ? options.iterations : 10000,
+          hash: (options?.hash ?? "SHA-256") as "SHA-256" | "SHA-512",
+          keyLength: typeof options?.keyLength === 'number' ? options.keyLength : 32,
+          salt: typeof options?.salt === 'string' ? options.salt : undefined,
         });
         break;
       case "scrypt":
         result = await deriveScryptKey(input, {
-          N: options?.N ?? 16384,
-          r: options?.r ?? 8,
-          p: options?.p ?? 1,
-          dkLen: options?.dkLen ?? 32,
-          salt: options?.salt,
+          N: typeof options?.N === 'number' ? options.N : 16384,
+          r: typeof options?.r === 'number' ? options.r : 8,
+          p: typeof options?.p === 'number' ? options.p : 1,
+          dkLen: typeof options?.dkLen === 'number' ? options.dkLen : 32,
+          salt: typeof options?.salt === 'string' ? options.salt : undefined,
         });
         break;
       case "rc4":
@@ -385,6 +520,9 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         throw new Error(`Unsupported cipher ID: ${cipherId}`);
     }
 
+    const handler = encryptMode ? dispatcher.encrypt : dispatcher.decrypt;
+    let result: unknown = handler(input, key, options);
+
     // Some cipher implementations (e.g. RSA real mode via WebCrypto) are async
     // and return a Promise; awaiting a plain value is a no-op for the rest.
     result = await result;
@@ -393,7 +531,7 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
     const response: WorkerResponse = {
       requestId,
       success: true,
-      payload: { result: result as any },
+      payload: { result: result as CipherResult },
       timings: { durationMs },
     };
     workerScope.postMessage(response);

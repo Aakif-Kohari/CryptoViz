@@ -60,7 +60,16 @@ export interface CipherOptions {
   info?: string
   /** When true, capture state after every sub-step (for visualizer) */
   instrument?: boolean
-  [key: string]: string | number | boolean | Encoding | undefined
+  signal?: AbortSignal
+  hexInput?: boolean
+  rounds?: number
+  N?: number
+  r?: number
+  p?: number
+  dkLen?: number
+  salt?: string
+  iterations?: number
+  [key: string]: unknown
 }
 
 export type CipherName =
@@ -91,8 +100,11 @@ export type CipherName =
   | 'aes-ccm'
   | 'threefish'
   | 'xchacha20'
+  | 'twofish'
   | 'gost'
+  | 'rc2'
   | 'enigma'
+  | 'ascon'
   | 'xsalsa20'
   | 'sm4'
   | 'tea'

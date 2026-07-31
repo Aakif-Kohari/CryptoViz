@@ -268,6 +268,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'keyHex(32B)|nonceHex(24B)',
   },
   {
+    id: 'twofish',
+    name: 'Twofish',
+    category: 'symmetric',
+    description:
+      'AES finalist by Bruce Schneier et al. (1998). 128-bit block, 128/192/256-bit keys, 16-round Feistel. Uses key-dependent S-boxes (derived via RS matrix over GF(2^8)), MDS matrix diffusion, PHT, and 40 subkeys. Used in GnuPG and VeraCrypt. Never broken.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+  },
+  {
     id: 'gost',
     name: 'GOST 28147-89',
     category: 'symmetric',
@@ -278,6 +289,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '64-character hex key (256-bit)',
   },
   {
+    id: 'rc2',
+    name: 'RC2',
+    category: 'symmetric',
+    description:
+      'Ron Rivest\'s 1987 variable-key block cipher (RFC 2268). First cipher exportable from the US under 1990s export controls via "effective key bits" parameter. Used in SSL 2/3, TLS, and S/MIME. Mix-and-mash round structure. Historical/educational only — broken at ≤40-bit effective keys.',
+    defaultKey: '0000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'broken',
+    keyPlaceholder: '1–128 byte key as hex',
+  },
+  {
     id: 'enigma',
     name: 'Enigma (I, 3-rotor)',
     category: 'symmetric', // confirm against how other classical ciphers (playfair, vigenere, etc.) are categorized
@@ -286,6 +308,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: 'HELLOWORLD',
     securityStatus: 'broken',
     keyPlaceholder: 'rotors|positions|ringSettings|plugPairs — e.g. I,II,III|A,A,A|1,1,1|AB,CD',
+  },
+  {
+    id: 'ascon',
+    name: 'ASCON-128',
+    category: 'symmetric',
+    description:
+      'NIST-selected lightweight cryptography standard (SP 800-232, 2023). Authenticated encryption with associated data (AEAD) — encrypts and authenticates simultaneously using a 320-bit sponge permutation. Designed for IoT and constrained devices. Output = nonce + ciphertext + 128-bit tag.',
+    defaultKey: '000102030405060708090a0b0c0d0e0f',
+    defaultInput: '48656c6c6f20576f726c64',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
     id: 'xsalsa20',
