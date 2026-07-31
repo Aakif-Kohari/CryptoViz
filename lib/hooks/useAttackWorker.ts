@@ -90,10 +90,10 @@ export function useAttackWorker() {
         },
         transferList,
         (step) => {
-          if (onStep) onStep(step)
+          if (onStep) onStep(step as AttackStep)
         }
       ).then(result => {
-        const { plaintext, queryCount } = result
+        const { plaintext, queryCount } = result as { plaintext: ArrayBuffer; queryCount: number }
         plaintextBlocks[blockIndex] = new Uint8Array(plaintext)
         totalQueries += queryCount
       })
@@ -114,9 +114,9 @@ export function useAttackWorker() {
 
       setLoading(false)
       return { plaintext: fullPlaintext, queryCount: totalQueries }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setLoading(false)
-      const msg = err.message || 'Worker execution failed'
+      const msg = err instanceof Error ? err.message : 'Worker execution failed'
       setError(msg)
       throw new Error(msg)
     }
