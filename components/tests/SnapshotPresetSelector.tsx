@@ -2,6 +2,9 @@
 
 import type { VisualizationSnapshot } from "@/lib/utils/visualizationSnapshots";
 import { Layers, Shield, Cpu, Clock, Layout } from "lucide-react";
+import type { VisualizationSnapshot, ComponentCategory } from "@/lib/utils/visualizationSnapshots";
+import type { LucideIcon } from "lucide-react";
+import { Sparkles, Layers, Shield, Cpu, Clock, Layout } from "lucide-react";
 
 interface SnapshotPresetSelectorProps {
   snapshots: VisualizationSnapshot[];
@@ -18,7 +21,7 @@ export default function SnapshotPresetSelector({
   activeCategory,
   onCategoryChange,
 }: SnapshotPresetSelectorProps) {
-  const categories: Array<{ id: string; label: string; icon: any }> = [
+  const categories: Array<{ id: string; label: string; icon: LucideIcon }> = [
     { id: "all", label: "All Components", icon: Layers },
     { id: "classical", label: "Classical Ciphers", icon: Shield },
     { id: "symmetric", label: "Symmetric Ciphers", icon: Cpu },

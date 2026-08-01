@@ -34,10 +34,10 @@ workerScope.addEventListener('message', (event: MessageEvent) => {
           queryCount: oracle.queryCount
         }
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       workerScope.postMessage({
         type: 'error',
-        payload: { message: error.message }
+        payload: { message: error instanceof Error ? error.message : 'Unknown error' }
       });
     }
   }

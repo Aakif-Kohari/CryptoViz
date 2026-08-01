@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import type { CipherDefinition, CipherOptionValue } from '../../lib/cipher/registry'
-import type { CipherResult } from '../../lib/cipher/types'
+import type { CipherResult, CipherOptions } from '../../lib/cipher/types'
 import { useCipherWorker } from '../../lib/hooks/useCipherWorker'
 import type { AnimationSpeed } from './StepAnimator'
 import WorkspacePresetManager from './WorkspacePresetManager'
@@ -225,7 +225,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     setError(null);
     try {
       // Gather options
-      const options: any = {
+      const options: CipherOptions = {
         instrument: true, // Always request instrumented steps for visualizer
         signal: controller.signal,
       };
@@ -246,7 +246,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         options.bobSecret = bobSecret;
       }
       if (cipher.id === "camellia") {
-        options.padding = padding;
+        options.padding = padding ? "PKCS7" : "None";
       }
       // DH does not support decrypt
       const currentAction = cipher.id === "dh" ? "encrypt" : action;
@@ -281,11 +281,11 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           );
         }
       }
-    } catch (err: any) {
-      if (err.name === "AbortError") {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") {
         return;
       }
-      setError(err.message || "An error occurred during calculation.");
+      setError(err instanceof Error ? err.message : "An error occurred during calculation.");
       setResult(null);
     } finally {
       if (abortControllerRef.current === controller) {

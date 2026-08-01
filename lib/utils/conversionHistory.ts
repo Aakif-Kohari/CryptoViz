@@ -1,3 +1,9 @@
+import {
+  safeGetItemJson,
+  safeSetItemJson,
+  safeRemoveItem,
+} from './storage'
+
 export interface ConversionHistoryEntry {
   id: string
   cipherId: string
@@ -67,16 +73,11 @@ export function normalizeConversionHistory(
 export function loadConversionHistory(
   cipherId: string,
 ): ConversionHistoryEntry[] {
-  if (typeof window === 'undefined') return []
-
-  try {
-    const raw = window.localStorage.getItem(
-      getConversionHistoryStorageKey(cipherId),
-    )
-    return raw ? normalizeConversionHistory(JSON.parse(raw), cipherId) : []
-  } catch {
-    return []
-  }
+  const parsed = safeGetItemJson<unknown>(
+    getConversionHistoryStorageKey(cipherId),
+    null,
+  )
+  return parsed !== null ? normalizeConversionHistory(parsed, cipherId) : []
 }
 
 export function saveConversionHistory(
@@ -84,6 +85,7 @@ export function saveConversionHistory(
   history: ConversionHistoryEntry[],
 ): ConversionHistoryEntry[] {
   const normalized = normalizeConversionHistory(history, cipherId)
+  const stored = normalized.map(({ cipherId: _cipherId, ...entry }) => entry)
 
   if (typeof window !== 'undefined') {
     try {
@@ -96,18 +98,13 @@ export function saveConversionHistory(
       // Storage can be unavailable in private mode or when quota is full.
     }
   }
+  safeSetItemJson(getConversionHistoryStorageKey(cipherId), stored)
 
   return normalized
 }
 
 export function clearConversionHistory(cipherId: string): void {
-  if (typeof window === 'undefined') return
-
-  try {
-    window.localStorage.removeItem(getConversionHistoryStorageKey(cipherId))
-  } catch {
-    // Clearing should remain safe when localStorage is unavailable.
-  }
+  safeRemoveItem(getConversionHistoryStorageKey(cipherId))
 }
 
 export function filterConversionHistory(

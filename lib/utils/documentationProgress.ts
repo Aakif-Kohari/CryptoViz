@@ -1,3 +1,9 @@
+import {
+  safeGetItemJson,
+  safeSetItemJson,
+  safeRemoveItem,
+} from "./storage";
+
 export const DOC_PROGRESS_STORAGE_KEY = "cryptoviz-doc-progress";
 export const DOC_PROGRESS_VERSION = 1;
 
@@ -44,24 +50,18 @@ export function normalizeDocumentationProgress(
 export function loadDocumentationProgress(
   validSlugs?: ReadonlySet<string>,
 ): DocumentationProgress {
-  if (typeof window === "undefined") return EMPTY_DOCUMENTATION_PROGRESS;
-
-  try {
-    const raw = window.localStorage.getItem(DOC_PROGRESS_STORAGE_KEY);
-    if (!raw) return EMPTY_DOCUMENTATION_PROGRESS;
-    return normalizeDocumentationProgress(JSON.parse(raw), validSlugs);
-  } catch {
-    return EMPTY_DOCUMENTATION_PROGRESS;
-  }
+  const parsed = safeGetItemJson<unknown>(DOC_PROGRESS_STORAGE_KEY, null);
+  return parsed !== null
+    ? normalizeDocumentationProgress(parsed, validSlugs)
+    : EMPTY_DOCUMENTATION_PROGRESS;
 }
 
 export function saveDocumentationProgress(
   progress: DocumentationProgress,
 ): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(
+  safeSetItemJson(
     DOC_PROGRESS_STORAGE_KEY,
-    JSON.stringify(normalizeDocumentationProgress(progress)),
+    normalizeDocumentationProgress(progress),
   );
 }
 
@@ -72,8 +72,7 @@ export function toggleProgressValue(values: string[], slug: string): string[] {
 }
 
 export function clearDocumentationProgress(): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.removeItem(DOC_PROGRESS_STORAGE_KEY);
+  safeRemoveItem(DOC_PROGRESS_STORAGE_KEY);
 }
 
 export function getDocumentationProgressPercent(

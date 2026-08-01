@@ -7,7 +7,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import type { CipherResult } from '../cipher/types'
+import type { CipherResult, CipherOptions } from '../cipher/types'
 import type { WorkerRequest, WorkerResponse } from '../../types/worker'
 import type { CipherErrorCode } from '../utils/errors'
 
@@ -19,17 +19,17 @@ export function clearCipherWorkerCache() {
   resultCache.clear()
 }
 
-function sortObjectKeys(obj: any): any {
+function sortObjectKeys(obj: Record<string, unknown>): Record<string, unknown> {
   if (obj === null || typeof obj !== 'object') {
     return obj
   }
   if (Array.isArray(obj)) {
-    return obj.map(sortObjectKeys)
+    return obj.map(sortObjectKeys) as unknown as Record<string, unknown>
   }
   const sortedKeys = Object.keys(obj).sort()
-  const result: any = {}
+  const result: Record<string, unknown> = {}
   for (const k of sortedKeys) {
-    result[k] = sortObjectKeys(obj[k])
+    result[k] = sortObjectKeys(obj[k] as Record<string, unknown>)
   }
   return result
 }
@@ -63,7 +63,7 @@ function getCacheKey(
   cipherId: string,
   input: string,
   key: string,
-  options?: any
+  options?: CipherOptions
 ): string {
   const { signal: ___, bypassCache: ___, ...cacheableOptions } = options || {}
   // Stable serialization for options to avoid key-order issues.
@@ -104,7 +104,7 @@ export function useCipherWorker() {
       string,
       {
         resolve: (value: CipherResult) => void
-        reject: (reason: any) => void
+        reject: (reason: unknown) => void
         signal?: AbortSignal
         onAbort?: () => void
         timeoutId?: ReturnType<typeof setTimeout>
@@ -223,7 +223,7 @@ export function useCipherWorker() {
       cipherId: string,
       input: string,
       key: string,
-      options?: any
+      options?: CipherOptions
     ): Promise<CipherResult> => {
       const cacheKey = getCacheKey(action, cipherId, input, key, options)
       if (!options?.bypassCache && resultCache.has(cacheKey)) {
@@ -322,7 +322,7 @@ export function useCipherWorker() {
           activeRequestsRef.current.delete(id)
           if (activeRequestsRef.current.size === 0) setLoading(false)
           const message = err instanceof Error ? err.message : String(err)
-          const maybeCode = (err as any)?.code as CipherErrorCode | undefined
+          const maybeCode = err instanceof Error && 'code' in err ? (err as Error & { code: CipherErrorCode }).code : undefined
           if (maybeCode) {
             setError({ code: maybeCode, message })
           } else {

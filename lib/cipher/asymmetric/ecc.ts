@@ -200,7 +200,7 @@ export function decrypt(
   const hashHex = fromByteArray(hashBytes, 'hex')
 
   let isValid = false
-  let sigObj: any = null
+  let sigObj: ReturnType<typeof p256.Signature.fromBytes> | null = null
   try {
     const sigCompactBytes = parseSignatureToCompact(sigHex)
     isValid = p256.verify(sigCompactBytes, hashBytes, pubKeyBytes)
