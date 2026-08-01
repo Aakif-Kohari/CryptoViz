@@ -16,6 +16,7 @@
 import { encrypt as chacha20Encrypt } from './chacha20'
 import { encrypt as poly1305Encrypt } from '../hash/poly1305'
 import { CipherError } from '../../utils/errors'
+import { constantTimeHexEqual } from '../../utils/constantTime'
 import type { CipherResult, CipherStep, CipherMetadata, CipherOptions, TestVector } from '../types'
 
 const METADATA: CipherMetadata = {
@@ -147,7 +148,7 @@ function aeadCore(input: string, key: string, decrypt: boolean, instrument: bool
 
     // Verify the tag BEFORE decrypting/returning any plaintext.
     const tagResult = poly1305Encrypt(bytesToHex(macInput), polyKeyHex, { encoding: 'hex' })
-    const valid = tagResult.output === receivedTag
+    const valid = constantTimeHexEqual(tagResult.output, receivedTag)
 
     if (instrument) {
       steps.push({

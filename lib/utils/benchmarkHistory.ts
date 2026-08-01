@@ -1,4 +1,8 @@
 import type { BenchmarkSession } from "@/types/benchmark";
+import {
+  safeGetItemJson,
+  safeSetItemJson,
+} from "./storage";
 
 export const BENCHMARK_HISTORY_KEY = "cryptoviz-benchmark-history";
 export const MAX_BENCHMARK_HISTORY = 20;
@@ -7,31 +11,28 @@ function reviveSession(session: BenchmarkSession): BenchmarkSession {
   return {
     ...session,
     timestamp: new Date(session.timestamp),
-    results: session.results.map((result) => ({
-      ...result,
-      timestamp: new Date(result.timestamp),
-    })),
+    results: Array.isArray(session.results)
+      ? session.results.map((result) => ({
+          ...result,
+          timestamp: new Date(result.timestamp),
+        }))
+      : [],
   };
 }
 
 export function loadBenchmarkHistory(): BenchmarkSession[] {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const value = window.localStorage.getItem(BENCHMARK_HISTORY_KEY);
-    if (!value) return [];
-    const parsed = JSON.parse(value) as BenchmarkSession[];
-    return parsed.map(reviveSession);
-  } catch {
-    return [];
-  }
+  const parsed = safeGetItemJson<BenchmarkSession[]>(
+    BENCHMARK_HISTORY_KEY,
+    [],
+    (val): val is BenchmarkSession[] => Array.isArray(val),
+  );
+  return parsed.map(reviveSession);
 }
 
 export function saveBenchmarkHistory(sessions: BenchmarkSession[]): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(
+  safeSetItemJson(
     BENCHMARK_HISTORY_KEY,
-    JSON.stringify(sessions.slice(0, MAX_BENCHMARK_HISTORY)),
+    sessions.slice(0, MAX_BENCHMARK_HISTORY),
   );
 }
 

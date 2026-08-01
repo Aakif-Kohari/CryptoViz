@@ -6,12 +6,9 @@ export function toByteArray(str: string, encoding: Encoding): Uint8Array {
     return new TextEncoder().encode(str)
   }
   if (encoding === 'hex') {
-    if (str.length > 0 && /[^0-9a-fA-F]/.test(str)) {
-      throw new CipherError('INVALID_INPUT', `Invalid hex string: contains non-hex characters.`)
-    }
-    if (str.length % 2 !== 0) {
-      throw new CipherError('INVALID_INPUT', 'Hex string must have an even number of characters.')
-    }
+    if (str.length > 0) {
+    validateHexString(str)
+}
     const arr = new Uint8Array(str.length / 2)
     for (let i = 0; i < str.length; i += 2) {
       arr[i / 2] = parseInt(str.slice(i, i + 2), 16)
@@ -57,4 +54,40 @@ export function fromByteArray(arr: Uint8Array, encoding: Encoding): string {
   return Array.from(arr)
     .map((b) => String.fromCharCode(b))
     .join('')
+}
+export function validateHexString(input: string, label = 'Input'): void {
+  if (/[^0-9a-fA-F]/.test(input)) {
+    throw new CipherError(
+      'INVALID_INPUT',
+      `${label} must contain only hexadecimal characters.`
+    )
+  }
+
+  if (input.length % 2 !== 0) {
+    throw new CipherError(
+      'INVALID_INPUT',
+      `${label} must have an even number of characters.`
+    )
+  }
+}
+
+export function validateRequiredInput(
+  input: string,
+  message = 'Input is required.'
+): void {
+  if (!input || input.trim() === '') {
+    throw new CipherError('INPUT_REQUIRED', message)
+  }
+}
+
+export function validateMaxLength(
+  byteLength: number,
+  max: number
+): void {
+  if (byteLength > max) {
+    throw new CipherError(
+      'INPUT_TOO_LONG',
+      `Input exceeds maximum size of ${max} bytes.`
+    )
+  }
 }
