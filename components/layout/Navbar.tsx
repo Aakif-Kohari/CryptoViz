@@ -83,6 +83,7 @@ export default function Navbar() {
     { name: 'Challenge', href: '/challenge' },
     { name: 'Rainbow Table', href: '/rainbow-table' },
     { name: 'Docs', href: '/docs' },
+    { name: 'Reference Hub', href: '/reference' },
     { name: 'Offline', href: '/offline' },
     { name: 'Glossary', href: '/glossary' },
     { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
