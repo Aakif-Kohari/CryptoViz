@@ -3,11 +3,14 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import LanguageSelector from '../i18n/LanguageSelector'
+import { useTranslation } from '@/lib/i18n/context'
 
 export default function Navbar() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
+  const { t } = useTranslation()
 
   useEffect(() => {
     // Initialize theme from localStorage or system preference
@@ -36,14 +39,14 @@ export default function Navbar() {
   }
 
   const navLinks = [
-    { name: 'Playground', href: '/visualizer/caesar/' },
-    { name: 'Modes', href: '/modes' },
-    { name: 'Compare', href: '/compare' },
-    { name: 'Benchmark', href: '/benchmark' },
-    { name: 'Avalanche', href: '/avalanche' },
-    { name: 'Challenge', href: '/challenge' },
-    { name: 'Docs', href: '/docs' },
-    { name: 'Resources', href: '/resources' },
+    { name: t('nav.playground'), href: '/visualizer/caesar/' },
+    { name: t('nav.modes'), href: '/modes' },
+    { name: t('nav.compare'), href: '/compare' },
+    { name: t('nav.benchmark'), href: '/benchmark' },
+    { name: t('nav.avalanche'), href: '/avalanche' },
+    { name: t('nav.challenge'), href: '/challenge' },
+    { name: t('nav.docs'), href: '/docs' },
+    { name: t('nav.resources'), href: '/resources' },
   ];
 
   return (
@@ -92,6 +95,9 @@ export default function Navbar() {
           </div>
 
           <span className="h-6 w-[1px] bg-zinc-200 dark:bg-zinc-800 hidden sm:block" aria-hidden="true" />
+
+          {/* Language Selector */}
+          <LanguageSelector />
 
           {/* Theme Toggle Button */}
           <button
