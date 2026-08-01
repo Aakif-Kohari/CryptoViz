@@ -22,6 +22,7 @@ const ComparisonChart = dynamic(() => import('@/components/benchmark/ComparisonC
   ssr: false, 
   loading: () => <div className="h-96 flex items-center justify-center rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"><p className="text-zinc-500 dark:text-zinc-400">Loading chart components...</p></div> 
 });
+import CpuInformationPanel from "@/components/benchmark/CpuInformationPanel";
 import DeviceInfoDisplay from "@/components/benchmark/DeviceInfoDisplay";
 import ExportButton from "@/components/benchmark/ExportButton";
 import CategoryTabs from "@/components/benchmark/CategoryTabs";
@@ -285,9 +286,25 @@ export default function BenchmarkPage() {
         {error && (
           <div
             role="alert"
-            className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900 dark:bg-red-900/20 dark:text-red-200"
+            className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900/40 dark:bg-red-900/20"
           >
-            {error}
+            <div className="flex gap-3">
+              <svg
+                className="mt-0.5 h-5 w-5 shrink-0 text-red-500 dark:text-red-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div>
+                <h3 className="text-sm font-bold text-red-800 dark:text-red-200">Benchmark Error</h3>
+                <p className="mt-1 text-sm text-red-700 dark:text-red-300">
+                  {error}
+                </p>
+              </div>
+            </div>
           </div>
         )}
         {progressMessage && (
@@ -334,9 +351,14 @@ export default function BenchmarkPage() {
               onBenchmarkStart={handleBenchmarkStart}
             />
             {deviceInfo && (
-              <DeviceInfoDisplay
-                deviceInfo={session?.deviceInfo ?? deviceInfo}
-              />
+              <div className="space-y-6">
+                <CpuInformationPanel
+                  deviceInfo={session?.deviceInfo ?? deviceInfo}
+                />
+                <DeviceInfoDisplay
+                  deviceInfo={session?.deviceInfo ?? deviceInfo}
+                />
+              </div>
             )}
           </div>
         </section>

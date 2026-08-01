@@ -6,10 +6,24 @@ import { generateChallengeData, type ChallengeData, type ChallengeDifficulty } f
 import { getWrongAnswerExplanation } from '../../lib/challenge/explain'
 import { CIPHER_REGISTRY } from '../../lib/cipher/registry'
 
+import {
+  safeGetItem,
+  safeSetItem,
+  safeGetItemJson,
+  safeSetItemJson,
+  safeJsonParse,
+} from '../../lib/utils/storage'
+
 type FeedbackState = 'idle' | 'correct' | 'incorrect'
 
-const TOTAL_QUESTIONS = 10
-const TIME_LIMIT = 60
+export type QuestionCountOption = 5 | 10 | 20
+export type TimeLimitOption = 30 | 60 | 120 | 0
+
+const QUESTION_COUNT_OPTIONS: readonly QuestionCountOption[] = [5, 10, 20]
+const TIME_LIMIT_OPTIONS: readonly TimeLimitOption[] = [30, 60, 120, 0]
+
+const DEFAULT_QUESTION_COUNT: QuestionCountOption = 10
+const DEFAULT_TIME_LIMIT: TimeLimitOption = 60
 
 const XP_BASE_CORRECT = 100
 const XP_PENALTY_PER_HINT = 20
@@ -21,6 +35,8 @@ const XP_TOTAL_KEY = 'cryptoviz_xp_total'
 const STREAK_COUNT_KEY = 'cryptoviz_streak_count'
 const STREAK_LAST_DATE_KEY = 'cryptoviz_streak_last_play_date'
 const BEST_SCORE_KEY = 'cryptoviz_best_score'
+const QUESTION_COUNT_KEY = 'cryptoviz_challenge_question_count'
+const TIME_LIMIT_KEY = 'cryptoviz_challenge_time_limit'
 
 type QuestionRun = {
   cipherId: ChallengeData['cipherId']
@@ -80,15 +96,6 @@ function computeEarnedXp(params: {
   return Math.max(XP_MIN_CORRECT, earned)
 }
 
-function safeJsonParse<T>(s: string | null): T | null {
-  if (!s) return null
-  try {
-    return JSON.parse(s) as T
-  } catch {
-    return null
-  }
-}
-
 function uid() {
   return Math.random().toString(36).slice(2) + '-' + Date.now().toString(36)
 }
@@ -106,6 +113,8 @@ export default function ChallengeMode() {
 
 
   const [difficulty, setDifficulty] = useState<ChallengeDifficulty>('medium')
+  const [questionCount, setQuestionCount] = useState<QuestionCountOption>(DEFAULT_QUESTION_COUNT)
+  const [timeLimit, setTimeLimit] = useState<TimeLimitOption>(DEFAULT_TIME_LIMIT)
   const [started, setStarted] = useState(false)
   const [replayMode, setReplayMode] = useState(false)
 
@@ -121,17 +130,27 @@ export default function ChallengeMode() {
   // Session state
   const [sessionChallenges, setSessionChallenges] = useState<ChallengeData[] | null>(null)
   const [expectedCiphertext, setExpectedCiphertext] = useState('')
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0) // 0..9
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0) // 0..n-1
   const [feedback, setFeedback] = useState<FeedbackState>('idle')
   const [copied, setCopied] = useState(false)
 
   const [answer, setAnswer] = useState('')
-  const [timeLeft, setTimeLeft] = useState(TIME_LIMIT)
+  const [timeLeft, setTimeLeft] = useState<number>(DEFAULT_TIME_LIMIT)
 
   const [showHintIndex, setShowHintIndex] = useState(0) // 0..n-1 (but reveals hint at index)
 
   const [questionRuns, setQuestionRuns] = useState<QuestionRun[] | null>(null)
   const [challengeExplanation, setChallengeExplanation] = useState<{ title: string; details: string[] } | null>(null)
+
+  const handleQuestionCountChange = useCallback((count: QuestionCountOption) => {
+    setQuestionCount(count)
+    safeSetItem(QUESTION_COUNT_KEY, String(count))
+  }, [])
+
+  const handleTimeLimitChange = useCallback((limit: TimeLimitOption) => {
+    setTimeLimit(limit)
+    safeSetItem(TIME_LIMIT_KEY, String(limit))
+  }, [])
 
   const currentChallenge = useMemo(() => {
     if (!sessionChallenges) return null
@@ -144,31 +163,44 @@ export default function ChallengeMode() {
   }, [currentChallenge])
 
   const progressPercent = useMemo(() => {
-    return Math.round((currentQuestionIndex / TOTAL_QUESTIONS) * 100)
-  }, [currentQuestionIndex])
+    return Math.round((currentQuestionIndex / questionCount) * 100)
+  }, [currentQuestionIndex, questionCount])
 
   // Hydration + persisted values
   useEffect(() => {
-    const savedBest = localStorage.getItem(BEST_SCORE_KEY)
+    const savedBest = safeGetItem(BEST_SCORE_KEY)
     if (savedBest) setBestScore(parseInt(savedBest, 10) || 0)
 
-    const savedXp = localStorage.getItem(XP_TOTAL_KEY)
+    const savedXp = safeGetItem(XP_TOTAL_KEY)
     if (savedXp) setXpTotal(parseInt(savedXp, 10) || 0)
 
-    const savedStreakCount = localStorage.getItem(STREAK_COUNT_KEY)
-    const savedStreakLast = localStorage.getItem(STREAK_LAST_DATE_KEY)
+    const savedStreakCount = safeGetItem(STREAK_COUNT_KEY)
 
     if (savedStreakCount) setStreak(parseInt(savedStreakCount, 10) || 0)
 
-    // If last date is invalid, keep streak as-is; streak update will happen on completion.
+    const savedCount = safeGetItem(QUESTION_COUNT_KEY)
+    if (savedCount) {
+      const val = parseInt(savedCount, 10)
+      if (QUESTION_COUNT_OPTIONS.includes(val as QuestionCountOption)) {
+        setQuestionCount(val as QuestionCountOption)
+      }
+    }
+
+    const savedTime = safeGetItem(TIME_LIMIT_KEY)
+    if (savedTime !== null) {
+      const val = parseInt(savedTime, 10)
+      if (TIME_LIMIT_OPTIONS.includes(val as TimeLimitOption)) {
+        setTimeLimit(val as TimeLimitOption)
+      }
+    }
 
     setIsHydrated(true)
   }, [])
 
   const generateSessionChallenges = useCallback(
-    (d: ChallengeDifficulty) => {
+    (d: ChallengeDifficulty, count: number) => {
       const arr: ChallengeData[] = []
-      for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+      for (let i = 0; i < count; i++) {
         arr.push(generateChallengeData(d))
       }
       return arr
@@ -205,11 +237,25 @@ export default function ChallengeMode() {
   }, [currentQuestionIndex, started])
 
 
-  // Timer
+  const advanceQuestion = useCallback(() => {
+    setFeedback('idle')
+    setChallengeExplanation(null)
+    setAnswer('')
+    setShowHintIndex(0)
+    setTimeLeft(timeLimit)
+
+    setCurrentQuestionIndex((i) => {
+      const next = i + 1
+      return next
+    })
+  }, [timeLimit])
+
+  // Timer effect for challenge countdown and untimed mode
   useEffect(() => {
     if (!currentChallenge) return
     if (feedback === 'correct') return
     if (loading) return
+    if (timeLimit === 0) return
 
     if (timeLeft === 0) {
       // mark incorrect due to timeout
@@ -249,20 +295,7 @@ export default function ChallengeMode() {
 
     const t = setTimeout(() => setTimeLeft((v) => v - 1), 1000)
     return () => clearTimeout(t)
-  }, [currentChallenge, feedback, loading, timeLeft, currentQuestionIndex, showHintIndex])
-
-  const advanceQuestion = useCallback(() => {
-    setFeedback('idle')
-    setChallengeExplanation(null)
-    setAnswer('')
-    setShowHintIndex(0)
-    setTimeLeft(TIME_LIMIT)
-
-    setCurrentQuestionIndex((i) => {
-      const next = i + 1
-      return next
-    })
-  }, [])
+  }, [currentChallenge, feedback, loading, timeLeft, currentQuestionIndex, showHintIndex, timeLimit, advanceQuestion])
 
   const resetSession = useCallback(() => {
     successTimeoutRef.current && clearTimeout(successTimeoutRef.current)
@@ -270,34 +303,34 @@ export default function ChallengeMode() {
     setReplayMode(false)
 
     setStarted(true)
-    setSessionChallenges(generateSessionChallenges(difficulty))
-    setQuestionRuns(new Array(TOTAL_QUESTIONS))
+    setSessionChallenges(generateSessionChallenges(difficulty, questionCount))
+    setQuestionRuns(new Array(questionCount))
     setCurrentQuestionIndex(0)
     setExpectedCiphertext('')
     setFeedback('idle')
     setChallengeExplanation(null)
     setAnswer('')
     setShowHintIndex(0)
-    setTimeLeft(TIME_LIMIT)
+    setTimeLeft(timeLimit)
     setCopied(false)
-  }, [difficulty, generateSessionChallenges])
+  }, [difficulty, questionCount, timeLimit, generateSessionChallenges])
 
   const startNewSession = useCallback(() => {
     successTimeoutRef.current && clearTimeout(successTimeoutRef.current)
     sessionPersistedRef.current = false
     setReplayMode(false)
-    setSessionChallenges(generateSessionChallenges(difficulty))
-    setQuestionRuns(new Array(TOTAL_QUESTIONS))
+    setSessionChallenges(generateSessionChallenges(difficulty, questionCount))
+    setQuestionRuns(new Array(questionCount))
     setCurrentQuestionIndex(0)
     setExpectedCiphertext('')
     setFeedback('idle')
     setChallengeExplanation(null)
     setAnswer('')
     setShowHintIndex(0)
-    setTimeLeft(TIME_LIMIT)
+    setTimeLeft(timeLimit)
     setCopied(false)
     setStarted(true)
-  }, [difficulty, generateSessionChallenges])
+  }, [difficulty, questionCount, timeLimit, generateSessionChallenges])
 
   const handleCopy = () => {
     if (!expectedCiphertext) return
@@ -438,10 +471,10 @@ export default function ChallengeMode() {
     if (sessionPersistedRef.current) return
     if (!started) return
     if (!questionRuns) return
-    if (currentQuestionIndex <= TOTAL_QUESTIONS - 1) return
+    if (currentQuestionIndex <= questionCount - 1) return
 
     const completed = questionRuns.filter(Boolean) as QuestionRun[]
-    if (completed.length !== TOTAL_QUESTIONS) return
+    if (completed.length !== questionCount) return
 
     const sessionXp = completed.reduce((a, r) => a + r.earnedXp, 0)
     const correctCount = completed.filter((r) => r.correct).length
@@ -451,16 +484,16 @@ export default function ChallengeMode() {
 
     const now = new Date()
     const todayKey = formatLocalDateKey(now)
-    const lastKey = localStorage.getItem(STREAK_LAST_DATE_KEY)
+    const lastKey = safeGetItem(STREAK_LAST_DATE_KEY)
     const lastDate = lastKey ? parseLocalDateKey(lastKey) : null
 
     let newStreak = 1
     if (lastDate) {
       const diff = daysBetweenLocalDates(lastDate, now)
       if (diff === 0) {
-        newStreak = parseInt(localStorage.getItem(STREAK_COUNT_KEY) || '0', 10) || 0
+        newStreak = parseInt(safeGetItem(STREAK_COUNT_KEY) || '0', 10) || 0
       } else if (diff === 1) {
-        newStreak = (parseInt(localStorage.getItem(STREAK_COUNT_KEY) || '0', 10) || 0) + 1
+        newStreak = (parseInt(safeGetItem(STREAK_COUNT_KEY) || '0', 10) || 0) + 1
       } else {
         newStreak = 1
       }
@@ -471,9 +504,9 @@ export default function ChallengeMode() {
     setStreak(newStreak)
     setXpTotal((prev) => prev + sessionXp)
 
-    localStorage.setItem(XP_TOTAL_KEY, String((parseInt(localStorage.getItem(XP_TOTAL_KEY) || '0', 10) || 0) + sessionXp))
-    localStorage.setItem(STREAK_COUNT_KEY, String(newStreak))
-    localStorage.setItem(STREAK_LAST_DATE_KEY, todayKey)
+    safeSetItem(XP_TOTAL_KEY, String((parseInt(safeGetItem(XP_TOTAL_KEY) || '0', 10) || 0) + sessionXp))
+    safeSetItem(STREAK_COUNT_KEY, String(newStreak))
+    safeSetItem(STREAK_LAST_DATE_KEY, todayKey)
 
     // history
     const accuracy = completed.length ? correctCount / completed.length : 0
@@ -494,41 +527,41 @@ export default function ChallengeMode() {
       })),
     }
 
-    const prevHistory = safeJsonParse<ChallengeHistoryEntry[]>(localStorage.getItem(HISTORY_KEY)) ?? []
+    const prevHistory = safeGetItemJson<ChallengeHistoryEntry[]>(HISTORY_KEY, [])
     const nextHistory = [entry, ...prevHistory].slice(0, HISTORY_CAP)
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(nextHistory))
+    safeSetItemJson(HISTORY_KEY, nextHistory)
 
     // best score legacy
     setBestScore((prev) => {
       const next = Math.max(prev, legacyScore)
-      localStorage.setItem(BEST_SCORE_KEY, String(next))
+      safeSetItem(BEST_SCORE_KEY, String(next))
       return next
     })
 
     // Mark this session as persisted to prevent double-persistence
     sessionPersistedRef.current = true
-  }, [started, questionRuns, currentQuestionIndex, difficulty])
+  }, [started, questionRuns, currentQuestionIndex, difficulty, questionCount])
 
   const handleReplay = useCallback(() => {
     if (!sessionChallenges) return
     successTimeoutRef.current && clearTimeout(successTimeoutRef.current)
     sessionPersistedRef.current = false
     setReplayMode(true)
-    setQuestionRuns(new Array(TOTAL_QUESTIONS))
+    setQuestionRuns(new Array(questionCount))
     setCurrentQuestionIndex(0)
     setExpectedCiphertext('')
     setFeedback('idle')
     setChallengeExplanation(null)
     setAnswer('')
     setShowHintIndex(0)
-    setTimeLeft(TIME_LIMIT)
+    setTimeLeft(timeLimit)
     setCopied(false)
-  }, [sessionChallenges])
+  }, [sessionChallenges, timeLimit])
 
   // Completion screen when index reached end
-  if (currentQuestionIndex > TOTAL_QUESTIONS - 1 && sessionSummary) {
+  if (currentQuestionIndex > questionCount - 1 && sessionSummary) {
     const sessionCorrect = sessionSummary.correctCount
-    const totalQuestions = TOTAL_QUESTIONS
+    const totalQuestions = questionCount
     const isNewBest = sessionCorrect * XP_BASE_CORRECT >= bestScore && sessionCorrect > 0
 
     return (
@@ -657,6 +690,65 @@ export default function ChallengeMode() {
               </button>
             ))}
           </div>
+
+          {/* Question Count Selector */}
+          <div className="mt-6 text-left">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Questions Per Session</label>
+            <div role="radiogroup" aria-label="Question count" className="mt-2 grid grid-cols-3 gap-3">
+              {(
+                [
+                  { value: 5, label: '5 Questions' },
+                  { value: 10, label: '10 Questions' },
+                  { value: 20, label: '20 Questions' },
+                ] as const
+              ).map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={questionCount === opt.value}
+                  onClick={() => handleQuestionCountChange(opt.value)}
+                  className={`rounded-lg border py-2.5 px-3 text-center text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                    questionCount === opt.value
+                      ? 'border-teal-500 bg-teal-50 text-teal-900 dark:border-teal-400 dark:bg-teal-950/40 dark:text-teal-200'
+                      : 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-300 dark:hover:border-zinc-700'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Time Limit Selector */}
+          <div className="mt-6 text-left">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Timer Duration</label>
+            <div role="radiogroup" aria-label="Timer duration" className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {(
+                [
+                  { value: 30, label: '30s Blitz' },
+                  { value: 60, label: '60s Standard' },
+                  { value: 120, label: '120s Extended' },
+                  { value: 0, label: 'Untimed' },
+                ] as const
+              ).map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={timeLimit === opt.value}
+                  onClick={() => handleTimeLimitChange(opt.value)}
+                  className={`rounded-lg border py-2.5 px-3 text-center text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                    timeLimit === opt.value
+                      ? 'border-teal-500 bg-teal-50 text-teal-900 dark:border-teal-400 dark:bg-teal-950/40 dark:text-teal-200'
+                      : 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-300 dark:hover:border-zinc-700'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
           <button
             type="button"
             onClick={startNewSession}
@@ -686,7 +778,7 @@ export default function ChallengeMode() {
     )
   }
 
-  const timePercent = (timeLeft / TIME_LIMIT) * 100
+  const timePercent = timeLimit === 0 ? 100 : (timeLeft / timeLimit) * 100
   const maxHintIndex = Math.max(0, currentChallenge.hints.length - 1)
   const hintText = currentChallenge.hints[showHintIndex]
 
@@ -743,9 +835,9 @@ export default function ChallengeMode() {
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeDasharray="138.2"
-                    strokeDashoffset={138.2 - 138.2 * (timeLeft / TIME_LIMIT)}
+                    strokeDashoffset={timeLimit === 0 ? 0 : 138.2 - 138.2 * (timeLeft / timeLimit)}
                     className="transition-all duration-1000 ease-linear"
-                    style={{ stroke: timeLeft <= 10 ? '#ef4444' : 'currentColor' }}
+                    style={{ stroke: timeLimit > 0 && timeLeft <= 10 ? '#ef4444' : 'currentColor' }}
                   />
                 </svg>
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -754,7 +846,9 @@ export default function ChallengeMode() {
               </div>
               <div className="min-w-0">
                 <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Time Left</div>
-                <div className={`mt-0.5 text-lg font-mono font-bold tabular-nums truncate ${timeLeft <= 10 ? 'text-red-500 animate-pulse' : 'text-zinc-900 dark:text-white'}`} aria-live={timeLeft <= 10 ? 'assertive' : 'polite'} aria-atomic="true">00:{timeLeft.toString().padStart(2, '0')}</div>
+                <div className={`mt-0.5 text-lg font-mono font-bold tabular-nums truncate ${timeLimit > 0 && timeLeft <= 10 ? 'text-red-500 animate-pulse' : 'text-zinc-900 dark:text-white'}`} aria-live={timeLimit > 0 && timeLeft <= 10 ? 'assertive' : 'polite'} aria-atomic="true">
+                  {timeLimit === 0 ? 'Untimed' : `${Math.floor(timeLeft / 60).toString().padStart(2, '0')}:${(timeLeft % 60).toString().padStart(2, '0')}`}
+                </div>
               </div>
             </div>
           </div>
@@ -835,9 +929,20 @@ export default function ChallengeMode() {
                   <div className="px-5 py-6 sm:px-8">
                     {error ? (
                       <div className="flex flex-col gap-3">
-                        <div className="flex flex-col gap-1">
-                          <span className="font-mono text-sm text-red-400">{String(error)}</span>
-                          <span className="text-xs text-red-300 dark:text-red-200">Could not generate expected ciphertext.</span>
+                        <div className="flex items-start gap-2.5">
+                          <svg
+                            className="mt-0.5 h-4 w-4 shrink-0 text-red-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          <div className="flex flex-col gap-0.5">
+                            <span className="font-mono text-sm font-semibold text-red-400">{String(error)}</span>
+                            <span className="text-xs text-red-300/80">Could not generate expected ciphertext.</span>
+                          </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <button
@@ -846,7 +951,10 @@ export default function ChallengeMode() {
                             disabled={loading || cipherRetryCount >= MAX_CIPHERTEXT_RETRIES}
                             className="inline-flex items-center justify-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 transition-all hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800/40 dark:bg-red-900/20 dark:text-red-200 dark:hover:bg-red-900/30 dark:focus:ring-offset-zinc-900"
                           >
-                            <span>Retry</span>
+                            <svg className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            <span>{loading ? 'Retrying…' : 'Retry'}</span>
                             <span className="text-[10px] opacity-80">({cipherRetryCount}/{MAX_CIPHERTEXT_RETRIES})</span>
                           </button>
                         </div>
@@ -963,11 +1071,11 @@ export default function ChallengeMode() {
           <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40 transition-all hover:shadow-md">
             <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Your Progress</h3>
             <div className="flex items-center justify-between text-sm font-semibold text-zinc-900 dark:text-white">
-              <span>Question {currentQuestionIndex + 1} of {TOTAL_QUESTIONS}</span>
+              <span>Question {currentQuestionIndex + 1} of {questionCount}</span>
               <span className="text-teal-600 dark:text-teal-400">{progressPercent}%</span>
             </div>
             <div className="mt-4 flex h-2 w-full gap-1">
-              {Array.from({ length: TOTAL_QUESTIONS }).map((_, i) => (
+              {Array.from({ length: questionCount }).map((_, i) => (
                 <div
                   key={i}
                   className={`h-full flex-1 rounded-full transition-colors ${
@@ -1037,10 +1145,9 @@ export default function ChallengeMode() {
         </div>
       </div>
 
-      <div className="h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800" role="progressbar" aria-valuenow={timeLeft} aria-valuemin={0} aria-valuemax={TIME_LIMIT} aria-label="Time remaining">
-        <div className={`h-full rounded-full transition-all duration-1000 ease-linear ${timeLeft <= 10 ? 'bg-red-500' : 'bg-teal-600 dark:bg-teal-500'}`} style={{ width: `${timePercent}%` }} />
+      <div className="h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800" role="progressbar" aria-valuenow={timeLimit === 0 ? 100 : timeLeft} aria-valuemin={0} aria-valuemax={timeLimit === 0 ? 100 : timeLimit} aria-label="Time remaining">
+        <div className={`h-full rounded-full transition-all duration-1000 ease-linear ${timeLimit > 0 && timeLeft <= 10 ? 'bg-red-500' : 'bg-teal-600 dark:bg-teal-500'}`} style={{ width: `${timePercent}%` }} />
       </div>
     </div>
   )
 }
-

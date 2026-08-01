@@ -7,6 +7,9 @@ import {
   DocCategory,
   CipherDocCategory,
   GeneralDocCategory,
+  getDocSlug,
+  getDocsForTrack,
+  type LearningTrack,
 } from "./data";
 import { DocumentationSection } from "./components/DocumentationSection";
 import { MathBlock } from "./components/MathBlock";
@@ -17,25 +20,27 @@ import { ReferenceList } from "./components/ReferenceList";
 import { DocumentationProgressActions } from "./components/DocumentationProgressActions";
 import { LearningProgressPanel } from "./components/LearningProgressPanel";
 import { useDocumentationProgress } from "./components/useDocumentationProgress";
+import { LearningTrackSelector } from "./components/LearningTrackSelector";
+import { RecommendedNextLinks } from "./components/RecommendedNextLinks";
+import { DifficultyBadge } from "./components/DifficultyBadge";
+import { ReadingTime } from "./components/ReadingTime";
+import { Prerequisites } from "./components/Prerequisites";
+import { getTitleScore, getDescriptionScore } from "../../lib/utils/fuzzySearch";
+import GlossaryTextRenderer from "../../components/glossary/GlossaryTextRenderer";
 
 interface SearchItem {
   category: DocCategory;
   field: string;
   snippet: string;
+  score?: number;
 }
-
-const getDocSlug = (title: string) =>
-  title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
 
 export default function DocumentationPage() {
   const [activeSection, setActiveSection] = useState<DocCategory>(
     docCategories[0],
   );
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [activeTrack, setActiveTrack] = useState<LearningTrack | null>(null);
 
   // Search and highlighting states
   const [searchOpen, setSearchOpen] = useState(false);
@@ -47,8 +52,20 @@ export default function DocumentationPage() {
   // Table of Contents tracking
   const [activeHeadingId, setActiveHeadingId] = useState("overview");
 
-  const generalDocs = docCategories.filter((c) => c.type === "general");
-  const cipherDocs = docCategories.filter((c) => c.type === "cipher");
+  // Filter docs based on active learning track
+  const filteredDocs = useMemo(() => {
+    if (!activeTrack) return docCategories;
+    return getDocsForTrack(activeTrack);
+  }, [activeTrack]);
+
+  const filteredGeneralDocs = useMemo(
+    () => filteredDocs.filter((c) => c.type === "general"),
+    [filteredDocs],
+  );
+  const filteredCipherDocs = useMemo(
+    () => filteredDocs.filter((c) => c.type === "cipher"),
+    [filteredDocs],
+  );
 
   const docSlugs = useMemo(
     () => docCategories.map((category) => getDocSlug(category.title)),
@@ -64,18 +81,65 @@ export default function DocumentationPage() {
     percent,
   } = useDocumentationProgress(docSlugs);
 
+  // Calculate progress for filtered docs
+  const filteredProgress = useMemo(() => {
+    const completedInFiltered = filteredDocs.filter((doc) =>
+      progress.completed.includes(getDocSlug(doc.title)),
+    ).length;
+    return {
+      completed: completedInFiltered,
+      total: filteredDocs.length,
+      percent: filteredDocs.length > 0
+        ? Math.round((completedInFiltered / filteredDocs.length) * 100)
+        : 0,
+    };
+  }, [filteredDocs, progress.completed]);
+
   const activeSlug = getDocSlug(activeSection.title);
   const isBookmarked = progress.bookmarks.includes(activeSlug);
   const isCompleted = progress.completed.includes(activeSlug);
 
+  // Automatic reading progress detection
+  useEffect(() => {
+    if (!hasLoaded || isCompleted) return;
+
+    let timeoutId: NodeJS.Timeout;
+
+    const checkCompletion = () => {
+      const scrollPos = window.scrollY + window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+
+      // 95% threshold or close to bottom
+      if (scrollPos >= docHeight * 0.95 || docHeight - scrollPos < 100) {
+        toggleCompleted(activeSlug);
+      }
+    };
+
+    const handleScroll = () => {
+      clearTimeout(timeoutId);
+      // Debounce: ensure user has stopped scrolling (reading) for 1 second near the bottom
+      timeoutId = setTimeout(checkCompletion, 1000);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Initial check for short documents
+    timeoutId = setTimeout(checkCompletion, 2000);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(timeoutId);
+    };
+  }, [activeSlug, isCompleted, hasLoaded, toggleCompleted]);
+
   // Next / Previous Navigation items
-  const currentIndex = docCategories.findIndex(
+  const currentIndex = filteredDocs.findIndex(
     (c) => c.title === activeSection.title,
   );
-  const prevSection = currentIndex > 0 ? docCategories[currentIndex - 1] : null;
+  const prevSection = currentIndex > 0 ? filteredDocs[currentIndex - 1] : null;
   const nextSection =
-    currentIndex < docCategories.length - 1
-      ? docCategories[currentIndex + 1]
+    currentIndex < filteredDocs.length - 1
+      ? filteredDocs[currentIndex + 1]
       : null;
 
   // Generate dynamic TOC elements
@@ -188,6 +252,18 @@ export default function DocumentationPage() {
               {node}
             </code>
           );
+        } else if (typeof part === "string") {
+          node = <GlossaryTextRenderer key={idx} content={part} />;
+          if (isBold) {
+            node = (
+              <strong
+                key={idx}
+                className="font-semibold text-zinc-900 dark:text-white"
+              >
+                {node}
+              </strong>
+            );
+          }
         } else if (isBold) {
           node = (
             <strong
@@ -254,18 +330,21 @@ export default function DocumentationPage() {
     const q = searchQuery.toLowerCase().trim();
     const results: SearchItem[] = [];
 
-    docCategories.forEach((cat) => {
-      // Check title
-      if (cat.title.toLowerCase().includes(q)) {
-        results.push({ category: cat, field: "Title", snippet: cat.title });
+    filteredDocs.forEach((cat) => {
+      // Check title with fuzzy scoring
+      const titleScore = getTitleScore(q, cat.title);
+      if (titleScore > 0) {
+        results.push({ category: cat, field: "Title", snippet: cat.title, score: titleScore });
       }
 
-      // Check description
-      if (cat.description.toLowerCase().includes(q)) {
+      // Check description with fuzzy scoring
+      const descScore = getDescriptionScore(q, cat.description);
+      if (descScore > 0) {
         results.push({
           category: cat,
           field: "Description",
           snippet: cat.description,
+          score: descScore,
         });
       }
 
@@ -279,7 +358,7 @@ export default function DocumentationPage() {
             (start > 0 ? "..." : "") +
             general.content.substring(start, end) +
             (end < general.content.length ? "..." : "");
-          results.push({ category: cat, field: "Content", snippet });
+          results.push({ category: cat, field: "Content", snippet, score: 40 });
         }
       } else {
         const cipher = cat as CipherDocCategory;
@@ -293,7 +372,7 @@ export default function DocumentationPage() {
             (start > 0 ? "..." : "") +
             text.substring(start, end) +
             (end < text.length ? "..." : "");
-          results.push({ category: cat, field: "Overview", snippet });
+          results.push({ category: cat, field: "Overview", snippet, score: 40 });
         }
 
         if (cipher.overview.description.toLowerCase().includes(q)) {
@@ -305,12 +384,12 @@ export default function DocumentationPage() {
             (start > 0 ? "..." : "") +
             text.substring(start, end) +
             (end < text.length ? "..." : "");
-          results.push({ category: cat, field: "Overview", snippet });
+          results.push({ category: cat, field: "Overview", snippet, score: 40 });
         }
 
         cipher.mathematics.explanation.forEach((exp) => {
           if (exp.toLowerCase().includes(q)) {
-            results.push({ category: cat, field: "Mathematics", snippet: exp });
+            results.push({ category: cat, field: "Mathematics", snippet: exp, score: 40 });
           }
         });
 
@@ -320,19 +399,20 @@ export default function DocumentationPage() {
               category: cat,
               field: "Worked Example",
               snippet: step.description,
+              score: 40,
             });
           }
         });
 
         cipher.securityAnalysis.advantages.forEach((adv) => {
           if (adv.toLowerCase().includes(q)) {
-            results.push({ category: cat, field: "Advantage", snippet: adv });
+            results.push({ category: cat, field: "Advantage", snippet: adv, score: 40 });
           }
         });
 
         cipher.securityAnalysis.weaknesses.forEach((weak) => {
           if (weak.toLowerCase().includes(q)) {
-            results.push({ category: cat, field: "Weakness", snippet: weak });
+            results.push({ category: cat, field: "Weakness", snippet: weak, score: 40 });
           }
         });
 
@@ -342,14 +422,17 @@ export default function DocumentationPage() {
               category: cat,
               field: "Applications",
               snippet: app,
+              score: 40,
             });
           }
         });
       }
     });
 
+    results.sort((a, b) => (b.score || 0) - (a.score || 0));
+
     return results.slice(0, 8);
-  }, [searchQuery]);
+  }, [searchQuery, filteredDocs]);
 
   // Navigate Search results with Keyboard (Arrow keys & Enter)
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -662,6 +745,10 @@ export default function DocumentationPage() {
               <input
                 ref={searchInputRef}
                 type="text"
+                role="combobox"
+                aria-expanded={searchOpen}
+                aria-controls="search-listbox"
+                aria-activedescendant={searchResults.length > 0 ? `search-option-${activeIndex}` : undefined}
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -679,12 +766,15 @@ export default function DocumentationPage() {
             {/* Results list */}
             <div className="overflow-y-auto flex-1 py-2">
               {searchResults.length > 0 ? (
-                <div className="px-2 space-y-1">
+                <div id="search-listbox" role="listbox" className="px-2 space-y-1">
                   {searchResults.map((item, idx) => {
                     const isFocused = idx === activeIndex;
                     return (
                       <button
                         key={idx}
+                        id={`search-option-${idx}`}
+                        role="option"
+                        aria-selected={isFocused}
                         onClick={() => handleSelectResult(item)}
                         className={`w-full text-left p-3 rounded-lg flex flex-col gap-1 transition-all ${
                           isFocused
@@ -787,10 +877,10 @@ export default function DocumentationPage() {
             {hasLoaded && (
               <div className="mb-8">
                 <LearningProgressPanel
-                  completedCount={progress.completed.length}
+                  completedCount={activeTrack ? filteredProgress.completed : progress.completed.length}
                   bookmarkedCount={progress.bookmarks.length}
-                  totalCount={docCategories.length}
-                  percent={percent}
+                  totalCount={activeTrack ? filteredProgress.total : docCategories.length}
+                  percent={activeTrack ? filteredProgress.percent : percent}
                   onClear={() => {
                     if (
                       window.confirm(
@@ -803,11 +893,18 @@ export default function DocumentationPage() {
                 />
               </div>
             )}
+            <div className="mb-8">
+              <LearningTrackSelector
+                activeTrack={activeTrack}
+                onTrackChange={setActiveTrack}
+                completedSlugs={new Set(progress.completed)}
+              />
+            </div>
             <h3 className="text-xs font-mono font-bold text-zinc-450 dark:text-zinc-550 uppercase tracking-widest mb-3 px-2">
               Overview
             </h3>
             <nav className="space-y-1">
-              {generalDocs.map((category) => {
+              {filteredGeneralDocs.map((category) => {
                 const isSelected = activeSection.title === category.title;
                 const slug = getDocSlug(category.title);
                 const bookmarked = progress.bookmarks.includes(slug);
@@ -861,7 +958,7 @@ export default function DocumentationPage() {
               Ciphers
             </h3>
             <nav className="space-y-1">
-              {cipherDocs.map((category) => {
+              {filteredCipherDocs.map((category) => {
                 const isSelected = activeSection.title === category.title;
                 const slug = getDocSlug(category.title);
                 const bookmarked = progress.bookmarks.includes(slug);
@@ -948,9 +1045,32 @@ export default function DocumentationPage() {
           <h1 className="text-3xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight mb-2 select-text">
             {activeSection.title}
           </h1>
+          
+          <div className="flex items-center gap-3 mb-3">
+            <DifficultyBadge difficulty={activeSection.difficulty} />
+            <ReadingTime minutes={activeSection.readingTimeMinutes} />
+          </div>
+
           <p className="text-sm font-sans text-zinc-550 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800 pb-6 mb-6 leading-relaxed select-text">
             {renderFormattedText(activeSection.description, activeQuery)}
           </p>
+
+          {hasLoaded && activeSection.prerequisites && (
+            <div className="mb-6">
+              <Prerequisites
+                prerequisites={activeSection.prerequisites}
+                completedSlugs={new Set(progress.completed)}
+                onSelectDoc={(title) => {
+                  const doc = docCategories.find((d) => d.title === title);
+                  if (doc) {
+                    setActiveSection(doc);
+                    setActiveQuery("");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+                }}
+              />
+            </div>
+          )}
 
           {hasLoaded && (
             <div className="mb-6">
@@ -1010,6 +1130,23 @@ export default function DocumentationPage() {
               <div className="flex-1 hidden sm:block" />
             )}
           </div>
+
+          {hasLoaded && activeSection.recommendedNext && (
+            <div className="mb-6">
+              <RecommendedNextLinks
+                recommendedNext={activeSection.recommendedNext}
+                completedSlugs={new Set(progress.completed)}
+                onSelectDoc={(title) => {
+                  const doc = docCategories.find((d) => d.title === title);
+                  if (doc) {
+                    setActiveSection(doc);
+                    setActiveQuery("");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+                }}
+              />
+            </div>
+          )}
 
           {/* Unit tests footer warning banner */}
           <section

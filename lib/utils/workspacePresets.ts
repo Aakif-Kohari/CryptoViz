@@ -8,6 +8,11 @@ export const ANIMATION_SPEEDS = [0.5, 1, 2, 4] as const;
 
 export type AnimationSpeed = (typeof ANIMATION_SPEEDS)[number];
 
+import {
+  safeGetItemJson,
+  safeSetItemJson,
+} from "./storage";
+
 export interface WorkspacePreset {
   id: string;
   version: typeof WORKSPACE_PRESETS_VERSION;
@@ -37,6 +42,7 @@ const SAFE_OPTION_KEYS = new Set([
   "rounds",
   "demoMode",
   "bobSecret",
+  "padding",
 ]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -137,26 +143,15 @@ export function normalizeWorkspacePresets(value: unknown): WorkspacePreset[] {
 }
 
 export function loadWorkspacePresets(): WorkspacePreset[] {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const raw = window.localStorage.getItem(WORKSPACE_PRESETS_STORAGE_KEY);
-    return raw ? normalizeWorkspacePresets(JSON.parse(raw)) : [];
-  } catch {
-    return [];
-  }
+  const parsed = safeGetItemJson<unknown>(WORKSPACE_PRESETS_STORAGE_KEY, null);
+  return parsed !== null ? normalizeWorkspacePresets(parsed) : [];
 }
 
 export function saveWorkspacePresets(
   presets: WorkspacePreset[],
 ): WorkspacePreset[] {
   const normalized = normalizeWorkspacePresets(presets);
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(
-      WORKSPACE_PRESETS_STORAGE_KEY,
-      JSON.stringify(normalized),
-    );
-  }
+  safeSetItemJson(WORKSPACE_PRESETS_STORAGE_KEY, normalized);
   return normalized;
 }
 

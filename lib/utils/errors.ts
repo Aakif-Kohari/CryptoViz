@@ -67,3 +67,41 @@ export function validateKey(key: unknown): asserts key is string {
     throw new CipherError('INVALID_KEY', 'Key must be a string.')
   }
 }
+/**
+ * Validate that a string is a valid hexadecimal value.
+ */
+export function validateHexString(
+  value: string,
+  field = "Input"
+): void {
+  if (/[^0-9a-fA-F]/.test(value)) {
+    throw new CipherError(
+      "INVALID_INPUT",
+      `${field} contains non-hexadecimal characters.`
+    )
+  }
+
+  if (value.length % 2 !== 0) {
+    throw new CipherError(
+      "INVALID_INPUT",
+      `${field} must contain an even number of hexadecimal characters.`
+    )
+  }
+}
+
+/**
+ * Validate maximum byte length.
+ */
+export function validateMaxInputBytes(
+  input: string,
+  maxBytes: number
+): void {
+  const size = new TextEncoder().encode(input).length
+
+  if (size > maxBytes) {
+    throw new CipherError(
+      "INPUT_TOO_LONG",
+      `Input exceeds maximum size of ${maxBytes} bytes.`
+    )
+  }
+}

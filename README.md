@@ -13,10 +13,29 @@ Interact with Cryptography, Visualised in Real-Time.
 CryptoViz is a fully static Next.js 15 cybersecurity visualizer and cryptography learning platform. It allows developers, students, and security professionals to explore cryptographic algorithms step-by-step with off-thread calculations. The platform operates client-side inside secure browser Web Workers, rendering interactive visual trace state machines.
 
 ---
+## Why CryptoViz?
 
+- Interactive step-by-step cryptography visualizations
+- Runs entirely in the browser
+- No server required
+- Educational and beginner-friendly
+- Open source
+
+---
 ## 🔗 Live Demo
 
-Visit the production site at [crypto-viz-liart.vercel.app](crypto-viz-liart.vercel.app). Explore the interactive visualizer ciphers, read built-in cybersecurity documentation, and browse our curated learning resources list.
+Visit the production site at [Live Demo](https://crypto-viz-liart.vercel.app). Explore the interactive visualizer ciphers, read built-in cybersecurity documentation, and browse our curated learning resources list.
+
+---
+## Table of Contents
+
+- Features
+- Architecture
+- Tech Stack
+- Getting Started
+- Commands
+- Contributing
+- License
 
 ---
 
@@ -282,3 +301,13 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 - **Radix UI**: Accessible primitives enabling clean Tailwind components.
 - **Pagefind**: Fast, static indexing engine running inside WASM.
 - **NIST & IETF**: FIPS and RFC committees for publishing test vectors.
+## Continuous Integration
+
+GitHub Actions automatically validates every pull request targeting the `main` branch by running:
+
+- ESLint
+- TypeScript type checking
+- Unit tests
+- Production build
+
+Repository maintainers can optionally enable GitHub Branch Protection Rules to require these checks before merging.

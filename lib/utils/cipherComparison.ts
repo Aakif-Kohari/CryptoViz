@@ -1,7 +1,7 @@
 import type {
   CipherDefinition,
 } from '../cipher/registry'
-import type { CipherDirection } from '../cipher/types'
+import type { CipherDirection, CipherOptions } from '../cipher/types'
 
 export interface ComparisonSelection {
   leftCipherId: string
@@ -13,6 +13,14 @@ export interface ComparisonPanelState {
   direction: CipherDirection
   key: string
   options: Record<string, string | number | boolean>
+}
+
+export interface CipherWorkerOptions extends CipherOptions {
+  instrument: true
+  hexInput?: boolean
+  rounds?: number
+  mode?: 'real' | 'demo'
+  bobSecret?: string
 }
 
 export function getSupportedDirections(
@@ -69,8 +77,8 @@ export function swapComparisonSelection(
 export function createCipherWorkerOptions(
   cipher: CipherDefinition,
   options: Record<string, string | number | boolean>,
-): Record<string, unknown> {
-  const workerOptions: Record<string, unknown> = {
+): CipherWorkerOptions {
+  const workerOptions: CipherWorkerOptions = {
     instrument: true,
   }
 

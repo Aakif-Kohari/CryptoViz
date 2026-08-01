@@ -1,0 +1,627 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Visualization Component Snapshot Tests > matches snapshot for ByteHeatmap component 1`] = `
+<DocumentFragment>
+  <div
+    aria-label="Output byte diff heatmap"
+    class="grid gap-1"
+    role="grid"
+    style="grid-template-columns: repeat(8, minmax(0, 1fr));"
+  >
+    <div
+      aria-label="Byte 0: 41 (changed)"
+      class="flex aspect-square items-center justify-center rounded-md font-mono text-[11px] font-semibold tabular-nums outline-none transition-colors focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-zinc-950 bg-amber-400 text-amber-950 dark:bg-amber-400 dark:text-amber-950"
+      role="gridcell"
+      tabindex="0"
+    >
+      41
+    </div>
+    <div
+      aria-label="Byte 1: 42 (changed)"
+      class="flex aspect-square items-center justify-center rounded-md font-mono text-[11px] font-semibold tabular-nums outline-none transition-colors focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-zinc-950 bg-red-600 text-white dark:bg-red-500"
+      role="gridcell"
+      tabindex="-1"
+    >
+      42
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Visualization Component Snapshot Tests > matches snapshot for PlayfairGrid matrix component 1`] = `
+<DocumentFragment>
+  <div
+    class="flex flex-col items-center justify-center p-4"
+  >
+    <h5
+      class="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500"
+    >
+      Playfair 5x5 Matrix (I/J Shared)
+    </h5>
+    <div
+      aria-label="Playfair 5x5 key square"
+      class="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 dark:border-zinc-800 dark:bg-zinc-950/30"
+      role="grid"
+    >
+      <div
+        class="flex gap-2"
+        role="row"
+      >
+        <div
+          aria-label="Row 1, column 1: M"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="0"
+        >
+          M
+        </div>
+        <div
+          aria-label="Row 1, column 2: O"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          O
+        </div>
+        <div
+          aria-label="Row 1, column 3: N"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          N
+        </div>
+        <div
+          aria-label="Row 1, column 4: A"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          A
+        </div>
+        <div
+          aria-label="Row 1, column 5: R"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          R
+        </div>
+      </div>
+      <div
+        class="flex gap-2"
+        role="row"
+      >
+        <div
+          aria-label="Row 2, column 1: C"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          C
+        </div>
+        <div
+          aria-label="Row 2, column 2: H"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          H
+        </div>
+        <div
+          aria-label="Row 2, column 3: Y"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          Y
+        </div>
+        <div
+          aria-label="Row 2, column 4: B"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          B
+        </div>
+        <div
+          aria-label="Row 2, column 5: D"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          D
+        </div>
+      </div>
+      <div
+        class="flex gap-2"
+        role="row"
+      >
+        <div
+          aria-label="Row 3, column 1: E"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          E
+        </div>
+        <div
+          aria-label="Row 3, column 2: F"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          F
+        </div>
+        <div
+          aria-label="Row 3, column 3: G"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          G
+        </div>
+        <div
+          aria-label="Row 3, column 4: I"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          I
+        </div>
+        <div
+          aria-label="Row 3, column 5: K"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          K
+        </div>
+      </div>
+      <div
+        class="flex gap-2"
+        role="row"
+      >
+        <div
+          aria-label="Row 4, column 1: L"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          L
+        </div>
+        <div
+          aria-label="Row 4, column 2: P"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          P
+        </div>
+        <div
+          aria-label="Row 4, column 3: Q"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          Q
+        </div>
+        <div
+          aria-label="Row 4, column 4: S"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          S
+        </div>
+        <div
+          aria-label="Row 4, column 5: T"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          T
+        </div>
+      </div>
+      <div
+        class="flex gap-2"
+        role="row"
+      >
+        <div
+          aria-label="Row 5, column 1: U"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          U
+        </div>
+        <div
+          aria-label="Row 5, column 2: V"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          V
+        </div>
+        <div
+          aria-label="Row 5, column 3: W"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          W
+        </div>
+        <div
+          aria-label="Row 5, column 4: X"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          X
+        </div>
+        <div
+          aria-label="Row 5, column 5: Z"
+          aria-selected="false"
+          class="flex h-12 w-12 items-center justify-center rounded-lg border font-mono text-lg font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 border-zinc-200 bg-white text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+          role="gridcell"
+          tabindex="-1"
+        >
+          Z
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Visualization Component Snapshot Tests > matches snapshot for SkeletonCard component 1`] = `
+<DocumentFragment>
+  <div
+    class="relative overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900 flex h-[220px] flex-col p-4 sm:h-[240px]"
+    data-testid="skeleton-card"
+  >
+    <div
+      class="absolute inset-0"
+    >
+      <div
+        class="h-full w-1/2 bg-gradient-to-r from-zinc-200/0 via-zinc-200/70 to-zinc-200/0 dark:from-zinc-700/0 dark:via-zinc-700/70 dark:to-zinc-700/0"
+      />
+    </div>
+    <div
+      class="relative z-10 flex h-full flex-col justify-between"
+    >
+      <div
+        class="space-y-3"
+      >
+        <div
+          class="flex items-center justify-between"
+        >
+          <div
+            class="h-4 w-20 rounded-full bg-zinc-200/80 dark:bg-zinc-700/70"
+          />
+          <div
+            class="h-6 w-6 rounded-full bg-zinc-200/80 dark:bg-zinc-700/70"
+          />
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <div
+            class="h-6 w-24 rounded-full bg-zinc-200/80 dark:bg-zinc-700/70"
+          />
+          <div
+            class="h-4 w-16 rounded-full bg-zinc-200/80 dark:bg-zinc-700/70"
+          />
+        </div>
+      </div>
+      <div
+        class="space-y-3"
+        data-testid="skeleton-lines"
+      >
+        <div
+          class="h-3 rounded-full bg-zinc-200/80 dark:bg-zinc-700/70"
+          data-testid="skeleton-line"
+        />
+        <div
+          class="h-3 rounded-full bg-zinc-200/80 dark:bg-zinc-700/70 w-4/5"
+          data-testid="skeleton-line"
+        />
+        <div
+          class="h-3 rounded-full bg-zinc-200/80 dark:bg-zinc-700/70 w-3/5"
+          data-testid="skeleton-line"
+        />
+        <div
+          class="h-3 rounded-full bg-zinc-200/80 dark:bg-zinc-700/70 w-2/3"
+          data-testid="skeleton-line"
+        />
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Visualization Component Snapshot Tests > matches snapshot for StepAnimator component 1`] = `
+<DocumentFragment>
+  <div
+    class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50"
+  >
+    <div
+      class="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800"
+    >
+      <div
+        class="flex items-center gap-2"
+      >
+        <span
+          class="flex h-6 w-6 items-center justify-center rounded-full bg-teal-50 text-xs font-bold text-teal-700 dark:bg-teal-950/50 dark:text-teal-400"
+        >
+          1
+        </span>
+        <h4
+          class="font-semibold text-zinc-900 dark:text-white"
+        >
+          Initialize Cipher
+        </h4>
+      </div>
+    </div>
+    <div
+      class="py-4"
+    >
+      <p
+        class="mb-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 whitespace-pre-line font-sans"
+      >
+        Set initial state
+      </p>
+      <div
+        class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+      >
+        <div
+          class="rounded-lg bg-zinc-50 p-2.5 dark:bg-zinc-950/40"
+        >
+          <span
+            class="text-2xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500"
+          >
+            Input State
+          </span>
+          <div
+            class="mt-1 font-mono text-xs break-all text-zinc-700 dark:text-zinc-300"
+          >
+            A
+          </div>
+        </div>
+        <div
+          class="rounded-lg bg-zinc-50 p-2.5 dark:bg-zinc-950/40"
+        >
+          <span
+            class="text-2xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500"
+          >
+            Output State
+          </span>
+          <div
+            class="mt-1 font-mono text-xs break-all text-zinc-700 dark:text-zinc-300"
+          >
+            A
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="mb-3"
+    >
+      <div
+        class="mb-1 flex items-center justify-between text-2xs text-zinc-400 dark:text-zinc-500"
+      >
+        <span>
+          Progress
+        </span>
+        <span>
+          0%
+        </span>
+      </div>
+      <div
+        aria-label="Step progress"
+        aria-valuemax="100"
+        aria-valuemin="0"
+        aria-valuenow="0"
+        class="h-1.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700"
+        role="progressbar"
+      >
+        <div
+          class="h-full rounded-full bg-teal-600 dark:bg-teal-400 transition-all duration-300 ease-out"
+          style="width: 0%;"
+        />
+      </div>
+    </div>
+    <div
+      class="flex flex-col gap-3 border-t border-zinc-100 pt-3 dark:border-zinc-800 lg:flex-row lg:items-center"
+    >
+      <div
+        class="flex flex-wrap items-center gap-1.5"
+      >
+        <button
+          aria-label="Restart"
+          class="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
+          disabled=""
+          title="Restart (Home / R)"
+        >
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </button>
+        <button
+          aria-label="Previous step"
+          class="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
+          disabled=""
+          title="Previous Step (←)"
+        >
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M15 19l-7-7 7-7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </button>
+        <button
+          aria-label="Play"
+          aria-pressed="false"
+          class="flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 text-white hover:bg-teal-500 focus:outline-none disabled:opacity-30 dark:bg-teal-500 dark:hover:bg-teal-400"
+          title="Play (Space)"
+        >
+          <svg
+            class="h-4 w-4 translate-x-[1px]"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M8 5v14l11-7z"
+            />
+          </svg>
+        </button>
+        <button
+          aria-label="Next step"
+          class="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
+          title="Next Step (→)"
+        >
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M9 5l7 7-7 7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </button>
+        <button
+          aria-label="Jump to end"
+          class="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
+          title="Jump to End (End)"
+        >
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M11.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 005 8v8a1 1 0 001.6.8l5.334-4z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M19.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.334-4z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </button>
+        <div
+          aria-label="Playback speed"
+          class="ml-1 flex items-center gap-0.5 rounded-md bg-zinc-100 p-0.5 dark:bg-zinc-800"
+          role="group"
+        >
+          <button
+            aria-pressed="false"
+            class="rounded px-1.5 py-0.5 text-2xs font-mono font-semibold transition-colors text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+            title="0.5x speed"
+          >
+            0.5x
+          </button>
+          <button
+            aria-pressed="true"
+            class="rounded px-1.5 py-0.5 text-2xs font-mono font-semibold transition-colors bg-white text-teal-700 shadow-sm dark:bg-zinc-900 dark:text-teal-400"
+            title="1x speed"
+          >
+            1x
+          </button>
+          <button
+            aria-pressed="false"
+            class="rounded px-1.5 py-0.5 text-2xs font-mono font-semibold transition-colors text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+            title="2x speed"
+          >
+            2x
+          </button>
+          <button
+            aria-pressed="false"
+            class="rounded px-1.5 py-0.5 text-2xs font-mono font-semibold transition-colors text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+            title="4x speed"
+          >
+            4x
+          </button>
+        </div>
+      </div>
+      <div
+        class="min-w-0 flex flex-1 items-center gap-3"
+      >
+        <input
+          aria-label="Scrub to step"
+          aria-valuemax="1"
+          aria-valuemin="0"
+          aria-valuenow="0"
+          class="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-zinc-200 dark:bg-zinc-700 accent-teal-600 dark:accent-teal-400"
+          max="1"
+          min="0"
+          type="range"
+          value="0"
+        />
+        <span
+          class="shrink-0 font-mono text-xs text-zinc-400 dark:text-zinc-500"
+        >
+          1 / 2
+        </span>
+      </div>
+    </div>
+    <p
+      class="mt-2 text-2xs text-zinc-400 dark:text-zinc-600"
+    >
+      Shortcuts: Space play/pause · ←/→ step · Home/R restart · End jump to last step
+    </p>
+  </div>
+</DocumentFragment>
+`;

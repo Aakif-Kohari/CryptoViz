@@ -55,8 +55,21 @@ export interface CipherOptions {
   padding?: string
   encoding?: Encoding
   iv?: string
+  hash?: string
+  keyLength?: number
+  info?: string
   /** When true, capture state after every sub-step (for visualizer) */
   instrument?: boolean
+  signal?: AbortSignal
+  hexInput?: boolean
+  rounds?: number
+  N?: number
+  r?: number
+  p?: number
+  dkLen?: number
+  salt?: string
+  iterations?: number
+  [key: string]: unknown
 }
 
 export type CipherName =
@@ -78,23 +91,55 @@ export type CipherName =
   | 'otp'
   | 'des'
   | '3des'
+  | 'aes-xts'
   | 'aes'
   | 'aes-gcm'
+  | 'serpent'
+  | 'chacha20-poly1305'
+  | 'speck'
+  | 'aes-ccm'
+  | 'threefish'
+  | 'xchacha20'
+  | 'twofish'
+  | 'gost'
+  | 'rc2'
+  | 'enigma'
+  | 'ascon'
+  | 'xsalsa20'
+  | 'sm4'
+  | 'tea'
+  | 'lea'
+  | 'blowfish'
+  | 'simon'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
   | 'chacha20'
   | 'rc5'
   | 'xtea'
+  | 'rc6'
+  | 'camellia'
   | 'idea'
   | 'rsa'
   | 'columnar-transposition'
+  | 'dsa'
   | 'dh'
+  | 'x448'
   | 'ecc'
+  | 'schnorr'
+  | 'elgamal-signature'
   | 'elgamal'
+  | 'ml-dsa'
+  | 'ecies'
+  | 'ml-kem'
+  | 'ed448'
+  | 'shamir-secret-sharing'
   | 'ed25519'
+  | 'rabin'
   | 'x25519'
+  | 'paillier'
   | 'merkle-hellman'
+  | 'ecdsa'
   | 'sha256'
   | 'sha512'
   | 'md5'
@@ -103,9 +148,20 @@ export type CipherName =
   | 'sha3'
   | 'ripemd160'
   | 'blake2b'
+  | 'blake3'
+  | 'sha224'
+  | 'sha384'
+  | 'shake128'
+  | 'shake256'
+  | 'md4'
   | 'poly1305'
   | 'hmac'
+  | 'cmac'
   | 'sha1'
+  | 'hkdf'
+  | 'blake2s'
+  | 'bloom-filter'
+  | 'sm3'
 
 export interface TestVector {
   input: string

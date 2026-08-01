@@ -23,7 +23,9 @@ describe('cipher comparison utilities', () => {
 
   it('prevents decrypt mode for Diffie-Hellman', () => {
     const dh = getCipher('dh')
+
     expect(getSupportedDirections(dh)).toEqual(['encrypt'])
+    expect(normalizeComparisonDirection(dh, 'decrypt')).toBe('encrypt')
   })
 
   it('allows encrypt and decrypt for compatible ciphers', () => {
@@ -43,7 +45,6 @@ describe('cipher comparison utilities', () => {
       key: aes.defaultKey,
       options: {
         hexInput: true,
-        mode: 'ECB',
       },
     })
   })
@@ -77,6 +78,24 @@ describe('cipher comparison utilities', () => {
     ).toEqual({
       instrument: true,
       rounds: 8,
+    })
+  })
+  it('creates AES worker options with default hex input', () => {
+    expect(
+      createCipherWorkerOptions(getCipher('aes'), {}),
+    ).toEqual({
+      instrument: true,
+      hexInput: true,
+    })
+  })
+
+  it('creates DH worker options with default secret', () => {
+    expect(
+      createCipherWorkerOptions(getCipher('dh'), {}),
+    ).toEqual({
+      instrument: true,
+      mode: 'demo',
+      bobSecret: '15',
     })
   })
 })

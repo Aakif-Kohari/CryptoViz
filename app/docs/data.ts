@@ -1,9 +1,17 @@
 export type DocType = 'general' | 'cipher';
+export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
+export type LearningTrack = 'beginner' | 'intermediate' | 'advanced';
 
 export interface BaseCategory {
   title: string;
   description: string;
   type?: DocType;
+  // Learning metadata
+  difficulty?: DifficultyLevel;
+  readingTimeMinutes?: number;
+  prerequisites?: string[];
+  recommendedNext?: string[];
+  tracks?: LearningTrack[];
 }
 
 export interface GeneralDocCategory extends BaseCategory {
@@ -49,25 +57,44 @@ export const docCategories: DocCategory[] = [
     type: 'general',
     title: "Getting Started",
     description: "An overview of the CryptoViz visualization architecture and baseline requirements.",
-    content: "CryptoViz is a real-time cryptography  data visualization dashboard. It delivers an intuitive environment engineered to break down complex cryptographic concepts and cipher execution models into clear, human-readable algorithmic visualizations."
+    content: "CryptoViz is a real-time cryptocurrency data visualization dashboard. It delivers an intuitive environment engineered to break down complex cryptographic concepts and cipher execution models into clear, human-readable algorithmic visualizations.",
+    difficulty: 'beginner',
+    readingTimeMinutes: 3,
+    tracks: ['beginner'],
+    recommendedNext: ['installation-setup', 'features-overview']
   },
   {
     type: 'general',
     title: "Installation & Setup",
     description: "The execution scripts needed to clone, provision, and deploy the application locally.",
-    content: "1. Clone the project code framework from the source repository:\ngit clone https://github.com/csxark/CryptoViz.git\n2. Initialize dependencies using the node package manager:\nnpm install\n3. Boot the local development proxy network environment:\nnpm run dev"
+    content: "1. Clone the project code framework from the source repository:\ngit clone https://github.com/csxark/CryptoViz.git\n2. Initialize dependencies using the node package manager:\nnpm install\n3. Boot the local development proxy network environment:\nnpm run dev",
+    difficulty: 'beginner',
+    readingTimeMinutes: 5,
+    tracks: ['beginner'],
+    prerequisites: ['getting-started'],
+    recommendedNext: ['features-overview', 'project-architecture']
   },
   {
     type: 'general',
     title: "Features Overview",
     description: "A functional layout map of the underlying cipher playgrounds and dynamic grids.",
-    content: "• Comprehensive algorithm simulation sandboxes covering symmetric and asymmetric logic profiles.\n• Step-by-step state animations tracking internal matrix transformations.\n• Performance-optimized charts graphing metric data without dropping UI frames."
+    content: "• Comprehensive algorithm simulation sandboxes covering symmetric and asymmetric logic profiles.\n• Step-by-step state animations tracking internal matrix transformations.\n• Performance-optimized charts graphing metric data without dropping UI frames.",
+    difficulty: 'beginner',
+    readingTimeMinutes: 4,
+    tracks: ['beginner'],
+    prerequisites: ['getting-started'],
+    recommendedNext: ['project-architecture', 'caesar-cipher']
   },
   {
     type: 'general',
     title: "Project Architecture",
     description: "An analytical breakdown of the system layout, module constraints, and thread offloading.",
-    content: "The application relies on Next.js, React context modules, and Tailwind utility presets. High-latency cryptographic calculations are intelligently partitioned onto dedicated background execution scopes utilizing independent Web Workers (cipher.worker.ts) to guarantee zero rendering blockades."
+    content: "The application relies on Next.js, React context modules, and Tailwind utility presets. High-latency cryptographic calculations are intelligently partitioned onto dedicated background execution scopes utilizing independent Web Workers (cipher.worker.ts) to guarantee zero rendering blockades.",
+    difficulty: 'intermediate',
+    readingTimeMinutes: 8,
+    tracks: ['beginner', 'intermediate'],
+    prerequisites: ['installation-setup'],
+    recommendedNext: ['worker-architecture', 'visualization-development-guide']
   },
   {
     type: 'general',
@@ -82,9 +109,57 @@ export const docCategories: DocCategory[] = [
     content: "Experiencing setup discrepancies? Run a strict 'npm ci' to ensure a complete and exact rebuild of the package lock definitions. Verify your local runtime environment strictly aligns with modern LTS node standards."
   },
   {
+    type: 'general',
+    title: "Offline Learning Packs",
+    description: "Overview of offline docs, PWA Service Worker caching, and single-file HTML standalone visualizer bundles.",
+    content: "CryptoViz features an Offline Learning Pack hub allowing users to pre-cache algorithm specifications, documentation guides, and interactive cipher sandboxes. Single-file HTML apps can be exported and executed locally without an active network connection."
+  },
+  {
+    type: 'general',
+    title: "Glossary Cross-Linking",
+    description: "Overview of automatic terminology detection, definition tooltips, and the interactive Glossary Explorer.",
+    content: "CryptoViz automatically parses documentation content to detect cryptographic terminology such as Symmetric Encryption, Nonce, SHA-256, Initialization Vector, and KDF. Matched terms are highlighted with interactive definition popovers and direct links to the Glossary Explorer."
+  },
+  {
+    type: 'general',
+    title: "Cipher Lifecycle Badges",
+    description: "Overview of standardized security status badges (Recommended, Secure, Experimental, Legacy, Deprecated, Broken) and NIST SP 800-57 guidelines.",
+    content: "CryptoViz tags every algorithm with a standardized security lifecycle badge. Badges indicate NIST recommendations, security strength, known vulnerabilities, and legacy status."
+  },
+  {
+    type: 'general',
+    title: "Cryptography Myth Busters",
+    description: "Educational pages correcting prevalent misconceptions about encoding, hashing, key lengths, and quantum security.",
+    content: "CryptoViz features a Cryptography Myth Busters module designed to debunk security fallacies (such as 'Base64 is Encryption' or 'RSA-2048 is 8x Stronger than AES-256'). Includes an interactive Reality Check Quiz and technical reality breakdowns."
+  },
+  {
+    type: 'general',
+    title: "Encoding Error Playground",
+    description: "Interactive playground to corrupt, debug, and auto-repair text encoding errors, Base64 padding issues, and Mojibake.",
+    content: "CryptoViz includes an Encoding Error Playground allowing users to inject deliberate encoding faults, inspect byte-level offsets, simulate Mojibake character set mismatches, and auto-repair corrupt strings."
+  },
+  {
+    type: 'general',
+    title: "Cryptographic Case Studies",
+    description: "Deep-dive technical analysis of real-world cryptographic failures, Enigma, Heartbleed, WannaCry, Debian OpenSSL, DigiNotar, Sony PS3, and SHA-1 collisions.",
+    content: "The Cryptographic Case Studies module (/case-studies) provides technical root cause analyses, incident timelines, and key engineering takeaways for historical and modern cryptographic breaches."
+  },
+  {
+    type: 'general',
+    title: "Cipher Visualizers Hub",
+    description: "Overview of the dedicated Cipher Visualizers Hub with search, category filtering, security status badges, and interactive sandboxes.",
+    content: "The Cipher Visualizers Hub (/visualizer) provides a centralized interactive index for over 50 algorithm visualizers and specialized demonstration sandboxes. Users can filter ciphers by mathematical category (Classical, Symmetric, Asymmetric, Hash, Specialized Demos), NIST security status (Recommended, Secure, Legacy, Broken, etc.), or search by algorithm keywords."
+  },
+
+  {
     type: 'cipher',
     title: "Caesar Cipher",
     description: "A classical substitution cipher that shifts characters by a fixed number of positions down the alphabet.",
+    difficulty: 'beginner',
+    readingTimeMinutes: 12,
+    tracks: ['beginner'],
+    prerequisites: ['getting-started'],
+    recommendedNext: ['vigenere-cipher', 'frequency-analysis'],
     overview: {
       history: "Named after Julius Caesar, who used it to communicate securely with his generals, the Caesar cipher is one of the oldest and most famous encryption algorithms. While extremely simple by modern standards, it laid the foundational principles for symmetric encryption.",
       description: "The Caesar cipher is a substitution cipher where each letter in the plaintext is 'shifted' a certain number of places down the alphabet. For example, with a shift of 1, A would be replaced by B, B would become C, and so on."
@@ -140,6 +215,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "Rail Fence Cipher",
     description: "A classical transposition cipher that rearranges the plaintext characters in a zigzag pattern.",
+    difficulty: 'beginner',
+    readingTimeMinutes: 10,
+    tracks: ['beginner'],
+    prerequisites: ['caesar-cipher'],
+    recommendedNext: ['vigenere-cipher', 'playfair-cipher'],
     overview: {
       history: "The exact origins of the Rail Fence cipher are unknown, but it has been used historically as a rudimentary way to obscure messages without needing an alphabet shift. It belongs to the broader category of transposition ciphers, where the letters themselves aren't changed, just their positions.",
       description: "Also known as the zigzag cipher, the plaintext is written downwards on successive 'rails' of an imaginary fence, then moving up when we reach the bottom, and down again when we reach the top. The message is then read off in rows."
@@ -193,6 +273,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "AES",
     description: "Advanced Encryption Standard (AES) is a symmetric block cipher established by the U.S. NIST in 2001.",
+    difficulty: 'intermediate',
+    readingTimeMinutes: 20,
+    tracks: ['intermediate'],
+    prerequisites: ['project-architecture', 'caesar-cipher'],
+    recommendedNext: ['sha-256', 'hmac-sha256'],
     overview: {
       history: "Developed by two Belgian cryptographers, Joan Daemen and Vincent Rijmen (under the name Rijndael), AES was selected by NIST in 2001 to replace the older Data Encryption Standard (DES). It is now the globally accepted standard for symmetric encryption.",
       description: "AES is a block cipher that operates on 128-bit blocks of data. It relies on a Substitution-Permutation Network (SPN) architecture rather than a Feistel network. AES performs multiple 'rounds' of transformations to encrypt the data securely."
@@ -250,6 +335,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "Vigenère Cipher",
     description: "A method of encrypting alphabetic text by using a series of interwoven Caesar ciphers based on the letters of a keyword.",
+    difficulty: 'beginner',
+    readingTimeMinutes: 15,
+    tracks: ['beginner'],
+    prerequisites: ['caesar-cipher'],
+    recommendedNext: ['rail-fence-cipher', 'aes'],
     overview: {
       history: "Invented by Giovan Battista Bellaso in 1553, but later misattributed to Blaise de Vigenère in the 19th century, it was known as 'le chiffre indéchiffrable' (the indecipherable cipher) for over three centuries until Charles Babbage cracked it.",
       description: "It is a polyalphabetic substitution cipher. Instead of using a single shift like the Caesar cipher, it uses a keyword to determine a different shift for each letter of the plaintext. The keyword is repeated to match the length of the plaintext."
@@ -304,6 +394,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "DES",
     description: "Data Encryption Standard (DES) is a symmetric-key block cipher published by NIST.",
+    difficulty: 'intermediate',
+    readingTimeMinutes: 18,
+    tracks: ['intermediate'],
+    prerequisites: ['caesar-cipher', 'aes'],
+    recommendedNext: ['aes', 'sha-256'],
     overview: {
       history: "Developed in the early 1970s at IBM and based on an earlier design by Horst Feistel, it was submitted to the National Bureau of Standards (NBS) and approved as a federal standard in 1977.",
       description: "DES operates on 64-bit blocks of plaintext using a 56-bit key. It relies on a Feistel network structure consisting of 16 identical rounds of substitution and permutation."
@@ -357,6 +452,11 @@ export const docCategories: DocCategory[] = [
     type: 'cipher',
     title: "SHA-256",
     description: "A cryptographic hash function that outputs a 256-bit digest, part of the SHA-2 family.",
+    difficulty: 'intermediate',
+    readingTimeMinutes: 15,
+    tracks: ['intermediate'],
+    prerequisites: ['aes', 'caesar-cipher'],
+    recommendedNext: ['hmac-sha256', 'scrypt-kdf'],
     overview: {
       history: "Designed by the United States National Security Agency (NSA) and published in 2001 by NIST as a U.S. Federal Information Processing Standard (FIPS).",
       description: "Unlike encryption algorithms, SHA-256 is a one-way hash function. It takes an input of any size and deterministically produces a fixed-size 256-bit (32-byte) hash. It's built using the Merkle-Damgård construction."
@@ -408,8 +508,68 @@ export const docCategories: DocCategory[] = [
   },
   {
     type: 'cipher',
+    title: "SM3 Hash",
+    description: "Chinese Commercial Cryptography standard (GB/T 32905-2016) cryptographic hash function producing a 256-bit digest.",
+    overview: {
+      history: "Published in 2010 by the State Encryption Management Bureau (OSCCA) and formalized as Chinese National Standard GB/T 32905-2016 and ISO/IEC 10118-3:2018. SM3 is an integral member of China's commercial cryptographic algorithm suite (alongside SM2 and SM4).",
+      description: "SM3 processes 512-bit message blocks through a Merkle-Damgård construction using 64 ARX (Addition, Rotation, XOR) compression rounds. Unlike SHA-256 which uses modular addition to combine block outputs, SM3 updates its intermediate 256-bit hash state using bitwise XOR operations (V^(i+1) = V^(i) ^ (A,B,C,D,E,F,G,H))."
+    },
+    mathematics: {
+      encryptionFormula: "H(M) = \\text{SM3}(M)",
+      decryptionFormula: "N/A (One-way deterministic cryptographic hash function)",
+      explanation: [
+        "Message Expansion: Generates 68 32-bit words W_0..W_{67} and 64 XOR-derived words W'_j = W_j \\oplus W_{j+4}.",
+        "Permutation Functions: P_0(X) = X \\oplus (X \\lll 9) \\oplus (X \\lll 17) and P_1(X) = X \\oplus (X \\lll 15) \\oplus (X \\lll 23).",
+        "Round Functions: FF_j(X,Y,Z) and GG_j(X,Y,Z) act as bitwise XOR for rounds 0-15 and majority/choice functions for rounds 16-63.",
+        "Intermediate Variables: SS1 = ((A \\lll 12) + E + (T_j \\lll (j \\bmod 32))) \\lll 7, SS2 = SS1 \\oplus (A \\lll 12)."
+      ]
+    },
+    workedExample: {
+      plaintext: "abc",
+      parameters: "64 Rounds, 512-bit Message Block",
+      steps: [
+        { description: "Message Padding", result: "Appends 0x80, zero-pads to 448 mod 512 bits, and appends 64-bit length (24 bits)." },
+        { description: "Message Expansion", result: "Expands 16 block words into W[0..67] using P1 permutation and derives W'[0..63]." },
+        { description: "64 Compression Rounds", result: "Mutates working registers A..H using FF_j, GG_j, P0, SS1, SS2, TT1, and TT2." },
+        { description: "State Update (XOR)", result: "Updates IV registers V^(1) = V^(0) XOR (A,B,C,D,E,F,G,H)." },
+        { description: "Digest Finalization", result: "Concatenates V0..V7 into a 256-bit hexadecimal digest." }
+      ],
+      finalCiphertext: "66c7f0f462eeedd9d1f2d46bdc10e4e24167c4875cf2f7a2297da02b8f4ba8e0"
+    },
+    complexity: "O(n) time complexity where n is message length in 512-bit blocks. Space complexity is O(1) streaming state buffer.",
+    securityAnalysis: {
+      advantages: [
+        "Cryptographically secure 256-bit digest with resistance to collision and preimage attacks.",
+        "ARX design provides high hardware efficiency without relying on table lookups (S-boxes), mitigating cache-timing side channels."
+      ],
+      weaknesses: [
+        "Like SHA-256, built on Merkle-Damgård construction and vulnerable to length extension attacks if raw hash is used directly as a MAC (use HMAC-SM3 instead)."
+      ]
+    },
+    realWorldApplications: [
+      "Chinese Commercial Cryptography (Guomi / Commercial Code) mandatory standards.",
+      "Digital signatures with SM2 elliptic curve algorithm.",
+      "GM/T standard TLS/SSL connections and banking applications in East Asia."
+    ],
+    codeSnippets: {
+      python: "# Using pycryptodome or gmssl library\nfrom gmssl import sm3, func\n\ndef compute_sm3(text):\n    return sm3.sm3_hash(func.bytes_to_list(text.encode('utf-8')))",
+      javascript: "import { encrypt as sm3Encrypt } from './lib/cipher/hash/sm3';\n\nconst digest = sm3Encrypt('abc').output;\nconsole.log(digest); // 66c7f0f462eeedd9d1f2d46bdc10e4e24167c4875cf2f7a2297da02b8f4ba8e0"
+    },
+    playgroundLink: "/visualizer/sm3",
+    references: [
+      { title: "GB/T 32905-2016: SM3 Cryptographic Hash Algorithm", url: "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=022F9E5894101A094D26500F9514757C" },
+      { title: "ISO/IEC 10118-3:2018 Dedicated Hash Functions (SM3)", url: "https://www.iso.org/standard/67918.html" }
+    ]
+  },
+  {
+    type: 'cipher',
     title: "RSA-2048",
     description: "A widely used public-key cryptosystem for secure data transmission based on the factoring of large prime numbers.",
+    difficulty: 'advanced',
+    readingTimeMinutes: 25,
+    tracks: ['advanced'],
+    prerequisites: ['sha-256', 'aes'],
+    recommendedNext: ['merkle-trees', 'diffie-hellman'],
     overview: {
       history: "Developed in 1977 by Ron Rivest, Adi Shamir, and Leonard Adleman at MIT. The acronym RSA comes from their surnames. It revolutionized cryptography by introducing asymmetric public-key concepts into mainstream use.",
       description: "RSA uses two distinct keys: a public key for encryption (which can be shared openly) and a private key for decryption (which must be kept secret). RSA-2048 utilizes a 2048-bit modulus, which is currently considered highly secure against classical computing attacks."
@@ -460,5 +620,562 @@ export const docCategories: DocCategory[] = [
     references: [
       { title: "Wikipedia: RSA (cryptosystem)", url: "https://en.wikipedia.org/wiki/RSA_(cryptosystem)" }
     ]
+  },
+  {
+    type: 'cipher',
+    title: "Merkle Trees",
+    description: "A cryptographic tree structure designed to securely and efficiently verify the contents of large data sets.",
+    difficulty: 'advanced',
+    readingTimeMinutes: 18,
+    tracks: ['advanced'],
+    prerequisites: ['sha-256'],
+    recommendedNext: ['rsa-2048', 'hmac-sha256'],
+    overview: {
+      history: "Proposed by Ralph Merkle in 1979 and patented in 1980, Merkle Trees are a foundational concept in computer science. They are heavily utilized in peer-to-peer file systems like BitTorrent and IPFS, version control systems like Git, and modern blockchains like Bitcoin and Ethereum.",
+      description: "A Merkle Tree is a binary tree where every leaf node is the hash of a data block, and every non-leaf (internal) node is the hash of its children concatenated together. It allows verifying that a specific data block exists inside a larger tree structure by providing only a logarithmic number of sibling hashes, known as a Merkle Proof."
+    },
+    mathematics: {
+      encryptionFormula: "H_{Parent} = \\text{Hash}(H_{Left} \\parallel H_{Right})",
+      decryptionFormula: "\\text{Verify}(H_{Leaf}, \\text{AuditPath}, H_{Root}) \\to \\{\\text{True}, \\text{False}\\}",
+      explanation: [
+        "H_Left and H_Right are the sibling hashes representing left and right nodes.",
+        "\\parallel denotes the concatenation of the two byte arrays.",
+        "If a node lacks a sibling at an odd-numbered level, it is either duplicated (Bitcoin strategy) or promoted directly (Git/IPFS strategy).",
+        "Merkle Proof: A logarithmic list of sibling hashes (audit path) and directions that allows recalculating the root hash from a single leaf hash."
+      ]
+    },
+    workedExample: {
+      plaintext: "Tx0, Tx1, Tx2, Tx3",
+      parameters: "SHA-256 Hashing Strategy",
+      steps: [
+        { description: "Leaf Hash Calculation", result: "Compute H0=Hash(Tx0), H1=Hash(Tx1), H2=Hash(Tx2), H3=Hash(Tx3)." },
+        { description: "Level 1 Parent Pairing", result: "Pair children: H01=Hash(H0 + H1) and H23=Hash(H2 + H3)." },
+        { description: "Level 2 Root Calculation", result: "Pair Level 1 parents: Root=Hash(H01 + H23)." }
+      ],
+      finalCiphertext: "[32-byte hexadecimal Merkle Root Hash]"
+    },
+    complexity: "Tree construction: O(N) hashes. Proof generation: O(log N). Proof verification: O(log N).",
+    securityAnalysis: {
+      advantages: [
+        "Validates inclusion of data in O(log N) time and space complexity.",
+        "A client only needs to store the 32-byte root hash to verify integrity of millions of transactions.",
+        "Instantly isolates the location of modified data when comparing two different trees."
+      ],
+      weaknesses: [
+        "Vulnerable to second-preimage attacks (pairing inner nodes as leaf hashes) if leaf and internal nodes are not explicitly distinguished using distinct byte prefixes (e.g., prefixing leaf data with 0x00 and internal hashes with 0x01 before hashing)."
+      ]
+    },
+    realWorldApplications: [
+      "Git: Verifying file and directory structure modifications.",
+      "BitTorrent & IPFS: Validating individual data chunks downloaded from untrusted peers.",
+      "Cryptocurrency & Blockchain: Storing transactions in blocks (e.g., Bitcoin Block Headers) to support Simple Payment Verification (SPV) wallets."
+    ],
+    codeSnippets: {
+      python: "import hashlib\n\ndef compute_parent(left_hex, right_hex):\n    # Convert hex inputs to bytes, concatenate and hash\n    combined = bytes.fromhex(left_hex) + bytes.fromhex(right_hex)\n    return hashlib.sha256(combined).hexdigest()",
+      javascript: "import { sha256 } from '@noble/hashes/sha2.js'\n\nfunction computeParent(leftHex, rightHex) {\n  const leftBytes = toByteArray(leftHex);\n  const rightBytes = toByteArray(rightHex);\n  const combined = new Uint8Array([...leftBytes, ...rightBytes]);\n  return fromByteArray(sha256(combined), 'hex');\n}"
+    },
+    playgroundLink: "/merkle",
+    references: [
+      { title: "Ralph Merkle's original patent", url: "https://patents.google.com/patent/US4309569A/en" },
+      { title: "RFC 9162: Certificate Transparency (Merkle Trees)", url: "https://datatracker.ietf.org/doc/html/rfc9162" }
+    ]
+  },
+  {
+    type: 'cipher',
+    title: "HMAC-SHA256",
+    description: "Keyed-Hash Message Authentication Code using SHA-256 to verify data integrity and authenticity.",
+    difficulty: 'intermediate',
+    readingTimeMinutes: 12,
+    tracks: ['intermediate'],
+    prerequisites: ['sha-256'],
+    recommendedNext: ['scrypt-kdf', 'aes'],
+    overview: {
+      history: "First proposed in 1996 by Mihir Bellare, Ran Canetti, and Hugo Krawczyk, and formalized in RFC 2104. It was designed to solve the vulnerabilities of simple MAC designs like H(K || m) which are susceptible to length extension attacks.",
+      description: "HMAC is a cryptographic construction for calculating a message authentication code involving a cryptographic hash function in combination with a secret key. It computes the hash twice using nested padding constants (ipad and opad) to bind the message state securely to the key."
+    },
+    mathematics: {
+      encryptionFormula: "\\text{HMAC}(K, m) = H((K' \\oplus opad) \\parallel H((K' \\oplus ipad) \\parallel m))",
+      decryptionFormula: "\\text{Verify}(K, m, \\text{Mac}) \\to [\\text{HMAC}(K, m) == \\text{Mac}]",
+      explanation: [
+        "K' is the block-sized prepared key. If K is longer than 64 bytes, K' = H(K). If K is shorter, K' is K padded with trailing zeros to 64 bytes.",
+        "ipad is the inner padding constant (the byte 0x36 repeated 64 times).",
+        "opad is the outer padding constant (the byte 0x5c repeated 64 times).",
+        "\\parallel represents byte concatenation, and \\oplus represents bitwise XOR."
+      ]
+    },
+    workedExample: {
+      plaintext: "Hi There",
+      parameters: "Key = 0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b (Hex format)",
+      steps: [
+        { description: "Key Preparation", result: "Original key is 20 bytes (<= 64). Pad key with zeros to block size: 0b0b...0000..." },
+        { description: "Inner XOR Calculation", result: "Compute K' XOR ipad (0x36) resulting in: 3d3d...3636..." },
+        { description: "Inner SHA-256 Hashing", result: "Concatenate Inner Key and 'Hi There' message and compute SHA-256: 3b344c61d8db..." },
+        { description: "Outer XOR Calculation", result: "Compute K' XOR opad (0x5c) resulting in: 5757...5c5c..." },
+        { description: "Outer SHA-256 (Final HMAC)", result: "Concatenate Outer Key and Inner Hash, compute final SHA-256 digest." }
+      ],
+      finalCiphertext: "b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7"
+    },
+    complexity: "O(N) operations, equivalent to two standard SHA-256 updates.",
+    securityAnalysis: {
+      advantages: [
+        "Provably immune to length extension attacks because the final outer hash hides the internal state of the inner hash.",
+        "Provides both data integrity (tamper proofing) and authenticity (key ownership proof)."
+      ],
+      weaknesses: [
+        "Cryptographic security relies entirely on the strength of the underlying hash function (e.g., HMAC-SHA256 is strong, whereas HMAC-MD5 is legacy due to MD5 weaknesses)."
+      ]
+    },
+    realWorldApplications: [
+      "API Request Signing: Standard authentication method for AWS (Signature Version 4) and Twilio request verification.",
+      "Token-Based Authentication: Forming the signature part of JSON Web Tokens (JWT).",
+      "Key Derivation Functions: Forms the core PRF (Pseudorandom Function) for HKDF in TLS 1.3."
+    ],
+    codeSnippets: {
+      python: "import hmac\nimport hashlib\n\ndef generate_hmac(key_bytes, msg_bytes):\n    return hmac.new(key_bytes, msg_bytes, hashlib.sha256).hexdigest()",
+      javascript: "import { hmac } from '@noble/hashes/hmac.js'\nimport { sha256 } from '@noble/hashes/sha2.js'\n\nconst digestBytes = hmac(sha256, keyBytes, msgBytes);"
+    },
+    playgroundLink: "/visualizer/hmac",
+    references: [
+      { title: "RFC 2104: HMAC (Keyed-Hashing for Message Authentication)", url: "https://datatracker.ietf.org/doc/html/rfc2104" },
+      { title: "NIST FIPS 198-1: The Keyed-Hash Message Authentication Code", url: "https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.198-1.pdf" }
+    ]
+  },
+  {
+    type: 'cipher',
+    title: "Scrypt KDF",
+    description: "A memory-hard key derivation function designed to prevent GPU/ASIC-based hardware brute-force attacks.",
+    difficulty: 'intermediate',
+    readingTimeMinutes: 14,
+    tracks: ['intermediate'],
+    prerequisites: ['hmac-sha256', 'sha-256'],
+    recommendedNext: ['aes', 'rsa-2048'],
+    overview: {
+      history: "Created by Colin Percival in 2009 for the Tarsnap secure backup service, Scrypt was designed to require significantly more memory than bcrypt or PBKDF2, making custom hardware implementations (ASICs) prohibitively expensive to build.",
+      description: "Scrypt is a password-based key derivation function. It starts by stretching the password/salt using PBKDF2, mixes it with a sequential memory loop (ROMix) utilizing Salsa20/8 core steps, performs data-dependent random reads, and runs a final PBKDF2 step to derive the output key. This design enforces memory-hardness."
+    },
+    mathematics: {
+      encryptionFormula: "\\text{Scrypt}(P, S, N, r, p, dkLen) = \\text{PBKDF2-HMAC-SHA256}(P, B', 1, dkLen)",
+      decryptionFormula: "\\text{Verify}(P, S, N, r, p, \\text{Key}) \\to [\\text{Scrypt}(P, S, N, r, p, dkLen) == \\text{Key}]",
+      explanation: [
+        "P and S represent password and salt inputs.",
+        "N is the CPU/memory cost parameter (must be a power of 2).",
+        "r is the block size parameter, dictating the sequential memory footprint.",
+        "p is the parallelization parameter, controlling active threads."
+      ]
+    },
+    workedExample: {
+      plaintext: "correct horse battery staple",
+      parameters: "N = 16384, r = 8, p = 1, dkLen = 32",
+      steps: [
+        { description: "Parameter Parsing", result: "Validate N=16384 (power of 2), r=8, p=1, dkLen=32." },
+        { description: "Memory Allocation", result: "Allocate (128 * r * N * p) = 16 MB of workspace memory." },
+        { description: "Initial Stretch", result: "Stretches password with PBKDF2 into block array B of size 1024 bytes." },
+        { description: "Salsa20 ROMix Loop", result: "Compute Salsa20/8 core mix blocks sequentially to populate array V." },
+        { description: "Integerify Querying", result: "Retrieve random blocks from V based on data state, XORing blocks." },
+        { description: "Final Hashing", result: "Pass final block array through PBKDF2 to derive 32-byte key." }
+      ],
+      finalCiphertext: "[32-byte hexadecimal derived key]"
+    },
+    complexity: "Time complexity: O(N * r). Space complexity: O(N * r).",
+    securityAnalysis: {
+      advantages: [
+        "Extremely high protection against specialized hardware (ASICs/GPUs) due to memory-hard constraints.",
+        "Tunable parameters allow adjusting security based on hardware improvements over time."
+      ],
+      weaknesses: [
+        "High memory usage can lead to denial-of-service (DoS) vulnerabilities on authentication servers if parameters are configured too high."
+      ]
+    },
+    realWorldApplications: [
+      "Password hashing in Unix-like systems and secure database setups.",
+      "Key derivation in cryptocurrency wallets (Litecoin, Dogecoin, Ethereum).",
+      "Securing file-level backups (Tarsnap backup service)."
+    ],
+    codeSnippets: {
+      python: "import hashlib\n\n# Uses hashlib's scrypt implementation (Python 3.6+)\ndef derive_scrypt(password, salt, N=16384, r=8, p=1, dkLen=32):\n    return hashlib.scrypt(password.encode(), salt=salt.encode(), n=N, r=r, p=p, dklen=dkLen).hex()",
+      javascript: "import { scrypt } from '@noble/hashes/scrypt.js'\n\nconst keyBytes = scrypt(passwordBytes, saltBytes, { N: 16384, r: 8, p: 1, dkLen: 32 });"
+    },
+    playgroundLink: "/kdf/scrypt",
+    references: [
+      { title: "RFC 7914: The scrypt Password-Based Key Derivation Function", url: "https://datatracker.ietf.org/doc/html/rfc7914" },
+      { title: "Tarsnap: Scrypt algorithm description by Colin Percival", url: "https://www.tarsnap.com/scrypt.html" }
+    ]
+  },
+  {
+    type: 'cipher',
+    title: "ROT13",
+    description: "A simple letter substitution cipher that replaces a letter with the 13th letter after it in the alphabet.",
+    overview: {
+      history: "Developed in ancient Rome as a variant of the Caesar cipher, ROT13 gained prominence in the early internet era on Usenet in the 1980s as a means of hiding spoilers, punchlines, and offensive material.",
+      description: "ROT13 (Rotate by 13 places) is a special case of the Caesar cipher. Because there are 26 letters in the basic Latin alphabet, applying ROT13 twice restores the original text, meaning encryption and decryption are identical."
+    },
+    mathematics: {
+      encryptionFormula: "E(x) = (x + 13) \\pmod{26}",
+      decryptionFormula: "D(x) = (x + 13) \\pmod{26}",
+      explanation: [
+        "x is the alphabetical index of the character (0-25).",
+        "Adding 13 and taking the modulo 26 wraps the index around the alphabet.",
+        "Because 13 is exactly half of 26, the encryption and decryption operations are the exact same function."
+      ]
+    },
+    workedExample: {
+      plaintext: "HELLO",
+      parameters: "Shift = 13 (Fixed)",
+      steps: [
+        { description: "H (7) + 13 mod 26 = 20", result: "U" },
+        { description: "E (4) + 13 mod 26 = 17", result: "R" },
+        { description: "L (11) + 13 mod 26 = 24", result: "Y" },
+        { description: "L (11) + 13 mod 26 = 24", result: "Y" },
+        { description: "O (14) + 13 mod 26 = 1", result: "B" }
+      ],
+      finalCiphertext: "URYYB"
+    },
+    complexity: "O(n) time complexity where n is the length of the string. Space complexity is O(n).",
+    securityAnalysis: {
+      advantages: [
+        "Requires no key management since the shift is fixed.",
+        "Encryption and decryption use the exact same algorithm.",
+        "Extremely fast to compute."
+      ],
+      weaknesses: [
+        "Provides absolutely zero cryptographic security.",
+        "Vulnerable to frequency analysis and simple inspection.",
+        "Easily broken since the algorithm is public and has no key."
+      ]
+    },
+    realWorldApplications: [
+      "Obscuring joke punchlines or movie spoilers on forums.",
+      "Hiding email addresses from basic scraping bots.",
+      "Geocaching hint obfuscation."
+    ],
+    codeSnippets: {
+      python: "import codecs\n\ndef rot13(text):\n    return codecs.encode(text, 'rot_13')",
+      javascript: "function rot13(str) {\n  return str.replace(/[a-zA-Z]/g, function(c) {\n    return String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26);\n  });\n}"
+    },
+    playgroundLink: "/visualizer/rot13",
+    references: [
+      { title: "Wikipedia: ROT13", url: "https://en.wikipedia.org/wiki/ROT13" }
+    ]
+  },
+  {
+    type: 'cipher',
+    title: "Atbash Cipher",
+    description: "An ancient monoalphabetic substitution cipher formed by mapping the alphabet to its reverse.",
+    overview: {
+      history: "Originally created for the Hebrew alphabet in biblical times (around 500 BC), Atbash is found in several books of the Bible, including Jeremiah. The name derives from the first, last, second, and second-to-last Hebrew letters.",
+      description: "Atbash maps the first letter of the alphabet to the last, the second to the second-to-last, and so on. In English, A becomes Z, B becomes Y, etc. It is its own inverse."
+    },
+    mathematics: {
+      encryptionFormula: "E(x) = (25 - x)",
+      decryptionFormula: "D(x) = (25 - x)",
+      explanation: [
+        "x is the alphabetical index (0-25).",
+        "Subtracting x from 25 effectively mirrors the index across the center of the alphabet.",
+        "Like ROT13, encryption and decryption are identical operations."
+      ]
+    },
+    workedExample: {
+      plaintext: "HELLO",
+      parameters: "None (Fixed Mapping)",
+      steps: [
+        { description: "H (7) -> 25 - 7 = 18", result: "S" },
+        { description: "E (4) -> 25 - 4 = 21", result: "V" },
+        { description: "L (11) -> 25 - 11 = 14", result: "O" },
+        { description: "L (11) -> 25 - 11 = 14", result: "O" },
+        { description: "O (14) -> 25 - 14 = 11", result: "L" }
+      ],
+      finalCiphertext: "SVOOL"
+    },
+    complexity: "O(n) time complexity, O(n) space complexity.",
+    securityAnalysis: {
+      advantages: [
+        "Simple to implement by hand.",
+        "Self-reciprocal: encryption and decryption are the same."
+      ],
+      weaknesses: [
+        "No key space; the mapping is entirely fixed.",
+        "Fully vulnerable to frequency analysis.",
+        "Provides no real security."
+      ]
+    },
+    realWorldApplications: [
+      "Historical biblical texts and theological study.",
+      "Recreational puzzles and geocaching.",
+      "Basic data obfuscation."
+    ],
+    codeSnippets: {
+      python: "def atbash(text):\n    result = ''\n    for char in text:\n        if char.isalpha():\n            offset = 65 if char.isupper() else 97\n            result += chr(25 - (ord(char) - offset) + offset)\n        else:\n            result += char\n    return result",
+      javascript: "function atbash(text) {\n  return text.replace(/[a-zA-Z]/g, (char) => {\n    const base = char <= 'Z' ? 65 : 97;\n    return String.fromCharCode(25 - (char.charCodeAt(0) - base) + base);\n  });\n}"
+    },
+    playgroundLink: "/visualizer/atbash",
+    references: [
+      { title: "Wikipedia: Atbash", url: "https://en.wikipedia.org/wiki/Atbash" }
+    ]
+  },
+  {
+    type: 'cipher',
+    title: "Playfair Cipher",
+    description: "A polygraphic substitution cipher that encrypts pairs of letters using a 5x5 key matrix.",
+    overview: {
+      history: "Invented by Charles Wheatstone in 1854 but named after Lord Playfair who promoted its use. It was used by British forces in the Second Boer War and World War I for tactical secrecy because it could be quickly computed without special equipment.",
+      description: "Playfair operates on digrams (pairs of letters). It constructs a 5x5 grid using a keyword, filling the rest of the matrix with the remaining alphabet letters (usually merging I and J). Digrams are then substituted based on their rectangular relationship in the grid."
+    },
+    mathematics: {
+      encryptionFormula: "Based on 5x5 matrix geometric substitution rules",
+      decryptionFormula: "Reverse geometric substitution rules",
+      explanation: [
+        "If the letters are in the same row, replace them with letters to their immediate right.",
+        "If they are in the same column, replace them with letters immediately below.",
+        "If they form a rectangle, replace each with the letter on the same row but in the other corner of the rectangle.",
+        "If the letters are identical, a filler letter (usually X) is inserted between them before encryption."
+      ]
+    },
+    workedExample: {
+      plaintext: "HE LL OX",
+      parameters: "Keyword = 'PLAYFAIR'",
+      steps: [
+        { description: "Matrix generated with PLAYFAIR (I/J combined).", result: "Grid formed." },
+        { description: "Digram HE forms a rectangle", result: "KU" },
+        { description: "Digram LL requires a filler X -> LX", result: "YV" },
+        { description: "Remaining LO forms a rectangle", result: "RN" }
+      ],
+      finalCiphertext: "KUYVRN"
+    },
+    complexity: "O(n) time complexity where n is plaintext length. O(1) space for the 5x5 matrix.",
+    securityAnalysis: {
+      advantages: [
+        "Obscures single-letter frequencies, defeating standard frequency analysis.",
+        "Can be performed entirely by hand in the field."
+      ],
+      weaknesses: [
+        "Digram frequencies are still preserved and can be analyzed.",
+        "Vulnerable to known-plaintext attacks.",
+        "Small key space (5x5 matrix combinations) easily broken by modern computers."
+      ]
+    },
+    realWorldApplications: [
+      "Historically used in WWI military communications.",
+      "Amateur radio and cryptographic puzzles."
+    ],
+    codeSnippets: {
+      python: "# Conceptual snippet due to algorithm length\ndef generate_playfair_matrix(key):\n    # Generate 5x5 grid skipping J and handling duplicates\n    pass\n\ndef playfair_encrypt(text, matrix):\n    # Apply geometric substitution rules to digrams\n    pass",
+      javascript: "// Playfair logic requires grid generation and pairing rules\nfunction playfairEncrypt(text, keyword) {\n  // 1. Generate 5x5 grid\n  // 2. Format text into pairs (adding X if duplicate)\n  // 3. Apply Row/Column/Rectangle rules\n  return 'IMPLEMENTATION_STUB';\n}"
+    },
+    playgroundLink: "/visualizer/playfair",
+    references: [
+      { title: "Wikipedia: Playfair Cipher", url: "https://en.wikipedia.org/wiki/Playfair_cipher" }
+    ]
+  },
+  {
+    type: 'cipher',
+    title: "XOR Cipher",
+    description: "A simple additive stream cipher that applies a bitwise exclusive OR (XOR) operation to the plaintext and key.",
+    overview: {
+      history: "The XOR operation is a fundamental logic gate in computing. Its use in cryptography dates back to the advent of digital logic, forming the foundation of many modern symmetric stream and block ciphers.",
+      description: "The cipher iterates over the plaintext and applies the bitwise XOR operation against a repeating key. Because XOR is its own inverse, applying the same key to the ciphertext recovers the original plaintext."
+    },
+    mathematics: {
+      encryptionFormula: "C = P \\oplus K",
+      decryptionFormula: "P = C \\oplus K",
+      explanation: [
+        "P is the plaintext byte, K is the key byte, and C is the ciphertext byte.",
+        "\\oplus represents the bitwise exclusive OR logic operation.",
+        "If the key is shorter than the plaintext, it is repeated cyclically.",
+        "A bitwise XOR evaluates to 1 if the bits are different, and 0 if they are the same."
+      ]
+    },
+    workedExample: {
+      plaintext: "Cat",
+      parameters: "Key = 'k'",
+      steps: [
+        { description: "'C' (0x43) XOR 'k' (0x6B)", result: "0x28" },
+        { description: "'a' (0x61) XOR 'k' (0x6B)", result: "0x0A" },
+        { description: "'t' (0x74) XOR 'k' (0x6B)", result: "0x1F" }
+      ],
+      finalCiphertext: "0x28 0x0A 0x1F"
+    },
+    complexity: "O(n) time complexity where n is the length of the plaintext.",
+    securityAnalysis: {
+      advantages: [
+        "Extremely fast and simple to implement in hardware or software.",
+        "Perfectly secure (information-theoretic security) if the key is truly random, as long as the plaintext, and never reused (forming a One-Time Pad)."
+      ],
+      weaknesses: [
+        "If the key is short and repeats, it is highly vulnerable to frequency analysis and known-plaintext attacks.",
+        "Provides no integrity checking; vulnerable to bit-flipping attacks."
+      ]
+    },
+    realWorldApplications: [
+      "A foundational component inside complex algorithms like AES, DES, and ChaCha20.",
+      "Malware obfuscation to evade basic static signature analysis.",
+      "Simple data masking where high security is not required."
+    ],
+    codeSnippets: {
+      python: "def xor_encrypt_decrypt(data, key):\n    return bytearray([b ^ key[i % len(key)] for i, b in enumerate(data)])",
+      javascript: "function xorEncryptDecrypt(dataString, keyString) {\n  let output = '';\n  for (let i = 0; i < dataString.length; i++) {\n    const charCode = dataString.charCodeAt(i) ^ keyString.charCodeAt(i % keyString.length);\n    output += String.fromCharCode(charCode);\n  }\n  return output;\n}"
+    },
+    playgroundLink: "/visualizer/xor",
+    references: [
+      { title: "Wikipedia: XOR cipher", url: "https://en.wikipedia.org/wiki/XOR_cipher" }
+    ]
+  },
+  {
+    type: 'cipher',
+    title: "One-Time Pad (OTP)",
+    description: "An unbreakable encryption technique that requires a truly random, single-use key that is at least as long as the message.",
+    overview: {
+      history: "Patented by Gilbert Vernam in 1919 and proven to be perfectly secure by Claude Shannon in 1945, OTP was used heavily during the Cold War by intelligence agencies via physical paper pads.",
+      description: "OTP is an additive cipher (often using XOR in digital contexts). Its absolute security relies on four strict rules: the key must be completely random, as long as the plaintext, never reused, and kept entirely secret."
+    },
+    mathematics: {
+      encryptionFormula: "C_i = P_i \\oplus K_i",
+      decryptionFormula: "P_i = C_i \\oplus K_i",
+      explanation: [
+        "P_i is the ith character of the plaintext.",
+        "K_i is the ith character of the perfectly random key.",
+        "In digital systems, the operation is typically bitwise XOR.",
+        "Shannon proved that if K is uniformly distributed, C is perfectly uniformly distributed and yields zero information about P."
+      ]
+    },
+    workedExample: {
+      plaintext: "HELLO",
+      parameters: "Random Key = 'XMCKL'",
+      steps: [
+        { description: "H (7) + X (23) mod 26 = 4", result: "E" },
+        { description: "E (4) + M (12) mod 26 = 16", result: "Q" },
+        { description: "L (11) + C (2) mod 26 = 13", result: "N" },
+        { description: "L (11) + K (10) mod 26 = 21", result: "V" },
+        { description: "O (14) + L (11) mod 26 = 25", result: "Z" }
+      ],
+      finalCiphertext: "EQNVZ"
+    },
+    complexity: "O(n) time complexity.",
+    securityAnalysis: {
+      advantages: [
+        "Provides perfect, information-theoretic secrecy.",
+        "Immune to all brute-force and quantum computing attacks."
+      ],
+      weaknesses: [
+        "Key management is extremely difficult (the key distribution problem).",
+        "If a key is reused (a 'two-time pad'), the system immediately fails.",
+        "Requires a true random number generator (TRNG).",
+        "No message integrity (vulnerable to malleability)."
+      ]
+    },
+    realWorldApplications: [
+      "Top-secret government and military communications.",
+      "Numbers stations broadcasting espionage communications.",
+      "Quantum key distribution (QKD) leverages OTP for its provable security."
+    ],
+    codeSnippets: {
+      python: "import secrets\n\ndef generate_otp(length):\n    return [secrets.randbelow(256) for _ in range(length)]\n\ndef otp_encrypt(data_bytes, key_bytes):\n    assert len(data_bytes) == len(key_bytes)\n    return bytearray([d ^ k for d, k in zip(data_bytes, key_bytes)])",
+      javascript: "function generateOTP(length) {\n  return crypto.getRandomValues(new Uint8Array(length));\n}\n\nfunction otpEncrypt(dataBytes, keyBytes) {\n  if (dataBytes.length !== keyBytes.length) throw new Error('Key length mismatch');\n  const out = new Uint8Array(dataBytes.length);\n  for (let i = 0; i < dataBytes.length; i++) {\n    out[i] = dataBytes[i] ^ keyBytes[i];\n  }\n  return out;\n}"
+    },
+    playgroundLink: "/visualizer/otp",
+    references: [
+      { title: "Wikipedia: One-time pad", url: "https://en.wikipedia.org/wiki/One-time_pad" },
+      { title: "Claude Shannon: Communication Theory of Secrecy Systems", url: "https://archive.org/details/bellsystemtechni28amerrich/page/656/mode/2up" }
+    ]
   }
 ];
+
+export interface LearningTrackConfig {
+  id: LearningTrack;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  docSlugs: string[];
+}
+
+export const learningTracks: LearningTrackConfig[] = [
+  {
+    id: 'beginner',
+    name: 'Beginner Track',
+    description: 'Start your cryptography journey with fundamental concepts and classical ciphers.',
+    icon: '🌱',
+    color: 'teal',
+    docSlugs: [
+      'getting-started',
+      'installation-setup',
+      'features-overview',
+      'caesar-cipher',
+      'vigenere-cipher',
+      'base64-encoding',
+      'project-architecture'
+    ]
+  },
+  {
+    id: 'intermediate',
+    name: 'Intermediate Track',
+    description: 'Explore modern symmetric encryption, hash functions, and cryptographic protocols.',
+    icon: '🚀',
+    color: 'blue',
+    docSlugs: [
+      'aes-256',
+      'sha-256',
+      'hmac',
+      'key-derivation-functions',
+      'modes-of-operation',
+      'padding-oracle-attack',
+      'timing-attacks'
+    ]
+  },
+  {
+    id: 'advanced',
+    name: 'Advanced Track',
+    description: 'Master asymmetric cryptography, advanced protocols, and security analysis.',
+    icon: '🎯',
+    color: 'purple',
+    docSlugs: [
+      'rsa-2048',
+      'diffie-hellman',
+      'elliptic-curve-cryptography',
+      'merkle-trees',
+      'zero-knowledge-proofs',
+      'post-quantum-cryptography',
+      'side-channel-attacks'
+    ]
+  }
+];
+
+export function getDocSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+export function getDocBySlug(slug: string): DocCategory | undefined {
+  return docCategories.find(doc => getDocSlug(doc.title) === slug);
+}
+
+export function getDocsForTrack(trackId: LearningTrack): DocCategory[] {
+  const track = learningTracks.find(t => t.id === trackId);
+  if (!track) return [];
+  
+  return track.docSlugs
+    .map(slug => getDocBySlug(slug))
+    .filter((doc): doc is DocCategory => doc !== undefined);
+}
+
+export function calculateReadingTime(content: string): number {
+  const wordsPerMinute = 200;
+  const wordCount = content.split(/\s+/).length;
+  return Math.ceil(wordCount / wordsPerMinute);
+}
+
+export function getTrackProgress(
+  trackId: LearningTrack,
+  completedSlugs: Set<string>
+): { completed: number; total: number; percent: number } {
+  const track = learningTracks.find(t => t.id === trackId);
+  if (!track) return { completed: 0, total: 0, percent: 0 };
+  
+  const completed = track.docSlugs.filter(slug => completedSlugs.has(slug)).length;
+  const total = track.docSlugs.length;
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+  
+  return { completed, total, percent };
+}
