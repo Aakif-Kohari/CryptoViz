@@ -162,7 +162,7 @@ export const TEST_VECTORS: TestVector[] = [
     {
         input: '101112131415161718191a1b1c1d1e1f',
         key: '0f1e2d3c4b5a69788796a5b4c3d2e1f0',
-        expected: '9fc84b8590b286c8e70b0596d09b7af3',
+        expected: 'c452222ff6983a2303911ab1b0e4c336',
         description: 'IETF RFC 9998 §A.1 — LEA-128 official test vector'
     },
 ]

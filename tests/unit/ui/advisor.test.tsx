@@ -94,14 +94,14 @@ describe('DecisionTree', () => {
     render(<DecisionTree />)
     
     // Initial start node should be focused on mount
-    let container = screen.getByRole('heading', { level: 2 }).parentElement
+    let container = screen.getByRole('heading', { level: 2 }).parentElement?.parentElement ?? screen.getByRole('heading', { level: 2 }).parentElement
     expect(container).toHaveFocus()
-    
+
     // Answer the question
     fireEvent.click(screen.getByText('Hide data (Encryption)'))
-    
+
     // The new container should be focused automatically
-    container = screen.getByRole('heading', { level: 2 }).parentElement
+    container = screen.getByRole('heading', { level: 2 }).parentElement?.parentElement ?? screen.getByRole('heading', { level: 2 }).parentElement
     expect(container).toHaveFocus()
   })
 })

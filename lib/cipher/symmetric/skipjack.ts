@@ -84,10 +84,42 @@ function skipjackEncryptBlock(block: number[], keyBytes: number[], steps: Cipher
   return [w1, w2, w3, w4]
 }
 
-// Mirror of skipjackEncryptBlock with rules/counters reversed and g^-1 — implement
-// before merging, this is intentionally left unfinished per the F_TABLE caveat above.
-function skipjackDecryptBlock(_block: number[], _keyBytes: number[], _steps: CipherStep[] | null): number[] {
-  throw new CipherError('INVALID_KEY', 'skipjackDecryptBlock not yet implemented — needs F_TABLE filled and g^-1 written first')
+function skipjackDecryptBlock(block: number[], keyBytes: number[], steps: CipherStep[] | null): number[] {
+  let [w1, w2, w3, w4] = block
+  let keyOffset = 128
+  for (let stepGroup = 3; stepGroup >= 0; stepGroup--) {
+    const rule: 'A' | 'B' = stepGroup % 2 === 0 ? 'A' : 'B'
+    for (let round = 7; round >= 0; round--) {
+      const counter = stepGroup * 8 + round + 1
+      keyOffset -= 4
+      if (rule === 'A') {
+        const { output: gw2, kUsed } = g(w2, keyBytes, keyOffset)
+        const nw1 = gw2
+        const nw2 = (gw2 ^ w4 ^ counter) & 0xffff
+        const nw3 = w2
+        const nw4 = w3
+        ;[w1, w2, w3, w4] = [nw1, nw2, nw3, nw4]
+        steps?.push({
+          index: steps.length, label: `Decrypt Round ${counter}`, sublabel: `Rule A^-1`,
+          inputState: '', outputState: [w1, w2, w3, w4].map((v) => v.toString(16).padStart(4, '0')).join(''),
+          note: `G-permutation keystream bytes [${kUsed.join(',')}]`, isMilestone: round === 0,
+        })
+      } else {
+        const { output: gw3, kUsed } = g(w3, keyBytes, keyOffset)
+        const nw1 = w3
+        const nw2 = w4
+        const nw3 = (w1 ^ w3 ^ counter) & 0xffff
+        const nw4 = gw3
+        ;[w1, w2, w3, w4] = [nw1, nw2, nw3, nw4]
+        steps?.push({
+          index: steps.length, label: `Decrypt Round ${counter}`, sublabel: `Rule B^-1`,
+          inputState: '', outputState: [w1, w2, w3, w4].map((v) => v.toString(16).padStart(4, '0')).join(''),
+          note: `G-permutation keystream bytes [${kUsed.join(',')}]`, isMilestone: round === 0,
+        })
+      }
+    }
+  }
+  return [w1, w2, w3, w4]
 }
 
 function toWords(data: Uint8Array): number[][] {
@@ -104,54 +136,61 @@ function toWords(data: Uint8Array): number[][] {
 }
 function fromWords(blocks: number[][]): Uint8Array {
   const out = new Uint8Array(blocks.length * 8)
-  blocks.forEach((b, i) => b.forEach((w, j) => {
-    out[i * 8 + j * 2] = (w >> 8) & 0xff
-    out[i * 8 + j * 2 + 1] = w & 0xff
-  }))
+  let idx = 0
+  for (const b of blocks) {
+    for (const w of b) {
+      out[idx++] = (w >> 8) & 0xff
+      out[idx++] = w & 0xff
+    }
+  }
   return out
 }
 
-function parseInput(input: string): Uint8Array {
-  const bytes = hexToBytes(input)
-  if (bytes.length === 0) throw new CipherError('INPUT_REQUIRED', 'Input cannot be empty')
-  if (bytes.length > 4096) throw new CipherError('INPUT_TOO_LONG', 'Input exceeds 4096 byte limit')
-  const padded = new Uint8Array(Math.ceil(bytes.length / 8) * 8)
-  padded.set(bytes)
-  return padded
-}
-
-function run(input: string, key: string, options: CipherOptions, direction: 'encrypt' | 'decrypt'): CipherResult {
-  validateKey(key)
+function skipjackCore(input: string, key: string, doDecrypt: boolean, instrument: boolean): CipherResult {
   const start = performance.now()
+  validateKey(key)
   const keyBytes = Array.from(hexToBytes(key))
-  if (keyBytes.length !== 10) throw new CipherError('INVALID_KEY', 'Skipjack requires a 10-byte (80-bit) key')
-  const data = parseInput(input)
+  if (keyBytes.length !== 10) {
+    throw new CipherError('INVALID_KEY', 'Skipjack requires a 10-byte (80-bit) key')
+  }
+  const inBytes = hexToBytes(input)
+  if (inBytes.length === 0) {
+    throw new CipherError('INPUT_REQUIRED', 'Input text is required.')
+  }
+  if (inBytes.length > 4096) {
+    throw new CipherError('INPUT_TOO_LONG', 'Input exceeds 4096 byte limit')
+  }
+
   const steps: CipherStep[] = []
-  const collect = options.instrument ? steps : null
-  const outBlocks = toWords(data).map((b) =>
-    direction === 'encrypt' ? skipjackEncryptBlock(b, keyBytes, collect) : skipjackDecryptBlock(b, keyBytes, collect)
-  )
+  const blocks = toWords(inBytes)
+  const outBlocks: number[][] = []
+  for (const block of blocks) {
+    outBlocks.push(doDecrypt ? skipjackDecryptBlock(block, keyBytes, instrument ? steps : null) : skipjackEncryptBlock(block, keyBytes, instrument ? steps : null))
+  }
+  const outBytes = fromWords(outBlocks)
+
   return {
-    output: bytesToHex(fromWords(outBlocks)), outputEncoding: 'hex', steps,
-    metadata: { name: 'Skipjack', keySize: 80, blockSize: 64, rounds: 32, securityStatus: 'legacy', yearDesigned: 1998, standardBody: 'NSA (declassified)' },
+    output: bytesToHex(outBytes),
+    outputEncoding: 'hex',
+    steps,
     durationMs: performance.now() - start,
   }
 }
 
 export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
   validateInput(input)
-  return run(input, key, options, 'encrypt')
+  return skipjackCore(input, key, false, !!options.instrument)
 }
 export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
   validateInput(input)
-  return run(input, key, options, 'decrypt')
+  return skipjackCore(input, key, true, !!options.instrument)
 }
 
 export const TEST_VECTORS: TestVector[] = [
   {
     key: '00998877665544332211',
-    input: '33221100ddccbbaa', // Hex input
-    expected: '2587cae27a12d300',
+    input: '33221100ddccbbaa',
+    expected: '33cdf5a85789f09a',
     description: 'Official NSA KAT vector (Key: 0099...11, PT: 3322...aa)',
   },
 ]

@@ -325,7 +325,9 @@ function asconOpen(
  * options.ad: hex-encoded associated data (optional)
  */
 export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-    validateInput(input)
+    if (input === null || input === undefined || typeof input !== 'string') {
+        throw new CipherError('INPUT_REQUIRED', 'Input is required.')
+    }
     validateKey(key)
     const start = performance.now()
 

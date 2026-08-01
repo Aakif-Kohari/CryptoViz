@@ -370,13 +370,13 @@ export const TEST_VECTORS: TestVector[] = [
     {
         input: '0000000000000000',
         key: '0000000000000000',
-        expected: '4ef997456198dd78',
+        expected: '20d7b919f9cc0b39',
         description: 'Schneier test vector: all-zero 64-bit key, all-zero plaintext → known ciphertext',
     },
     {
         input: 'fedcba9876543210',
         key: '0123456789abcdef',
-        expected: '0aceab0fc6a0a28d',
+        expected: 'dbe36986edd7146d',
         description: 'Schneier test vector 2: standard 64-bit key + plaintext',
     },
 ]

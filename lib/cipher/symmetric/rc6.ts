@@ -1,3 +1,5 @@
+import { CipherError, validateInput, validateKey } from '../../utils'
+
 export interface Rc6Options {
   rounds?: number;
 }
@@ -74,8 +76,8 @@ function assertKeyHex(value: string): string {
     throw new Error("RC6 key must contain a whole number of bytes.");
   }
 
-  if (cleaned.length > 64) {
-    throw new Error("RC6 key must be 32 bytes or fewer.");
+  if (cleaned.length !== 32 && cleaned.length !== 48 && cleaned.length !== 64) {
+    throw new Error("RC6 key must be a 128-bit key (32, 48, or 64 hex characters).");
   }
 
   return cleaned;
@@ -315,3 +317,56 @@ export function rc6ImplementationNotes(): string[] {
     "Includes encrypt/decrypt round-trip tests and a known zero-vector reference.",
   ];
 }
+
+const METADATA: CipherMetadata = {
+  name: 'RC6',
+  keySize: 128,
+  blockSize: 128,
+  rounds: 20,
+  securityStatus: 'secure',
+  yearDesigned: 1998,
+  standardBody: 'RSA Security',
+}
+
+export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
+  validateInput(input)
+  validateKey(key)
+  const start = performance.now()
+  const trace = traceRc6Encryption(input, key, { rounds: (options as Record<string, unknown>)?.rounds as number ?? 20 })
+  return {
+    output: trace.ciphertextHex.toLowerCase(),
+    outputEncoding: 'hex',
+    steps: trace.roundTrace.map((r) => ({
+      index: r.round,
+      label: `Round ${r.round}`,
+      inputState: r.a,
+      outputState: r.output.toLowerCase(),
+      note: `subkeys A=${r.subkeyA}, C=${r.subkeyC}`,
+      isMilestone: r.round === 1 || r.round === 20,
+    })),
+    metadata: METADATA,
+    durationMs: performance.now() - start,
+  }
+}
+
+export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
+  validateInput(input)
+  validateKey(key)
+  const start = performance.now()
+  const outHex = decryptRc6Block(input, key, { rounds: (options as Record<string, unknown>)?.rounds as number ?? 20 })
+  return {
+    output: outHex.toLowerCase(),
+    outputEncoding: 'hex',
+    steps: [],
+    metadata: METADATA,
+    durationMs: performance.now() - start,
+  }
+}
+
+export const TEST_VECTORS: TestVector[] = [
+  {
+    input: '00000000000000000000000000000000',
+    key: '00000000000000000000000000000000',
+    expected: '8fc3a53656b1f778c129df4e9848a41e',
+  },
+]

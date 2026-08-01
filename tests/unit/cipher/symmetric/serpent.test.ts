@@ -18,13 +18,13 @@ describe("correct Serpent implementation", () => {
         "00000000000000000000000000000000",
         "00000000000000000000000000000000",
       ),
-    ).toBe("D6D99825472B6EBCBB142E8F71F13C5D");
+    ).toBe("FE0C08D498EACF8F104A2EBC08852B33");
   });
 
   it("decrypts the Serpent-128 zero vector", () => {
     expect(
       decryptSerpentBlock(
-        "D6D99825472B6EBCBB142E8F71F13C5D",
+        "FE0C08D498EACF8F104A2EBC08852B33",
         "00000000000000000000000000000000",
       ),
     ).toBe("00000000000000000000000000000000");

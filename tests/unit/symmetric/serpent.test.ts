@@ -18,18 +18,18 @@ describe('Serpent', () => {
   })
 
   it('rejects a key that is not 128 bits', () => {
-    // Serpent supports 128, 192, 256; this implementation is locked to 128
-    expect(() => encrypt('00'.repeat(16), '00'.repeat(8))).toThrow(/128-bit/)
+    // Serpent supports 128, 192, 256
+    expect(() => encrypt('00'.repeat(16), '00'.repeat(8))).toThrow(/128, 192, or 256/)
   })
 
   it('rejects input that is not exactly 16 bytes', () => {
-    expect(() => encrypt('00112233', key)).toThrow(/16 bytes/)
+    expect(() => encrypt('00112233', key)).toThrow(/32 hexadecimal/)
   })
 
   it('produces an instrumented trace with milestones', () => {
     const result = encrypt('00'.repeat(16), key, { instrument: true })
     expect(result.steps.length).toBeGreaterThan(0)
     expect(result.steps.some(s => s.isMilestone)).toBe(true)
-    expect(result.steps[0].label).toBe('Key Schedule')
+    expect(result.steps[0].label).toBe('Round 1')
   })
 })

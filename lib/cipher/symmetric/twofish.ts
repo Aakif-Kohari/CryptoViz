@@ -252,22 +252,26 @@ function twofishEncrypt(block: Uint8Array, ctx: TwofishCtx): Uint8Array {
 
 // ── Block decrypt ─────────────────────────────────────────────────────────────
 function twofishDecrypt(block: Uint8Array, ctx: TwofishCtx): Uint8Array {
-    let R0 = u32(readLE32(block, 0) ^ ctx.K[4])
-    let R1 = u32(readLE32(block, 4) ^ ctx.K[5])
-    let R2 = u32(readLE32(block, 8) ^ ctx.K[6])
-    let R3 = u32(readLE32(block, 12) ^ ctx.K[7])
+    let R2_new = u32(readLE32(block, 0) ^ ctx.K[4])
+    let R3_new = u32(readLE32(block, 4) ^ ctx.K[5])
+    let R0 = u32(readLE32(block, 8) ^ ctx.K[6])
+    let R1 = u32(readLE32(block, 12) ^ ctx.K[7])
 
     for (let r = 15; r >= 0; r--) {
         const [F0, F1] = F(R0, R1, r, ctx)
-            ;[R0, R1, R2, R3] = [R2, R3, R0, R1]
-        R2 = u32(rotl32(R2, 1) ^ F0)
-        R3 = u32(rotr32(u32(R3 ^ F1), 1))
+        const R2_prev = u32(rotl32(R2_new, 1) ^ F0)
+        const R3_prev = u32(rotr32(u32(R3_new ^ F1), 1))
+        R2_new = R0
+        R3_new = R1
+        R0 = R2_prev
+        R1 = R3_prev
     }
+
     const out = new Uint8Array(16)
-    writeLE32(u32(R0 ^ ctx.K[0]), out, 0)
-    writeLE32(u32(R1 ^ ctx.K[1]), out, 4)
-    writeLE32(u32(R2 ^ ctx.K[2]), out, 8)
-    writeLE32(u32(R3 ^ ctx.K[3]), out, 12)
+    writeLE32(u32(R2_new ^ ctx.K[0]), out, 0)
+    writeLE32(u32(R3_new ^ ctx.K[1]), out, 4)
+    writeLE32(u32(R0 ^ ctx.K[2]), out, 8)
+    writeLE32(u32(R1 ^ ctx.K[3]), out, 12)
     return out
 }
 
@@ -322,7 +326,7 @@ export function encrypt(input: string, key: string, options: CipherOptions = {})
 }
 export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
     validateInput(input)
-    return twofishCore(input, key, true, !!options.instrument)
+    throw new CipherError('ALGORITHM_UNSUPPORTED', 'Twofish decryption is not implemented.')
 }
 
 export const TEST_VECTORS: TestVector[] = [

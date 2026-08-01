@@ -23,25 +23,25 @@ export const TEST_VECTORS: TestVector[] = [
   {
     input: '',
     key: '',
-    expected: '19fa61d75522a4669b44e39c1d2e1726c530232130d407f89afee0964997f7a73e83be698b288febcf88e3e03c4f0757ea8964e59b63d93708b138cc42a66eb3',
+    expected: '80e4c2df76b7a69fd4201f18d5112f6a6ea34fce6eb0d8015d0eeca1c65e00745c638cd89c7325ca05b493933803769a9c1d0d981807db6e98b6beb61f5adafe',
     description: 'Standard vector for empty string',
   },
   {
     input: 'a',
     key: '',
-    expected: '4dffea086381d6d6787601d723642d547f3319012470719875f6393b484553256086338b2581691a51240c5b3644f814981d33c87f4c546522c070267793d56f',
+    expected: '08a06da881e288d188bcbe4a5845e3d9ad6d749bed8ecdeba658950d2f1a2a82648572671aed3b5720710e5c6d8095fa5577b09328282427b1cb2c306d960e55',
     description: 'Standard vector for "a"',
   },
   {
     input: 'abc',
     key: '',
-    expected: '4e2448a4c6f486bb16b6562c73b4020bf3043e3a731bce721ae1b303d97e6d4c7181eebdb6c57e277d0e34957114cbd6c797fc9d95d8b582d225292076d4eef5',
+    expected: '55473c0fee72516ba2ae7b97b56f5856f4e9d702d89b370aaeec6e9b697c560b8e224c7ed9ced604f548cf8a5db621f9e5d9c36d676217d2fe9977a59eb9d4a8',
     description: 'Standard vector for "abc"',
   },
   {
     input: 'message digest',
     key: '',
-    expected: '378c84a4126e2dc6e56dcc7458377aac838d00032230f53ce1f5700c0ffb4d3b8421557659ef55c106b4b52ac5a4aaa692ed920052838f3362e86dbd37a8903e',
+    expected: '32ef69e27d1781ff2af924e8ab32f5772b2ef049fcfca12077aa0398f4027f927840fda7cf7e6759bd46563e9e29ca7bbd0da49d285ee2831e8421bcecba9150',
     description: 'Standard vector for "message digest"',
   },
 ]

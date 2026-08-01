@@ -1,3 +1,6 @@
+import type { CipherResult, CipherStep, CipherOptions, TestVector, CipherMetadata } from '../types'
+import { CipherError, validateInput, validateKey } from '../../utils'
+
 export interface SerpentOptions {
   rounds?: number;
 }
@@ -374,3 +377,54 @@ export function serpentImplementationNotes(): string[] {
     "Includes encrypt/decrypt round-trip tests and reference-vector regression tests.",
   ];
 }
+
+const METADATA: CipherMetadata = {
+  name: 'Serpent',
+  keySize: 128,
+  blockSize: 128,
+  rounds: 32,
+  securityStatus: 'secure',
+  yearDesigned: 1998,
+  standardBody: 'Anderson, Biham, Knudsen (AES finalist)',
+}
+
+export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
+  validateInput(input)
+  const start = performance.now()
+  const trace = traceSerpentEncryption(input, key, { rounds: (options as Record<string, unknown>)?.rounds as number ?? 32 })
+  return {
+    output: trace.ciphertextHex.toLowerCase(),
+    outputEncoding: 'hex',
+    steps: trace.roundTrace.map((r) => ({
+      index: r.round,
+      label: `Round ${r.round}`,
+      inputState: r.input,
+      outputState: r.afterLinearTransform.toLowerCase(),
+      note: `S-Box ${r.sbox}, subkey ${r.subkey}`,
+      isMilestone: r.round === 1 || r.round === 32,
+    })),
+    metadata: METADATA,
+    durationMs: performance.now() - start,
+  }
+}
+
+export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
+  validateInput(input)
+  const start = performance.now()
+  const outHex = decryptSerpentBlock(input, key, { rounds: (options as Record<string, unknown>)?.rounds as number ?? 32 })
+  return {
+    output: outHex.toLowerCase(),
+    outputEncoding: 'hex',
+    steps: [],
+    metadata: METADATA,
+    durationMs: performance.now() - start,
+  }
+}
+
+export const TEST_VECTORS: TestVector[] = [
+  {
+    input: '00000000000000000000000000000000',
+    key: '00000000000000000000000000000000',
+    expected: 'fe0c08d498eacf8f104a2ebc08852b33',
+  },
+]

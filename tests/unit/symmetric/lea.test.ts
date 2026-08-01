@@ -14,7 +14,7 @@ describe('LEA', () => {
     })
 
     it('round-trip 192-bit key', () => {
-        const key = '0f1e2d3c4b5a69788796a5b4c3d2e1f0' + '000102030405060708090a0b'
+        const key = '0f1e2d3c4b5a69788796a5b4c3d2e1f0' + '0001020304050607'
         const pt = 'aabbccddeeff00112233445566778899'
         expect(decrypt(encrypt(pt, key).output, key).output).toBe(pt)
     })

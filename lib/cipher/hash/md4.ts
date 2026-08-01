@@ -160,7 +160,9 @@ function md4Digest(input: string, instrument: boolean): CipherResult {
 }
 
 export function encrypt(input: string, _key: string, options: CipherOptions = {}): CipherResult {
-  validateInput(input)
+  if (input === null || input === undefined || typeof input !== 'string') {
+    throw new CipherError('INPUT_REQUIRED', 'Input text is required.')
+  }
   return md4Digest(input, !!options.instrument)
 }
 export function decrypt(_input: string, _key: string, _options: CipherOptions = {}): CipherResult {
