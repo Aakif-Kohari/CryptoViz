@@ -56,10 +56,12 @@ function signCore(message: string, privateKeyHex: string, instrument: boolean): 
 
   const pubKey = secp256k1.getPublicKey(privKey)
   const msgHash = sha256(toByteArray(message, 'utf8'))
-  
-  // @noble/curves v2 sign() returns a Signature object which has toCompactHex().
   const sig = secp256k1.sign(msgHash, privKey)
-  const sigHex = (sig as any).toCompactHex ? (sig as any).toCompactHex() : fromByteArray((sig as any).toCompactRawBytes(), 'hex')
+  const sigHex = typeof (sig as any)?.toCompactHex === 'function'
+    ? (sig as any).toCompactHex()
+    : typeof (sig as any)?.toCompactBytes === 'function'
+    ? fromByteArray((sig as any).toCompactBytes(), 'hex')
+    : (sig as any).r.toString(16).padStart(64, '0') + (sig as any).s.toString(16).padStart(64, '0')
 
   if (instrument) {
     steps.push({
@@ -148,7 +150,7 @@ export const TEST_VECTORS: TestVector[] = [
   {
     input: 'hello ECSoC26',
     key: '0101010101010101010101010101010101010101010101010101010101010101',
-    expected: '6947761066964098905646f906404289899f81678652019777174676458064973347590864987649876498764987649876498764987649876498764987649876', // Placeholder: update with actual RFC 6979 output if needed
-    description: 'Deterministic ECDSA (secp256k1) signature of "hello ECSoC26"'
-  }
+    expected: 'cdcbfa9166f2127202fa48135bd05cd906d200ce8fcbc16aef7fc5b7eb9a0ea62dfedae620efbd43aa3f47e30d170a4efc8c104443ee9e5595cce2ef0ddce707',
+    description: 'Deterministic ECDSA (secp256k1) signature of "hello ECSoC26"',
+  },
 ]

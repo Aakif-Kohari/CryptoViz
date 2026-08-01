@@ -301,3 +301,13 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 - **Radix UI**: Accessible primitives enabling clean Tailwind components.
 - **Pagefind**: Fast, static indexing engine running inside WASM.
 - **NIST & IETF**: FIPS and RFC committees for publishing test vectors.
+## Continuous Integration
+
+GitHub Actions automatically validates every pull request targeting the `main` branch by running:
+
+- ESLint
+- TypeScript type checking
+- Unit tests
+- Production build
+
+Repository maintainers can optionally enable GitHub Branch Protection Rules to require these checks before merging.

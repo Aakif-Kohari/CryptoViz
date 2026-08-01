@@ -1,7 +1,7 @@
 import type {
   CipherDefinition,
 } from '../cipher/registry'
-import type { CipherDirection } from '../cipher/types'
+import type { CipherDirection, CipherOptions } from '../cipher/types'
 
 export interface ComparisonSelection {
   leftCipherId: string
@@ -15,7 +15,7 @@ export interface ComparisonPanelState {
   options: Record<string, string | number | boolean>
 }
 
-export interface CipherWorkerOptions {
+export interface CipherWorkerOptions extends CipherOptions {
   instrument: true
   hexInput?: boolean
   rounds?: number
