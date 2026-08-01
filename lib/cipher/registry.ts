@@ -363,6 +363,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '4–56 byte key as hex (8–112 hex chars)',
   },
   {
+    id: 'simon',
+    name: 'SIMON-128/128',
+    category: 'symmetric',
+    description: "NSA hardware-optimised lightweight block cipher (IACR 2013/404). Sibling of SPECK — SIMON targets gate-minimal hardware via bitwise AND while SPECK targets software via ARX. 128-bit block, 128-bit key, 68-round Feistel. Round function: f(x)=(x<<<1 & x<<<8)⊕x<<<2.",
+    defaultKey: '0f0e0d0c0b0a09080706050403020100',
+    defaultInput: '6373656420737265' + '6c6c657661726174',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",

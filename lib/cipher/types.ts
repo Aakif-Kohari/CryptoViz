@@ -109,6 +109,7 @@ export type CipherName =
   | 'sm4'
   | 'tea'
   | 'blowfish'
+  | 'simon'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
