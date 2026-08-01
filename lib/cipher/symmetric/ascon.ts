@@ -325,7 +325,9 @@ function asconOpen(
  * options.ad: hex-encoded associated data (optional)
  */
 export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-    validateInput(input)
+    if (input === undefined || input === null) {
+        throw new CipherError('INPUT_REQUIRED', 'Input plaintext is required for ASCON-128.')
+    }
     validateKey(key)
     const start = performance.now()
 
@@ -342,7 +344,7 @@ export function encrypt(input: string, key: string, options: CipherOptions = {})
 
     const adHex = (options as Record<string, unknown>).ad as string | undefined
     const adBytes = adHex ? parseHex(adHex, 'associated data') : new Uint8Array(0)
-    const ptBytes = parseHex(input, 'ASCON plaintext')
+    const ptBytes = input === '' ? new Uint8Array(0) : parseHex(input, 'ASCON plaintext')
 
     const { ct, tag } = asconSeal(keyBytes, nonceBytes, adBytes, ptBytes)
     const output = toHex(nonceBytes) + toHex(ct) + toHex(tag)
@@ -371,7 +373,9 @@ export function encrypt(input: string, key: string, options: CipherOptions = {})
  * options.ad: hex associated data (must match what was used during seal)
  */
 export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-    validateInput(input)
+    if (input === undefined || input === null) {
+        throw new CipherError('INPUT_REQUIRED', 'Input ciphertext is required for ASCON-128.')
+    }
     validateKey(key)
     const start = performance.now()
 
@@ -407,7 +411,7 @@ export const TEST_VECTORS: TestVector[] = [
     {
         input: '00',
         key: '000102030405060708090a0b0c0d0e0f',
-        expected: '(round-trip: seal then open must recover 00)',
+        expected: '00',
         description: 'ASCON-128: 1-byte plaintext, zero key/nonce, empty AD — round-trip verified',
     },
 ]
