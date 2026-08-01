@@ -303,7 +303,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 - **NIST & IETF**: FIPS and RFC committees for publishing test vectors.
 ## Continuous Integration
 
-GitHub Actions automatically validates every pull request by running:
+GitHub Actions automatically validates every pull request targeting the `main` branch by running:
 
 - ESLint
 - TypeScript type checking
