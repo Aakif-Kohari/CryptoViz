@@ -331,6 +331,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'keyHex(32B)|nonceHex(24B)',
   },
   {
+    id: 'trivium',
+    name: 'Trivium',
+    category: 'symmetric',
+    description: 'eSTREAM Phase 3 stream cipher (ISO/IEC 29192-3). Three coupled 93/84/111-bit NLFSRs with 288-bit total state. 80-bit key, 80-bit IV, 1152 warm-up clocks before keystream. Most analysed stream cipher — one AND gate per output bit in hardware. Output = IV(20 hex) + ciphertext.',
+    defaultKey: '00000000000000000000',
+    defaultInput: '48656c6c6f20576f726c64',
+    securityStatus: 'legacy',
+    keyPlaceholder: '80-bit key as 20 hex chars',
+  },
+  {
     id: 'sm4',
     name: 'SM4',
     category: 'symmetric',

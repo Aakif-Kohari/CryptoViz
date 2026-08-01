@@ -157,6 +157,10 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
       const mod = await import("../cipher/symmetric/xsalsa20");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
+    case "trivium": {
+      const mod = await import("../cipher/symmetric/trivium");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
     case "ascon": {
       const mod = await import("../cipher/symmetric/ascon");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
