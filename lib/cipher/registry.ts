@@ -342,6 +342,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'present',
+    name: 'PRESENT',
+    category: 'symmetric',
+    description: "Ultra-lightweight block cipher (ISO/IEC 29192-2:2012). Smallest standardised cipher: PRESENT-80 fits in 1,075 gate equivalents — vs AES's ~3,400 GE. 64-bit block, 80 or 128-bit key, 31-round SPN with a 4-bit S-box and a 64-bit bit-permutation P-layer.",
+    defaultKey: '00000000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '80-bit key (20 hex) or 128-bit key (32 hex)',
+  },
+  {
     id: 'tea',
     name: 'TEA',
     category: 'symmetric',

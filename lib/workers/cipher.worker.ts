@@ -165,6 +165,10 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
       const mod = await import("../cipher/symmetric/sm4");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
+    case "present": {
+      const mod = await import("../cipher/symmetric/present");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
     case "tea": {
       const mod = await import("../cipher/symmetric/tea");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };

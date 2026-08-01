@@ -107,6 +107,7 @@ export type CipherName =
   | 'ascon'
   | 'xsalsa20'
   | 'sm4'
+  | 'present'
   | 'tea'
   | 'blowfish'
   | 'rc4'
