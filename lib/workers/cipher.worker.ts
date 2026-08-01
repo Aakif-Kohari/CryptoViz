@@ -115,7 +115,7 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
     }
     case "serpent": {
       const mod = await import("../cipher/symmetric/serpent");
-      return { encrypt: mod.encryptSerpentBlock, decrypt: mod.decryptSerpentBlock };
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
     case "chacha20-poly1305": {
       const mod = await import("../cipher/symmetric/chacha20-poly1305");
@@ -147,6 +147,10 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
     }
     case "enigma": {
       const mod = await import("../cipher/symmetric/enigma");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
+    case "rc6": {
+      const mod = await import("../cipher/symmetric/rc6");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
     case "xchacha20": {

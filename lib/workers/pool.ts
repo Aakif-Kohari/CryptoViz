@@ -53,11 +53,11 @@ export class WorkerPool {
         if (type === 'progress' && task.onProgress) {
           task.onProgress(payload);
         } else if (type === 'done') {
-          task.callback(null, payload);
+          task.callback(null, payload?.result || payload);
           this.activeTasks.delete(worker);
           this.makeWorkerIdle(worker);
         } else if (type === 'error') {
-          task.callback(new Error(payload?.message || 'Worker error'));
+          task.callback(new Error(payload?.message || payload?.error || 'Worker error'));
           this.activeTasks.delete(worker);
           this.makeWorkerIdle(worker);
         } else if (type === undefined) {
