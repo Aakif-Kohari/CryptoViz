@@ -108,6 +108,7 @@ export type CipherName =
   | 'xsalsa20'
   | 'sm4'
   | 'tea'
+  | 'lea'
   | 'blowfish'
   | 'rc4'
   | 'salsa20'
