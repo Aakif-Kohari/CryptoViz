@@ -1,6 +1,8 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Breadcrumbs from '../../components/layout/Breadcrumbs'
+
 import Navbar from '../../components/layout/Navbar'
 import CipherComparisonPanel from '../../components/compare/CipherComparisonPanel'
 import ComparisonControls from '../../components/compare/ComparisonControls'
@@ -51,6 +53,7 @@ export default function ComparePage() {
       <Navbar />
 
       <main className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
+        <Breadcrumbs items={[{ label: "Practice" }, { label: "Compare Ciphers" }]} />
         <header className="max-w-3xl">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">
             Comparison workspace
