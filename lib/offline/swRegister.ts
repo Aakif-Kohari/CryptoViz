@@ -53,7 +53,7 @@ export function useOfflinePackManager() {
         const estimate = await navigator.storage.estimate();
         if (estimate.usage) used = estimate.usage;
         if (estimate.quota) quota = estimate.quota;
-      } catch (e) {
+      } catch (_e) {
         // Fallback defaults
       }
     }

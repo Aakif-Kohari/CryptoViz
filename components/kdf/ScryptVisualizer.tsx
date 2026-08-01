@@ -9,7 +9,7 @@ import {
   type ScryptStageStep
 } from '@/lib/kdf/scrypt'
 import type { WorkerRequest } from '@/types/worker'
-import { Info, HelpCircle, ShieldAlert, Cpu } from 'lucide-react'
+import { HelpCircle, ShieldAlert, Cpu } from 'lucide-react'
 
 function randomSaltHex(bytes = 16): string {
   const arr = crypto.getRandomValues(new Uint8Array(bytes))

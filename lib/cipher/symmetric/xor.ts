@@ -27,7 +27,7 @@ function hex(n: number): string {
 function xorInstrumented(
   inputBytes: Uint8Array,
   keyBytes: Uint8Array,
-  isDecrypt: boolean
+  _isDecrypt: boolean
 ): CipherStep[] {
   const steps: CipherStep[] = []
 

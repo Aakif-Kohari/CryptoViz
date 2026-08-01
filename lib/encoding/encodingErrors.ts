@@ -111,7 +111,7 @@ export function injectEncodingFault(input: string, encoding: EncodingType, fault
   if (fault === 'TRUNCATED_SEQUENCE') {
     if (encoding === 'UTF-8') {
       // Create a string with a 3-byte character like Euro '€' (0xE2 0x82 0xAC) truncated
-      const corrupted = 'Crypto€'.slice(0, -1); // Euro sign partially truncated
+      const _corrupted = 'Crypto€'.slice(0, -1); // Euro sign partially truncated
       return { corrupted: 'Crypto\xE2\x82', explanation: 'Truncated 3-byte UTF-8 sequence for "€" mid-way (0xE2 0x82 missing lead byte).' };
     }
     const corrupted = input.slice(0, Math.max(1, input.length - 1));
@@ -142,7 +142,7 @@ export function injectEncodingFault(input: string, encoding: EncodingType, fault
 /**
  * Simulates Mojibake character set mismatches (e.g. UTF-8 read as ISO-8859-1 / Windows-1252).
  */
-export function simulateMojibake(text: string, sourceEncoding: string = 'UTF-8', targetEncoding: string = 'ISO-8859-1'): MojibakeResult {
+export function simulateMojibake(text: string, _sourceEncoding: string = 'UTF-8', targetEncoding: string = 'ISO-8859-1'): MojibakeResult {
   const encoder = new TextEncoder();
   const utf8Bytes = encoder.encode(text);
   const hexBytes = Array.from(utf8Bytes).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');

@@ -6,12 +6,11 @@ import {
   compareSnapshotHtml,
   exportSnapshotReportJSON,
   exportSnapshotReportMarkdown,
-  saveVisualizationSnapshot,
   type VisualizationSnapshot,
 } from "@/lib/utils/visualizationSnapshots";
 import SnapshotDiffViewer from "./SnapshotDiffViewer";
 import SnapshotPresetSelector from "./SnapshotPresetSelector";
-import { Play, CheckCircle2, XCircle, Download, RefreshCw, Plus, FileCode, Layers, Shield } from "lucide-react";
+import { Play, CheckCircle2, XCircle, Download, RefreshCw } from "lucide-react";
 
 export default function SnapshotTestRunner() {
   const [snapshots, setSnapshots] = useState<VisualizationSnapshot[]>(() =>
@@ -22,7 +21,7 @@ export default function SnapshotTestRunner() {
   );
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [currentDomOverride, setCurrentDomOverride] = useState<string | null>(null);
-  const [copiedReport, setCopiedReport] = useState<"json" | "md" | null>(null);
+  const [_copiedReport, setCopiedReport] = useState<"json" | "md" | null>(null);
 
   const selectedSnapshot = useMemo(
     () => snapshots.find((s) => s.id === selectedSnapshotId) || snapshots[0],
@@ -113,7 +112,7 @@ export default function SnapshotTestRunner() {
     setTimeout(() => setCopiedReport(null), 2000);
   };
 
-  const handleExportMarkdown = () => {
+  const _handleExportMarkdown = () => {
     const md = exportSnapshotReportMarkdown(snapshots);
     downloadFile(
       md,
@@ -245,7 +244,7 @@ export default function SnapshotTestRunner() {
         <SnapshotDiffViewer
           diffResult={diffResult}
           componentName={selectedSnapshot.componentName}
-          title={selectedSnapshot.title}
+          _title={selectedSnapshot.title}
         />
       )}
     </div>

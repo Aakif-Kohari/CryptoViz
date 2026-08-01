@@ -117,7 +117,7 @@ export default function ChallengeMode() {
   const [questionCount, setQuestionCount] = useState<QuestionCountOption>(DEFAULT_QUESTION_COUNT)
   const [timeLimit, setTimeLimit] = useState<TimeLimitOption>(DEFAULT_TIME_LIMIT)
   const [started, setStarted] = useState(false)
-  const [replayMode, setReplayMode] = useState(false)
+  const [_replayMode, setReplayMode] = useState(false)
 
   const [isHydrated, setIsHydrated] = useState(false)
 
@@ -298,7 +298,7 @@ export default function ChallengeMode() {
     return () => clearTimeout(t)
   }, [currentChallenge, feedback, loading, timeLeft, currentQuestionIndex, showHintIndex, timeLimit, advanceQuestion])
 
-  const resetSession = useCallback(() => {
+  const _resetSession = useCallback(() => {
     successTimeoutRef.current && clearTimeout(successTimeoutRef.current)
     sessionPersistedRef.current = false
     setReplayMode(false)

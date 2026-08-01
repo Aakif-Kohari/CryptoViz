@@ -7,7 +7,7 @@ import {
   decryptAffine,
   type DynamicCipherDefinition,
 } from "@/lib/utils/dynamicCipherLoader";
-import { Play, ArrowRightLeft, ShieldCheck, Cpu } from "lucide-react";
+import { Play, Cpu } from "lucide-react";
 
 interface DynamicCipherPlaygroundProps {
   cipher: DynamicCipherDefinition;

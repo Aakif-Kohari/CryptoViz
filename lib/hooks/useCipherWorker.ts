@@ -65,7 +65,7 @@ function getCacheKey(
   key: string,
   options?: any
 ): string {
-  const { signal: _, bypassCache: __, ...cacheableOptions } = options || {}
+  const { signal: ___, bypassCache: ___, ...cacheableOptions } = options || {}
   // Stable serialization for options to avoid key-order issues.
   const stableOptions = JSON.stringify(sortObjectKeys(cacheableOptions))
 
@@ -296,7 +296,7 @@ export function useCipherWorker() {
 
         try {
           // Strip AbortSignal from options since it's not JSON serializable
-          const { signal: _, ...serializableOptions } = options || {}
+          const { signal: __, ...serializableOptions } = options || {}
           const requestMessage: WorkerRequest = {
             type: action,
             requestId: id,

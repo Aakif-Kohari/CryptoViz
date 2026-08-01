@@ -12,7 +12,7 @@ import * as caesar from './caesar'
 
 export function encrypt(
   input: string,
-  key: string = '13',
+  _key: string = '13',
   options: CipherOptions = {}
 ): CipherResult {
   validateInput(input)

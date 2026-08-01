@@ -11,7 +11,7 @@ import {
 import ModuleLoadMetricsCard from "./ModuleLoadMetricsCard";
 import CustomCipherEditor from "./CustomCipherEditor";
 import DynamicCipherPlayground from "./DynamicCipherPlayground";
-import { Cpu, Layers, Download, Upload, RefreshCw, Sparkles, Shield, Code, Plus } from "lucide-react";
+import { Cpu, Layers, Download, Upload, Sparkles, Code } from "lucide-react";
 
 export default function DynamicCipherLoader() {
   const [ciphers, setCiphers] = useState<DynamicCipherDefinition[]>(() =>

@@ -567,7 +567,7 @@ function executeCamellia(
     const offset = b * 16
     const blockLen = Math.min(16, processedInput.length - offset)
     
-    let block = new Uint8Array(16)
+    const block = new Uint8Array(16)
     block.set(processedInput.subarray(offset, offset + blockLen))
 
     let resultBlock: Uint8Array

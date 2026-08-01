@@ -87,7 +87,7 @@ export function saveConversionHistory(
 
   if (typeof window !== 'undefined') {
     try {
-      const stored = normalized.map(({ cipherId: _cipherId, ...entry }) => entry)
+      const stored = normalized.map(({ cipherId: __cipherId, ...entry }) => entry)
       window.localStorage.setItem(
         getConversionHistoryStorageKey(cipherId),
         JSON.stringify(stored),

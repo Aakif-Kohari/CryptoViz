@@ -83,6 +83,6 @@ function blake2sCore(input: string, instrument: boolean): CipherResult {
 export function encrypt(input: string, _key: string, options: CipherOptions = {}): CipherResult {
   return blake2sCore(input, !!options.instrument)
 }
-export function decrypt(_input: string, _key: string, _options: CipherOptions = {}): CipherResult {
+export function decrypt(_input: string, _key: string, __options: CipherOptions = {}): CipherResult {
   throw new CipherError('ALGORITHM_UNSUPPORTED', 'BLAKE2s is a one-way hash function — it has no decrypt operation.')
 }

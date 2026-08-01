@@ -4,9 +4,9 @@ import React, { useState, useMemo } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/footer';
 import GlossaryModal from '@/components/glossary/GlossaryModal';
-import { GLOSSARY_TERMS, searchGlossaryTerms } from '@/lib/glossary/glossaryData';
+import { searchGlossaryTerms } from '@/lib/glossary/glossaryData';
 import { GlossaryTerm, TermCategory } from '@/lib/glossary/types';
-import { Search, BookOpen, ArrowRight, Sparkles, Filter } from 'lucide-react';
+import { Search, BookOpen, ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export default function GlossaryPage() {

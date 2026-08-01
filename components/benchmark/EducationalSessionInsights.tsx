@@ -5,11 +5,11 @@ import type { SessionDelta } from "@/lib/utils/sessionComparison";
 import { Lightbulb, Cpu, Activity, ShieldCheck, Zap, ChevronDown, ChevronUp } from "lucide-react";
 
 interface EducationalSessionInsightsProps {
-  delta: SessionDelta;
+  _delta: SessionDelta;
 }
 
 export default function EducationalSessionInsights({
-  delta,
+  _delta,
 }: EducationalSessionInsightsProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 

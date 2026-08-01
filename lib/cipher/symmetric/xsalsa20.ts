@@ -21,7 +21,7 @@ const METADATA: CipherMetadata = {
   standardBody: 'NaCl / libsodium (extension of Bernstein\'s Salsa20)',
 }
 
-const MASK = 0xffffffff
+const _MASK = 0xffffffff
 function rotl(x: number, n: number): number {
   const ux = x >>> 0
   return ((ux << n) | (ux >>> (32 - n))) >>> 0

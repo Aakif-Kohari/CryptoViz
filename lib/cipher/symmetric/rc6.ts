@@ -27,7 +27,7 @@ const METADATA: CipherMetadata = {
   standardBody: 'AES competition (finalist)',
 }
 
-const MASK = 0xffffffff
+const _MASK = 0xffffffff
 const P32 = 0xb7e15163
 const Q32 = 0x9e3779b9
 const R = 20 // rounds
