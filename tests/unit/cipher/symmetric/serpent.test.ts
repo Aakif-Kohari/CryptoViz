@@ -12,19 +12,19 @@ import {
 } from "../../../../lib/cipher/symmetric/serpent";
 
 describe("correct Serpent implementation", () => {
-  it("matches a Serpent-128 zero-key zero-plaintext regression vector", () => {
+  it("matches a Serpent-128 zero-key zero-plaintext NESSIE regression vector", () => {
     expect(
       encryptSerpentBlock(
         "00000000000000000000000000000000",
         "00000000000000000000000000000000",
       ),
-    ).toBe("D6D99825472B6EBCBB142E8F71F13C5D");
+    ).toBe("36C2B777400B033C700E1B9516506EB6");
   });
 
   it("decrypts the Serpent-128 zero vector", () => {
     expect(
       decryptSerpentBlock(
-        "D6D99825472B6EBCBB142E8F71F13C5D",
+        "36C2B777400B033C700E1B9516506EB6",
         "00000000000000000000000000000000",
       ),
     ).toBe("00000000000000000000000000000000");
