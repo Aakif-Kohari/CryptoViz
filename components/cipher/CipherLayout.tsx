@@ -820,7 +820,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
                     ? "Generated Hash Digest"
                     : "Output Result"}
                 </span>
-                <div className="mt-2 min-h-[48px] overflow-x-auto rounded-lg bg-zinc-50 p-3 font-mono text-sm leading-relaxed break-all ..."text-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-200">
+                <div className="mt-2 min-h-[48px] overflow-x-auto rounded-lg bg-zinc-50 p-3 font-mono text-sm leading-relaxed break-all text-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-200">
                   {loading ? (
                     <span className="flex items-center gap-1.5 text-zinc-400">
                       <span className="h-1.5 w-1.5 animate-ping rounded-full bg-teal-500" />

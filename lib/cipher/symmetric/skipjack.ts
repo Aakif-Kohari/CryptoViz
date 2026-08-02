@@ -1,5 +1,5 @@
 import { CipherError, validateInput, validateKey } from '../../utils'
-import type { CipherOptions, CipherResult, CipherStep, TestVector } from '../types'
+import type { CipherOptions, CipherResult, CipherStep, TestVector, CipherMetadata } from '../types'
 
 /**
  * Skipjack — NSA Clipper-chip cipher, declassified 1998.
@@ -146,6 +146,16 @@ function fromWords(blocks: number[][]): Uint8Array {
   return out
 }
 
+const METADATA: CipherMetadata = {
+  name: 'Skipjack',
+  keySize: 80,
+  blockSize: 64,
+  rounds: 32,
+  securityStatus: 'legacy',
+  yearDesigned: 1998,
+  standardBody: 'NSA (declassified)',
+}
+
 function skipjackCore(input: string, key: string, doDecrypt: boolean, instrument: boolean): CipherResult {
   const start = performance.now()
   validateKey(key)
@@ -173,6 +183,7 @@ function skipjackCore(input: string, key: string, doDecrypt: boolean, instrument
     output: bytesToHex(outBytes),
     outputEncoding: 'hex',
     steps,
+    metadata: METADATA,
     durationMs: performance.now() - start,
   }
 }

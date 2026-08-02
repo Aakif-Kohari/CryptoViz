@@ -89,8 +89,6 @@ import { deriveScryptKey } from "../kdf/scrypt";
 import { CipherError } from "../utils/errors";
 import type { WorkerRequest, WorkerResponse } from "../../types/worker";
 import type { CipherResult } from "../cipher/types";
-import { deriveKey } from "../kdf/pbkdf2";
-import { deriveScryptKey } from "../kdf/scrypt";
 
 type CipherHandler = (input: string, key: string, options?: any) => any;
 
