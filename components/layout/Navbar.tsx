@@ -3,10 +3,9 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { isDevelopmentMode } from '@/lib/utils/env'
-import { safeGetItem, safeSetItem } from '../../lib/utils/storage'
 import LanguageSelector from '../i18n/LanguageSelector'
 import { useTranslation } from '@/lib/i18n/context'
+import { safeGetItem, safeSetItem } from '../../lib/utils/storage'
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -68,44 +67,45 @@ export default function Navbar() {
     }
   }
 
-  const allNavLinks = [
-    { name: t('nav.visualizers') || 'Visualizers', href: '/visualizer' },
-    { name: t('nav.playground'), href: '/visualizer/caesar/' },
-    { name: t('nav.advisor') || 'Advisor', href: '/advisor' },
-    { name: t('nav.modes'), href: '/modes' },
-    { name: t('nav.protocols') || 'Protocols', href: '/protocols' },
-    { name: t('nav.compare'), href: '/compare' },
-    { name: t('nav.matrix') || 'Matrix', href: '/matrix' },
-    { name: t('nav.benchmark'), href: '/benchmark' },
-    { name: t('nav.avalanche'), href: '/avalanche' },
-    { name: t('nav.sbox') || 'S-Box Explorer', href: '/sbox' },
-    { name: t('nav.merkle') || 'Merkle Tree', href: '/merkle' },
-    { name: t('nav.padding') || 'Padding', href: '/padding' },
-    { name: t('nav.challenge'), href: '/challenge' },
-    { name: t('nav.rainbow') || 'Rainbow Table', href: '/rainbow-table' },
-    { name: t('nav.docs'), href: '/docs' },
-    { name: t('nav.reference') || 'Reference Hub', href: '/reference' },
-    { name: t('nav.offline') || 'Offline', href: '/offline' },
-    { name: t('nav.glossary') || 'Glossary', href: '/glossary' },
-    { name: t('nav.lifecycle') || 'Cipher Lifecycle', href: '/cipher-lifecycle' },
-    { name: t('nav.graph') || 'Cipher Graph', href: '/timeline' },
-    { name: t('nav.caseStudies') || 'Case Studies', href: '/case-studies' },
-    { name: t('nav.mythBusters') || 'Myth Busters', href: '/myth-busters' },
-    { name: t('nav.encodingErrors') || 'Encoding Errors', href: '/encoding-errors' },
-    { name: t('nav.resources'), href: '/resources' },
-    { name: t('nav.timeline') || 'Timeline', href: '/timeline' },
-  ];
-
-  const developerOnlyLinks = [
-    { name: 'Benchmark History', href: '/benchmarks/history' },
-    { name: 'Integration Tests', href: '/tests/integration' },
-    { name: 'Snapshot Tests', href: '/tests/snapshots' },
-    { name: 'Worker Tests', href: '/tests/worker' },
-  ];
-
-  const navLinks = isDevelopmentMode()
-    ? [...allNavLinks, ...developerOnlyLinks]
-    : allNavLinks;
+  const navCategories = [
+    { name: t('nav.home') || 'Home', href: '/' },
+    {
+      name: t('nav.learn') || 'Learn',
+      items: [
+        { name: t('nav.lifecycle') || 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+        { name: t('nav.mythBusters') || 'Myth Busters', href: '/myth-busters' },
+        { name: t('nav.encodingErrors') || 'Encoding Errors', href: '/encoding-errors' },
+        { name: t('nav.merkle') || 'Merkle Tree', href: '/merkle' },
+        { name: t('nav.padding') || 'Padding', href: '/padding' },
+      ],
+    },
+    {
+      name: t('nav.practice') || 'Practice',
+      items: [
+        { name: t('nav.playground') || 'Playground', href: '/visualizer/caesar/' },
+        { name: t('nav.challenge') || 'Challenge', href: '/challenge' },
+        { name: t('nav.advisor') || 'Advisor', href: '/advisor' },
+      ],
+    },
+    {
+      name: t('nav.reference') || 'Reference',
+      items: [
+        { name: t('nav.glossary') || 'Glossary', href: '/glossary' },
+        { name: t('nav.modes') || 'Modes', href: '/modes' },
+        { name: t('nav.compare') || 'Compare', href: '/compare' },
+        { name: t('nav.matrix') || 'Matrix', href: '/matrix' },
+        { name: t('nav.benchmark') || 'Benchmark', href: '/benchmark' },
+        { name: t('nav.avalanche') || 'Avalanche', href: '/avalanche' },
+      ],
+    },
+    {
+      name: t('nav.more') || 'More',
+      items: [
+        { name: t('nav.resources') || 'Resources', href: '/resources' },
+        { name: t('nav.offline') || 'Offline', href: '/offline' },
+      ],
+    },
+  ]
 
   return (
     <nav
@@ -115,7 +115,6 @@ export default function Navbar() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-
         <div className="flex items-center gap-2">
           <Link
             href="/"
@@ -135,9 +134,6 @@ export default function Navbar() {
                   d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
                 />
               </svg>
-
-              {/* Glow effect */}
-
               <div className="absolute inset-0 rounded-2xl bg-teal-500/20 blur-md transition-opacity duration-300 opacity-0 group-hover:opacity-100" />
             </div>
 
@@ -150,59 +146,113 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Navigation Links */}
-
-        <div className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => {
-            const isActive =
-              pathname === link.href ||
-              (link.href !== '/' && pathname.startsWith(link.href))
+        {/* Desktop Navigation */}
+        <div className="hidden items-center gap-10 xl:flex">
+          {navCategories.map((category) => {
+            const isCategoryActive = category.href
+              ? pathname === category.href
+              : category.items?.some((item) => pathname.startsWith(item.href) && item.href !== '#');
 
             return (
-              <Link
-                key={link.name}
-                href={link.href}
-                aria-current={isActive ? 'page' : undefined}
-                className={`
-                  group relative rounded-xl px-3.5 py-2 text-sm font-medium
-                  transition-all duration-300
-                  ${isActive
-                    ? 'text-teal-600 dark:text-teal-400 font-semibold'
-                    : 'text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white'
-                  }
-                `}
-              >
-                {/* Active Indicator Background */}
-
-                {isActive && (
-                  <div className="absolute inset-0 rounded-xl bg-teal-500/10 dark:bg-teal-500/15" />
+              <div key={category.name} className="group relative">
+                {category.href ? (
+                  <Link
+                    href={category.href}
+                    className={`
+                      relative
+                      text-[15px]
+                      font-semibold
+                      transition-all
+                      duration-300
+                      ${isCategoryActive
+                        ? 'text-teal-500'
+                        : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
+                      }
+                    `}
+                  >
+                    {category.name}
+                    <span
+                      className={`
+                        absolute
+                        -bottom-6
+                        left-1/2
+                        h-[3px]
+                        rounded-full
+                        bg-teal-500
+                        transition-all
+                        duration-300
+                        ${isCategoryActive
+                          ? 'w-full -translate-x-1/2'
+                          : 'w-0 -translate-x-1/2 group-hover:w-full'
+                        }
+                      `}
+                    />
+                  </Link>
+                ) : (
+                  <div className="cursor-default py-6 -my-6 flex items-center">
+                    <span
+                      className={`
+                        relative
+                        text-[15px]
+                        font-semibold
+                        transition-all
+                        duration-300
+                        ${isCategoryActive
+                          ? 'text-teal-500'
+                          : 'text-zinc-600 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white'
+                        }
+                      `}
+                    >
+                      {category.name}
+                      <span
+                        className={`
+                          absolute
+                          -bottom-[28px]
+                          left-1/2
+                          h-[3px]
+                          rounded-full
+                          bg-teal-500
+                          transition-all
+                          duration-300
+                          ${isCategoryActive
+                            ? 'w-full -translate-x-1/2'
+                            : 'w-0 -translate-x-1/2 group-hover:w-full'
+                          }
+                        `}
+                      />
+                    </span>
+                    
+                    <div className="absolute left-1/2 top-full mt-4 w-56 -translate-x-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                      <div className="rounded-xl border border-zinc-200/50 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-zinc-800/50 dark:bg-zinc-950/95 flex flex-col gap-1">
+                        {category.items?.map((item) => {
+                          const isItemActive = pathname.startsWith(item.href) && item.href !== '#';
+                          return (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              className={`block rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
+                                isItemActive
+                                  ? 'bg-teal-50 text-teal-600 dark:bg-teal-500/10 dark:text-teal-400'
+                                  : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900/50 dark:hover:text-white'
+                              }`}
+                            >
+                              {item.name}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
                 )}
-
-                <span className="relative z-10">{link.name}</span>
-
-                {/* Hover Line */}
-
-                <div
-                  className={`
-                    absolute bottom-1 left-1/2 h-[2px] rounded-full bg-teal-500 transition-all duration-300
-                    ${isActive
-                      ? 'w-full -translate-x-1/2'
-                      : 'w-0 -translate-x-1/2 group-hover:w-full'
-                    }
-                  `}
-                />
-              </Link>
+              </div>
             )
           })}
         </div>
 
         {/* Right Side */}
-
         <div className="flex items-center gap-2 sm:gap-4">
-          {/* Language Selector */}
           <LanguageSelector />
 
-          {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
@@ -258,8 +308,6 @@ export default function Navbar() {
               </svg>
             )}
           </button>
-
-          {/* Mobile Menu Button */}
 
           <button
             ref={mobileMenuBtnRef}
@@ -317,7 +365,6 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Navigation */}
-
       {isMobileMenuOpen && (
         <div
           id="mobile-menu"
@@ -332,34 +379,54 @@ export default function Navbar() {
           "
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6">
-            {navLinks.map((link) => {
-              const isActive =
-                link.href === '/visualizer'
-                  ? pathname === '/visualizer' || pathname === '/visualizer/'
-                  : pathname.startsWith(link.href) && link.href !== '#'
+            {navCategories.map((category) => {
+              if (category.href) {
+                const isActive = pathname === category.href
+                return (
+                  <Link
+                    key={category.name}
+                    href={category.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`
+                      rounded-xl px-4 py-3 text-base font-semibold transition-all duration-300
+                      ${isActive
+                        ? 'bg-teal-500 text-white'
+                        : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900'
+                      }
+                    `}
+                  >
+                    {category.name}
+                  </Link>
+                )
+              }
 
               return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`
-                    rounded-xl
-                    px-4
-                    py-3
-                    text-base
-                    font-semibold
-                    transition-all
-                    duration-300
-
-                    ${isActive
-                      ? 'bg-teal-500 text-white'
-                      : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900'
-                    }
-                  `}
-                >
-                  {link.name}
-                </Link>
+                <div key={category.name} className="py-2">
+                  <h3 className="px-4 mb-2 text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                    {category.name}
+                  </h3>
+                  <div className="flex flex-col gap-1">
+                    {category.items?.map((item) => {
+                      const isActive = pathname.startsWith(item.href) && item.href !== '#'
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className={`
+                            rounded-xl pl-8 pr-4 py-2.5 text-[15px] font-medium transition-all duration-300
+                            ${isActive
+                              ? 'bg-teal-50 text-teal-600 dark:bg-teal-500/10 dark:text-teal-400'
+                              : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-white'
+                            }
+                          `}
+                        >
+                          {item.name}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </div>
               )
             })}
           </div>

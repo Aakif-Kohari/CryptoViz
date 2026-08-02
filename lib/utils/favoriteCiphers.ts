@@ -14,16 +14,48 @@ function isBrowser(): boolean {
 }
 
 function readStorage(): string[] {
-  const parsed = safeGetItemJson<unknown>(FAVORITE_CIPHERS_STORAGE_KEY, null)
-  return parsed !== null ? normalizeFavoriteCipherIds(parsed) : []
+  if (!isBrowser()) return []
+
+  try {
+    const raw = window.localStorage.getItem(FAVORITE_CIPHERS_STORAGE_KEY)
+    return raw ? normalizeFavoriteCipherIds(JSON.parse(raw)) : []
+  } catch (error) {
+    console.warn(
+      '[CryptoViz LocalStorage Error] Failed to read favorite ciphers from storage:',
+      error,
+    )
+    return []
+  }
 }
 
 function writeStorage(ids: string[]): void {
-  safeSetItemJson(FAVORITE_CIPHERS_STORAGE_KEY, ids)
+  if (!isBrowser()) return
+
+  try {
+    window.localStorage.setItem(
+      FAVORITE_CIPHERS_STORAGE_KEY,
+      JSON.stringify(ids),
+    )
+  } catch (error) {
+    console.warn(
+      '[CryptoViz LocalStorage Error] Failed to write favorite ciphers to storage:',
+      error,
+    )
+  }
 }
 
+
 function removeStorage(): void {
-  safeRemoveItem(FAVORITE_CIPHERS_STORAGE_KEY)
+  if (!isBrowser()) return
+
+  try {
+    window.localStorage.removeItem(FAVORITE_CIPHERS_STORAGE_KEY)
+  } catch (error) {
+    console.warn(
+      '[CryptoViz LocalStorage Error] Failed to remove favorite ciphers from storage:',
+      error,
+    )
+  }
 }
 
 export function getSupportedCipherIds(): ReadonlySet<string> {
@@ -80,8 +112,8 @@ export function saveFavoriteCipherIds(ids: string[]): string[] {
     dispatchFavoriteChange(normalized)
   }
 
-    return normalized
-  }
+  return normalized
+}
 
 export function toggleFavoriteCipher(
   currentIds: string[],
