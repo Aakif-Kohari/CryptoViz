@@ -156,6 +156,7 @@ export type CipherName =
   | 'shake128'
   | 'shake256'
   | 'md4'
+  | 'skein'
   | 'poly1305'
   | 'hmac'
   | 'cmac'

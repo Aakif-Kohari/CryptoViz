@@ -620,6 +620,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: 'abc',
     securityStatus: 'broken',
   },
+  {
+    id: 'skein',
+    name: 'Skein-256',
+    category: 'hash',
+    description: "SHA-3 finalist (Skein v1.3, 2010) by Schneier et al. Built on Threefish-256 via UBI (Unique Block Iteration) chaining — a Davies-Meyer construction. Pipeline: Config → Message → Output. Each block encrypted with Threefish-256 then XORed with plaintext. 256-bit output.",
+    defaultKey: '',
+    defaultInput: '48656c6c6f20576f726c64',
+    securityStatus: 'secure',
+    keyPlaceholder: '(no key — this is a hash function)',
+  },
   // Asymmetric
   {
     id: "rsa",
