@@ -151,7 +151,7 @@ export default function Navbar() {
           {navCategories.map((category) => {
             const isCategoryActive = category.href
               ? pathname === category.href
-              : category.items?.some((item) => pathname.startsWith(item.href) && item.href !== '#');
+              : category.items?.some((item) => pathname?.startsWith(item.href) && item.href !== '#');
 
             return (
               <div key={category.name} className="group relative">
@@ -225,7 +225,7 @@ export default function Navbar() {
                     <div className="absolute left-1/2 top-full mt-4 w-56 -translate-x-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                       <div className="rounded-xl border border-zinc-200/50 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-zinc-800/50 dark:bg-zinc-950/95 flex flex-col gap-1">
                         {category.items?.map((item) => {
-                          const isItemActive = pathname.startsWith(item.href) && item.href !== '#';
+                          const isItemActive = pathname?.startsWith(item.href) && item.href !== '#';
                           return (
                             <Link
                               key={item.name}
@@ -407,7 +407,7 @@ export default function Navbar() {
                   </h3>
                   <div className="flex flex-col gap-1">
                     {category.items?.map((item) => {
-                      const isActive = pathname.startsWith(item.href) && item.href !== '#'
+                      const isActive = pathname?.startsWith(item.href) && item.href !== '#'
                       return (
                         <Link
                           key={item.name}
