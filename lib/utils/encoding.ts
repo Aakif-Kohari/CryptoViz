@@ -1,5 +1,5 @@
 import type { Encoding } from '../cipher/types'
-import { CipherError } from './errors'
+import { CipherError, validateHexString } from './errors'
 
 export function toByteArray(str: string, encoding: Encoding): Uint8Array {
   if (encoding === 'utf8') {
@@ -55,22 +55,6 @@ export function fromByteArray(arr: Uint8Array, encoding: Encoding): string {
     .map((b) => String.fromCharCode(b))
     .join('')
 }
-export function validateHexString(input: string, label = 'Input'): void {
-  if (/[^0-9a-fA-F]/.test(input)) {
-    throw new CipherError(
-      'INVALID_INPUT',
-      `${label} must contain only hexadecimal characters.`
-    )
-  }
-
-  if (input.length % 2 !== 0) {
-    throw new CipherError(
-      'INVALID_INPUT',
-      `${label} must have an even number of characters.`
-    )
-  }
-}
-
 export function validateRequiredInput(
   input: string,
   message = 'Input is required.'

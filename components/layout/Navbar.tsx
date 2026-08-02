@@ -105,6 +105,8 @@ export default function Navbar() {
         { name: 'Offline', href: '/offline' },
       ],
     },
+  ];
+
   const allNavLinks = [
     { name: 'Visualizers', href: '/visualizer' },
     { name: 'Playground', href: '/visualizer/caesar/' },
@@ -204,12 +206,6 @@ export default function Navbar() {
             const isCategoryActive = category.href
               ? pathname === category.href
               : category.items?.some((item) => pathname.startsWith(item.href) && item.href !== '#');
-          {navLinks.map((link) => {
-            const isActive =
-              link.href === '/visualizer'
-                ? pathname === '/visualizer' || pathname === '/visualizer/'
-                : pathname.startsWith(link.href) && link.href !== '#'
-
 
             return (
               <div key={category.name} className="group relative">
@@ -461,11 +457,6 @@ export default function Navbar() {
                   </Link>
                 );
               }
-            {navLinks.map((link) => {
-              const isActive =
-                link.href === '/visualizer'
-                  ? pathname === '/visualizer' || pathname === '/visualizer/'
-                  : pathname.startsWith(link.href) && link.href !== '#'
 
               return (
                 <div key={category.name} className="py-2">
