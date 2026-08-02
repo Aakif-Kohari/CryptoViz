@@ -1,3 +1,8 @@
+import {
+  safeGetItemJson,
+  safeSetItemJson,
+} from "./storage";
+
 export type ComponentCategory =
   | "classical"
   | "symmetric"
@@ -226,15 +231,19 @@ export const DEFAULT_VISUALIZATION_SNAPSHOTS: VisualizationSnapshot[] = [
  * Load snapshots from local storage combined with default presets.
  */
 export function loadVisualizationSnapshots(): VisualizationSnapshot[] {
-  if (typeof window === "undefined") return DEFAULT_VISUALIZATION_SNAPSHOTS;
-  try {
-    const raw = window.localStorage.getItem(VISUALIZATION_SNAPSHOT_STORAGE_KEY);
-    if (!raw) return DEFAULT_VISUALIZATION_SNAPSHOTS;
-    const parsed = JSON.parse(raw) as VisualizationSnapshot[];
-    return [...parsed, ...DEFAULT_VISUALIZATION_SNAPSHOTS.filter((d) => !parsed.some((p) => p.id === d.id))];
-  } catch {
-    return DEFAULT_VISUALIZATION_SNAPSHOTS;
-  }
+  const parsed = safeGetItemJson<VisualizationSnapshot[]>(
+    VISUALIZATION_SNAPSHOT_STORAGE_KEY,
+    [],
+    (val): val is VisualizationSnapshot[] => Array.isArray(val),
+  );
+  if (!parsed || parsed.length === 0) return DEFAULT_VISUALIZATION_SNAPSHOTS;
+
+  return [
+    ...parsed,
+    ...DEFAULT_VISUALIZATION_SNAPSHOTS.filter(
+      (d) => !parsed.some((p) => p.id === d.id),
+    ),
+  ];
 }
 
 /**
@@ -244,18 +253,12 @@ export function saveVisualizationSnapshot(
   snapshot: VisualizationSnapshot,
 ): VisualizationSnapshot[] {
   const existing = loadVisualizationSnapshots();
-  const updated = [snapshot, ...existing.filter((item) => item.id !== snapshot.id)];
+  const updated = [
+    snapshot,
+    ...existing.filter((item) => item.id !== snapshot.id),
+  ];
 
-  if (typeof window !== "undefined") {
-    try {
-      window.localStorage.setItem(
-        VISUALIZATION_SNAPSHOT_STORAGE_KEY,
-        JSON.stringify(updated),
-      );
-    } catch {
-      // Storage limits handled gracefully
-    }
-  }
+  safeSetItemJson(VISUALIZATION_SNAPSHOT_STORAGE_KEY, updated);
 
   return updated;
 }

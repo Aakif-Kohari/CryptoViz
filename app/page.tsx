@@ -294,18 +294,6 @@ export default function Home() {
       <StatisticsRow />
       <WhyCryptoViz />
       <Footer />
-
-      {/* Background Grid Animation Style */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            @keyframes gridMove {
-              0% { background-position: 0 0; }
-              100% { background-position: 60px 60px; }
-            }
-          `,
-        }}
-      />
     </div>
   );
 }

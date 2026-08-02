@@ -76,8 +76,8 @@ export default function DynamicCipherLoader() {
         const text = event.target?.result as string;
         const imported = importDynamicCipherJSON(text);
         handleRegisterCustom(imported);
-      } catch (err: any) {
-        setImportError(err.message || "Failed to import dynamic cipher schema.");
+      } catch (err: unknown) {
+        setImportError(err instanceof Error ? err.message : "Failed to import dynamic cipher schema.");
       }
     };
     reader.readAsText(file);

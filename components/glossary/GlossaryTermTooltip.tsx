@@ -58,7 +58,15 @@ export default function GlossaryTermTooltip({
   };
 
   return (
-    <span className="relative inline-block">
+    <span 
+      className="relative inline-block"
+      onFocus={() => setIsOpen(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+          setIsOpen(false);
+        }
+      }}
+    >
       <button
         ref={triggerRef}
         type="button"

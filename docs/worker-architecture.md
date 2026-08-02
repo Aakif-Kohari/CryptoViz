@@ -60,6 +60,14 @@ Cipher modules should validate input early and return useful errors. The worker
 should convert thrown errors into structured failure responses so the UI can show
 friendly messages instead of crashing.
 
+## Lazy-Loading & Bundle Optimization
+
+To prevent bloated worker bundles, `lib/workers/cipher.worker.ts` dynamically imports (`import()`) cipher modules on demand. 
+
+- **Dynamic Loaders Map (`cipherLoaders`)**: Cipher IDs map to async loader functions returning the cipher implementation.
+- **In-Memory Module Cache (`moduleCache`)**: Loaded cipher modules are cached per worker instance so subsequent requests for the same cipher load instantly without re-fetching.
+- **Code Splitting**: Modern bundlers split each cipher module family into smaller, on-demand chunks.
+
 ## Testing guidance
 
 Worker-backed features should include focused tests for at least one of:
@@ -71,3 +79,4 @@ Worker-backed features should include focused tests for at least one of:
 - timeout behavior
 - abort behavior
 - cache behavior
+
