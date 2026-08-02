@@ -106,6 +106,7 @@ export type CipherName =
   | 'enigma'
   | 'ascon'
   | 'xsalsa20'
+  | 'trivium'
   | 'sm4'
   | 'present'
   | 'tea'
