@@ -1,13 +1,19 @@
 import Navbar from "../../components/layout/Navbar";
 import Breadcrumbs from '../../components/layout/Breadcrumbs'
 
+"use client";
+import WorkspaceLayout from "../../components/layout/WorkspaceLayout";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import ChallengeMode from "../../components/challenge/ChallengeMode";
 import DailyQuiz from "../../components/challenge/DailyQuiz";
 
-export default function ChallengePage() {
+function ChallengeContent() {
+  const searchParams = useSearchParams();
+  const urlCipher = searchParams.get('cipher');
+  
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 font-sans transition-colors duration-300">
-      <Navbar />
+    <WorkspaceLayout activeCipherId={urlCipher || undefined}>
       <main className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
         <Breadcrumbs items={[{ label: "Practice" }, { label: "Cryptography Challenge" }]} />
         {/* Faint Grid Background */}
@@ -49,6 +55,15 @@ export default function ChallengePage() {
 
         <ChallengeMode />
       </main>
-    </div>
+    </WorkspaceLayout>
   );
+}
+
+
+export default function ChallengePage() {
+  return (
+    <Suspense fallback={<div className="p-8">Loading challenge workspace...</div>}>
+      <ChallengeContent />
+    </Suspense>
+  )
 }

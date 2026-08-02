@@ -72,6 +72,7 @@ import { encrypt as enigmaEncrypt, decrypt as enigmaDecrypt } from '../cipher/sy
 import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20'
 import { encrypt as teaEncrypt, decrypt as teaDecrypt } from '../cipher/symmetric/tea';
 import { encrypt as serpentEncrypt, decrypt as serpentDecrypt } from '../cipher/symmetric/serpent';
+import { encryptSerpentBlock as serpentEncrypt, decryptSerpentBlock as serpentDecrypt } from '../cipher/symmetric/serpent';
 import { encrypt as chacha20Encrypt, decrypt as chacha20Decrypt } from "../cipher/symmetric/chacha20";
 import { encrypt as desEncrypt, decrypt as desDecrypt } from "../cipher/symmetric/des";
 import { encrypt as des3Encrypt, decrypt as des3Decrypt } from "../cipher/symmetric/3des";
@@ -80,6 +81,7 @@ import { encrypt as otpEncrypt, decrypt as otpDecrypt } from "../cipher/symmetri
 import { encrypt as rc4Encrypt, decrypt as rc4Decrypt } from "../cipher/symmetric/rc4";
 import { encrypt as rc5Encrypt, decrypt as rc5Decrypt } from "../cipher/symmetric/rc5";
 import { encrypt as rc6Encrypt, decrypt as rc6Decrypt } from "../cipher/symmetric/rc6";
+import { encryptRc6Block as rc6Encrypt, decryptRc6Block as rc6Decrypt } from "../cipher/symmetric/rc6";
 import { encrypt as salsa20Encrypt, decrypt as salsa20Decrypt } from "../cipher/symmetric/salsa20";
 import { encrypt as skipjackEncrypt, decrypt as skipjackDecrypt } from "../cipher/symmetric/skipjack";
 import { encrypt as xorEncrypt, decrypt as xorDecrypt } from "../cipher/symmetric/xor";
@@ -89,8 +91,6 @@ import { deriveScryptKey } from "../kdf/scrypt";
 import { CipherError } from "../utils/errors";
 import type { WorkerRequest, WorkerResponse } from "../../types/worker";
 import type { CipherResult } from "../cipher/types";
-import { deriveKey } from "../kdf/pbkdf2";
-import { deriveScryptKey } from "../kdf/scrypt";
 
 type CipherHandler = (input: string, key: string, options?: any) => any;
 
@@ -239,12 +239,20 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
       const mod = await import("../cipher/symmetric/xsalsa20");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
+    case "trivium": {
+      const mod = await import("../cipher/symmetric/trivium");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
     case "ascon": {
       const mod = await import("../cipher/symmetric/ascon");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
     case "sm4": {
       const mod = await import("../cipher/symmetric/sm4");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
+    case "present": {
+      const mod = await import("../cipher/symmetric/present");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
     case "tea": {
@@ -421,6 +429,10 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
     }
     case "md4": {
       const mod = await import("../cipher/hash/md4");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
+    case "skein": {
+      const mod = await import("../cipher/hash/skein");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
     case "pbkdf2": {

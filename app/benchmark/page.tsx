@@ -29,7 +29,9 @@ import DeviceInfoDisplay from "@/components/benchmark/DeviceInfoDisplay";
 import ExportButton from "@/components/benchmark/ExportButton";
 import CategoryTabs from "@/components/benchmark/CategoryTabs";
 import BenchmarkHistory from "@/components/benchmark/BenchmarkHistory";
-import Navbar from "@/components/layout/Navbar";
+import WorkspaceLayout from "@/components/layout/WorkspaceLayout";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { CIPHER_REGISTRY } from "@/lib/cipher/registry";
 
 type Category = "all" | "classical" | "symmetric" | "asymmetric" | "hash";
@@ -89,8 +91,11 @@ const getBenchmarkParams = (
   return { input, key, options };
 };
 
-export default function BenchmarkPage() {
-  const [selectedAlgorithms, setSelectedAlgorithms] = useState<string[]>([]);
+function BenchmarkContent() {
+  const searchParams = useSearchParams()
+  const urlAlgorithms = searchParams.get('algorithms')
+  
+  const [selectedAlgorithms, setSelectedAlgorithms] = useState<string[]>(urlAlgorithms ? urlAlgorithms.split(",") : []);
   const [selectedCategory, setSelectedCategory] = useState<Category>("all");
   const [inputSize, setInputSize] = useState(1024);
   const [iterations, setIterations] = useState(100);
@@ -256,8 +261,7 @@ export default function BenchmarkPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 font-sans transition-colors duration-300 dark:bg-zinc-950">
-      <Navbar />
+    <WorkspaceLayout activeCipherId={urlAlgorithms ? urlAlgorithms.split(",")[0] : undefined}>
       <main className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
         <Breadcrumbs items={[{ label: "Practice" }, { label: "Performance Benchmark" }]} />
         <header className="space-y-2">
@@ -423,6 +427,14 @@ export default function BenchmarkPage() {
           onClear={clearHistory}
         />
       </main>
-    </div>
+    </WorkspaceLayout>
   );
+}
+
+export default function BenchmarkPage() {
+  return (
+    <Suspense fallback={<div className="p-8">Loading benchmark workspace...</div>}>
+      <BenchmarkContent />
+    </Suspense>
+  )
 }
