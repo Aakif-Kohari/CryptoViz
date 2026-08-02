@@ -51,15 +51,15 @@ export default function DynamicCipherPlayground({
 
   return (
     <div className="space-y-4 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 pb-3 dark:border-zinc-800">
+      <div className="flex flex-col gap-3 border-b border-zinc-100 pb-3 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
         <div className="flex items-center gap-2">
           <Cpu className="h-4.5 w-4.5 text-teal-600 dark:text-teal-400" />
-          <h3 className="font-semibold text-base text-zinc-900 dark:text-white">
+          <h3 className="break-words text-base font-semibold text-zinc-900 dark:text-white">
             Dynamic Playground: <span className="text-teal-600 dark:text-teal-400">{cipher.name}</span>
           </h3>
         </div>
 
-        <div className="flex items-center gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800">
+        <div className="flex w-full items-center gap-1 rounded-lg bg-zinc-100 p-1 sm:w-auto dark:bg-zinc-800">
           <button
             type="button"
             onClick={() => setDirection("encrypt")}
@@ -91,7 +91,7 @@ export default function DynamicCipherPlayground({
             Input Plaintext / Ciphertext
           </label>
           <textarea
-            rows={3}
+            rows={4}
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             className="mt-1 w-full rounded-lg border border-zinc-200 bg-white p-3 font-mono text-xs text-zinc-900 focus:border-teal-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
@@ -102,13 +102,13 @@ export default function DynamicCipherPlayground({
           <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
             Output Result
           </label>
-          <div className="mt-1 min-h-[74px] w-full rounded-lg border border-zinc-200 bg-zinc-50 p-3 font-mono text-xs text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white break-all">
+          <div className="mt-1 min-h-[96px] w-full overflow-x-auto rounded-lg border border-zinc-200 bg-zinc-50 p-3 font-mono text-xs break-all text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white">
             {resultText || <span className="text-zinc-400">Click "Run Execution" to compute output...</span>}
           </div>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+      <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
         {executionTimeMs !== null ? (
           <span className="text-xs text-zinc-500 dark:text-zinc-400">
             Compute Duration: <span className="font-mono font-bold text-teal-600 dark:text-teal-400">{executionTimeMs} ms</span>
@@ -120,7 +120,7 @@ export default function DynamicCipherPlayground({
         <button
           type="button"
           onClick={handleRunCipher}
-          className="flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-xs font-semibold text-white hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600"
+          className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-xs font-semibold text-white hover:bg-teal-700 sm:w-auto dark:bg-teal-500 dark:hover:bg-teal-600"
         >
           <Play className="h-3.5 w-3.5" />
           Run Execution

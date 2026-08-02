@@ -498,7 +498,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     padding,
   };
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-6 md:px-6 md:py-8 lg:px-8">
+    <div className="mx-auto flex max-w-7xl flex-col gap-6 px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8">
       {/* Title & Metadata Card */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 pb-5 dark:border-zinc-800">
         <div>
@@ -516,7 +516,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           </span>
         </div>
       </div>
-      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
+      <div className="grid grid-cols-1 items-start gap-5 md:gap-6 lg:grid-cols-12 lg:gap-8">
         {/* Controls Column (Left) */}
         <div className="flex flex-col gap-6 lg:col-span-5">
           {/* Action toggle (Encrypt / Decrypt) */}
@@ -524,7 +524,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
             <div className="flex rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-800/80">
               <button
                 onClick={() => setAction("encrypt")}
-                className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${
+                className={`flex-1 rounded-md py-2.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${
                   action === "encrypt"
                     ? "bg-white text-zinc-950 shadow dark:bg-zinc-900 dark:text-white"
                     : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
@@ -534,7 +534,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               </button>
               <button
                 onClick={() => setAction("decrypt")}
-                className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${
+                className={`flex-1 rounded-md py-2.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${
                   action === "decrypt"
                     ? "bg-white text-zinc-950 shadow dark:bg-zinc-900 dark:text-white"
                     : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
@@ -556,7 +556,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                className="min-h-[90px] w-full rounded-lg border border-zinc-200 bg-zinc-50/50 p-2.5 font-mono text-sm leading-relaxed text-zinc-900 outline-none transition-all focus:border-teal-500 focus:bg-white dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-100 dark:focus:border-teal-400 dark:focus:bg-zinc-950"
+                className="min-h-[120px] resize-y w-full rounded-lg border border-zinc-200 bg-zinc-50/50 p-2.5 font-mono text-sm leading-relaxed text-zinc-900 outline-none transition-all focus:border-teal-500 focus:bg-white dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-100 dark:focus:border-teal-400 dark:focus:bg-zinc-950"
                 placeholder="Enter input here..."
               />
             </div>
@@ -694,11 +694,11 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               </div>
             )}
             {/* Run button + Auto Compute toggle */}
-            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <button
                 onClick={handleRun}
                 disabled={loading}
-                className="h-10 flex-1 flex items-center justify-center rounded-lg bg-teal-600 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.01] hover:bg-teal-500 hover:shadow-md focus:outline-none disabled:opacity-50 disabled:hover:scale-100 active:scale-[0.98] dark:bg-teal-500 dark:hover:bg-teal-400"
+                className="h-10 w-full sm:flex-1 flex items-center justify-center rounded-lg bg-teal-600 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.01] hover:bg-teal-500 hover:shadow-md focus:outline-none disabled:opacity-50 disabled:hover:scale-100 active:scale-[0.98] dark:bg-teal-500 dark:hover:bg-teal-400"
               >
                 {loading ? (
                   <span className="flex items-center gap-1.5">
@@ -818,7 +818,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
                     ? "Generated Hash Digest"
                     : "Output Result"}
                 </span>
-                <div className="mt-2 min-h-[48px] rounded-lg bg-zinc-50 p-3 font-mono text-sm leading-relaxed break-all text-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-200">
+                <div className="mt-2 min-h-[48px] overflow-x-auto rounded-lg bg-zinc-50 p-3 font-mono text-sm leading-relaxed break-all text-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-200">
                   {loading ? (
                     <span className="flex items-center gap-1.5 text-zinc-400">
                       <span className="h-1.5 w-1.5 animate-ping rounded-full bg-teal-500" />

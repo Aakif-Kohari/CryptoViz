@@ -1,5 +1,5 @@
 import type { Encoding } from '../cipher/types'
-import { CipherError } from './errors'
+import { CipherError, validateHexString } from './errors'
 
 export function toByteArray(str: string, encoding: Encoding): Uint8Array {
   if (encoding === 'utf8') {
