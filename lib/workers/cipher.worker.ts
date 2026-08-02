@@ -169,8 +169,16 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
       const mod = await import("../cipher/symmetric/tea");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
+    case "lea": {
+      const mod = await import("../cipher/symmetric/lea");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
     case "blowfish": {
       const mod = await import("../cipher/symmetric/blowfish");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
+    case "simon": {
+      const mod = await import("../cipher/symmetric/simon");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
     case "rsa": {
