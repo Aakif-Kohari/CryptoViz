@@ -6,14 +6,12 @@ import { Zap, Clock, Cpu, HardDrive, TrendingUp, TrendingDown, Minus } from "luc
 
 interface SessionDeltaCardProps {
   delta: SessionDelta;
-  _sessionALabel?: string;
-  _sessionBLabel?: string;
+
 }
 
 export default function SessionDeltaCard({
   delta,
-  _sessionALabel = "Baseline (Session A)",
-  _sessionBLabel = "Candidate (Session B)",
+
 }: SessionDeltaCardProps) {
   const isSpeedup = delta.speedupRatio >= 1.02;
   const isSlowdown = delta.speedupRatio <= 0.98;

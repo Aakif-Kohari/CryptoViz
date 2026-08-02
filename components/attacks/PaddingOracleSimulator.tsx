@@ -50,7 +50,7 @@ export default function PaddingOracleSimulator() {
 
   const _allSteps = useMemo(() => [] as AttackStep[], []); // populated per-run below
 
-  const { recoverPlaintextConcurrently, cancel, _loading } = useAttackWorker();
+  const { recoverPlaintextConcurrently, cancel, loading: _loading } = useAttackWorker();
 
   async function runAttack() {
     setError(null);

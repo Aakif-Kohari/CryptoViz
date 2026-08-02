@@ -65,7 +65,7 @@ function getCacheKey(
   key: string,
   options?: CipherOptions
 ): string {
-  const { signal: ___, bypassCache: ___, ...cacheableOptions } = options || {}
+  const { signal: _signal, bypassCache: _bypassCache, ...cacheableOptions } = options || {}
   // Stable serialization for options to avoid key-order issues.
   const stableOptions = JSON.stringify(sortObjectKeys(cacheableOptions))
 

@@ -1,10 +1,9 @@
 "use client";
 
+
 import type { VisualizationSnapshot } from "@/lib/utils/visualizationSnapshots";
-import { Layers, Shield, Cpu, Clock, Layout } from "lucide-react";
-import type { VisualizationSnapshot, ComponentCategory } from "@/lib/utils/visualizationSnapshots";
 import type { LucideIcon } from "lucide-react";
-import { Sparkles, Layers, Shield, Cpu, Clock, Layout } from "lucide-react";
+import { Layers, Shield, Cpu, Clock, Layout } from "lucide-react";
 
 interface SnapshotPresetSelectorProps {
   snapshots: VisualizationSnapshot[];

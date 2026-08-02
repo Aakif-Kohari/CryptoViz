@@ -135,8 +135,6 @@ export default function SessionComparisonVisualizer({
       {/* Top Cards: Delta Summary */}
       <SessionDeltaCard
         delta={delta}
-        sessionALabel={sessionALabel}
-        sessionBLabel={sessionBLabel}
       />
 
       {/* Export / Import Toolbar */}
@@ -259,7 +257,7 @@ export default function SessionComparisonVisualizer({
       )}
 
       {activeTab === "educational" && (
-        <EducationalSessionInsights delta={delta} />
+        <EducationalSessionInsights />
       )}
     </div>
   );
