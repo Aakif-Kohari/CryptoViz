@@ -362,6 +362,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '80-bit key (20 hex) or 128-bit key (32 hex)',
   },
   {
+    id: 'simon32',
+    name: 'SIMON-32/64',
+    category: 'symmetric',
+    description: 'NSA lightweight block cipher targeting 8/16-bit microcontrollers. Uses 16-bit words, a 32-bit block, and a 64-bit key across 32 Feistel rounds. The smallest variant of the SIMON family.',
+    defaultKey: '1918111009080100',
+    defaultInput: '65656877',
+    securityStatus: 'secure',
+    keyPlaceholder: '64-bit key as 16 hex chars',
+  },
+  {
     id: 'tea',
     name: 'TEA',
     category: 'symmetric',

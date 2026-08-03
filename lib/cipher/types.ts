@@ -109,6 +109,7 @@ export type CipherName =
   | 'trivium'
   | 'sm4'
   | 'present'
+  | 'simon32'
   | 'tea'
   | 'lea'
   | 'blowfish'
