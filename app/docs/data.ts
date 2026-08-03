@@ -76,14 +76,14 @@ export const docCategories: DocCategory[] = [
   },
   {
     type: 'general',
-    title: "Cipher Recommendation Assistant",
-    description: "An intelligent recommendation assistant matching algorithms to specific operational use cases and hardware constraints.",
-    content: "The Cipher Recommendation Assistant helps developers and students select the most appropriate cryptographic algorithms for real-world applications (HTTPS/TLS, Password Hashing, IoT/Embedded, Database Storage, Digital Signatures, Post-Quantum). It provides match scoring %, security trade-off analysis, implementation code snippets in JavaScript & Python, and interactive decision trees.",
-    difficulty: 'beginner',
+    title: "Cipher Sandbox",
+    description: "An educational laboratory for substitution (confusion) and permutation (diffusion) experiments.",
+    content: "Build Your Own Cipher Sandbox allows users to visually construct custom block ciphers by combining substitution layers (Caesar, S-Box, Affine, XOR) and permutation layers (P-Box, Columnar Transposition, Block Swap, Cyclic Shift, Reverse). Features multi-round iteration, step-by-step state traces, invertibility validation, and real-time Avalanche effect calculation.",
+    difficulty: 'intermediate',
     readingTimeMinutes: 5,
-    tracks: ['beginner', 'intermediate'],
-    prerequisites: ['getting-started'],
-    recommendedNext: ['features-overview']
+    tracks: ['intermediate'],
+    prerequisites: ['features-overview'],
+    recommendedNext: ['sbox-explorer']
   },
   {
     type: 'general',

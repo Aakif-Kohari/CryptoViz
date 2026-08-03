@@ -7,6 +7,9 @@ interface Props {
   setCategory: (value: string) => void;
   difficulty: string;
   setDifficulty: (value: string) => void;
+  topic: string;
+setTopic: (value: string) => void;
+topics: string[];
 }
 
 const categories = [
@@ -35,6 +38,9 @@ export default function ResourceFilters({
   setCategory,
   difficulty,
   setDifficulty,
+  topic,
+  setTopic,
+  topics,
 }: Props) {
   return (
     <div className="space-y-6">
@@ -115,6 +121,27 @@ export default function ResourceFilters({
         </div>
       </div>
 
+      <div className="flex items-center gap-2">
+  <label htmlFor="topic-select" className="sr-only">
+    Filter by topic
+  </label>
+
+  <select
+    id="topic-select"
+    value={topic}
+    onChange={(e) => setTopic(e.target.value)}
+    className="min-w-[180px] rounded-xl border border-zinc-200 dark:border-[#2A2A31] bg-zinc-50 dark:bg-[#101013] px-4 py-3 text-sm font-medium text-zinc-900 dark:text-[#F5F5F5] outline-none transition focus:border-[#00C2AE] focus:ring-1 focus:ring-[#00C2AE]"
+  >
+    <option value="All">All Topics</option>
+
+    {topics.map((item) => (
+      <option key={item} value={item}>
+        {item}
+      </option>
+    ))}
+  </select>
+</div>
+
       {/* Category Pills Bar */}
       <div className="flex flex-wrap gap-2 pt-2 border-t border-zinc-100 dark:border-[#2A2A31]/50">
         {categories.map((cat) => {
@@ -135,6 +162,35 @@ export default function ResourceFilters({
           );
         })}
       </div>
+      {/* Topic Pills */}
+<div className="mt-4 flex flex-wrap gap-2">
+  <button
+    type="button"
+    onClick={() => setTopic("All")}
+    className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+      topic === "All"
+        ? "bg-[#00C2AE] text-white shadow-sm"
+        : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-[#101013] dark:text-[#8A8A94] dark:hover:bg-[#2A2A31] dark:hover:text-white"
+    }`}
+  >
+    All Topics
+  </button>
+
+  {topics.map((item) => (
+    <button
+      key={item}
+      type="button"
+      onClick={() => setTopic(item)}
+      className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+        topic === item
+          ? "bg-[#00C2AE] text-white shadow-sm"
+          : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-[#101013] dark:text-[#8A8A94] dark:hover:bg-[#2A2A31] dark:hover:text-white"
+      }`}
+    >
+      {item}
+    </button>
+  ))}
+</div>
     </div>
   );
 }
