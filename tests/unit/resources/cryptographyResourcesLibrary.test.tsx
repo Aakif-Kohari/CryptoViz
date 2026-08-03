@@ -34,27 +34,64 @@ describe('Cryptography Resources Library (Issue #475)', () => {
     expect(link).toHaveAttribute('target', '_blank');
   });
 
-  it('renders FilterBar with search, category, and difficulty controls', () => {
-    let search = '';
-    let category = 'All';
-    let difficulty = 'All';
+ it('renders FilterBar with search, category, difficulty, and topic controls', () => {
+  let search = '';
+  let category = 'All';
+  let difficulty = 'All';
+  let topic = 'All';
 
-    render(
-      <FilterBar
-        search={search}
-        setSearch={(val) => (search = val)}
-        category={category}
-        setCategory={(val) => (category = val)}
-        difficulty={difficulty}
-        setDifficulty={(val) => (difficulty = val)}
-      />
-    );
+  const topics = [
+    'AES',
+    'RSA',
+    'Hashing',
+    'ECC',
+  ];
 
-    expect(screen.getByPlaceholderText(/Search books/i)).toBeInTheDocument();
-    expect(screen.getByLabelText('Filter by category')).toBeInTheDocument();
-    expect(screen.getByLabelText('Filter by difficulty')).toBeInTheDocument();
+  render(
+    <FilterBar
+      search={search}
+      setSearch={(val) => (search = val)}
+      category={category}
+      setCategory={(val) => (category = val)}
+      difficulty={difficulty}
+      setDifficulty={(val) => (difficulty = val)}
+      topic={topic}
+      setTopic={(val) => (topic = val)}
+      topics={topics}
+    />
+  );
+
+  it('updates topic filter when a topic is selected', () => {
+  let topic = 'All';
+
+  render(
+    <FilterBar
+      search=""
+      setSearch={() => {}}
+      category="All"
+      setCategory={() => {}}
+      difficulty="All"
+      setDifficulty={() => {}}
+      topic={topic}
+      setTopic={(val) => {
+        topic = val;
+      }}
+      topics={['AES', 'RSA']}
+    />
+  );
+
+  fireEvent.change(screen.getByLabelText('Filter by topic'), {
+    target: { value: 'AES' },
   });
 
+  expect(topic).toBe('AES');
+});
+
+  expect(screen.getByPlaceholderText(/Search books/i)).toBeInTheDocument();
+  expect(screen.getByLabelText('Filter by category')).toBeInTheDocument();
+  expect(screen.getByLabelText('Filter by difficulty')).toBeInTheDocument();
+  expect(screen.getByLabelText('Filter by topic')).toBeInTheDocument();
+});
   it('renders SearchBar grid and empty state when resources are empty', () => {
     const { rerender } = render(<SearchBar resources={resources.slice(0, 3)} />);
     expect(screen.getByText(resources[0].title)).toBeInTheDocument();
