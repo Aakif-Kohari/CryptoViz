@@ -85,7 +85,6 @@ export default function Navbar() {
         { name: 'Playground', href: '/visualizer/caesar/' },
         { name: 'Cipher Sandbox', href: '/cipher-sandbox' },
         { name: 'Challenge', href: '/challenge' },
-        { name: 'Advisor', href: '/advisor' },
       ],
     },
     {
