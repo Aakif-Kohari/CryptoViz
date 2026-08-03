@@ -9,6 +9,10 @@ export interface CipherDefinition {
   defaultInput: string;
   securityStatus: "recommended" | "secure" | "legacy" | "deprecated" | "broken" | "experimental";
   keyPlaceholder?: string;
+  /** Cipher IDs the learner should be comfortable with before tackling this one */
+  prerequisites?: string[];
+  /** Cipher IDs that make natural next steps after exploring this one */
+  recommendedNext?: string[];
   options?: {
     name: string;
     id: string;
@@ -29,6 +33,7 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "Hello, World!",
     securityStatus: "broken",
     keyPlaceholder: "Shift (e.g. 3)",
+    recommendedNext: ["rot13", "vigenere", "railfence"],
   },
   {
     id: "rot13",
@@ -39,6 +44,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: "",
     defaultInput: "Hello, World!",
     securityStatus: "broken",
+    prerequisites: ["caesar"],
+    recommendedNext: ["vigenere", "atbash"],
   },
   {
     id: "vigenere",
@@ -50,6 +57,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "ATTACKATDAWN",
     securityStatus: "broken",
     keyPlaceholder: "Keyword (e.g. LEMON)",
+    prerequisites: ["caesar"],
+    recommendedNext: ["playfair", "railfence", "xor"],
   },
   {
     id: "atbash",
@@ -60,6 +69,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: "",
     defaultInput: "Hello, World!",
     securityStatus: "broken",
+    prerequisites: ["caesar"],
+    recommendedNext: ["playfair", "vigenere"],
   },
   {
     id: "playfair",
@@ -71,6 +82,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "HIDE THE GOLD IN THE TREE STUMP",
     securityStatus: "broken",
     keyPlaceholder: "Key phrase",
+    prerequisites: ["vigenere"],
+    recommendedNext: ["des", "xor"],
   },
   {
     id: "railfence",
@@ -82,6 +95,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "WE ARE DISCOVERED FLEE AT ONCE",
     securityStatus: "broken",
     keyPlaceholder: "Number of rails (e.g. 3)",
+    prerequisites: ["caesar"],
+    recommendedNext: ["vigenere", "des"],
   },
   {
     id: "xor",
@@ -93,6 +108,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "Hello, World!",
     securityStatus: "deprecated",
     keyPlaceholder: "Secret key string",
+    prerequisites: ["vigenere"],
+    recommendedNext: ["des", "aes", "otp"],
   },
   {
     id: "otp",
@@ -115,6 +132,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "0123456789ABCDEF",
     securityStatus: "broken",
     keyPlaceholder: "16-character hex key",
+    prerequisites: ["xor"],
+    recommendedNext: ["3des", "aes"],
     options: [
       {
         name: "Hex Input Mode",
@@ -134,6 +153,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "Hello, World!",
     securityStatus: "deprecated",
     keyPlaceholder: "32-character hex key (2-Key) or 48-character (3-Key)",
+    prerequisites: ["des"],
+    recommendedNext: ["aes", "camellia"],
     options: [
       {
         name: "Hex Input Mode",
@@ -163,6 +184,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "00112233445566778899aabbccddeeff",
     securityStatus: "recommended",
     keyPlaceholder: "32/48/64-character hex key",
+    prerequisites: ["des"],
+    recommendedNext: ["chacha20-poly1305", "sha256", "hmac"],
     options: [
       {
         name: "Hex Input Mode",
@@ -226,6 +249,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '4c6164696573',
     securityStatus: 'recommended',
     keyPlaceholder: 'keyHex(32B)|nonceHex(12B)|aadHex(optional)',
+    prerequisites: ["aes"],
+    recommendedNext: ["xchacha20", "ascon", "hmac"],
   },
   {
     id: 'speck',
@@ -411,6 +436,7 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: "",
     defaultInput: "abc",
     securityStatus: "recommended",
+    recommendedNext: ["hmac", "sha512", "bcrypt"],
   },
   {
     id: "sha512",
@@ -421,6 +447,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: "",
     defaultInput: "abc",
     securityStatus: "secure",
+    prerequisites: ["sha256"],
+    recommendedNext: ["hmac", "hkdf", "bcrypt"],
   },
   {
     id: "sm3",
@@ -452,6 +480,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "what do ya want for nothing?",
     securityStatus: "secure",
     keyPlaceholder: "HMAC Secret Key",
+    prerequisites: ["sha256"],
+    recommendedNext: ["hkdf", "bcrypt", "rsa"],
   },
   {
     id: 'cmac',
@@ -471,6 +501,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: "password",
     defaultInput: "password",
     securityStatus: "recommended",
+    prerequisites: ["sha256", "hmac"],
+    recommendedNext: ["hkdf", "rsa"],
     options: [
       {
         name: "Rounds (Cost)",
@@ -642,6 +674,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: "secure",
     keyPlaceholder:
       "Enter: 3 values (p,q,e) or 2 values (n,e / n,d) if you already have n",
+    prerequisites: ["hmac"],
+    recommendedNext: ["ecc", "dh", "ml-kem"],
     options: [
       {
         name: "Demo Mode (Small Primes)",
@@ -671,6 +705,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "6,15",
     securityStatus: "secure",
     keyPlaceholder: "p,g parameters (e.g. 23,5)",
+    prerequisites: ["rsa"],
+    recommendedNext: ["ecc", "x448", "ml-kem"],
     options: [
       {
         name: "Bob Secret input (demo)",
@@ -701,6 +737,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "hello",
     securityStatus: "secure",
     keyPlaceholder: "32-byte private key hex (64 chars)",
+    prerequisites: ["rsa", "dh"],
+    recommendedNext: ["schnorr", "ml-dsa", "ml-kem"],
   },
   {
     id: 'schnorr',
@@ -731,6 +769,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: 'hello',
     securityStatus: 'secure',
     keyPlaceholder: 'private key (sign) or "publicKey|signature" (verify)',
+    prerequisites: ["ecc"],
+    recommendedNext: ["ml-kem"],
   },
   {
     id: 'ecies',
@@ -751,6 +791,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '',
     securityStatus: 'secure',
     keyPlaceholder: 'recipient public key (encapsulate) or private key (decapsulate)',
+    prerequisites: ["ecc", "dh"],
+    recommendedNext: ["ml-dsa", "ecies"],
   },
   {
     id: 'ed448',
