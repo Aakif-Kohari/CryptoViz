@@ -10,6 +10,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import type { CipherResult, CipherOptions } from '../cipher/types'
 import type { WorkerRequest, WorkerResponse } from '../../types/worker'
 import type { CipherErrorCode } from '../utils/errors'
+import type { CipherWorkerRequestPayload, CipherWorkerResponsePayload } from '../workers/cipher-worker-protocol'
 
 
 const MAX_CACHE_SIZE = 200
