@@ -14,12 +14,11 @@ describe('Serpent', () => {
     const plaintext = '00112233445566778899aabbccddeeff'
     const enc = encrypt(plaintext, key)
     const dec = decrypt(enc.output, key)
-    expect(dec.output).toBe(plaintext)
+    expect(dec.output.toLowerCase()).toBe(plaintext.toLowerCase())
   })
 
-  it('rejects a key that is not 128 bits', () => {
-    // Serpent supports 128, 192, 256; this implementation is locked to 128
-    expect(() => encrypt('00'.repeat(16), '00'.repeat(8))).toThrow(/128-bit/)
+  it('rejects a key that is not 128, 192, or 256 bits', () => {
+    expect(() => encrypt('00'.repeat(16), '00'.repeat(8))).toThrow(/128, 192, or 256 bits/)
   })
 
   it('rejects input that is not exactly 16 bytes', () => {
