@@ -110,6 +110,7 @@ export type CipherName =
   | 'sm4'
   | 'present'
   | 'tea'
+  | 'noekeon'
   | 'lea'
   | 'blowfish'
   | 'simon'

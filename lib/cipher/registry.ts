@@ -372,6 +372,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '32-character hex key (128-bit)',
   },
   {
+    id: 'noekeon',
+    name: 'NOEKEON',
+    category: 'symmetric',
+    description: 'NESSIE-submitted 128-bit block cipher. Unique for having ZERO lookup tables; its non-linear Gamma layer uses exactly 5 bitwise AND/OR/XOR operations. Ideal for VLSI/FPGA environments.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'lea',
     name: 'LEA',
     category: 'symmetric',
