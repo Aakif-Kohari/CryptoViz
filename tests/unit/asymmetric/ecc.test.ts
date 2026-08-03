@@ -50,4 +50,13 @@ describe('ECC Asymmetric Cipher Unit Tests', () => {
     expect(() => encrypt('hello', '1234')).toThrow(/private key must be 32 bytes/)
     expect(() => decrypt('hello', 'only-one-part')).toThrow(/Verification key must specify/)
   })
+
+  it('converts point coordinates to uncompressed point hex', async () => {
+    const { pointToHex, parseUncompressedPoint } = await import('../../../lib/ecc/point-conversion-utils')
+    const hex = pointToHex(12345n, 67890n)
+    expect(hex.startsWith('04')).toBe(true)
+    const parsed = parseUncompressedPoint(hex)
+    expect(parsed.x).toBe(12345n)
+    expect(parsed.y).toBe(67890n)
+  })
 })
