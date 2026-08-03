@@ -67,6 +67,47 @@ export default function Navbar() {
     }
   }
 
+    const navCategories = [
+    { name: 'Home', href: '/' },
+    {
+      name: 'Learn',
+      items: [
+        { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+        { name: 'Myth Busters', href: '/myth-busters' },
+        { name: 'Encoding Errors', href: '/encoding-errors' },
+        { name: 'Merkle Tree', href: '/merkle' },
+        { name: 'Padding', href: '/padding' },
+      ],
+    },
+    {
+      name: 'Practice',
+      items: [
+        { name: 'Playground', href: '/visualizer/caesar/' },
+        { name: 'Challenge', href: '/challenge' },
+        { name: 'Advisor', href: '/advisor' },
+      ],
+    },
+    {
+      name: 'Reference',
+      items: [
+        { name: 'Glossary', href: '/glossary' },
+        { name: 'Modes', href: '/modes' },
+        { name: 'Compare', href: '/compare' },
+        { name: 'Collections', href: '/collections' },
+        { name: 'Matrix', href: '/matrix' },
+        { name: 'Benchmark', href: '/benchmark' },
+        { name: 'Avalanche', href: '/avalanche' },
+      ],
+    },
+    {
+      name: 'More',
+      items: [
+        { name: 'Resources', href: '/resources' },
+        { name: 'Offline', href: '/offline' },
+      ],
+    },
+  ];
+
   const allNavLinks = [
     { name: 'Visualizers', href: '/visualizer' },
     { name: 'Playground', href: '/visualizer/caesar/' },
@@ -74,6 +115,7 @@ export default function Navbar() {
     { name: 'Modes', href: '/modes' },
     { name: 'Protocols', href: '/protocols' },
     { name: 'Compare', href: '/compare' },
+    { name: 'Collections', href: '/collections' },
     { name: 'Matrix', href: '/matrix' },
     { name: 'Benchmark', href: '/benchmark' },
     { name: 'Avalanche', href: '/avalanche' },
@@ -162,50 +204,103 @@ export default function Navbar() {
         {/* Desktop Navigation */}
 
         <div className="hidden items-center gap-10 xl:flex">
-          {navLinks.map((link) => {
-            const isActive =
-              link.href === '/visualizer'
-                ? pathname === '/visualizer' || pathname === '/visualizer/'
-                : pathname.startsWith(link.href) && link.href !== '#'
-
+          {navCategories.map((category) => {
+            const isCategoryActive = category.href
+              ? pathname === category.href
+              : category.items?.some((item) => pathname.startsWith(item.href) && item.href !== '#');
 
             return (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`
-                  relative
-                  text-[15px]
-                  font-semibold
-                  transition-all
-                  duration-300
-
-                  ${isActive
-                    ? 'text-teal-500'
-                    : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
-                  }
-                `}
-              >
-                {link.name}
-
-                <span
-                  className={`
-                    absolute
-                    -bottom-3
-                    left-1/2
-                    h-[3px]
-                    rounded-full
-                    bg-teal-500
-                    transition-all
-                    duration-300
-
-                    ${isActive
-                      ? 'w-full -translate-x-1/2'
-                      : 'w-0 -translate-x-1/2 group-hover:w-full'
-                    }
-                  `}
-                />
-              </Link>
+              <div key={category.name} className="group relative">
+                {category.href ? (
+                  <Link
+                    href={category.href}
+                    className={`
+                      relative
+                      text-[15px]
+                      font-semibold
+                      transition-all
+                      duration-300
+                      ${isCategoryActive
+                        ? 'text-teal-500'
+                        : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
+                      }
+                    `}
+                  >
+                    {category.name}
+                    <span
+                      className={`
+                        absolute
+                        -bottom-6
+                        left-1/2
+                        h-[3px]
+                        rounded-full
+                        bg-teal-500
+                        transition-all
+                        duration-300
+                        ${isCategoryActive
+                          ? 'w-full -translate-x-1/2'
+                          : 'w-0 -translate-x-1/2 group-hover:w-full'
+                        }
+                      `}
+                    />
+                  </Link>
+                ) : (
+                  <div className="cursor-default py-6 -my-6 flex items-center">
+                    <span
+                      className={`
+                        relative
+                        text-[15px]
+                        font-semibold
+                        transition-all
+                        duration-300
+                        ${isCategoryActive
+                          ? 'text-teal-500'
+                          : 'text-zinc-600 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white'
+                        }
+                      `}
+                    >
+                      {category.name}
+                      <span
+                        className={`
+                          absolute
+                          -bottom-[28px]
+                          left-1/2
+                          h-[3px]
+                          rounded-full
+                          bg-teal-500
+                          transition-all
+                          duration-300
+                          ${isCategoryActive
+                            ? 'w-full -translate-x-1/2'
+                            : 'w-0 -translate-x-1/2 group-hover:w-full'
+                          }
+                        `}
+                      />
+                    </span>
+                    
+                    <div className="absolute left-1/2 top-full mt-4 w-56 -translate-x-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                      <div className="rounded-xl border border-zinc-200/50 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-zinc-800/50 dark:bg-zinc-950/95 flex flex-col gap-1">
+                        {category.items?.map((item) => {
+                          const isItemActive = pathname.startsWith(item.href) && item.href !== '#';
+                          return (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              className={`block rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
+                                isItemActive
+                                  ? 'bg-teal-50 text-teal-600 dark:bg-teal-500/10 dark:text-teal-400'
+                                  : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900/50 dark:hover:text-white'
+                              }`}
+                            >
+                              {item.name}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             )
           })}
         </div>
@@ -344,35 +439,55 @@ export default function Navbar() {
           "
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6">
-            {navLinks.map((link) => {
-              const isActive =
-                link.href === '/visualizer'
-                  ? pathname === '/visualizer' || pathname === '/visualizer/'
-                  : pathname.startsWith(link.href) && link.href !== '#'
+            {navCategories.map((category) => {
+              if (category.href) {
+                const isActive = pathname === category.href;
+                return (
+                  <Link
+                    key={category.name}
+                    href={category.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`
+                      rounded-xl px-4 py-3 text-base font-semibold transition-all duration-300
+                      ${isActive
+                        ? 'bg-teal-500 text-white'
+                        : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900'
+                      }
+                    `}
+                  >
+                    {category.name}
+                  </Link>
+                );
+              }
 
               return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`
-                    rounded-xl
-                    px-4
-                    py-3
-                    text-base
-                    font-semibold
-                    transition-all
-                    duration-300
-
-                    ${isActive
-                      ? 'bg-teal-500 text-white'
-                      : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900'
-                    }
-                  `}
-                >
-                  {link.name}
-                </Link>
-              )
+                <div key={category.name} className="py-2">
+                  <h3 className="px-4 mb-2 text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                    {category.name}
+                  </h3>
+                  <div className="flex flex-col gap-1">
+                    {category.items?.map((item) => {
+                      const isActive = pathname.startsWith(item.href) && item.href !== '#';
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className={`
+                            rounded-xl pl-8 pr-4 py-2.5 text-[15px] font-medium transition-all duration-300
+                            ${isActive
+                              ? 'bg-teal-50 text-teal-600 dark:bg-teal-500/10 dark:text-teal-400'
+                              : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-white'
+                            }
+                          `}
+                        >
+                          {item.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
             })}
           </div>
         </div>

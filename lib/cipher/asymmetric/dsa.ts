@@ -141,7 +141,7 @@ function verifyCore(input: string, key: string, instrument: boolean): CipherResu
   // input = "messageHash", signature = "r,s" (passed via key or appended)
   // To match the UI pattern in ecc.ts/ed25519.ts, we expect input to be H
   // and the key to contain "p,q,g,y|r,s"
-  const [keyPart, sigPart] = key.split('|').map(s => s.trim())
+  const [_keyPart, sigPart] = key.split('|').map(s => s.trim())
   if (!sigPart) {
     throw new CipherError('INVALID_KEY', 'Verification requires "p,q,g,y | r,s".')
   }

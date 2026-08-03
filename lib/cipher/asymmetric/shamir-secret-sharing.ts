@@ -121,7 +121,7 @@ function splitCore(input: string, key: string, instrument: boolean): CipherResul
   }
 
   const shareStrings = shareRows.map(
-    (row, idx) => `${row[0][0]}:${bytesToHex(new Uint8Array(row.map(([, y]) => y)))}`
+    (row, _idx) => `${row[0][0]}:${bytesToHex(new Uint8Array(row.map(([, y]) => y)))}`
   )
 
   const steps: CipherStep[] = []

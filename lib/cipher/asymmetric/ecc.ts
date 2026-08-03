@@ -34,7 +34,7 @@ function parseSignatureToCompact(sigHex: string): Uint8Array {
   try {
     const sig = p256.Signature.fromHex(cleanHex, 'der')
     return sig.toBytes() // Returns 64-byte compact Uint8Array
-  } catch (err) {
+  } catch (_err) {
     try {
       const sig = p256.Signature.fromHex(cleanHex)
       return sig.toBytes()
@@ -205,7 +205,7 @@ export function decrypt(
     const sigCompactBytes = parseSignatureToCompact(sigHex)
     isValid = p256.verify(sigCompactBytes, hashBytes, pubKeyBytes)
     sigObj = p256.Signature.fromBytes(sigCompactBytes)
-  } catch (err) {
+  } catch (_err) {
     // Treat invalid signature formatting/points as invalid signature rather than crashing
     isValid = false
   }

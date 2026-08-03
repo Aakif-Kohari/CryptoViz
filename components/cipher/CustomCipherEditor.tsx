@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { DynamicCipherDefinition, DynamicCipherType } from "@/lib/utils/dynamicCipherLoader";
-import { Plus, Sliders, Layers, Sparkles, Check } from "lucide-react";
+import { Plus, Sparkles, Check } from "lucide-react";
 
 interface CustomCipherEditorProps {
   onRegisterCustomCipher: (cipher: DynamicCipherDefinition) => void;
@@ -13,12 +13,12 @@ export default function CustomCipherEditor({
 }: CustomCipherEditorProps) {
   const [cipherName, setCipherName] = useState("Custom S-Box Block Cipher");
   const [cipherType, setCipherType] = useState<DynamicCipherType>("sbox-block");
-  const [category, setCategory] = useState<"classical" | "symmetric">("symmetric");
+  const [category, _setCategory] = useState<"classical" | "symmetric">("symmetric");
   const [description, setDescription] = useState(
     "A custom user-defined substitution-permutation block cipher constructed with custom S-Box values.",
   );
-  const [defaultInput, setDefaultInput] = useState("CRYPTOVIZ LAB");
-  const [defaultKey, setDefaultKey] = useState("MYSECRETKEY");
+  const [defaultInput, _setDefaultInput] = useState("CRYPTOVIZ LAB");
+  const [defaultKey, _setDefaultKey] = useState("MYSECRETKEY");
   const [sboxInput, setSboxInput] = useState("14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7");
   const [affineKeyA, setAffineKeyA] = useState(5);
   const [affineKeyB, setAffineKeyB] = useState(8);

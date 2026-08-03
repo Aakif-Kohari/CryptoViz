@@ -9,8 +9,6 @@ import {
   calculateEstimatedTime,
   formatDuration,
   getStrengthIndicator,
-  type PresetSpeed,
-  type CharsetOption,
 } from "../../lib/attacks/bruteForce";
 import { cn } from "../../lib/utils";
 
@@ -33,8 +31,6 @@ import {
   Play,
   Pause,
   RotateCcw,
-  AlertCircle,
-  HelpCircle,
   Lock,
   Unlock,
 } from "lucide-react";

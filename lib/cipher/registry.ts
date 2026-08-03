@@ -331,6 +331,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'keyHex(32B)|nonceHex(24B)',
   },
   {
+    id: 'trivium',
+    name: 'Trivium',
+    category: 'symmetric',
+    description: 'eSTREAM Phase 3 stream cipher (ISO/IEC 29192-3). Three coupled 93/84/111-bit NLFSRs with 288-bit total state. 80-bit key, 80-bit IV, 1152 warm-up clocks before keystream. Most analysed stream cipher — one AND gate per output bit in hardware. Output = IV(20 hex) + ciphertext.',
+    defaultKey: '00000000000000000000',
+    defaultInput: '48656c6c6f20576f726c64',
+    securityStatus: 'legacy',
+    keyPlaceholder: '80-bit key as 20 hex chars',
+  },
+  {
     id: 'sm4',
     name: 'SM4',
     category: 'symmetric',
@@ -340,6 +350,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '0123456789abcdeffedcba9876543210',
     securityStatus: 'secure',
     keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
+    id: 'present',
+    name: 'PRESENT',
+    category: 'symmetric',
+    description: "Ultra-lightweight block cipher (ISO/IEC 29192-2:2012). Smallest standardised cipher: PRESENT-80 fits in 1,075 gate equivalents — vs AES's ~3,400 GE. 64-bit block, 80 or 128-bit key, 31-round SPN with a 4-bit S-box and a 64-bit bit-permutation P-layer.",
+    defaultKey: '00000000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '80-bit key (20 hex) or 128-bit key (32 hex)',
   },
   {
     id: 'tea',
@@ -599,6 +619,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: '',
     defaultInput: 'abc',
     securityStatus: 'broken',
+  },
+  {
+    id: 'skein',
+    name: 'Skein-256',
+    category: 'hash',
+    description: "SHA-3 finalist (Skein v1.3, 2010) by Schneier et al. Built on Threefish-256 via UBI (Unique Block Iteration) chaining — a Davies-Meyer construction. Pipeline: Config → Message → Output. Each block encrypted with Threefish-256 then XORed with plaintext. 256-bit output.",
+    defaultKey: '',
+    defaultInput: '48656c6c6f20576f726c64',
+    securityStatus: 'secure',
+    keyPlaceholder: '(no key — this is a hash function)',
   },
   // Asymmetric
   {
