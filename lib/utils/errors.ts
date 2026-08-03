@@ -10,6 +10,8 @@ export type CipherErrorCode =
   | 'INVALID_INPUT'
   | 'INVALID_KEY'
   | 'INVALID_KEY_LENGTH'
+  | 'INVALID_KEY_SIZE'
+  | 'KEY_REQUIRED'
   | 'INVALID_PADDING'
   | 'INVALID_IV'
   | 'WEAK_KEY'
@@ -21,6 +23,7 @@ export type CipherErrorCode =
   | 'WORKER_TIMEOUT'
   | 'KDF_ERROR'
   | 'UNSUPPORTED_KDF'
+  | 'ONE_WAY_HASH'
 
 export class CipherError extends Error {
   public readonly code: CipherErrorCode

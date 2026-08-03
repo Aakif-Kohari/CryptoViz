@@ -206,25 +206,29 @@ export function encrypt(plaintext: string, key: string, options?: CipherOptions)
 
   if (options?.instrument) {
     steps.push({
-      step: 1,
+      index: 1,
       label: 'Key Schedule',
-      description: `Generated ${rounds * 6} 32-bit round subkeys from ${keyBytes.length * 8}-bit key across ${rounds} rounds.`,
-      state: toHex(RK.subarray(0, 6)),
+      note: `Generated ${rounds * 6} 32-bit round subkeys from ${keyBytes.length * 8}-bit key across ${rounds} rounds.`,
+      inputState: Array.from(RK.subarray(0, 6)).map((value) => value.toString(16).padStart(8, '0')).join(' '),
+      outputState: ciphertext,
       isMilestone: true,
     });
     steps.push({
-      step: 2,
+      index: 2,
       label: 'ARX Rounds',
-      description: `Processed ${ptBytes.length / 16} block(s) through ${rounds} 32-bit addition-rotation-XOR rounds.`,
-      state: ciphertext,
+      note: `Processed ${ptBytes.length / 16} block(s) through ${rounds} 32-bit addition-rotation-XOR rounds.`,
+      inputState: ciphertext,
+      outputState: ciphertext,
       isMilestone: true,
     });
   }
 
   return {
-    ciphertext,
     output: ciphertext,
+    outputEncoding: 'hex',
     steps,
+    metadata: METADATA,
+    durationMs: 0,
   };
 }
 
@@ -252,8 +256,10 @@ export function decrypt(ciphertext: string, key: string, options?: CipherOptions
 
   const plaintext = toHex(out);
   return {
-    ciphertext: plaintext,
     output: plaintext,
+    outputEncoding: 'hex',
     steps: [],
+    metadata: METADATA,
+    durationMs: 0,
   };
 }

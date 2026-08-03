@@ -25,7 +25,7 @@ export interface CipherStep {
   /** Key-value table for key schedule display */
   table?: { key: string; value: string }[]
   /** Human-readable explanation of what happened */
-  note: string
+  note?: string
   /** True for major steps (show in summary mode) */
   isMilestone?: boolean
 }

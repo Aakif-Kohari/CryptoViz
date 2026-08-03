@@ -1,3 +1,6 @@
+import type { CipherMetadata, CipherOptions, CipherResult } from '../types';
+import { CipherError, validateInput, validateKey } from '../../utils';
+
 export interface Rc6Options {
   rounds?: number;
 }
@@ -30,6 +33,15 @@ const WORD_BYTES = 4;
 const DEFAULT_ROUNDS = 20;
 const P32 = 0xb7e15163;
 const Q32 = 0x9e3779b9;
+
+const METADATA: CipherMetadata = {
+  name: 'RC6',
+  blockSize: 128,
+  rounds: DEFAULT_ROUNDS,
+  securityStatus: 'secure',
+  yearDesigned: 1998,
+  standardBody: 'RC6 submission to AES',
+};
 
 function cleanHex(value: string): string {
   return value.trim().replace(/\s+/g, "").replace(/^0x/i, "").toUpperCase();
@@ -303,6 +315,42 @@ export function traceRc6Encryption(
     subkeys: s.map(toHex32),
     roundTrace,
     ciphertextHex: formatBlock(a, b, c, d),
+  };
+}
+
+export function encrypt(plaintext: string, key: string, options: CipherOptions = {}): CipherResult {
+  validateInput(plaintext);
+  validateKey(key);
+
+  const keyHex = cleanHex(key);
+  const plaintextHex = assertHexLength(plaintext, 32, 'RC6 plaintext');
+  const rounds = (options.rounds as number | undefined) ?? DEFAULT_ROUNDS;
+  const ciphertext = encryptRc6Block(plaintextHex, keyHex, { rounds });
+
+  return {
+    output: ciphertext,
+    outputEncoding: 'hex',
+    steps: [],
+    metadata: METADATA,
+    durationMs: 0,
+  };
+}
+
+export function decrypt(ciphertext: string, key: string, options: CipherOptions = {}): CipherResult {
+  validateInput(ciphertext);
+  validateKey(key);
+
+  const keyHex = cleanHex(key);
+  const ciphertextHex = assertHexLength(ciphertext, 32, 'RC6 ciphertext');
+  const rounds = (options.rounds as number | undefined) ?? DEFAULT_ROUNDS;
+  const plaintext = decryptRc6Block(ciphertextHex, keyHex, { rounds });
+
+  return {
+    output: plaintext,
+    outputEncoding: 'hex',
+    steps: [],
+    metadata: METADATA,
+    durationMs: 0,
   };
 }
 

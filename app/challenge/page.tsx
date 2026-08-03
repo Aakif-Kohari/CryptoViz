@@ -1,7 +1,6 @@
-import Navbar from "../../components/layout/Navbar";
-import Breadcrumbs from '../../components/layout/Breadcrumbs'
-
 "use client";
+
+import Breadcrumbs from '../../components/layout/Breadcrumbs'
 import WorkspaceLayout from "../../components/layout/WorkspaceLayout";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";

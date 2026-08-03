@@ -46,6 +46,12 @@ function u16(n: number): number { return n & 0xFFFF }
 function rotl16(x: number, n: number): number { return u16((x << n) | (x >>> (16 - n))) }
 function rotr16(x: number, n: number): number { return u16((x >>> n) | (x << (16 - n))) }
 
+function makeBigUint64State(value: bigint): BigUint64Array {
+    const state = new BigUint64Array(1)
+    state[0] = value
+    return state
+}
+
 function gift64Permute(state: BigUint64Array): BigUint64Array {
     let bits = state[0]
     let out = 0n
@@ -54,7 +60,7 @@ function gift64Permute(state: BigUint64Array): BigUint64Array {
             out |= (1n << BigInt(i))
         }
     }
-    return new BigUint64Array([out])
+    return makeBigUint64State(out)
 }
 
 function gift64SubCells(state: BigUint64Array): BigUint64Array {
@@ -64,7 +70,7 @@ function gift64SubCells(state: BigUint64Array): BigUint64Array {
         const nibble = Number((bits >> BigInt(i * 4)) & 0xFn)
         out |= BigInt(SBOX[nibble]) << BigInt(i * 4)
     }
-    return new BigUint64Array([out])
+    return makeBigUint64State(out)
 }
 
 function gift64AddRoundKey(state: BigUint64Array, U: number, V: number, rc: number): BigUint64Array {
@@ -91,7 +97,7 @@ function gift64AddRoundKey(state: BigUint64Array, U: number, V: number, rc: numb
     // Also flip bit 63 (the constant 1 in GIFT RC addition)
     bits ^= (1n << 63n)
 
-    return new BigUint64Array([bits])
+    return makeBigUint64State(bits)
 }
 
 function parseHex(s: string, lbl: string): Uint8Array {
@@ -118,7 +124,7 @@ function gift64Core(input: string, key: string, dec: boolean, instrument: boolea
     // Load 64-bit state
     let stateVal = 0n
     for (let i = 0; i < 8; i++) stateVal |= BigInt(ib[i]) << BigInt(i * 8)
-    let state = new BigUint64Array([stateVal])
+    let state = makeBigUint64State(stateVal)
 
     // Load 128-bit key as eight 16-bit words
     const K = new Uint16Array(8)
@@ -164,7 +170,7 @@ function gift64Core(input: string, key: string, dec: boolean, instrument: boolea
             for (let i = 0; i < 64; i++) {
                 if ((invBits >> BigInt(i)) & 1n) out |= (1n << BigInt(P64[i]))
             }
-            state = new BigUint64Array([out])
+            state = makeBigUint64State(out)
 
             // 3. Inv SubCells
             let bits = state[0]
@@ -176,7 +182,7 @@ function gift64Core(input: string, key: string, dec: boolean, instrument: boolea
                 const nibble = Number((bits >> BigInt(i * 4)) & 0xFn)
                 outS |= BigInt(INV_SBOX[nibble]) << BigInt(i * 4)
             }
-            state = new BigUint64Array([outS])
+            state = makeBigUint64State(outS)
 
             // Inverse Key Schedule (rotate left 32 bits, inverse bit rotations)
             K[7] = u16((K[7] >>> 12) | (K[7] << 4))

@@ -298,11 +298,11 @@ export function traceSerpentEncryption(
 
 export function encrypt(plaintext: string, key: string, options?: CipherOptions): CipherResult {
   validateInput(plaintext);
-  validateKey(key, 128);
+  validateKey(key);
 
   const keyHex = cleanHex(key);
   const ptHex = cleanHex(plaintext);
-  
+
   if (ptHex.length !== 32) {
     throw new CipherError('INVALID_INPUT', 'Input must be exactly 16 bytes (32 hex characters).');
   }
@@ -313,33 +313,37 @@ export function encrypt(plaintext: string, key: string, options?: CipherOptions)
   if (options?.instrument) {
     const trace = traceSerpentEncryption(ptHex, keyHex);
     steps.push({
-      step: 1,
+      index: 1,
       label: 'Key Schedule',
-      description: 'Expanded key into 33 128-bit round subkeys.',
-      state: trace.subkeys[0],
+      note: 'Expanded key into 33 128-bit round subkeys.',
+      inputState: trace.subkeys[0],
+      outputState: trace.ciphertextHex,
       isMilestone: true,
     });
     trace.roundTrace.forEach((r) => {
       steps.push({
-        step: r.round + 1,
+        index: r.round + 1,
         label: `Round ${r.round} (S-box S${r.sbox})`,
-        description: `Subkey XOR, S-box S${r.sbox} substitution, linear transformation`,
-        state: r.afterLinearTransform,
+        note: `Subkey XOR, S-box S${r.sbox} substitution, linear transformation`,
+        inputState: r.input,
+        outputState: r.afterLinearTransform,
         isMilestone: r.round % 4 === 0,
       });
     });
   }
 
   return {
-    ciphertext,
     output: ciphertext,
+    outputEncoding: 'hex',
     steps,
+    metadata: METADATA,
+    durationMs: 0,
   };
 }
 
 export function decrypt(ciphertext: string, key: string, options?: CipherOptions): CipherResult {
   validateInput(ciphertext);
-  validateKey(key, 128);
+  validateKey(key);
 
   const keyHex = cleanHex(key);
   const ctHex = cleanHex(ciphertext);
@@ -350,9 +354,11 @@ export function decrypt(ciphertext: string, key: string, options?: CipherOptions
 
   const plaintext = decryptSerpentBlock(ctHex, keyHex);
   return {
-    ciphertext: plaintext,
     output: plaintext,
+    outputEncoding: 'hex',
     steps: [],
+    metadata: METADATA,
+    durationMs: 0,
   };
 }
 
