@@ -124,12 +124,13 @@ export default function HexBinaryAsciiConverter() {
       </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
-        <button
-          onClick={convert}
-          className="rounded-lg bg-teal-600 px-5 py-2 font-medium text-white transition hover:bg-teal-700"
-        >
-          Convert
-        </button>
+       <button
+  onClick={convert}
+  disabled={!input.trim()}
+  className="rounded-lg bg-teal-600 px-5 py-2 font-medium text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+>
+  Convert
+</button>
 
         <button
           onClick={copyOutput}
@@ -147,13 +148,17 @@ export default function HexBinaryAsciiConverter() {
       </div>
 
       {error && (
-        <div className="mt-4 rounded-lg border border-red-300 bg-red-50 p-3 text-red-600 dark:border-red-700 dark:bg-red-950">
+  <div
+    role="alert"
+    aria-live="assertive"
+    className="mt-4 rounded-lg border border-red-300 bg-red-50 p-3 text-red-600 dark:border-red-700 dark:bg-red-950"
+  >
           {error}
         </div>
       )}
 
       <div className="mt-6">
-        <label className="mb-2 block text-sm font-medium">
+        <label htmlFor="from-encoding" className="mb-2 block text-sm font-medium">
           Output
         </label>
 
