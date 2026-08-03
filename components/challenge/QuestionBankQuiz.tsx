@@ -8,6 +8,16 @@ import {
   type QuizQuestion,
 } from '../../lib/challenge/questionBank'
 import { getQuestionBankStats } from '../../lib/challenge/generator'
+import { CompactNextStepNudge } from '../learning/LearningProgressionFooter'
+
+// Map quiz category to a default cipher when cipherId is absent
+const CATEGORY_DEFAULT_CIPHER: Record<CipherCategory | 'attacks', string> = {
+  classical:  'caesar',
+  symmetric:  'aes',
+  asymmetric: 'rsa',
+  hash:       'sha256',
+  attacks:    'aes',
+}
 
 const CATEGORY_LABELS: Record<CipherCategory | 'all', string> = {
   all: 'All Categories',
@@ -314,6 +324,14 @@ export default function QuestionBankQuiz() {
               <p className="text-sm font-medium text-teal-950 dark:text-teal-200">
                 {currentQuestion.explanation}
               </p>
+
+              {/* Compact next-step nudge appears directly under the explanation */}
+              <CompactNextStepNudge
+                cipherId={
+                  currentQuestion.cipherId ??
+                  CATEGORY_DEFAULT_CIPHER[currentQuestion.category]
+                }
+              />
             </div>
           )}
 
