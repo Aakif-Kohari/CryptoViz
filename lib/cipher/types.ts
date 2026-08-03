@@ -112,6 +112,7 @@ export type CipherName =
   | 'tea'
   | 'lea'
   | 'blowfish'
+  | 'seed'
   | 'simon'
   | 'rc4'
   | 'salsa20'
