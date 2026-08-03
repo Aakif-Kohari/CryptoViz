@@ -76,6 +76,17 @@ export const docCategories: DocCategory[] = [
   },
   {
     type: 'general',
+    title: "Cipher Sandbox",
+    description: "An educational laboratory for substitution (confusion) and permutation (diffusion) experiments.",
+    content: "Build Your Own Cipher Sandbox allows users to visually construct custom block ciphers by combining substitution layers (Caesar, S-Box, Affine, XOR) and permutation layers (P-Box, Columnar Transposition, Block Swap, Cyclic Shift, Reverse). Features multi-round iteration, step-by-step state traces, invertibility validation, and real-time Avalanche effect calculation.",
+    difficulty: 'intermediate',
+    readingTimeMinutes: 5,
+    tracks: ['intermediate'],
+    prerequisites: ['features-overview'],
+    recommendedNext: ['sbox-explorer']
+  },
+  {
+    type: 'general',
     title: "Features Overview",
     description: "A functional layout map of the underlying cipher playgrounds and dynamic grids.",
     content: "• Comprehensive algorithm simulation sandboxes covering symmetric and asymmetric logic profiles.\n• Step-by-step state animations tracking internal matrix transformations.\n• Performance-optimized charts graphing metric data without dropping UI frames.",
