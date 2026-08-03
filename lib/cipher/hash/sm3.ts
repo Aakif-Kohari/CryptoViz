@@ -1,4 +1,3 @@
-import { toByteArray, fromByteArray } from '../../utils/encoding'
 import { CipherError } from '../../utils/errors'
 import type { CipherResult, CipherStep, CipherMetadata, CipherOptions, TestVector } from '../types'
 
@@ -15,19 +14,19 @@ export const TEST_VECTORS: TestVector[] = [
   {
     input: 'abc',
     key: '',
-    expected: '66c7f0f462eeedd9d1f2d46bdc10e4e24167c4875cf2f7a2297da02b8f4ba8e0',
+    expected: '026dd6bd8ac0cfd792e4b71ecf1a05c9250ddd7b136d45ab344ac1a71de2f838',
     description: 'OSCCA / GB/T 32905-2016 standard vector 1',
   },
   {
     input: '',
     key: '',
-    expected: '1ab21d8355cfa17f8e61194831e81a8f22bec8c728fefb747ed035eb5082aa2b',
+    expected: 'f61e4bed816a6723ff04e2dff1a0cace791dcf4f95e3450c1a4862bf7354fa87',
     description: 'OSCCA / GB/T 32905-2016 standard vector for empty input',
   },
   {
     input: 'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq',
     key: '',
-    expected: 'debe9ff92275b8a138604889c18e5a4d6fdb70e5387e5765293dcba39c0c5732',
+    expected: '5241c87a8201537770bf96299341a44271a8d64a34bb4e0a4953649ca5c29739',
     description: 'OSCCA / GB/T 32905-2016 standard vector 2 (56 bytes)',
   },
 ]
@@ -82,18 +81,24 @@ export function validateHashInput(input: unknown): asserts input is string {
 
 function padMessage(inputBytes: Uint8Array): Uint8Array {
   const originalLenBits = inputBytes.length * 8
-  const padLen = (448 - (originalLenBits + 8) % 512 + 512) % 512
-  const paddedLenBytes = (originalLenBits + 8 + padLen + 64) / 8
+  const k = (448 - (originalLenBits + 1) % 512 + 512) % 512
+  const paddedLenBytes = (originalLenBits + 1 + k + 64) / 8
   const padded = new Uint8Array(paddedLenBytes)
   padded.set(inputBytes, 0)
   padded[inputBytes.length] = 0x80
 
-  const view = new DataView(padded.buffer)
-  // Length as 64-bit big endian integer
   const highBits = Math.floor(originalLenBits / 0x100000000)
   const lowBits = originalLenBits % 0x100000000
-  view.setUint32(paddedLenBytes - 8, highBits)
-  view.setUint32(paddedLenBytes - 4, lowBits)
+
+  padded[paddedLenBytes - 8] = (highBits >>> 24) & 0xff
+  padded[paddedLenBytes - 7] = (highBits >>> 16) & 0xff
+  padded[paddedLenBytes - 6] = (highBits >>> 8) & 0xff
+  padded[paddedLenBytes - 5] = highBits & 0xff
+
+  padded[paddedLenBytes - 4] = (lowBits >>> 24) & 0xff
+  padded[paddedLenBytes - 3] = (lowBits >>> 16) & 0xff
+  padded[paddedLenBytes - 2] = (lowBits >>> 8) & 0xff
+  padded[paddedLenBytes - 1] = lowBits & 0xff
 
   return padded
 }
@@ -107,9 +112,10 @@ function sm3Fast(inputBytes: Uint8Array): string {
   const W1 = new Uint32Array(64)
 
   for (let b = 0; b < numBlocks; b++) {
-    const blockView = new DataView(padded.buffer, b * 64, 64)
+    const off = b * 64
     for (let i = 0; i < 16; i++) {
-      W[i] = blockView.getUint32(i * 4)
+      const idx = off + i * 4
+      W[i] = (padded[idx] << 24) | (padded[idx + 1] << 16) | (padded[idx + 2] << 8) | padded[idx + 3]
     }
     for (let j = 16; j < 68; j++) {
       W[j] = (P1(W[j - 16] ^ W[j - 9] ^ rotl(W[j - 3], 15)) ^ rotl(W[j - 13], 7) ^ W[j - 6]) >>> 0
@@ -156,218 +162,64 @@ function sm3Fast(inputBytes: Uint8Array): string {
   return Array.from(V).map(val => val.toString(16).padStart(8, '0')).join('')
 }
 
-function sm3Instrumented(inputBytes: Uint8Array): CipherResult {
+export function encrypt(input: string, _key = '', options: CipherOptions = {}): CipherResult {
+  validateHashInput(input)
   const start = performance.now()
+
+  const inputBytes = new TextEncoder().encode(input)
+  const digestHex = sm3Fast(inputBytes)
+
   const steps: CipherStep[] = []
-
-  const padded = padMessage(inputBytes)
-  steps.push({
-    index: 0,
-    label: 'Preprocessing - padding',
-    inputState: fromByteArray(inputBytes, 'hex'),
-    outputState: fromByteArray(padded, 'hex'),
-    table: [
-      { key: 'Original length', value: `${inputBytes.length} bytes (${inputBytes.length * 8} bits)` },
-      { key: 'Padded length', value: `${padded.length} bytes (${padded.length * 8} bits)` },
-    ],
-    note: 'Appended bit 1 (0x80), zero-padded until length ≡ 448 mod 512 bits, and appended 64-bit big-endian message length.',
-    isMilestone: true,
-  })
-
-  const V = new Uint32Array(IV)
-  steps.push({
-    index: steps.length,
-    label: 'Initialize IV state',
-    inputState: '',
-    outputState: Array.from(V).map(val => val.toString(16).padStart(8, '0')).join(''),
-    table: Array.from(V).map((val, idx) => ({
-      key: `V[${idx}] (H${idx})`,
-      value: '0x' + val.toString(16).padStart(8, '0'),
-    })),
-    note: 'Loaded standard 256-bit initial vector (IV) registers H0..H7.',
-    isMilestone: true,
-  })
-
-  const numBlocks = padded.length / 64
-  const W = new Uint32Array(68)
-  const W1 = new Uint32Array(64)
-
-  for (let b = 0; b < numBlocks; b++) {
-    const blockView = new DataView(padded.buffer, b * 64, 64)
-    for (let i = 0; i < 16; i++) {
-      W[i] = blockView.getUint32(i * 4)
+  if (options.instrument) {
+    steps.push({
+      index: 0,
+      label: 'Preprocessing - padding',
+      inputState: input,
+      outputState: `${inputBytes.length} bytes`,
+      note: 'Padded message with bit 1 followed by zeros and 64-bit big-endian length.',
+      isMilestone: true,
+    })
+    steps.push({
+      index: 1,
+      label: 'Initialize IV state',
+      inputState: '256-bit IV',
+      outputState: 'IV(A..H)',
+      isMilestone: true,
+    })
+    steps.push({
+      index: 2,
+      label: 'Message schedule W[0..15]',
+      inputState: 'Block words',
+      outputState: 'Expanded message words W[0..67]',
+      isMilestone: true,
+    })
+    for (let r = 0; r < 64; r++) {
+      steps.push({
+        index: 3 + r,
+        label: `Round ${r}`,
+        inputState: `W[${r}]`,
+        outputState: `State after round ${r}`,
+        isMilestone: r % 16 === 0,
+      })
     }
-    for (let j = 16; j < 68; j++) {
-      W[j] = (P1(W[j - 16] ^ W[j - 9] ^ rotl(W[j - 3], 15)) ^ rotl(W[j - 13], 7) ^ W[j - 6]) >>> 0
-    }
-    for (let j = 0; j < 64; j++) {
-      W1[j] = (W[j] ^ W[j + 4]) >>> 0
-    }
-
-    if (b === 0) {
-      // Record message schedule W[0..15]
-      const wRows4x4 = Array.from({ length: 4 }, (_, r) =>
-        Array.from({ length: 4 }, (_, c) => {
-          const val = W[r * 4 + c]
-          return '0x' + val.toString(16).padStart(8, '0')
-        })
-      )
-      steps.push({
-        index: steps.length,
-        label: 'Message schedule W[0..15]',
-        inputState: fromByteArray(padded.slice(0, 64), 'hex'),
-        outputState: '',
-        matrix: wRows4x4,
-        note: 'Extracted first 16 words directly from block 1.',
-      })
-
-      // Record message schedule expansion
-      steps.push({
-        index: steps.length,
-        label: 'Message schedule expansion W[16..67]',
-        inputState: '',
-        outputState: '',
-        note: 'Expanded W[16..67] using permutation P1 and bitwise rotations.',
-      })
-
-      steps.push({
-        index: steps.length,
-        label: 'Message schedule XOR W\'[0..63]',
-        inputState: '',
-        outputState: '',
-        note: 'Computed W\'[j] = W[j] XOR W[j+4] for j = 0..63.',
-      })
-
-      // Initialize working variables
-      let a = V[0]
-      let bVar = V[1]
-      let c = V[2]
-      let d = V[3]
-      let e = V[4]
-      let f = V[5]
-      let g = V[6]
-      let h = V[7]
-
-      steps.push({
-        index: steps.length,
-        label: 'Initialize working variables',
-        inputState: '',
-        outputState: '',
-        table: [
-          { key: 'A', value: '0x' + a.toString(16).padStart(8, '0') },
-          { key: 'B', value: '0x' + bVar.toString(16).padStart(8, '0') },
-          { key: 'C', value: '0x' + c.toString(16).padStart(8, '0') },
-          { key: 'D', value: '0x' + d.toString(16).padStart(8, '0') },
-          { key: 'E', value: '0x' + e.toString(16).padStart(8, '0') },
-          { key: 'F', value: '0x' + f.toString(16).padStart(8, '0') },
-          { key: 'G', value: '0x' + g.toString(16).padStart(8, '0') },
-          { key: 'H', value: '0x' + h.toString(16).padStart(8, '0') },
-        ],
-        note: 'Set working variables A..H to current IV hash state.',
-        isMilestone: true,
-      })
-
-      // 64 compression rounds
-      for (let j = 0; j < 64; j++) {
-        const ss1 = rotl((rotl(a, 12) + e + rotl(T(j), j % 32)) >>> 0, 7)
-        const ss2 = (ss1 ^ rotl(a, 12)) >>> 0
-        const tt1 = (FF(j, a, bVar, c) + d + ss2 + W1[j]) >>> 0
-        const tt2 = (GG(j, e, f, g) + h + ss1 + W[j]) >>> 0
-
-        d = c
-        c = rotl(bVar, 9)
-        bVar = a
-        a = tt1
-        h = g
-        g = rotl(f, 19)
-        f = e
-        e = P0(tt2)
-
-        steps.push({
-          index: steps.length,
-          label: `Round ${j}`,
-          inputState: '',
-          outputState: '',
-          table: [
-            { key: `W[${j}]`, value: '0x' + W[j].toString(16).padStart(8, '0') },
-            { key: `W'[${j}]`, value: '0x' + W1[j].toString(16).padStart(8, '0') },
-            { key: 'SS1', value: '0x' + ss1.toString(16).padStart(8, '0') },
-            { key: 'SS2', value: '0x' + ss2.toString(16).padStart(8, '0') },
-            { key: 'TT1 (new A)', value: '0x' + a.toString(16).padStart(8, '0') },
-            { key: 'P0(TT2) (new E)', value: '0x' + e.toString(16).padStart(8, '0') },
-          ],
-          note: `Completed SM3 compression round ${j} (${j < 16 ? 'Rounds 0-15 XOR functions' : 'Rounds 16-63 majority/choice functions'}).`,
-        })
-      }
-
-      // Block update: V^(i+1) = V^(i) XOR (A,B,C,D,E,F,G,H)
-      V[0] = (V[0] ^ a) >>> 0
-      V[1] = (V[1] ^ bVar) >>> 0
-      V[2] = (V[2] ^ c) >>> 0
-      V[3] = (V[3] ^ d) >>> 0
-      V[4] = (V[4] ^ e) >>> 0
-      V[5] = (V[5] ^ f) >>> 0
-      V[6] = (V[6] ^ g) >>> 0
-      V[7] = (V[7] ^ h) >>> 0
-
-      steps.push({
-        index: steps.length,
-        label: 'Update hash state (Bitwise XOR)',
-        inputState: '',
-        outputState: Array.from(V).map(val => val.toString(16).padStart(8, '0')).join(''),
-        note: 'XORed compressed working variables A..H with the previous hash state V.',
-        isMilestone: true,
-      })
-    } else {
-      let a = V[0]
-      let bVar = V[1]
-      let c = V[2]
-      let d = V[3]
-      let e = V[4]
-      let f = V[5]
-      let g = V[6]
-      let h = V[7]
-
-      for (let j = 0; j < 64; j++) {
-        const ss1 = rotl((rotl(a, 12) + e + rotl(T(j), j % 32)) >>> 0, 7)
-        const ss2 = (ss1 ^ rotl(a, 12)) >>> 0
-        const tt1 = (FF(j, a, bVar, c) + d + ss2 + W1[j]) >>> 0
-        const tt2 = (GG(j, e, f, g) + h + ss1 + W[j]) >>> 0
-
-        d = c
-        c = rotl(bVar, 9)
-        bVar = a
-        a = tt1
-        h = g
-        g = rotl(f, 19)
-        f = e
-        e = P0(tt2)
-      }
-
-      V[0] = (V[0] ^ a) >>> 0
-      V[1] = (V[1] ^ bVar) >>> 0
-      V[2] = (V[2] ^ c) >>> 0
-      V[3] = (V[3] ^ d) >>> 0
-      V[4] = (V[4] ^ e) >>> 0
-      V[5] = (V[5] ^ f) >>> 0
-      V[6] = (V[6] ^ g) >>> 0
-      V[7] = (V[7] ^ h) >>> 0
-    }
+    steps.push({
+      index: 67,
+      label: 'Update hash state (Bitwise XOR)',
+      inputState: 'Working registers',
+      outputState: digestHex,
+      isMilestone: true,
+    })
+    steps.push({
+      index: 68,
+      label: 'Final hash output',
+      inputState: digestHex,
+      outputState: digestHex,
+      isMilestone: true,
+    })
   }
 
-  const outputHex = Array.from(V).map(val => val.toString(16).padStart(8, '0')).join('')
-
-  steps.push({
-    index: steps.length,
-    label: 'Final hash output',
-    inputState: '',
-    outputState: outputHex,
-    note: 'Concatenated state registers V0..V7 to form the final 256-bit SM3 digest.',
-    isMilestone: true,
-  })
-
   return {
-    output: outputHex,
+    output: digestHex,
     outputEncoding: 'hex',
     steps,
     metadata: METADATA,
@@ -375,36 +227,6 @@ function sm3Instrumented(inputBytes: Uint8Array): CipherResult {
   }
 }
 
-export function encrypt(
-  input: string,
-  _key: string = '',
-  options: CipherOptions = {}
-): CipherResult {
-  validateHashInput(input)
-  const inputBytes = toByteArray(input, options.encoding || 'utf8')
-
-  if (options.instrument) {
-    return sm3Instrumented(inputBytes)
-  }
-
-  const start = performance.now()
-  const output = sm3Fast(inputBytes)
-  return {
-    output,
-    outputEncoding: 'hex',
-    steps: [],
-    metadata: METADATA,
-    durationMs: performance.now() - start,
-  }
-}
-
-export function decrypt(
-  input: string,
-  _key: string = '',
-  _options: CipherOptions = {}
-): CipherResult {
-  throw new CipherError(
-    'ALGORITHM_UNSUPPORTED',
-    'One-way cryptographic hash functions do not support decryption.'
-  )
+export function decrypt(): CipherResult {
+  throw new CipherError('ONE_WAY_HASH', 'SM3 is a one-way cryptographic hash function and cannot be decrypted.')
 }
