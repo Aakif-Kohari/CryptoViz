@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Breadcrumbs from '../../components/layout/Breadcrumbs'
+
 import Link from "next/link";
 import Navbar from "../../components/layout/Navbar";
 import { resources } from "@/lib/resources";
@@ -37,6 +39,8 @@ export default function ResourcesPage() {
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-6 py-12">
+        <Breadcrumbs items={[{ label: "Reference" }, { label: "Resources" }]} />
+        <div className="mb-12 border-b border-zinc-200 dark:border-[#2A2A31] pb-10">
         {/* Page Header */}
         <div className="mb-10 border-b border-zinc-200 dark:border-[#2A2A31] pb-10">
           <span className="inline-flex rounded-full border border-teal-200 dark:border-[#0C3634] bg-teal-50 dark:bg-[#0C3634]/40 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-[#00C2AE]">

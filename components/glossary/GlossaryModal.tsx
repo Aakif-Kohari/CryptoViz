@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, BookOpen, ExternalLink, ArrowRight, Tag } from 'lucide-react';
+import { X, ArrowRight, Tag } from 'lucide-react';
 import { GlossaryTerm } from '@/lib/glossary/types';
 import Link from 'next/link';
 

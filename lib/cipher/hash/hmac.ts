@@ -160,7 +160,7 @@ export function encrypt(
 export function decrypt(
   input: string,
   key: string,
-  options: CipherOptions = {}
+  _options: CipherOptions = {}
 ): CipherResult {
   throw new CipherError(
     'ALGORITHM_UNSUPPORTED',

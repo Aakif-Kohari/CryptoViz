@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import { encode, injectErrors, decode } from '../lib/workers/reedSolomonWorker';
 
 // Since the worker code is not exported as module functions, we need to import the same logic.
 // For the purpose of this test, we will re-implement minimal functions here matching the worker's behavior.

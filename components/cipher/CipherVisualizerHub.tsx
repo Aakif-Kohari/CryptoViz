@@ -295,7 +295,7 @@ export default function CipherVisualizerHub() {
           </p>
 
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 gap-3 pt-2 sm:grid-cols-4 lg:max-w-4xl">
+          <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-2 lg:grid-cols-4 lg:max-w-4xl">
             <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
               <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Total Visualizers</div>
               <div className="mt-1 text-2xl font-black text-teal-600 dark:text-teal-400">{allItems.length}</div>
@@ -361,7 +361,7 @@ export default function CipherVisualizerHub() {
             </div>
 
             {/* Dropdown Filters & Sort */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
               {/* Security Filter */}
               <div className="flex items-center gap-1.5">
                 <label htmlFor="security-filter" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
@@ -372,7 +372,7 @@ export default function CipherVisualizerHub() {
                   aria-label="Filter by security status"
                   value={selectedSecurity}
                   onChange={(e) => setSelectedSecurity(e.target.value as SecurityFilter)}
-                  className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs font-semibold text-zinc-800 transition-colors focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200"
+                 className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs sm:w-auto ..."
                 >
                   <option value="all">All Security Levels</option>
                   <option value="recommended">Recommended</option>
@@ -394,7 +394,7 @@ export default function CipherVisualizerHub() {
                   aria-label="Sort visualizers"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortOption)}
-                  className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs font-semibold text-zinc-800 transition-colors focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200"
+                  className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs sm:w-auto ..."
                 >
                   <option value="name">Name (A-Z)</option>
                   <option value="category">Category</option>
@@ -439,7 +439,7 @@ export default function CipherVisualizerHub() {
         </section>
 
         {/* Results Header & Summary */}
-        <div className="flex items-center justify-between px-1">
+        <div className="flex flex-col gap-3 px-1 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
               {CATEGORY_LABELS[selectedCategory]}
@@ -469,7 +469,7 @@ export default function CipherVisualizerHub() {
                       href={item.visualizerLink}
                       className="min-w-0 flex-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
                     >
-                      <h3 className="text-lg font-bold text-zinc-900 group-hover:text-teal-700 dark:text-white dark:group-hover:text-teal-400">
+                      <h3 className="break-wordstext-lg font-bold text-zinc-900 group-hover:text-teal-700 dark:text-white dark:group-hover:text-teal-400">
                         {item.name}
                       </h3>
                     </Link>
@@ -497,7 +497,7 @@ export default function CipherVisualizerHub() {
                 </div>
 
                 {/* Footer Links & Actions */}
-                <div className="mt-6 flex items-center justify-between border-t border-zinc-100 pt-4 dark:border-zinc-800/80">
+                <div className="mt-6 flex flex-col gap-3 border-t border-zinc-100 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800/80">
                   <Link
                     href={item.visualizerLink}
                     className="inline-flex items-center gap-1 text-sm font-bold text-teal-600 hover:text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:text-teal-400 dark:hover:text-teal-300"
@@ -505,7 +505,7 @@ export default function CipherVisualizerHub() {
                     Open Visualizer →
                   </Link>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
                     <Link
                       href={item.playgroundLink}
                       className="text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"

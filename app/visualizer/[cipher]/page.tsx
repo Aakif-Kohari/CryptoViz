@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
-import Navbar from "../../../components/layout/Navbar";
-import Sidebar from "../../../components/layout/Sidebar";
+import WorkspaceLayout from "../../../components/layout/WorkspaceLayout";
 import CipherLayout from "../../../components/cipher/CipherLayout";
 import GcmTamperDemo from "../../../components/cipher/GcmTamperDemo";
 import WorkerErrorBoundary from "../../../components/error/WorkerErrorBoundary";
@@ -39,13 +38,9 @@ export default async function VisualizerPage({
     <>
       <RecentCipherTracker cipherId={cipher.id} />
 
-      <div className="min-h-screen bg-zinc-50 font-sans transition-colors duration-300 dark:bg-zinc-950">
-        <Navbar />
+      <WorkspaceLayout activeCipherId={cipher.id}>
+          <div className="min-w-0 flex-1 bg-white dark:bg-zinc-900/10">
 
-        <div className="mx-auto flex max-w-7xl flex-col md:flex-row">
-          <Sidebar ciphers={sidebarCiphers} />
-
-          <main className="min-w-0 flex-1 bg-white dark:bg-zinc-900/10">
             <WorkerErrorBoundary>
               <CipherLayout cipher={cipher} />
             </WorkerErrorBoundary>
@@ -55,9 +50,9 @@ export default async function VisualizerPage({
                 <GcmTamperDemo />
               </div>
             )}
-          </main>
-        </div>
-      </div>
+          
+          </div>
+      </WorkspaceLayout>
     </>
   );
 }

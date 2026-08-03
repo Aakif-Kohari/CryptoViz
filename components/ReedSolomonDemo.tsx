@@ -133,7 +133,7 @@ const ReedSolomonDemo: React.FC = () => {
         </button>
       </div>
       {encoded.length > 0 && (
-        <ReedSolomonVisualizer encoded={encoded} errorPositions={errorPositions} decoded={decoded} />
+        <ReedSolomonVisualizer encoded={encoded} errorPositions={errorPositions} />
       )}
       {decoded && (
         <div className="mt-4 p-2 bg-gray-100 dark:bg-zinc-800 rounded">
