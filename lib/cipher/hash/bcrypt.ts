@@ -102,7 +102,7 @@ export function encrypt(
 export function decrypt(
   input: string,
   key: string = '',
-  options: CipherOptions = {}
+  _options: CipherOptions = {}
 ): CipherResult {
   // For bcrypt, "decrypt" verifies a password (input) against a hash (key)
   validateHashInput(input)
@@ -114,7 +114,7 @@ export function decrypt(
   let isMatch = false
   try {
     isMatch = bcrypt.compareSync(input, key)
-  } catch (err) {
+  } catch (_err) {
     throw new CipherError('INVALID_KEY', 'Invalid bcrypt hash format.')
   }
 

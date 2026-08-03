@@ -1,4 +1,5 @@
 import type { CipherName } from '../cipher/types';
+import { QUESTION_BANK, type CipherCategory, type QuizQuestion } from './questionBank';
 
 export type ChallengeType = 'encrypt' | 'decrypt';
 export type ChallengeDifficulty = 'easy' | 'medium' | 'hard';
@@ -38,16 +39,6 @@ const HINTS: Partial<Record<CipherName, string[]>> = {
   playfair: ['Letters are encrypted in pairs using a 5x5 grid built from the keyword.'],
 };
 
-/**
- * Safely retrieve hints for a given cipher.
- *
- * If the cipher has no hints defined, a fallback hint is returned instead of an
- * empty array. This ensures the challenge UI always shows useful guidance even
- * when hints for a newly-added cipher haven't been written yet.
- *
- * @remarks When adding a new cipher to any `allowedCiphers` list, add its
- * hints here so learners see cipher-specific guidance.
- */
 function getHints(cipherId: CipherName): string[] {
   const hints = HINTS[cipherId];
   if (hints && hints.length > 0) {
@@ -113,5 +104,44 @@ export function generateChallengeData(
     key,
     difficulty,
     hints,
+  };
+}
+
+// Question Bank Utility Functions
+export function getFilteredQuestionBank(
+  category: CipherCategory | 'all' = 'all',
+  difficulty: ChallengeDifficulty | 'all' = 'all'
+): QuizQuestion[] {
+  return QUESTION_BANK.filter((q) => {
+    if (category !== 'all' && q.category !== category) return false;
+    if (difficulty !== 'all' && q.difficulty !== difficulty) return false;
+    return true;
+  });
+}
+
+export function getQuestionBankStats() {
+  const total = QUESTION_BANK.length;
+  const categories: Record<CipherCategory, number> = {
+    classical: 0,
+    symmetric: 0,
+    asymmetric: 0,
+    hash: 0,
+    attacks: 0,
+  };
+  const difficulties: Record<ChallengeDifficulty, number> = {
+    easy: 0,
+    medium: 0,
+    hard: 0,
+  };
+
+  QUESTION_BANK.forEach((q) => {
+    categories[q.category] = (categories[q.category] || 0) + 1;
+    difficulties[q.difficulty] = (difficulties[q.difficulty] || 0) + 1;
+  });
+
+  return {
+    total,
+    categories,
+    difficulties,
   };
 }

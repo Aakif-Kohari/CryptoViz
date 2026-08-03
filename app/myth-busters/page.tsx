@@ -8,9 +8,9 @@ import Footer from '@/components/layout/footer';
 import MythCard from '@/components/myth-busters/MythCard';
 import MythQuiz from '@/components/myth-busters/MythQuiz';
 import MythDetailModal from '@/components/myth-busters/MythDetailModal';
-import { CRYPTO_MYTHS, searchMyths } from '@/lib/myth-busters/mythData';
+import { searchMyths } from '@/lib/myth-busters/mythData';
 import { MythItem, MythCategory } from '@/lib/myth-busters/types';
-import { Search, Flame, ShieldAlert, Sparkles, BookOpen } from 'lucide-react';
+import { Search, Flame, ShieldAlert } from 'lucide-react';
 
 export default function MythBustersPage() {
   const [searchQuery, setSearchQuery] = useState('');

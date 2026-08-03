@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { XCircle, CheckCircle2, ChevronDown, ChevronUp, ArrowRight, ShieldAlert, BookOpen } from 'lucide-react';
+import { XCircle, CheckCircle2, ChevronDown, ChevronUp, ArrowRight, ShieldAlert } from 'lucide-react';
 import { MythItem } from '@/lib/myth-busters/types';
 import Link from 'next/link';
 

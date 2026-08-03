@@ -253,7 +253,7 @@ function md5Instrumented(inputBytes: Uint8Array): CipherResult {
 
 export function encrypt(
   input: string,
-  key: string = '',
+  _key: string = '',
   options: CipherOptions = {}
 ): CipherResult {
   validateHashInput(input)
@@ -276,8 +276,8 @@ export function encrypt(
 
 export function decrypt(
   input: string,
-  key: string = '',
-  options: CipherOptions = {}
+  _key: string = '',
+  _options: CipherOptions = {}
 ): CipherResult {
   throw new CipherError(
     'ALGORITHM_UNSUPPORTED',

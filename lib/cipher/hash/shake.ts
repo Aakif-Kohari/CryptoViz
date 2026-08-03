@@ -88,7 +88,7 @@ export function encryptShake128(input: string, key: string, options: CipherOptio
 export function encryptShake256(input: string, key: string, options: CipherOptions = {}): CipherResult {
   return shakeCore(input, key, 256, !!options.instrument)
 }
-export function decrypt(_input: string, _key: string, _options: CipherOptions = {}): CipherResult {
+export function decrypt(_input: string, _key: string, __options: CipherOptions = {}): CipherResult {
   throw new CipherError('ALGORITHM_UNSUPPORTED', 'SHAKE is a one-way extendable-output function — it has no decrypt operation.')
 }
 

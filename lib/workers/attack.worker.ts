@@ -1,4 +1,4 @@
-import { PaddingOracle, recoverBlock, type AttackStep, type OracleMode, BLOCK_SIZE } from '../attacks/paddingOracle';
+import { PaddingOracle, recoverBlock, type AttackStep, BLOCK_SIZE } from '../attacks/paddingOracle';
 
 const workerScope = self as unknown as Worker;
 

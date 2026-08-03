@@ -6,9 +6,9 @@ import Breadcrumbs from '../../components/layout/Breadcrumbs'
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/footer';
 import CipherLifecycleBadge, { BADGE_CONFIG, SecurityStatus } from '@/components/cipher/CipherLifecycleBadge';
-import { CIPHER_REGISTRY, CipherDefinition } from '@/lib/cipher/registry';
+import { CIPHER_REGISTRY } from '@/lib/cipher/registry';
 import Link from 'next/link';
-import { Search, ShieldAlert, CheckCircle2, ArrowRight, Info, AlertTriangle, Sparkles } from 'lucide-react';
+import { Search, ShieldAlert, ArrowRight, Sparkles } from 'lucide-react';
 
 export default function CipherLifecyclePage() {
   const [searchQuery, setSearchQuery] = useState('');
