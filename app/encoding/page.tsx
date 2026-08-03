@@ -1,5 +1,5 @@
 'use client'
-
+import HexBinaryAsciiConverter from '../../components/encoding/HexBinaryAsciiConverter'
 import Navbar from '../../components/layout/Navbar'
 import EncodingExplorer from '../../components/encoding/EncodingExplorer'
 
@@ -22,7 +22,10 @@ export default function EncodingPage() {
             Compare Base16 (Hex), Base32, Base58, Base64 and URL encoding.
           </p>
         </header>
-        <EncodingExplorer />
+        <div className="space-y-8">
+  <EncodingExplorer />
+  <HexBinaryAsciiConverter />
+</div>
       </main>
     </div>
   )
