@@ -3,7 +3,15 @@
  */
 export function asciiToHex(text: string): string {
   return Array.from(text)
-    .map((char) => char.charCodeAt(0).toString(16).padStart(2, "0"))
+    .map((char) => {
+      const code = char.charCodeAt(0);
+
+      if (code > 0xff) {
+        throw new Error("Only ASCII characters are supported.");
+      }
+
+      return code.toString(16).padStart(2, "0");
+    })
     .join("");
 }
 
@@ -20,7 +28,9 @@ export function hexToAscii(hex: string): string {
   let result = "";
 
   for (let i = 0; i < cleaned.length; i += 2) {
-    result += String.fromCharCode(parseInt(cleaned.substring(i, i + 2), 16));
+    result += String.fromCharCode(
+      parseInt(cleaned.substring(i, i + 2), 16)
+    );
   }
 
   return result;
@@ -31,9 +41,15 @@ export function hexToAscii(hex: string): string {
  */
 export function asciiToBinary(text: string): string {
   return Array.from(text)
-    .map((char) =>
-      char.charCodeAt(0).toString(2).padStart(8, "0")
-    )
+    .map((char) => {
+      const code = char.charCodeAt(0);
+
+      if (code > 0xff) {
+        throw new Error("Only ASCII characters are supported.");
+      }
+
+      return code.toString(2).padStart(8, "0");
+    })
     .join(" ");
 }
 
@@ -41,21 +57,21 @@ export function asciiToBinary(text: string): string {
  * Converts binary to ASCII text.
  */
 export function binaryToAscii(binary: string): string {
-  const cleaned = binary.trim().replace(/\s+/g, " ");
+  const cleaned = binary.replace(/\s+/g, "");
 
-  const bytes = cleaned.split(" ");
-
-  if (
-    bytes.some(
-      (byte) => byte.length !== 8 || /[^01]/.test(byte)
-    )
-  ) {
+  if (!/^[01]+$/.test(cleaned) || cleaned.length % 8 !== 0) {
     throw new Error("Invalid binary input.");
   }
 
-  return bytes
-    .map((byte) => String.fromCharCode(parseInt(byte, 2)))
-    .join("");
+  let result = "";
+
+  for (let i = 0; i < cleaned.length; i += 8) {
+    result += String.fromCharCode(
+      parseInt(cleaned.substring(i, i + 8), 2)
+    );
+  }
+
+  return result;
 }
 
 /**
@@ -89,7 +105,10 @@ export function binaryToHex(binary: string): string {
   let result = "";
 
   for (let i = 0; i < cleaned.length; i += 4) {
-    result += parseInt(cleaned.substring(i, i + 4), 2).toString(16);
+    result += parseInt(
+      cleaned.substring(i, i + 4),
+      2
+    ).toString(16);
   }
 
   return result.toUpperCase();
