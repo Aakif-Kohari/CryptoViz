@@ -3,17 +3,31 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReedSolomonVisualizer from './ReedSolomonVisualizer';
 
+interface EncodePayload {
+  input: string;
+  paritySymbols: number;
+}
+
+interface InjectErrorsPayload {
+  encoded: number[];
+  errorCount: number;
+}
+
+interface DecodePayload {
+  corrupted: number[];
+}
+
 // Define the shape of messages exchanged with the worker
 interface WorkerMessage {
   command: 'encode' | 'injectErrors' | 'decode';
   requestId: string;
-  payload: any;
+  payload: EncodePayload | InjectErrorsPayload | DecodePayload;
 }
 
 interface WorkerResponse {
   requestId: string;
   success: boolean;
-  payload: any;
+  payload: { encoded?: number[]; errorPositions?: number[]; decoded?: string; error?: string; corrupted?: number[] };
 }
 
 const ReedSolomonDemo: React.FC = () => {
@@ -54,7 +68,7 @@ const ReedSolomonDemo: React.FC = () => {
       requestId,
       payload: { input, paritySymbols },
     });
-    if (response.success) {
+    if (response.success && response.payload.encoded) {
       setEncoded(response.payload.encoded);
       setErrorPositions([]);
       setDecoded('');
@@ -68,9 +82,9 @@ const ReedSolomonDemo: React.FC = () => {
       requestId,
       payload: { encoded, errorCount: Math.max(1, Math.floor(paritySymbols / 4)) },
     });
-    if (response.success) {
+    if (response.success && response.payload.corrupted) {
       setEncoded(response.payload.corrupted);
-      setErrorPositions(response.payload.errorPositions);
+      setErrorPositions(response.payload.errorPositions ?? []);
     }
   };
 
@@ -81,7 +95,7 @@ const ReedSolomonDemo: React.FC = () => {
       requestId,
       payload: { corrupted: encoded },
     });
-    if (response.success) {
+    if (response.success && response.payload.decoded) {
       setDecoded(response.payload.decoded);
     }
   };

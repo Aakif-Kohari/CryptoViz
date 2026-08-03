@@ -43,11 +43,14 @@ async function deriveKeyViaWorker(
     },
   }
 
-  const response = await sharedCipherPool.execute(message)
+  const response = await sharedCipherPool.execute(message) as { success: boolean; payload: { result?: { derivedKeyHex: string; saltHex: string }; error?: string } }
   // cipher.worker.ts's response has no `type` field, so pool.ts's fallback
   // branch delivers the raw worker payload here.
   if (response.success === false) {
-    throw new CipherError('KDF_ERROR', response.payload.error)
+    throw new CipherError('KDF_ERROR', response.payload.error ?? 'Unknown KDF error')
+  }
+  if (!response.payload.result) {
+    throw new CipherError('KDF_ERROR', 'KDF derivation failed - no result returned')
   }
   return response.payload.result
 }
