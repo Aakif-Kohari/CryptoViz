@@ -72,6 +72,7 @@ import { encrypt as gostEncrypt, decrypt as gostDecrypt } from '../cipher/symmet
 import { encrypt as enigmaEncrypt, decrypt as enigmaDecrypt } from '../cipher/symmetric/enigma';
 import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20'
 import { encrypt as teaEncrypt, decrypt as teaDecrypt } from '../cipher/symmetric/tea';
+import { encrypt as serpentEncrypt, decrypt as serpentDecrypt } from '../cipher/symmetric/serpent';
 import { encryptSerpentBlock as serpentEncrypt, decryptSerpentBlock as serpentDecrypt } from '../cipher/symmetric/serpent';
 import { encrypt as chacha20Encrypt, decrypt as chacha20Decrypt } from "../cipher/symmetric/chacha20";
 import { encrypt as desEncrypt, decrypt as desDecrypt } from "../cipher/symmetric/des";
@@ -80,6 +81,7 @@ import { encrypt as ideaEncrypt, decrypt as ideaDecrypt } from "../cipher/symmet
 import { encrypt as otpEncrypt, decrypt as otpDecrypt } from "../cipher/symmetric/otp";
 import { encrypt as rc4Encrypt, decrypt as rc4Decrypt } from "../cipher/symmetric/rc4";
 import { encrypt as rc5Encrypt, decrypt as rc5Decrypt } from "../cipher/symmetric/rc5";
+import { encrypt as rc6Encrypt, decrypt as rc6Decrypt } from "../cipher/symmetric/rc6";
 import { encryptRc6Block as rc6Encrypt, decryptRc6Block as rc6Decrypt } from "../cipher/symmetric/rc6";
 import { encrypt as salsa20Encrypt, decrypt as salsa20Decrypt } from "../cipher/symmetric/salsa20";
 import { encrypt as skipjackEncrypt, decrypt as skipjackDecrypt } from "../cipher/symmetric/skipjack";

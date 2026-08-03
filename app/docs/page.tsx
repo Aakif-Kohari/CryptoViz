@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import Breadcrumbs from '../../components/layout/Breadcrumbs'
+
 import Link from "next/link";
 import {
   docCategories,
@@ -1010,6 +1012,7 @@ export default function DocumentationPage() {
 
         {/* Main Content Area */}
         <main className="flex-1 p-4 sm:p-6 lg:p-10 w-full max-w-none lg:max-w-3xl overflow-y-auto">
+        <Breadcrumbs items={[{ label: "Reference" }, { label: "Documentation" }]} />
           {/* Highlight indicator banner */}
           {activeQuery && (
             <div className="mb-6 px-4 py-2.5 bg-yellow-500/10 border border-yellow-500/25 rounded-lg flex items-center justify-between text-xs font-sans text-yellow-800 dark:text-yellow-250 transition-all">
