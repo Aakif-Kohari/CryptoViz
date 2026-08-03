@@ -9,8 +9,6 @@ import type { AnimationSpeed } from './StepAnimator'
 import WorkspacePresetManager from './WorkspacePresetManager'
 import ConversionHistory from './ConversionHistory'
 import WhereIsThisUsed from "./WhereIsThisUsed";
-import StepNotes from './StepNotes'
-import BookmarkedSteps from './BookmarkedSteps'
 import type { WorkspacePreset } from '../../lib/utils/workspacePresets'
 import {
   clearScopeAnnotations,
@@ -56,7 +54,7 @@ interface HistoryEntry {
   output: string;
   timestamp: string;
 }
-const getHistoryStorageKey = (cipherId: string) =>
+const _getHistoryStorageKey = (cipherId: string) =>
   `cryptoviz-history-${cipherId}`;
 const isBooleanOptionValue = (value: CipherOptionValue): value is boolean => typeof value === 'boolean'
 const isNumberOptionValue = (value: CipherOptionValue): value is number => typeof value === 'number'
@@ -73,7 +71,7 @@ const isValidHistoryEntry = (entry: unknown): entry is HistoryEntry => {
     "timestamp" in entry
   );
 };
-const isValidHistoryArray = (data: unknown): data is HistoryEntry[] => {
+const _isValidHistoryArray = (data: unknown): data is HistoryEntry[] => {
   return Array.isArray(data) && data.every(isValidHistoryEntry);
 };
 export default function CipherLayout({ cipher }: CipherLayoutProps) {
@@ -349,7 +347,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     padding,
   ]);
   // Helper for status badge styling
-  const getStatusBadge = (status: "secure" | "legacy" | "deprecated" | "broken") => {
+  const _getStatusBadge = (status: "secure" | "legacy" | "deprecated" | "broken") => {
     switch (status) {
       case "secure":
         return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900";
@@ -418,10 +416,10 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     annotationStore,
     annotationScope,
   )
-  const activeAnnotation = activeStepId
+  const _activeAnnotation = activeStepId
     ? scopeAnnotations.find((item) => item.stepId === activeStepId)
     : undefined
-  const bookmarkedSteps = result?.steps
+  const _bookmarkedSteps = result?.steps
     ? result.steps
         .map((step, index) => {
           const stepId = createStableStepId(step.label, index)
@@ -438,7 +436,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           ): item is NonNullable<typeof item> => item !== null,
         )
     : []
-  const handleToggleStepBookmark = () => {
+  const _handleToggleStepBookmark = () => {
     if (!activeStep || !activeStepId) return
     setAnnotationStore(
       toggleStepBookmark(
@@ -449,7 +447,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       ),
     )
   }
-  const handleSaveStepNote = (note: string) => {
+  const _handleSaveStepNote = (note: string) => {
     if (!activeStep || !activeStepId) return
     setAnnotationStore(
       updateStepNote(
@@ -461,13 +459,13 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       ),
     )
   }
-  const handleDeleteStepNote = () => {
+  const _handleDeleteStepNote = () => {
     if (!activeStepId) return
     setAnnotationStore(
       removeStepNote(annotationStore, annotationScope, activeStepId),
     )
   }
-  const handleClearStepAnnotations = async () => {
+  const _handleClearStepAnnotations = async () => {
     if (
       !window.confirm(
         'Clear all notes and bookmarks for this cipher and direction?',

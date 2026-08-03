@@ -72,7 +72,7 @@ function caesarInstrumented(
 
     const isAlpha = /[a-zA-Z]/.test(char)
     const p = char.toUpperCase().charCodeAt(0) - 65
-    const r = result.toUpperCase().charCodeAt(0) - 65
+    const _r = result.toUpperCase().charCodeAt(0) - 65
 
     steps.push({
       index: i + 1,

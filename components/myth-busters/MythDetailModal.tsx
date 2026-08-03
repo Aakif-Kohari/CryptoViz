@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, ShieldAlert, CheckCircle2, ArrowRight, BookOpen, Lightbulb } from 'lucide-react';
+import { X, ShieldAlert, CheckCircle2, ArrowRight, Lightbulb } from 'lucide-react';
 import { MythItem } from '@/lib/myth-busters/types';
 import Link from 'next/link';
 

@@ -53,7 +53,7 @@ describe('Ed25519 (EdDSA) Unit Tests', () => {
         // recover the public key the same way encrypt() derived it, by re-deriving
         // via a second signing call is unnecessary — instead verify using the same
         // deterministic key material through decrypt()'s public interface:
-        const pubKeyHex = require('@noble/curves/ed25519.js').ed25519
+        const _pubKeyHex = require('@noble/curves/ed25519.js').ed25519
           ? undefined
           : undefined
         expect(signed.output).toHaveLength(128)

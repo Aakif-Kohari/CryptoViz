@@ -386,7 +386,7 @@ function buildDecryptSteps(
   let counter = inc32(j0)
   const ctrBlocks = Math.ceil(ciphertext.length / 16)
   for (let b = 0; b < ctrBlocks; b++) {
-    const keystream = processBlock(counter, roundKeys, false)
+    const _keystream = processBlock(counter, roundKeys, false)
     const offset = b * 16
     const blockLen = Math.min(16, ciphertext.length - offset)
     steps.push({

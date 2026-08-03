@@ -4,7 +4,7 @@ import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/footer';
 import EncodingErrorPlayground from '@/components/encoding/EncodingErrorPlayground';
-import { AlertTriangle, Bug, Wrench, Sparkles, BookOpen } from 'lucide-react';
+import { Bug } from 'lucide-react';
 
 export default function EncodingErrorPage() {
   return (

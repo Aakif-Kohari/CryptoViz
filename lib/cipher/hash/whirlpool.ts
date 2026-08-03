@@ -245,7 +245,7 @@ export function whirlpoolHash(inputBytes: Uint8Array, trace?: boolean): { digest
   for (let b = 0; b < numBlocks; b++) {
     const block = padded.subarray(b * 64, (b + 1) * 64)
 
-    whirlpoolTransform(state, block, (round, mat) => {
+    whirlpoolTransform(state, block, (round, _mat) => {
       if (trace) {
         steps.push({
           index: steps.length,
@@ -281,7 +281,7 @@ export function whirlpoolHash(inputBytes: Uint8Array, trace?: boolean): { digest
   return { digestHex, steps }
 }
 
-export function encrypt(input: string, key: string = '', options: CipherOptions = {}): CipherResult {
+export function encrypt(input: string, _key: string = '', options: CipherOptions = {}): CipherResult {
   if (input === null || input === undefined || typeof input !== 'string') {
     throw new CipherError('INPUT_REQUIRED', 'Input is required.')
   }
