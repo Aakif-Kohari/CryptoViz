@@ -113,6 +113,7 @@ export type CipherName =
   | 'lea'
   | 'blowfish'
   | 'simon'
+  | 'hc128'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'

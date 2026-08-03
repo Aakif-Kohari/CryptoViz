@@ -403,6 +403,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'hc128',
+    name: 'HC-128',
+    category: 'symmetric',
+    description: 'eSTREAM Phase 3 software-profile stream cipher by Hongjun Wu. Uses two 512-word (2 KB each) key/IV-derived lookup tables P and Q that update themselves during keystream generation. The fastest stream cipher in the eSTREAM portfolio on 32-bit software. Output = IV(32 hex) + ciphertext.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '48656c6c6f20576f726c64',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
