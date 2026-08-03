@@ -76,6 +76,17 @@ export const docCategories: DocCategory[] = [
   },
   {
     type: 'general',
+    title: "Cipher Recommendation Assistant",
+    description: "An intelligent recommendation assistant matching algorithms to specific operational use cases and hardware constraints.",
+    content: "The Cipher Recommendation Assistant helps developers and students select the most appropriate cryptographic algorithms for real-world applications (HTTPS/TLS, Password Hashing, IoT/Embedded, Database Storage, Digital Signatures, Post-Quantum). It provides match scoring %, security trade-off analysis, implementation code snippets in JavaScript & Python, and interactive decision trees.",
+    difficulty: 'beginner',
+    readingTimeMinutes: 5,
+    tracks: ['beginner', 'intermediate'],
+    prerequisites: ['getting-started'],
+    recommendedNext: ['features-overview']
+  },
+  {
+    type: 'general',
     title: "Features Overview",
     description: "A functional layout map of the underlying cipher playgrounds and dynamic grids.",
     content: "• Comprehensive algorithm simulation sandboxes covering symmetric and asymmetric logic profiles.\n• Step-by-step state animations tracking internal matrix transformations.\n• Performance-optimized charts graphing metric data without dropping UI frames.",
