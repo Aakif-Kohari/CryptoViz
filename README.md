@@ -32,6 +32,7 @@ Visit the production site at [Live Demo](https://crypto-viz-liart.vercel.app). E
 - Features
 - Architecture
 - Tech Stack
+- Browser Compatibility
 - Getting Started
 - Commands
 - Contributing
@@ -224,6 +225,53 @@ The SaaS layer (Phase 9) integrates seamlessly as an additive option without alt
 | **ORM Wrapper** | Drizzle ORM | Latest | Type-safe SQL schema database definitions |
 | **Payment Gateway** | Stripe API | Latest | User premium access control and checkouts |
 | **Email Relay** | Resend | Latest | Transactional notifications and verification mail |
+
+---
+
+## 🌐 Browser Compatibility
+
+CryptoViz is a client-side cryptography visualization platform that runs entirely inside the browser. It requires a modern browser with support for JavaScript, Web Workers, and the WebCrypto API.
+
+### Supported Desktop Browsers
+
+| Browser | Support |
+| :--- | :--- |
+| Google Chrome | ✅ Supported |
+| Microsoft Edge | ✅ Supported |
+| Mozilla Firefox | ✅ Supported |
+| Safari | ✅ Supported |
+
+### Supported Mobile Browsers
+
+| Browser | Support |
+| :--- | :--- |
+| Chrome Mobile (Android) | ✅ Supported |
+| Safari Mobile (iOS) | ✅ Supported |
+| Firefox Mobile | ✅ Supported |
+
+### Required Browser Features
+
+CryptoViz requires the following browser capabilities:
+
+- **JavaScript enabled** for application functionality.
+- **Web Workers** for running cryptographic calculations in background threads.
+- **WebCrypto API** support for browser-based cryptographic operations.
+- **ES6+ JavaScript support** for modern application features.
+
+### Recommended Browser Versions
+
+For the best performance, security, and compatibility, use the latest stable version of:
+
+- Google Chrome
+- Microsoft Edge
+- Mozilla Firefox
+- Safari
+
+### Unsupported or Partially Supported Browsers
+
+Older browsers that do not support modern JavaScript features, Web Workers, or WebCrypto API may not function correctly.
+
+Users should update their browser to the latest available version to ensure proper performance and security.
 
 ---
 
