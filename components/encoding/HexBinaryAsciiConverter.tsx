@@ -55,11 +55,15 @@ export default function HexBinaryAsciiConverter() {
     setError('')
   }
 
-  const copyOutput = async () => {
-    if (!output) return
+ const copyOutput = async () => {
+  if (!output) return;
 
-    await navigator.clipboard.writeText(output)
+  try {
+    await navigator.clipboard.writeText(output);
+  } catch {
+    setError("Failed to copy output.");
   }
+};
 
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
