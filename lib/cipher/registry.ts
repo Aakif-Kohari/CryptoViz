@@ -407,6 +407,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
   },
   {
+    id: 'gift',
+    name: 'GIFT-64',
+    category: 'symmetric',
+    description: 'Ultra-lightweight 64-bit block cipher (CHES 2017). Uses a 4-bit S-box and 28-round SPN. 5x more hardware-efficient than PRESENT and underlies the NIST Lightweight Finalist GIFT-COFB.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'blowfish',
     name: 'Blowfish',
     category: 'symmetric',
