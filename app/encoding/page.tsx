@@ -23,7 +23,7 @@ export default function EncodingPage() {
           </p>
         </header>
         <div className="space-y-8">
-  <EncodingExplorer />
+  
   <HexBinaryAsciiConverter />
 </div>
       </main>
