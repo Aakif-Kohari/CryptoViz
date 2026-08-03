@@ -111,6 +111,7 @@ export type CipherName =
   | 'present'
   | 'tea'
   | 'lea'
+  | 'gift'
   | 'blowfish'
   | 'simon'
   | 'rc4'
