@@ -418,6 +418,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '4–56 byte key as hex (8–112 hex chars)',
   },
   {
+    id: 'seed',
+    name: 'SEED-128',
+    category: 'symmetric',
+    description: 'Korean national block cipher (RFC 4269, 2005; ISO/IEC 18033-3). Mandatory in Korean financial and government systems for over a decade. 128-bit block, 128-bit key, 16-round Feistel with G-function using two GF(2^8)-derived S-boxes. Superseded by LEA for new Korean deployments.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '000102030405060708090a0b0c0d0e0f',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'simon',
     name: 'SIMON-128/128',
     category: 'symmetric',

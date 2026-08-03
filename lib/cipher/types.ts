@@ -112,6 +112,7 @@ export type CipherName =
   | 'tea'
   | 'lea'
   | 'blowfish'
+  | 'seed'
   | 'simon'
   | 'hc128'
   | 'rc4'
