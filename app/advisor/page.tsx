@@ -1,4 +1,6 @@
 import React from 'react'
+import Breadcrumbs from '../../components/layout/Breadcrumbs'
+
 import type { Metadata } from 'next'
 import Navbar from '../../components/layout/Navbar'
 import DecisionTree from '../../components/advisor/DecisionTree'
@@ -14,6 +16,7 @@ export default function AdvisorPage() {
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <Breadcrumbs items={[{ label: "Learn" }, { label: "Cipher Advisor" }]} />
         <header className="mx-auto mb-16 max-w-3xl text-center">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">
             Interactive Guide

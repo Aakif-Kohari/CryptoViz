@@ -5,8 +5,6 @@ import {
   calculateEstimatedTime,
   formatDuration,
   getStrengthIndicator,
-  SPEED_PRESETS,
-  CHARACTER_SETS,
 } from "../../../lib/attacks/bruteForce";
 
 describe("brute force time estimator math & helpers", () => {

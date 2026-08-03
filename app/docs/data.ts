@@ -150,6 +150,12 @@ export const docCategories: DocCategory[] = [
     description: "Overview of the dedicated Cipher Visualizers Hub with search, category filtering, security status badges, and interactive sandboxes.",
     content: "The Cipher Visualizers Hub (/visualizer) provides a centralized interactive index for over 50 algorithm visualizers and specialized demonstration sandboxes. Users can filter ciphers by mathematical category (Classical, Symmetric, Asymmetric, Hash, Specialized Demos), NIST security status (Recommended, Secure, Legacy, Broken, etc.), or search by algorithm keywords."
   },
+  {
+    type: 'general',
+    title: "Expanded Challenge Question Bank",
+    description: "Comprehensive bank of 300+ curated cryptography questions across classical, symmetric, asymmetric, hash, and attack categories.",
+    content: "The Challenge Question Bank (/challenge) provides over 300 curated questions filterable by mathematical category and difficulty level with hints and step-by-step explanations."
+  },
 
   {
     type: 'cipher',

@@ -11,7 +11,7 @@ describe('ECC Asymmetric Cipher Unit Tests', () => {
   })
 
   it('passes standard test vectors (verification)', () => {
-    const vector = TEST_VECTORS[0]
+    const _vector = TEST_VECTORS[0]
     const privKeyBytes = p256.utils.randomSecretKey()
     const pubKeyBytes = p256.getPublicKey(privKeyBytes)
     const pubKeyHex = fromByteArray(pubKeyBytes, 'hex')

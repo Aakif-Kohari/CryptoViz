@@ -26,7 +26,7 @@ const METADATA: CipherMetadata = {
   standardBody: 'RFC 1320',
 }
 
-const MASK = 0xffffffff
+const _MASK = 0xffffffff
 const S1 = [3, 7, 11, 19]
 const S2 = [3, 5, 9, 13]
 const S3 = [3, 9, 11, 15]
@@ -165,7 +165,7 @@ export function encrypt(input: string, _key: string, options: CipherOptions = {}
   }
   return md4Digest(input, !!options.instrument)
 }
-export function decrypt(_input: string, _key: string, _options: CipherOptions = {}): CipherResult {
+export function decrypt(_input: string, _key: string, __options: CipherOptions = {}): CipherResult {
   throw new CipherError('ALGORITHM_UNSUPPORTED', 'MD4 is a one-way hash function — it has no decrypt operation.')
 }
 

@@ -93,6 +93,7 @@ export default function Navbar() {
         { name: t('nav.glossary') || 'Glossary', href: '/glossary' },
         { name: t('nav.modes') || 'Modes', href: '/modes' },
         { name: t('nav.compare') || 'Compare', href: '/compare' },
+        { name: t('nav.collections') || 'Collections', href: '/collections' },
         { name: t('nav.matrix') || 'Matrix', href: '/matrix' },
         { name: t('nav.benchmark') || 'Benchmark', href: '/benchmark' },
         { name: t('nav.avalanche') || 'Avalanche', href: '/avalanche' },
@@ -105,7 +106,47 @@ export default function Navbar() {
         { name: t('nav.offline') || 'Offline', href: '/offline' },
       ],
     },
-  ]
+  ];
+
+  const allNavLinks = [
+    { name: 'Visualizers', href: '/visualizer' },
+    { name: 'Playground', href: '/visualizer/caesar/' },
+    { name: 'Advisor', href: '/advisor' },
+    { name: 'Modes', href: '/modes' },
+    { name: 'Protocols', href: '/protocols' },
+    { name: 'Compare', href: '/compare' },
+    { name: 'Collections', href: '/collections' },
+    { name: 'Matrix', href: '/matrix' },
+    { name: 'Benchmark', href: '/benchmark' },
+    { name: 'Avalanche', href: '/avalanche' },
+    { name: 'S-Box Explorer', href: '/sbox' },
+    { name: 'Merkle Tree', href: '/merkle' },
+    { name: 'Padding', href: '/padding' },
+    { name: 'Challenge', href: '/challenge' },
+    { name: 'Rainbow Table', href: '/rainbow-table' },
+    { name: 'Docs', href: '/docs' },
+    { name: 'Reference Hub', href: '/reference' },
+    { name: 'Offline', href: '/offline' },
+    { name: 'Glossary', href: '/glossary' },
+    { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+    { name: 'Cipher Graph', href: '/timeline' },
+    { name: 'Case Studies', href: '/case-studies' },
+    { name: 'Myth Busters', href: '/myth-busters' },
+    { name: 'Encoding Errors', href: '/encoding-errors' },
+    { name: 'Resources', href: '/resources' },
+    { name: 'Timeline', href: '/timeline' },
+  ];
+
+  const developerOnlyLinks = [
+    { name: 'Benchmark History', href: '/benchmarks/history' },
+    { name: 'Integration Tests', href: '/tests/integration' },
+    { name: 'Snapshot Tests', href: '/tests/snapshots' },
+    { name: 'Worker Tests', href: '/tests/worker' },
+  ];
+
+  const navLinks = isDevelopmentMode()
+    ? [...allNavLinks, ...developerOnlyLinks]
+    : allNavLinks;
 
   return (
     <nav

@@ -75,7 +75,7 @@ export function encryptSha224(input: string, _key: string, options: CipherOption
 export function encryptSha384(input: string, _key: string, options: CipherOptions = {}): CipherResult {
   return shaCore(input, 384, !!options.instrument)
 }
-export function decrypt(_input: string, _key: string, _options: CipherOptions = {}): CipherResult {
+export function decrypt(_input: string, _key: string, __options: CipherOptions = {}): CipherResult {
   throw new CipherError('ALGORITHM_UNSUPPORTED', 'This is a one-way hash function — it has no decrypt operation.')
 }
 

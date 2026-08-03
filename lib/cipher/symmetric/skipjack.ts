@@ -46,7 +46,7 @@ function g(word: number, keyBytes: number[], keyOffset: number): { output: numbe
   return { output: ((g1 << 8) | g2) & 0xffff, kUsed }
 }
 
-function gInv(word: number, keyBytes: number[], keyOffset: number): { output: number; kUsed: number[] } {
+function _gInv(word: number, keyBytes: number[], keyOffset: number): { output: number; kUsed: number[] } {
   let g1 = (word >> 8) & 0xff, g2 = word & 0xff
   const kUsed: number[] = []
   for (let round = 3; round >= 0; round--) {

@@ -4,7 +4,7 @@
  */
 
 import type { CipherResult, CipherStep, CipherOptions, TestVector } from '../types'
-import { CipherError, validateInput, validateKey } from '../../utils'
+import { validateInput, validateKey } from '../../utils'
 
 const METADATA = {
   name: 'Playfair Cipher',
