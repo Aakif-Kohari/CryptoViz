@@ -437,6 +437,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'xxtea',
+    name: 'XXTEA',
+    category: 'symmetric',
+    description:
+      'Corrected Block TEA (Wheeler & Needham, 1998). The final and strongest member of the TEA family. Unlike TEA/XTEA, it operates on the entire message as a single variable-length block (min 2 words) for full diffusion. Widely used historically but unauthenticated.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'blowfish',
     name: 'Blowfish',
     category: 'symmetric',
