@@ -116,6 +116,7 @@ export type CipherName =
   | 'gift'
   | 'blowfish'
   | 'seed'
+  | 'kuznyechik'
   | 'simon'
   | 'rabbit'
   | 'hc128'
