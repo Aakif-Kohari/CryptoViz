@@ -355,3 +355,22 @@
 [#606] (open) by @csxark: Implement Skipjack Decryption Support
 [#605] (open) by @Ayush-0918: [FEATURE] Constant-Time Comparison Utilities
 [#604] (closed) by @Ayush-0918: [FEATURE]Add Comprehensive Cipher Performance Profiling and Regression Testing Framework
+
+=== Audited 2026-08-04 06:16 UTC (17 new) ===
+[#717] (closed) by @ankitasahu83964: docs: Add a Frequently Asked Questions (FAQ) section to the README
+[#716] (open) by @Aakif-Kohari: [FEATURE] Add XXTEA (Corrected Block TEA) cipher — variable-length block, Feistel-like MX function, full-block diffusion
+[#715] (open) by @Aakif-Kohari: [FEATURE] Add Streebog-256 cryptographic hash (Russian GOST R 34.11-2012, 512-bit internal state, Miyaguchi-Preneel-like compression)
+[#714] (open) by @Aakif-Kohari: [FEATURE] Add Kuznyechik block cipher (Russian GOST R 34.12-2015, 128-bit block, 9-round SPN with nonlinear GF(2⁸) transform)
+[#713] (open) by @Aakif-Kohari: [FEATURE] Add Rabbit stream cipher (eSTREAM Portfolio Phase 2/3, RFC 4503, 8-round-per-word counter system)
+[#712] (open) by @Aakif-Kohari: [FEATURE] Add MARS block cipher (IBM AES finalist, 128-bit block, 32-round heterogeneous SPN, type-3 Feistel core)
+[#695] (closed) by @ankitasahu83964: docs: Add a Browser Compatibility section to README
+[#692] (closed) by @Babin123456: [BUG] Uncompressed $0x04$ point coordinate parsing failure in ECC P-256 and Ed25519 scalar validation
+[#691] (closed) by @Babin123456: [BUG] SM3 64-bit length padding misalignment, Whirlpool feedforward bug, and incomplete Skipjack cipher
+[#690] (closed) by @Babin123456: [BUG] Cipher Web Worker race conditions and unhandled rejection during rapid tab switching
+[#689] (closed) by @Babin123456: [BUG] AEAD tag truncation and nonce length validation failure in Ascon, ChaCha20-Poly1305, and XChaCha20-Poly1305
+[#688] (closed) by @Babin123456: [BUG] Unhandled RangeError and modular rotation misalignment in Serpent & LEA cipher implementations
+[#684] (closed) by @Aakif-Kohari: [FEATURE] Add SIMON-32/64 lightweight block cipher (NSA 2013, IACR 2013/404, 16-bit words, 32-round Feistel)
+[#683] (closed) by @Aakif-Kohari: [FEATURE] Add NOEKEON block cipher (NESSIE candidate, 128-bit block, no S-box lookup table, pure bitsliced design)
+[#682] (closed) by @Aakif-Kohari: [FEATURE] Add GIFT-64 ultra-lightweight block cipher (CHES 2017, 4-bit S-box, 28-round SPN, 128-bit key)
+[#681] (closed) by @Aakif-Kohari: [FEATURE] Add SEED-128 block cipher (Korean national standard, RFC 4269, ISO/IEC 18033-3, 16-round Feistel)
+[#680] (closed) by @Aakif-Kohari: [FEATURE] Add HC-128 stream cipher (key/IV-derived tables, 128-bit key)
