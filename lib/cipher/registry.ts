@@ -448,6 +448,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '4–56 byte key as hex (8–112 hex chars)',
   },
   {
+    id: 'streebog',
+    name: 'Streebog-256',
+    category: 'hash',
+    description:
+      'Russian national hash function (GOST R 34.11-2012, RFC 6986). 512-bit internal state processed through 12 rounds of a Kuznyechik-family SPN in a Miyaguchi-Preneel-like compression function, with a unique checksum-based finalization step.',
+    defaultKey: '',
+    defaultInput: '323130393837363534333231303938373635343332313039383736353433323130393837363534333231303938373635343332313039383736353433323130',
+    securityStatus: 'secure',
+  },
+  {
     id: 'seed',
     name: 'SEED-128',
     category: 'symmetric',

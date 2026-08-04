@@ -115,6 +115,7 @@ export type CipherName =
   | 'lea'
   | 'gift'
   | 'blowfish'
+  | 'streebog'
   | 'seed'
   | 'simon'
   | 'rabbit'
