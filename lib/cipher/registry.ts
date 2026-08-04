@@ -468,6 +468,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'rabbit',
+    name: 'Rabbit',
+    category: 'symmetric',
+    description:
+      'eSTREAM Portfolio Phase 3 stream cipher (RFC 4503). 128-bit key, 64-bit IV. Distinctive non-linear counter system (no LFSR) using 64-bit squaring and XOR to generate 128 bits of keystream per iteration. Extremely fast in software.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'hc128',
     name: 'HC-128',
     category: 'symmetric',

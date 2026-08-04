@@ -117,6 +117,7 @@ export type CipherName =
   | 'blowfish'
   | 'seed'
   | 'simon'
+  | 'rabbit'
   | 'hc128'
   | 'mars'
   | 'rc4'
