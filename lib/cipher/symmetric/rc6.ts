@@ -1,4 +1,4 @@
-import type { CipherResult, CipherOptions, TestVector, CipherMetadata } from '../types'
+import type { CipherResult, CipherOptions, TestVector, CipherMetadata, CipherStep } from '../types'
 import { CipherError, validateInput, validateKey } from '../../utils'
 
 export interface Rc6Options {
