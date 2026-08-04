@@ -458,6 +458,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'kuznyechik',
+    name: 'Kuznyechik',
+    category: 'symmetric',
+    description:
+      'Russian national block cipher (GOST R 34.12-2015, RFC 7801). 128-bit block, 256-bit key, 9-round SPN. Replaces the legacy 1989 GOST cipher. Uses a fixed 256-byte S-box and a linear transform built from 16 GF(2^8) feedback steps.',
+    defaultKey: '8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef',
+    defaultInput: '1122334455667700ffeeddccbbaa9988',
+    securityStatus: 'secure',
+    keyPlaceholder: '256-bit key as 64 hex chars',
+  },
+  {
     id: 'simon',
     name: 'SIMON-128/128',
     category: 'symmetric',
