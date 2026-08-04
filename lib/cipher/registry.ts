@@ -478,6 +478,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'mars',
+    name: 'MARS',
+    category: 'symmetric',
+    description:
+      'IBM AES finalist (1998). 128-bit block, 32-round heterogeneous SPN. Unique for combining 4 different round types (forward mixing, forward E-rounds, backward E-rounds, backward mixing) for defense-in-depth. Lost to Rijndael (AES) on performance/simplicity, but unbroken.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
