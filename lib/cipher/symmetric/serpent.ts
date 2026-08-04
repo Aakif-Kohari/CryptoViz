@@ -372,3 +372,4 @@ export function serpentImplementationNotes(): string[] {
     'Includes encrypt/decrypt round-trip tests and reference-vector regression tests.',
   ];
 }
+

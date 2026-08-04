@@ -1,5 +1,5 @@
-import type { CipherMetadata, CipherOptions, CipherResult } from '../types';
-import { CipherError, validateInput, validateKey } from '../../utils';
+import type { CipherResult, CipherOptions, TestVector, CipherMetadata } from '../types'
+import { CipherError, validateInput, validateKey } from '../../utils'
 
 export interface Rc6Options {
   rounds?: number;
@@ -86,8 +86,8 @@ function assertKeyHex(value: string): string {
     throw new Error("RC6 key must contain a whole number of bytes.");
   }
 
-  if (cleaned.length > 64) {
-    throw new Error("RC6 key must be 32 bytes or fewer.");
+  if (cleaned.length !== 32 && cleaned.length !== 48 && cleaned.length !== 64) {
+    throw new Error("RC6 key must be a 128-bit key (32, 48, or 64 hex characters).");
   }
 
   return cleaned;
@@ -322,17 +322,29 @@ export function encrypt(plaintext: string, key: string, options: CipherOptions =
   validateInput(plaintext);
   validateKey(key);
 
+  const start = performance.now();
   const keyHex = cleanHex(key);
   const plaintextHex = assertHexLength(plaintext, 32, 'RC6 plaintext');
   const rounds = (options.rounds as number | undefined) ?? DEFAULT_ROUNDS;
-  const ciphertext = encryptRc6Block(plaintextHex, keyHex, { rounds });
+
+  const trace = traceRc6Encryption(plaintextHex, keyHex, { rounds });
+  const steps: CipherStep[] = options.instrument
+    ? trace.roundTrace.map((r) => ({
+        index: r.round,
+        label: `Round ${r.round}`,
+        inputState: r.a,
+        outputState: r.output.toLowerCase(),
+        note: `subkeys A=${r.subkeyA}, C=${r.subkeyC}`,
+        isMilestone: r.round === 1 || r.round === 20,
+      }))
+    : [];
 
   return {
-    output: ciphertext,
+    output: trace.ciphertextHex.toLowerCase(),
     outputEncoding: 'hex',
-    steps: [],
+    steps,
     metadata: METADATA,
-    durationMs: 0,
+    durationMs: performance.now() - start,
   };
 }
 
@@ -340,17 +352,18 @@ export function decrypt(ciphertext: string, key: string, options: CipherOptions 
   validateInput(ciphertext);
   validateKey(key);
 
+  const start = performance.now();
   const keyHex = cleanHex(key);
   const ciphertextHex = assertHexLength(ciphertext, 32, 'RC6 ciphertext');
   const rounds = (options.rounds as number | undefined) ?? DEFAULT_ROUNDS;
   const plaintext = decryptRc6Block(ciphertextHex, keyHex, { rounds });
 
   return {
-    output: plaintext,
+    output: plaintext.toLowerCase(),
     outputEncoding: 'hex',
     steps: [],
     metadata: METADATA,
-    durationMs: 0,
+    durationMs: performance.now() - start,
   };
 }
 
@@ -363,3 +376,15 @@ export function rc6ImplementationNotes(): string[] {
     "Includes encrypt/decrypt round-trip tests and a known zero-vector reference.",
   ];
 }
+
+
+
+
+
+export const TEST_VECTORS: TestVector[] = [
+  {
+    input: '00000000000000000000000000000000',
+    key: '00000000000000000000000000000000',
+    expected: '8fc3a53656b1f778c129df4e9848a41e',
+  },
+]

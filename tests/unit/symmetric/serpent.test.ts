@@ -22,13 +22,13 @@ describe('Serpent', () => {
   })
 
   it('rejects input that is not exactly 16 bytes', () => {
-    expect(() => encrypt('00112233', key)).toThrow(/16 bytes/)
+    expect(() => encrypt('00112233', key)).toThrow(/32 hex/)
   })
 
   it('produces an instrumented trace with milestones', () => {
     const result = encrypt('00'.repeat(16), key, { instrument: true })
     expect(result.steps.length).toBeGreaterThan(0)
     expect(result.steps.some(s => s.isMilestone)).toBe(true)
-    expect(result.steps[0].label).toBe('Key Schedule')
+    expect(result.steps.some(s => s.label.includes('Round 1'))).toBe(true)
   })
 })

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { LanguageProvider } from "@/lib/i18n/context";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -53,7 +54,8 @@ export default function RootLayout({
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
 
         </div>
-        {children}</body>
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }

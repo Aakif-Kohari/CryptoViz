@@ -1,5 +1,5 @@
 import { CipherError, validateInput, validateKey } from '../../utils'
-import type { CipherOptions, CipherResult, CipherStep, TestVector } from '../types'
+import type { CipherOptions, CipherResult, CipherStep, TestVector, CipherMetadata } from '../types'
 
 /**
  * Skipjack — NSA Clipper-chip cipher, declassified 1998.
@@ -133,9 +133,7 @@ function toWords(data: Uint8Array): number[][] {
     ])
   }
   return blocks
-}
-
-function fromWords(blocks: number[][]): Uint8Array {
+}function fromWords(blocks: number[][]): Uint8Array {
   const out = new Uint8Array(blocks.length * 8)
   let idx = 0
   for (const block of blocks) {

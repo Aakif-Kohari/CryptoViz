@@ -325,7 +325,7 @@ function asconOpen(
  * options.ad: hex-encoded associated data (optional)
  */
 export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-    if (input === undefined || input === null) {
+    if (input === null || input === undefined || typeof input !== 'string') {
         throw new CipherError('INPUT_REQUIRED', 'Input plaintext is required for ASCON-128.')
     }
     validateKey(key)

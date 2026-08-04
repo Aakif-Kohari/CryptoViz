@@ -3,13 +3,13 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { isDevelopmentMode } from '@/lib/utils/env'
-
-
+import LanguageSelector from '../i18n/LanguageSelector'
+import { useTranslation } from '@/lib/i18n/context'
 import { safeGetItem, safeSetItem } from '../../lib/utils/storage'
 
 export default function Navbar() {
   const pathname = usePathname()
+  const { t } = useTranslation()
 
   const [theme, setTheme] = useState<'light' | 'dark'>('dark')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -67,43 +67,44 @@ export default function Navbar() {
     }
   }
 
-    const navCategories = [
-    { name: 'Home', href: '/' },
+  const navCategories = [
+    { name: t('nav.home') || 'Home', href: '/' },
     {
-      name: 'Learn',
+      name: t('nav.learn') || 'Learn',
       items: [
-        { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
-        { name: 'Myth Busters', href: '/myth-busters' },
-        { name: 'Encoding Errors', href: '/encoding-errors' },
-        { name: 'Merkle Tree', href: '/merkle' },
-        { name: 'Padding', href: '/padding' },
+        { name: t('nav.lifecycle') || 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+        { name: t('nav.mythBusters') || 'Myth Busters', href: '/myth-busters' },
+        { name: t('nav.encodingErrors') || 'Encoding Errors', href: '/encoding-errors' },
+        { name: t('nav.merkle') || 'Merkle Tree', href: '/merkle' },
+        { name: t('nav.padding') || 'Padding', href: '/padding' },
       ],
     },
     {
-      name: 'Practice',
+      name: t('nav.practice') || 'Practice',
       items: [
-        { name: 'Playground', href: '/visualizer/caesar/' },
-        { name: 'Cipher Sandbox', href: '/cipher-sandbox' },
-        { name: 'Challenge', href: '/challenge' },
+        { name: t('nav.playground') || 'Playground', href: '/visualizer/caesar/' },
+        { name: t('nav.cipherSandbox') || 'Cipher Sandbox', href: '/cipher-sandbox' },
+        { name: t('nav.challenge') || 'Challenge', href: '/challenge' },
+        { name: t('nav.advisor') || 'Advisor', href: '/advisor' },
       ],
     },
     {
-      name: 'Reference',
+      name: t('nav.reference') || 'Reference',
       items: [
-        { name: 'Glossary', href: '/glossary' },
-        { name: 'Modes', href: '/modes' },
-        { name: 'Compare', href: '/compare' },
-        { name: 'Collections', href: '/collections' },
-        { name: 'Matrix', href: '/matrix' },
-        { name: 'Benchmark', href: '/benchmark' },
-        { name: 'Avalanche', href: '/avalanche' },
+        { name: t('nav.glossary') || 'Glossary', href: '/glossary' },
+        { name: t('nav.modes') || 'Modes', href: '/modes' },
+        { name: t('nav.compare') || 'Compare', href: '/compare' },
+        { name: t('nav.collections') || 'Collections', href: '/collections' },
+        { name: t('nav.matrix') || 'Matrix', href: '/matrix' },
+        { name: t('nav.benchmark') || 'Benchmark', href: '/benchmark' },
+        { name: t('nav.avalanche') || 'Avalanche', href: '/avalanche' },
       ],
     },
     {
-      name: 'More',
+      name: t('nav.more') || 'More',
       items: [
-        { name: 'Resources', href: '/resources' },
-        { name: 'Offline', href: '/offline' },
+        { name: t('nav.resources') || 'Resources', href: '/resources' },
+        { name: t('nav.offline') || 'Offline', href: '/offline' },
       ],
     },
   ];
@@ -155,60 +156,45 @@ export default function Navbar() {
       role="navigation"
       aria-label="Main navigation"
     >
-      <div className="mx-auto flex h-[88px] max-w-[1450px] items-center justify-between px-4 sm:px-6 lg:px-12">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-
-        <Link
-          href="/"
-          className="group flex items-center gap-3 sm:gap-4 transition-all duration-300"        >
-          <div
-            className="
-            flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center
-            rounded-2xl
-            bg-gradient-to-br
-            from-teal-500
-            to-cyan-500
-            text-white
-            shadow-lg
-            shadow-teal-500/30
-            transition-all
-            duration-300
-            group-hover:scale-110
-            group-hover:rotate-6
-          "
+        <div className="flex items-center gap-2">
+          <Link
+            href="/"
+            className="group flex items-center gap-3 transition-transform duration-300 hover:scale-[1.02] active:scale-95"
           >
-            <svg
-              className="h-5 w-5 sm:h-7 sm:w-7"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.4"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
-              />
-            </svg>
-          </div>
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-teal-500/10 transition-colors duration-300 group-hover:bg-teal-500/20">
+              <svg
+                className="h-6 w-6 text-teal-600 transition-transform duration-300 group-hover:rotate-12 dark:text-teal-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
+                />
+              </svg>
+              <div className="absolute inset-0 rounded-2xl bg-teal-500/20 blur-md transition-opacity duration-300 opacity-0 group-hover:opacity-100" />
+            </div>
 
-          <div className="flex flex-col leading-none">
-            <span className="text-xl sm:text-[28px] font-black tracking-tight text-zinc-900 dark:text-white">
+            <span className="font-sans text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
               Crypto
-              <span className="text-teal-500">Viz</span>
+              <span className="text-teal-600 dark:text-teal-400">
+                Viz
+              </span>
             </span>
-
-
-          </div>
-        </Link>
+          </Link>
+        </div>
 
         {/* Desktop Navigation */}
-
         <div className="hidden items-center gap-10 xl:flex">
           {navCategories.map((category) => {
             const isCategoryActive = category.href
               ? pathname === category.href
-              : category.items?.some((item) => pathname.startsWith(item.href) && item.href !== '#');
+              : category.items?.some((item) => pathname?.startsWith(item.href) && item.href !== '#');
 
             return (
               <div key={category.name} className="group relative">
@@ -282,7 +268,7 @@ export default function Navbar() {
                     <div className="absolute left-1/2 top-full mt-4 w-56 -translate-x-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                       <div className="rounded-xl border border-zinc-200/50 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-zinc-800/50 dark:bg-zinc-950/95 flex flex-col gap-1">
                         {category.items?.map((item) => {
-                          const isItemActive = pathname.startsWith(item.href) && item.href !== '#';
+                          const isItemActive = pathname?.startsWith(item.href) && item.href !== '#';
                           return (
                             <Link
                               key={item.name}
@@ -307,9 +293,8 @@ export default function Navbar() {
         </div>
 
         {/* Right Side */}
-
         <div className="flex items-center gap-2 sm:gap-4">
-          {/* Theme Toggle */}
+          <LanguageSelector />
 
           <button
             onClick={toggleTheme}
@@ -367,8 +352,6 @@ export default function Navbar() {
             )}
           </button>
 
-          {/* Mobile Menu Button */}
-
           <button
             ref={mobileMenuBtnRef}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -425,7 +408,6 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Navigation */}
-
       {isMobileMenuOpen && (
         <div
           id="mobile-menu"
@@ -442,7 +424,7 @@ export default function Navbar() {
           <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6">
             {navCategories.map((category) => {
               if (category.href) {
-                const isActive = pathname === category.href;
+                const isActive = pathname === category.href
                 return (
                   <Link
                     key={category.name}
@@ -458,7 +440,7 @@ export default function Navbar() {
                   >
                     {category.name}
                   </Link>
-                );
+                )
               }
 
               return (
@@ -468,7 +450,7 @@ export default function Navbar() {
                   </h3>
                   <div className="flex flex-col gap-1">
                     {category.items?.map((item) => {
-                      const isActive = pathname.startsWith(item.href) && item.href !== '#';
+                      const isActive = pathname?.startsWith(item.href) && item.href !== '#'
                       return (
                         <Link
                           key={item.name}
@@ -484,11 +466,11 @@ export default function Navbar() {
                         >
                           {item.name}
                         </Link>
-                      );
+                      )
                     })}
                   </div>
                 </div>
-              );
+              )
             })}
           </div>
         </div>
