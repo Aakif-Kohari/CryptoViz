@@ -35,6 +35,7 @@ Visit the production site at [Live Demo](https://crypto-viz-liart.vercel.app). E
 - Browser Compatibility
 - Getting Started
 - Commands
+- Troubleshooting
 - Contributing
 - Frequently Asked Questions (FAQ)
 - License
@@ -327,6 +328,124 @@ Open `http://localhost:3000` in your web browser. You should see the CryptoViz l
 
 ---
 
+## 🛠️ Troubleshooting
+
+If you encounter issues while setting up or developing CryptoViz, try the solutions below before opening an issue.
+
+### 1. `npm install` fails
+
+**Problem**
+
+Dependencies fail to install or installation stops with errors.
+
+**Solution**
+
+- Ensure you are using **Node.js 22.x LTS** and **npm 10.x+**.
+- Remove the existing dependencies and reinstall:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+On Windows PowerShell:
+
+```powershell
+Remove-Item -Recurse -Force node_modules
+Remove-Item package-lock.json
+npm install
+```
+
+---
+
+### 2. `npm run build` fails
+
+**Problem**
+
+The production build exits with compilation or type errors.
+
+**Solution**
+
+- Verify all dependencies are installed.
+- Fix any TypeScript or ESLint errors shown in the terminal.
+- Run:
+
+```bash
+npm run lint
+npm run build
+```
+
+again after resolving the reported issues.
+
+---
+
+### 3. Development server does not start
+
+**Problem**
+
+Running `npm run dev` does not launch the local development server.
+
+**Solution**
+
+- Confirm that dependencies are installed.
+- Check whether port **3000** is already in use.
+- Restart the terminal and run:
+
+```bash
+npm run dev
+```
+
+---
+
+### 4. Missing `.env.local` configuration
+
+**Problem**
+
+The application cannot access required environment variables.
+
+**Solution**
+
+Create a `.env.local` file in the project root and add the required variables, for example:
+
+```env
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+Restart the development server after saving the file.
+
+---
+
+### 5. Node.js version mismatch
+
+**Problem**
+
+Commands fail because an unsupported Node.js version is installed.
+
+**Solution**
+
+Check your installed version:
+
+```bash
+node -v
+```
+
+If needed, upgrade to **Node.js 22.x LTS**, then reinstall dependencies using:
+
+```bash
+npm install
+```
+
+---
+
+### General Debugging Tips
+
+- Pull the latest changes from the `main` branch before starting work.
+- Run `npm install` after updating dependencies.
+- Restart the development server after modifying environment variables.
+- Read terminal error messages carefully to identify the root cause.
+- Run `npm run lint` before creating a pull request.
+
+---
 
 ## 🤝 Contributing
 
