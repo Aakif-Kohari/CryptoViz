@@ -118,9 +118,9 @@ export default function CollectionsPage() {
                     </Text>
 
                     <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-3">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-3">
                         Key Features & Capabilities
-                      </h4>
+                      </h3>
                       <ul className="grid gap-2 sm:grid-cols-2">
                         {activeCollection.features.map((feat, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-400">

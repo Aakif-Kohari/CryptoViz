@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import LanguageSelector from '../i18n/LanguageSelector'
 import { useTranslation } from '@/lib/i18n/context'
 import { safeGetItem, safeSetItem } from '../../lib/utils/storage'
+import { isDevelopmentMode } from '@/lib/utils/env'
 
 export default function Navbar() {
   const pathname = usePathname()
