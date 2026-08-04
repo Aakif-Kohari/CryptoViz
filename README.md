@@ -36,6 +36,7 @@ Visit the production site at [Live Demo](https://crypto-viz-liart.vercel.app). E
 - Getting Started
 - Commands
 - Contributing
+- Frequently Asked Questions (FAQ)
 - License
 
 ---
@@ -334,6 +335,92 @@ We welcome contributions to CryptoViz. Please read [CONTRIBUTING.md](./CONTRIBUT
 - **To add a new cipher**: Create a pure mathematical module, add tests, and update the Web Worker router.
 - **To add a new doc**: Add a `.mdx` file to the content path with the required Zod frontmatter fields.
 - **To add a resource**: Update the static resource array database with verified HTTPS URLs.
+
+
+---
+
+## ❓ Frequently Asked Questions (FAQ)
+
+### Which Node.js version is recommended?
+
+CryptoViz recommends using **Node.js 22.x LTS** along with **npm 10.x or later**. You can verify your installation using:
+
+```bash
+node -v
+npm -v
+```
+
+For more details, see the **Getting Started** section.
+
+---
+
+### Does CryptoViz require a backend server?
+
+No. CryptoViz is a fully static **Next.js 15** application that runs entirely in the browser using **Web Workers**. A backend server is not required for the core visualization features.
+
+---
+
+### Which browsers are officially supported?
+
+CryptoViz supports the latest stable versions of:
+
+- Google Chrome
+- Microsoft Edge
+- Mozilla Firefox
+- Safari
+
+It also supports modern mobile browsers that provide JavaScript, Web Workers, and WebCrypto API support.
+
+See the **Browser Compatibility** section for more information.
+
+---
+
+### Where are the cipher implementations located?
+
+Cipher implementations are located in:
+
+```text
+lib/cipher/
+```
+
+The Web Worker responsible for executing cipher operations is located in:
+
+```text
+lib/workers/
+```
+
+---
+
+### How do I add a new cipher?
+
+To add a new cipher:
+
+1. Create a new implementation inside `lib/cipher/`.
+2. Register it in the Web Worker router.
+3. Add the required unit tests.
+4. Update the visualizer UI if necessary.
+
+See the **Contributing** section for additional guidance.
+
+---
+
+### How do I run tests before submitting a pull request?
+
+Before opening a pull request, run:
+
+```bash
+npm run lint
+npm run build
+```
+
+These commands help ensure that the project builds successfully and follows the project's code quality checks before review.
+
+
+---
+
+### Where can I report bugs or request new features?
+
+Please open a GitHub Issue describing the bug or feature request. Include clear reproduction steps or implementation details whenever possible.
 
 ---
 
