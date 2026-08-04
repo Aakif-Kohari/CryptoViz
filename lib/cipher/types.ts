@@ -118,6 +118,7 @@ export type CipherName =
   | 'seed'
   | 'simon'
   | 'hc128'
+  | 'mars'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
