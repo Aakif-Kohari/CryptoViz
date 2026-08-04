@@ -84,6 +84,7 @@ export default function Navbar() {
       items: [
         { name: t('nav.playground') || 'Playground', href: '/visualizer/caesar/' },
         { name: t('nav.cipherSandbox') || 'Cipher Sandbox', href: '/cipher-sandbox' },
+        { name: 'Cipher Pipeline', href: '/pipeline' },
         { name: t('nav.challenge') || 'Challenge', href: '/challenge' },
         { name: t('nav.advisor') || 'Advisor', href: '/advisor' },
       ],
