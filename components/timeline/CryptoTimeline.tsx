@@ -141,21 +141,32 @@ function TimelineCard({
                 {entry.description}
               </p>
 
-              {entry.relatedCiphers && entry.relatedCiphers.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Try in CryptoViz:</span>
-                  {entry.relatedCiphers.map((cipher) => (
-                    <Link
-                      key={cipher}
-                      href={`/visualizer/${cipher}/`}
-                      className="inline-flex items-center gap-1 rounded-lg bg-teal-500/10 px-2.5 py-1 text-xs font-bold text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
-                    >
-                      {cipher}
-                      <ArrowRight className="h-3 w-3" />
-                    </Link>
-                  ))}
-                </div>
-              )}
+              <div className="flex flex-wrap items-center gap-3">
+                {entry.relatedCiphers && entry.relatedCiphers.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Try in CryptoViz:</span>
+                    {entry.relatedCiphers.map((cipher) => (
+                      <Link
+                        key={cipher}
+                        href={`/visualizer/${cipher}/`}
+                        className="inline-flex items-center gap-1 rounded-lg bg-teal-500/10 px-2.5 py-1 text-xs font-bold text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
+                      >
+                        {cipher}
+                        <ArrowRight className="h-3 w-3" />
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                {entry.docSlug && (
+                  <Link
+                    href={`/docs/${entry.docSlug}/`}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-blue-500/10 px-2.5 py-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors"
+                  >
+                    <BookOpen className="h-3 w-3" />
+                    Documentation
+                  </Link>
+                )}
+              </div>
 
               {/* Full tags */}
               <div className="flex flex-wrap gap-1.5">
