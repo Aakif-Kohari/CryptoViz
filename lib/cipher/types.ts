@@ -114,6 +114,7 @@ export type CipherName =
   | 'noekeon'
   | 'lea'
   | 'gift'
+  | 'xxtea'
   | 'blowfish'
   | 'streebog'
   | 'seed'
