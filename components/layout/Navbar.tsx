@@ -146,6 +146,8 @@ export default function Navbar() {
     { name: 'Worker Tests', href: '/tests/worker' },
   ];
 
+  const isDevelopmentMode = () => process.env.NODE_ENV === 'development'
+
   const navLinks = isDevelopmentMode()
     ? [...allNavLinks, ...developerOnlyLinks]
     : allNavLinks;
