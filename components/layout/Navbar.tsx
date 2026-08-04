@@ -106,6 +106,7 @@ export default function Navbar() {
       name: t('nav.more') || 'More',
       items: [
         { name: t('nav.resources') || 'Resources', href: '/resources' },
+        { name: 'Learning Notes', href: '/notes' },
         { name: t('nav.offline') || 'Offline', href: '/offline' },
       ],
     },
