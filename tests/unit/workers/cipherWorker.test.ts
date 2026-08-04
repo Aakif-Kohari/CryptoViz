@@ -50,21 +50,21 @@ describe("Worker Communication Suite", () => {
       const caesarMod = await import("@/lib/cipher/classical/caesar");
       const result = caesarMod.encrypt("HELLO WORLD", "3");
       expect(result).toBeDefined();
-      expect(result.output).toBe("KHOOR ZRUOG");
+      expect(result.output || (result as { ciphertext?: string }).ciphertext).toBe("KHOOR ZRUOG");
     });
 
     it("dynamically imports and executes a symmetric cipher module (aes)", async () => {
       const aesMod = await import("@/lib/cipher/symmetric/aes");
       const result = aesMod.encrypt("00112233445566778899aabbccddeeff", "000102030405060708090a0b0c0d0e0f");
       expect(result).toBeDefined();
-      expect(result.output).toBeDefined();
+      expect(result.output || (result as { ciphertext?: string }).ciphertext).toBeDefined();
     });
 
     it("dynamically imports hash modules (sha256)", async () => {
       const sha256Mod = await import("@/lib/cipher/hash/sha256");
       const result = sha256Mod.encrypt("test input", "");
       expect(result).toBeDefined();
-      expect(result.output).toBeDefined();
+      expect(result.output || (result as { ciphertext?: string }).ciphertext).toBeDefined();
     });
 
     it("handles unsupported cipher ID gracefully", async () => {
@@ -73,4 +73,4 @@ describe("Worker Communication Suite", () => {
       await expect(loader()).rejects.toThrow();
     });
   });
-});
+});

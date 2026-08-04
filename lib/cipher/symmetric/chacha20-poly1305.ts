@@ -36,6 +36,9 @@ function parseHexBytes(str: string, label: string): Uint8Array {
   for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16)
   return bytes
 }
+function ciphertextHexToBytes(hex: string): Uint8Array {
+  return hex === '' ? new Uint8Array(0) : parseHexBytes(hex, 'ciphertext')
+}
 function bytesToHex(b: Uint8Array): string {
   return Array.from(b).map((x) => x.toString(16).padStart(2, '0')).join('')
 }
@@ -62,15 +65,10 @@ function concat(chunks: Uint8Array[]): Uint8Array {
   return out
 }
 
+import { formatAeadMacInput } from '../aead-utils'
+
 function buildMacInput(aad: Uint8Array, ciphertext: Uint8Array): Uint8Array {
-  return concat([
-    aad,
-    pad16(aad.length),
-    ciphertext,
-    pad16(ciphertext.length),
-    le64(aad.length),
-    le64(ciphertext.length),
-  ])
+  return formatAeadMacInput(aad, ciphertext)
 }
 
 function aeadCore(input: string, key: string, decrypt: boolean, instrument: boolean): CipherResult {
@@ -103,10 +101,9 @@ function aeadCore(input: string, key: string, decrypt: boolean, instrument: bool
   }
 
   if (!decrypt) {
-    const plaintextBytes = parseHexBytes(input, 'ChaCha20-Poly1305 plaintext')
     // Encrypt starting at counter=1.
-    const ctResult = chacha20Encrypt(bytesToHex(plaintextBytes), `${keyHex}|${nonceHex}:1`, { encoding: 'hex' })
-    const ciphertext = parseHexBytes(ctResult.output, 'ciphertext')
+    const ctResult = input === '' ? { output: '', outputEncoding: 'hex' as const, steps: [], metadata: METADATA, durationMs: 0 } : chacha20Encrypt(input, `${keyHex}|${nonceHex}:1`, { encoding: 'hex' })
+    const ciphertext = ciphertextHexToBytes(ctResult.output)
 
     const macInput = buildMacInput(aad, ciphertext)
     const tagResult = poly1305Encrypt(bytesToHex(macInput), polyKeyHex, { encoding: 'hex' })
@@ -139,11 +136,16 @@ function aeadCore(input: string, key: string, decrypt: boolean, instrument: bool
       durationMs: performance.now() - start,
     }
   } else {
-    const [ciphertextHex, receivedTag] = input.split('|')
-    if (!ciphertextHex || !receivedTag) {
+    const pipeIndex = input.indexOf('|')
+    if (pipeIndex === -1) {
       throw new CipherError('INVALID_INPUT', 'Expected "ciphertextHex|tagHex".')
     }
-    const ciphertext = parseHexBytes(ciphertextHex, 'ciphertext')
+    const ciphertextHex = input.slice(0, pipeIndex)
+    const receivedTag = input.slice(pipeIndex + 1)
+    if (!receivedTag) {
+      throw new CipherError('INVALID_INPUT', 'Expected "ciphertextHex|tagHex".')
+    }
+    const ciphertext = ciphertextHexToBytes(ciphertextHex)
     const macInput = buildMacInput(aad, ciphertext)
 
     // Verify the tag BEFORE decrypting/returning any plaintext.
@@ -164,7 +166,7 @@ function aeadCore(input: string, key: string, decrypt: boolean, instrument: bool
       throw new CipherError('INVALID_INPUT', 'ChaCha20-Poly1305 tag verification failed — ciphertext, AAD, or key/nonce does not match.')
     }
 
-    const ptResult = chacha20Encrypt(ciphertextHex, `${keyHex}|${nonceHex}:1`, { encoding: 'hex' }) // ChaCha20 is symmetric: same op decrypts
+    const ptResult = ciphertextHex === '' ? { output: '', outputEncoding: 'hex' as const, steps: [], metadata: METADATA, durationMs: 0 } : chacha20Encrypt(ciphertextHex, `${keyHex}|${nonceHex}:1`, { encoding: 'hex' })
     if (instrument) {
       steps.push({
         index: 2,

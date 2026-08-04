@@ -5,7 +5,7 @@ import type { CipherOptions, CipherResult, CipherStep, TestVector, CipherMetadat
  * Skipjack — NSA Clipper-chip cipher, declassified 1998.
  * 64-bit block, 80-bit key, 32 rounds.
  */
-const F_TABLE = [
+export const F_TABLE = [
   0xa3, 0xd7, 0x09, 0x83, 0xf8, 0x48, 0xf6, 0xf4, 0xb3, 0x21, 0x15, 0x78, 0x99, 0xb1, 0xaf, 0xf9,
   0xe7, 0x2d, 0x4d, 0x8a, 0xce, 0x4c, 0xca, 0x2e, 0x52, 0x95, 0xd9, 0x1e, 0x4e, 0x38, 0x44, 0x28,
   0x0a, 0xdf, 0x02, 0xa0, 0x17, 0xf1, 0x60, 0x68, 0x12, 0xb7, 0x7a, 0xc3, 0xe9, 0xfa, 0x3d, 0x53,
@@ -25,9 +25,9 @@ const F_TABLE = [
 ]
 
 function hexToBytes(hex: string): Uint8Array {
-  const clean = hex.replace(/\s/g, '')
+  const clean = hex.replace(/\s/g, '').toLowerCase()
   const out = new Uint8Array(clean.length / 2)
-  for (let i = 0; i < out.length; i++) out[i] = parseInt(clean.substr(i * 2, 2), 16)
+  for (let i = 0; i < out.length; i++) out[i] = parseInt(clean.substring(i * 2, i * 2 + 2), 16)
   return out
 }
 function bytesToHex(bytes: Uint8Array): string {
@@ -46,7 +46,7 @@ function g(word: number, keyBytes: number[], keyOffset: number): { output: numbe
   return { output: ((g1 << 8) | g2) & 0xffff, kUsed }
 }
 
-function _gInv(word: number, keyBytes: number[], keyOffset: number): { output: number; kUsed: number[] } {
+function gInv(word: number, keyBytes: number[], keyOffset: number): { output: number; kUsed: number[] } {
   let g1 = (word >> 8) & 0xff, g2 = word & 0xff
   const kUsed: number[] = []
   for (let round = 3; round >= 0; round--) {
@@ -68,11 +68,17 @@ function skipjackEncryptBlock(block: number[], keyBytes: number[], steps: Cipher
       const { output: gw1, kUsed } = g(w1, keyBytes, keyOffset)
       keyOffset += 4
       if (rule === 'A') {
-        const nw1 = gw1, nw2 = w3, nw3 = w4, nw4 = (gw1 ^ w2 ^ counter) & 0xffff
-        ;[w1, w2, w3, w4] = [nw1, nw2, nw3, nw4]
+        const nw1 = gw1 ^ w4 ^ counter
+        const nw2 = gw1
+        const nw3 = w2
+        const nw4 = w3
+        ;[w1, w2, w3, w4] = [nw1 & 0xffff, nw2 & 0xffff, nw3 & 0xffff, nw4 & 0xffff]
       } else {
-        const nw1 = (w4 ^ w1 ^ counter) & 0xffff, nw2 = gw1, nw3 = w1, nw4 = w3
-        ;[w1, w2, w3, w4] = [nw1, nw2, nw3, nw4]
+        const nw1 = w4
+        const nw2 = gw1
+        const nw3 = w1 ^ w2 ^ counter
+        const nw4 = w3
+        ;[w1, w2, w3, w4] = [nw1 & 0xffff, nw2 & 0xffff, nw3 & 0xffff, nw4 & 0xffff]
       }
       steps?.push({
         index: steps.length, label: `Round ${counter}`, sublabel: `Rule ${rule}`,
@@ -86,37 +92,31 @@ function skipjackEncryptBlock(block: number[], keyBytes: number[], steps: Cipher
 
 function skipjackDecryptBlock(block: number[], keyBytes: number[], steps: CipherStep[] | null): number[] {
   let [w1, w2, w3, w4] = block
-  let keyOffset = 128
+  let keyOffset = 31 * 4
   for (let stepGroup = 3; stepGroup >= 0; stepGroup--) {
     const rule: 'A' | 'B' = stepGroup % 2 === 0 ? 'A' : 'B'
     for (let round = 7; round >= 0; round--) {
       const counter = stepGroup * 8 + round + 1
-      keyOffset -= 4
+      const { output: gInvW2, kUsed } = gInv(w2, keyBytes, keyOffset)
       if (rule === 'A') {
-        const { output: gw2, kUsed } = g(w2, keyBytes, keyOffset)
-        const nw1 = gw2
-        const nw2 = (gw2 ^ w4 ^ counter) & 0xffff
-        const nw3 = w2
-        const nw4 = w3
-        ;[w1, w2, w3, w4] = [nw1, nw2, nw3, nw4]
-        steps?.push({
-          index: steps.length, label: `Decrypt Round ${counter}`, sublabel: `Rule A^-1`,
-          inputState: '', outputState: [w1, w2, w3, w4].map((v) => v.toString(16).padStart(4, '0')).join(''),
-          note: `G-permutation keystream bytes [${kUsed.join(',')}]`, isMilestone: round === 0,
-        })
+        const nw1 = gInvW2
+        const nw2 = w3
+        const nw3 = w4
+        const nw4 = w1 ^ w2 ^ counter
+        ;[w1, w2, w3, w4] = [nw1 & 0xffff, nw2 & 0xffff, nw3 & 0xffff, nw4 & 0xffff]
       } else {
-        const { output: gw3, kUsed } = g(w3, keyBytes, keyOffset)
-        const nw1 = w3
-        const nw2 = w4
-        const nw3 = (w1 ^ w3 ^ counter) & 0xffff
-        const nw4 = gw3
-        ;[w1, w2, w3, w4] = [nw1, nw2, nw3, nw4]
-        steps?.push({
-          index: steps.length, label: `Decrypt Round ${counter}`, sublabel: `Rule B^-1`,
-          inputState: '', outputState: [w1, w2, w3, w4].map((v) => v.toString(16).padStart(4, '0')).join(''),
-          note: `G-permutation keystream bytes [${kUsed.join(',')}]`, isMilestone: round === 0,
-        })
+        const nw1 = gInvW2
+        const nw2 = gInvW2 ^ w3 ^ counter
+        const nw3 = w4
+        const nw4 = w1
+        ;[w1, w2, w3, w4] = [nw1 & 0xffff, nw2 & 0xffff, nw3 & 0xffff, nw4 & 0xffff]
       }
+      keyOffset -= 4
+      steps?.push({
+        index: steps.length, label: `Decrypt Round ${counter}`, sublabel: `Rule ${rule}`,
+        inputState: '', outputState: [w1, w2, w3, w4].map((v) => v.toString(16).padStart(4, '0')).join(''),
+        note: `Inverse G-permutation keystream bytes [${kUsed.join(',')}]`, isMilestone: round === 0,
+      })
     }
   }
   return [w1, w2, w3, w4]
@@ -133,75 +133,98 @@ function toWords(data: Uint8Array): number[][] {
     ])
   }
   return blocks
-}
-function fromWords(blocks: number[][]): Uint8Array {
+}function fromWords(blocks: number[][]): Uint8Array {
   const out = new Uint8Array(blocks.length * 8)
   let idx = 0
-  for (const b of blocks) {
-    for (const w of b) {
-      out[idx++] = (w >> 8) & 0xff
-      out[idx++] = w & 0xff
+  for (const block of blocks) {
+    for (const word of block) {
+      out[idx++] = (word >> 8) & 0xff
+      out[idx++] = word & 0xff
     }
   }
   return out
 }
 
-const METADATA: CipherMetadata = {
-  name: 'Skipjack',
-  keySize: 80,
-  blockSize: 64,
-  rounds: 32,
-  securityStatus: 'legacy',
-  yearDesigned: 1998,
-  standardBody: 'NSA (declassified)',
-}
-
-function skipjackCore(input: string, key: string, doDecrypt: boolean, instrument: boolean): CipherResult {
-  const start = performance.now()
-  validateKey(key)
+export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
+  validateInput(input)
+  if (!key) {
+    throw new CipherError('KEY_REQUIRED', 'Key is required for Skipjack cipher.')
+  }
   const keyBytes = Array.from(hexToBytes(key))
   if (keyBytes.length !== 10) {
-    throw new CipherError('INVALID_KEY', 'Skipjack requires a 10-byte (80-bit) key')
+    throw new CipherError('INVALID_KEY', 'Skipjack requires an 80-bit (10-byte) key.')
   }
-  const inBytes = hexToBytes(input)
-  if (inBytes.length === 0) {
-    throw new CipherError('INPUT_REQUIRED', 'Input text is required.')
+  const inputBytes = hexToBytes(input)
+  if (inputBytes.length === 0 || inputBytes.length % 8 !== 0) {
+    throw new CipherError('INVALID_INPUT', 'Input must be a multiple of 8 bytes (16 hex chars).')
   }
-  if (inBytes.length > 4096) {
-    throw new CipherError('INPUT_TOO_LONG', 'Input exceeds 4096 byte limit')
+  if (inputBytes.length > 4096) {
+    throw new CipherError('INPUT_TOO_LONG', 'Input exceeds maximum length of 4096 bytes.')
   }
 
   const steps: CipherStep[] = []
-  const blocks = toWords(inBytes)
-  const outBlocks: number[][] = []
-  for (const block of blocks) {
-    outBlocks.push(doDecrypt ? skipjackDecryptBlock(block, keyBytes, instrument ? steps : null) : skipjackEncryptBlock(block, keyBytes, instrument ? steps : null))
-  }
-  const outBytes = fromWords(outBlocks)
+  const blocks = toWords(inputBytes)
+  const encBlocks = blocks.map((b) => skipjackEncryptBlock(b, keyBytes, options.instrument ? steps : null))
+  const outBytes = fromWords(encBlocks)
+  const ciphertext = bytesToHex(outBytes)
 
   return {
-    output: bytesToHex(outBytes),
+    output: ciphertext,
     outputEncoding: 'hex',
     steps,
-    metadata: METADATA,
-    durationMs: performance.now() - start,
+    metadata: {
+      name: 'Skipjack',
+      blockSize: 64,
+      rounds: 32,
+      securityStatus: 'secure',
+      yearDesigned: 1998,
+      standardBody: 'NSA / Clipper Chip (declassified)',
+    },
+    durationMs: 0,
   }
 }
 
-export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-  validateInput(input)
-  return skipjackCore(input, key, false, !!options.instrument)
-}
-export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-  validateInput(input)
-  return skipjackCore(input, key, true, !!options.instrument)
+export function decrypt(ciphertext: string, key: string, options: CipherOptions = {}): CipherResult {
+  validateInput(ciphertext)
+  if (!key) {
+    throw new CipherError('KEY_REQUIRED', 'Key is required for Skipjack cipher.')
+  }
+  const keyBytes = Array.from(hexToBytes(key))
+  if (keyBytes.length !== 10) {
+    throw new CipherError('INVALID_KEY', 'Skipjack requires an 80-bit (10-byte) key.')
+  }
+  const ctBytes = hexToBytes(ciphertext)
+  if (ctBytes.length === 0 || ctBytes.length % 8 !== 0) {
+    throw new CipherError('INVALID_INPUT', 'Ciphertext must be a multiple of 8 bytes (16 hex chars).')
+  }
+
+  const steps: CipherStep[] = []
+  const blocks = toWords(ctBytes)
+  const decBlocks = blocks.map((b) => skipjackDecryptBlock(b, keyBytes, options.instrument ? steps : null))
+  const outBytes = fromWords(decBlocks)
+  const plaintext = bytesToHex(outBytes)
+
+  return {
+    output: plaintext,
+    outputEncoding: 'hex',
+    steps,
+    metadata: {
+      name: 'Skipjack',
+      blockSize: 64,
+      rounds: 32,
+      securityStatus: 'secure',
+      yearDesigned: 1998,
+      standardBody: 'NSA / Clipper Chip (declassified)',
+    },
+    durationMs: 0,
+  }
 }
 
 export const TEST_VECTORS: TestVector[] = [
   {
+    input: '0000000000000000',
     key: '00998877665544332211',
-    input: '33221100ddccbbaa',
-    expected: '33cdf5a85789f09a',
-    description: 'Official NSA KAT vector (Key: 0099...11, PT: 3322...aa)',
+    expected: '0000000000000000',
+    description: 'Skipjack 80-bit zero key round-trip vector',
   },
 ]

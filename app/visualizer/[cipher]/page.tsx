@@ -4,6 +4,7 @@ import CipherLayout from "../../../components/cipher/CipherLayout";
 import GcmTamperDemo from "../../../components/cipher/GcmTamperDemo";
 import WorkerErrorBoundary from "../../../components/error/WorkerErrorBoundary";
 import RecentCipherTracker from "../../../components/cipher/RecentCipherTracker";
+import LearningProgressionFooter from "../../../components/learning/LearningProgressionFooter";
 import { CIPHER_REGISTRY } from "../../../lib/cipher/registry";
 
 // Generate static routes for all ciphers for 'output: export' static build
@@ -50,6 +51,14 @@ export default async function VisualizerPage({
                 <GcmTamperDemo />
               </div>
             )}
+
+            {/* Learning progression — appears at the bottom of every visualizer */}
+            <div className="mx-auto max-w-5xl px-4 pb-12 md:px-6 lg:px-8">
+              <LearningProgressionFooter
+                cipherId={cipher.id}
+                context="visualizer"
+              />
+            </div>
           
           </div>
       </WorkspaceLayout>

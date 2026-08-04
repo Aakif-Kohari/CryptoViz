@@ -5,6 +5,7 @@ import { useCipherWorker } from '../../lib/hooks/useCipherWorker'
 import { generateChallengeData, type ChallengeData, type ChallengeDifficulty } from '../../lib/challenge/generator'
 import { getWrongAnswerExplanation } from '../../lib/challenge/explain'
 import { CIPHER_REGISTRY } from '../../lib/cipher/registry'
+import LearningProgressionFooter from '../learning/LearningProgressionFooter'
 
 import {
   safeGetItem,
@@ -564,6 +565,11 @@ export default function ChallengeMode() {
     const totalQuestions = questionCount
     const isNewBest = sessionCorrect * XP_BASE_CORRECT >= bestScore && sessionCorrect > 0
 
+    // Find the cipher most frequently seen in this session
+    const mostPracticedCipherId = sessionSummary.perCipher.length > 0
+      ? sessionSummary.perCipher.reduce((a, b) => (b.attempts > a.attempts ? b : a)).cipherId
+      : 'aes'
+
     return (
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="rounded-2xl border border-zinc-200 bg-white p-10 dark:border-zinc-800 dark:bg-zinc-900/40">
@@ -654,6 +660,13 @@ export default function ChallengeMode() {
             <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Saved locally in your browser.</p>
           </div>
         </div>
+
+        {/* Learning progression — visible after challenge is done */}
+        <LearningProgressionFooter
+          cipherId={mostPracticedCipherId}
+          context="challenge"
+          sessionAccuracy={sessionSummary.accuracy}
+        />
       </div>
     )
   }

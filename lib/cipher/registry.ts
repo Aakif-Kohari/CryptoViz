@@ -9,6 +9,10 @@ export interface CipherDefinition {
   defaultInput: string;
   securityStatus: "recommended" | "secure" | "legacy" | "deprecated" | "broken" | "experimental";
   keyPlaceholder?: string;
+  /** Cipher IDs the learner should be comfortable with before tackling this one */
+  prerequisites?: string[];
+  /** Cipher IDs that make natural next steps after exploring this one */
+  recommendedNext?: string[];
   options?: {
     name: string;
     id: string;
@@ -29,6 +33,7 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "Hello, World!",
     securityStatus: "broken",
     keyPlaceholder: "Shift (e.g. 3)",
+    recommendedNext: ["rot13", "vigenere", "railfence"],
   },
   {
     id: "rot13",
@@ -39,6 +44,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: "",
     defaultInput: "Hello, World!",
     securityStatus: "broken",
+    prerequisites: ["caesar"],
+    recommendedNext: ["vigenere", "atbash"],
   },
   {
     id: "vigenere",
@@ -50,6 +57,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "ATTACKATDAWN",
     securityStatus: "broken",
     keyPlaceholder: "Keyword (e.g. LEMON)",
+    prerequisites: ["caesar"],
+    recommendedNext: ["playfair", "railfence", "xor"],
   },
   {
     id: "atbash",
@@ -60,6 +69,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: "",
     defaultInput: "Hello, World!",
     securityStatus: "broken",
+    prerequisites: ["caesar"],
+    recommendedNext: ["playfair", "vigenere"],
   },
   {
     id: "playfair",
@@ -71,6 +82,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "HIDE THE GOLD IN THE TREE STUMP",
     securityStatus: "broken",
     keyPlaceholder: "Key phrase",
+    prerequisites: ["vigenere"],
+    recommendedNext: ["des", "xor"],
   },
   {
     id: "railfence",
@@ -82,6 +95,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "WE ARE DISCOVERED FLEE AT ONCE",
     securityStatus: "broken",
     keyPlaceholder: "Number of rails (e.g. 3)",
+    prerequisites: ["caesar"],
+    recommendedNext: ["vigenere", "des"],
   },
   {
     id: "xor",
@@ -93,6 +108,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "Hello, World!",
     securityStatus: "deprecated",
     keyPlaceholder: "Secret key string",
+    prerequisites: ["vigenere"],
+    recommendedNext: ["des", "aes", "otp"],
   },
   {
     id: "otp",
@@ -115,6 +132,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "0123456789ABCDEF",
     securityStatus: "broken",
     keyPlaceholder: "16-character hex key",
+    prerequisites: ["xor"],
+    recommendedNext: ["3des", "aes"],
     options: [
       {
         name: "Hex Input Mode",
@@ -134,6 +153,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "Hello, World!",
     securityStatus: "deprecated",
     keyPlaceholder: "32-character hex key (2-Key) or 48-character (3-Key)",
+    prerequisites: ["des"],
+    recommendedNext: ["aes", "camellia"],
     options: [
       {
         name: "Hex Input Mode",
@@ -163,6 +184,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "00112233445566778899aabbccddeeff",
     securityStatus: "recommended",
     keyPlaceholder: "32/48/64-character hex key",
+    prerequisites: ["des"],
+    recommendedNext: ["chacha20-poly1305", "sha256", "hmac"],
     options: [
       {
         name: "Hex Input Mode",
@@ -226,6 +249,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '4c6164696573',
     securityStatus: 'recommended',
     keyPlaceholder: 'keyHex(32B)|nonceHex(12B)|aadHex(optional)',
+    prerequisites: ["aes"],
+    recommendedNext: ["xchacha20", "ascon", "hmac"],
   },
   {
     id: 'speck',
@@ -362,6 +387,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '80-bit key (20 hex) or 128-bit key (32 hex)',
   },
   {
+    id: 'simon32',
+    name: 'SIMON-32/64',
+    category: 'symmetric',
+    description: 'NSA lightweight block cipher targeting 8/16-bit microcontrollers. Uses 16-bit words, a 32-bit block, and a 64-bit key across 32 Feistel rounds. The smallest variant of the SIMON family.',
+    defaultKey: '1918111009080100',
+    defaultInput: '65656877',
+    securityStatus: 'secure',
+    keyPlaceholder: '64-bit key as 16 hex chars',
+  },
+  {
     id: 'tea',
     name: 'TEA',
     category: 'symmetric',
@@ -372,6 +407,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '32-character hex key (128-bit)',
   },
   {
+    id: 'noekeon',
+    name: 'NOEKEON',
+    category: 'symmetric',
+    description: 'NESSIE-submitted 128-bit block cipher. Unique for having ZERO lookup tables; its non-linear Gamma layer uses exactly 5 bitwise AND/OR/XOR operations. Ideal for VLSI/FPGA environments.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'lea',
     name: 'LEA',
     category: 'symmetric',
@@ -380,6 +425,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '101112131415161718191a1b1c1d1e1f',
     securityStatus: 'secure',
     keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+  },
+  {
+    id: 'gift',
+    name: 'GIFT-64',
+    category: 'symmetric',
+    description: 'Ultra-lightweight 64-bit block cipher (CHES 2017). Uses a 4-bit S-box and 28-round SPN. 5x more hardware-efficient than PRESENT and underlies the NIST Lightweight Finalist GIFT-COFB.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
     id: 'blowfish',
@@ -393,12 +448,32 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '4–56 byte key as hex (8–112 hex chars)',
   },
   {
+    id: 'seed',
+    name: 'SEED-128',
+    category: 'symmetric',
+    description: 'Korean national block cipher (RFC 4269, 2005; ISO/IEC 18033-3). Mandatory in Korean financial and government systems for over a decade. 128-bit block, 128-bit key, 16-round Feistel with G-function using two GF(2^8)-derived S-boxes. Superseded by LEA for new Korean deployments.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '000102030405060708090a0b0c0d0e0f',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'simon',
     name: 'SIMON-128/128',
     category: 'symmetric',
     description: "NSA hardware-optimised lightweight block cipher (IACR 2013/404). Sibling of SPECK — SIMON targets gate-minimal hardware via bitwise AND while SPECK targets software via ARX. 128-bit block, 128-bit key, 68-round Feistel. Round function: f(x)=(x<<<1 & x<<<8)⊕x<<<2.",
     defaultKey: '0f0e0d0c0b0a09080706050403020100',
     defaultInput: '6373656420737265' + '6c6c657661726174',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
+    id: 'hc128',
+    name: 'HC-128',
+    category: 'symmetric',
+    description: 'eSTREAM Phase 3 software-profile stream cipher by Hongjun Wu. Uses two 512-word (2 KB each) key/IV-derived lookup tables P and Q that update themselves during keystream generation. The fastest stream cipher in the eSTREAM portfolio on 32-bit software. Output = IV(32 hex) + ciphertext.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '48656c6c6f20576f726c64',
     securityStatus: 'secure',
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
@@ -411,6 +486,7 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: "",
     defaultInput: "abc",
     securityStatus: "recommended",
+    recommendedNext: ["hmac", "sha512", "bcrypt"],
   },
   {
     id: "sha512",
@@ -421,6 +497,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: "",
     defaultInput: "abc",
     securityStatus: "secure",
+    prerequisites: ["sha256"],
+    recommendedNext: ["hmac", "hkdf", "bcrypt"],
   },
   {
     id: "sm3",
@@ -452,6 +530,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "what do ya want for nothing?",
     securityStatus: "secure",
     keyPlaceholder: "HMAC Secret Key",
+    prerequisites: ["sha256"],
+    recommendedNext: ["hkdf", "bcrypt", "rsa"],
   },
   {
     id: 'cmac',
@@ -471,6 +551,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: "password",
     defaultInput: "password",
     securityStatus: "recommended",
+    prerequisites: ["sha256", "hmac"],
+    recommendedNext: ["hkdf", "rsa"],
     options: [
       {
         name: "Rounds (Cost)",
@@ -642,6 +724,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: "secure",
     keyPlaceholder:
       "Enter: 3 values (p,q,e) or 2 values (n,e / n,d) if you already have n",
+    prerequisites: ["hmac"],
+    recommendedNext: ["ecc", "dh", "ml-kem"],
     options: [
       {
         name: "Demo Mode (Small Primes)",
@@ -671,6 +755,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "6,15",
     securityStatus: "secure",
     keyPlaceholder: "p,g parameters (e.g. 23,5)",
+    prerequisites: ["rsa"],
+    recommendedNext: ["ecc", "x448", "ml-kem"],
     options: [
       {
         name: "Bob Secret input (demo)",
@@ -701,6 +787,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "hello",
     securityStatus: "secure",
     keyPlaceholder: "32-byte private key hex (64 chars)",
+    prerequisites: ["rsa", "dh"],
+    recommendedNext: ["schnorr", "ml-dsa", "ml-kem"],
   },
   {
     id: 'schnorr',
@@ -731,6 +819,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: 'hello',
     securityStatus: 'secure',
     keyPlaceholder: 'private key (sign) or "publicKey|signature" (verify)',
+    prerequisites: ["ecc"],
+    recommendedNext: ["ml-kem"],
   },
   {
     id: 'ecies',
@@ -751,6 +841,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '',
     securityStatus: 'secure',
     keyPlaceholder: 'recipient public key (encapsulate) or private key (decapsulate)',
+    prerequisites: ["ecc", "dh"],
+    recommendedNext: ["ml-dsa", "ecies"],
   },
   {
     id: 'ed448',

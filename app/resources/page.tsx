@@ -13,7 +13,11 @@ export default function ResourcesPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [difficulty, setDifficulty] = useState("All");
-
+  const [topic, setTopic] = useState("All");
+  const topics = useMemo(
+  () => [...new Set(resources.flatMap((resource) => resource.tags))].sort(),
+  []
+);
   const filteredResources = useMemo(() => {
     return resources.filter((resource) => {
       const matchesSearch =
@@ -29,10 +33,11 @@ export default function ResourcesPage() {
 
       const matchesDifficulty =
         difficulty === "All" || resource.difficulty === difficulty;
-
-      return matchesSearch && matchesCategory && matchesDifficulty;
+      const matchesTopic =
+  topic === "All" || resource.tags.includes(topic);
+      return matchesSearch && matchesCategory && matchesDifficulty && matchesTopic;
     });
-  }, [search, category, difficulty]);
+  }, [search, category, difficulty,topic]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-[#081419] dark:via-[#09090B] dark:to-[#120d1d]">
@@ -40,7 +45,6 @@ export default function ResourcesPage() {
 
       <main className="mx-auto max-w-7xl px-6 py-12">
         <Breadcrumbs items={[{ label: "Reference" }, { label: "Resources" }]} />
-        <div className="mb-12 border-b border-zinc-200 dark:border-[#2A2A31] pb-10">
         {/* Page Header */}
         <div className="mb-10 border-b border-zinc-200 dark:border-[#2A2A31] pb-10">
           <span className="inline-flex rounded-full border border-teal-200 dark:border-[#0C3634] bg-teal-50 dark:bg-[#0C3634]/40 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-[#00C2AE]">
@@ -101,14 +105,17 @@ export default function ResourcesPage() {
 
         {/* Filter Controls */}
         <div className="mb-8 rounded-2xl border border-zinc-200 dark:border-[#2A2A31] bg-white dark:bg-[#16161A] p-6 shadow-sm">
-          <FilterBar
-            search={search}
-            setSearch={setSearch}
-            category={category}
-            setCategory={setCategory}
-            difficulty={difficulty}
-            setDifficulty={setDifficulty}
-          />
+         <FilterBar
+  search={search}
+  setSearch={setSearch}
+  category={category}
+  setCategory={setCategory}
+  difficulty={difficulty}
+  setDifficulty={setDifficulty}
+  topic={topic}
+  setTopic={setTopic}
+  topics={topics}
+/>
         </div>
 
         {/* Results Summary */}
@@ -122,10 +129,11 @@ export default function ResourcesPage() {
         <SearchBar
           resources={filteredResources}
           onClear={() => {
-            setSearch("");
-            setCategory("All");
-            setDifficulty("All");
-          }}
+  setSearch("");
+  setCategory("All");
+  setDifficulty("All");
+  setTopic("All");
+}}
         />
       </main>
     </div>

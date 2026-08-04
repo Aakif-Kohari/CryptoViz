@@ -83,6 +83,7 @@ export default function Navbar() {
       name: t('nav.practice') || 'Practice',
       items: [
         { name: t('nav.playground') || 'Playground', href: '/visualizer/caesar/' },
+        { name: t('nav.cipherSandbox') || 'Cipher Sandbox', href: '/cipher-sandbox' },
         { name: t('nav.challenge') || 'Challenge', href: '/challenge' },
         { name: t('nav.advisor') || 'Advisor', href: '/advisor' },
       ],
@@ -111,6 +112,7 @@ export default function Navbar() {
   const allNavLinks = [
     { name: 'Visualizers', href: '/visualizer' },
     { name: 'Playground', href: '/visualizer/caesar/' },
+    { name: 'Cipher Sandbox', href: '/cipher-sandbox' },
     { name: 'Advisor', href: '/advisor' },
     { name: 'Modes', href: '/modes' },
     { name: 'Protocols', href: '/protocols' },

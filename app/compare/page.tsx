@@ -1,10 +1,7 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { Suspense, useMemo, useState } from 'react'
 import Breadcrumbs from '../../components/layout/Breadcrumbs'
-
-import Navbar from '../../components/layout/Navbar'
-import { useMemo, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import WorkspaceLayout from '../../components/layout/WorkspaceLayout'
 import CipherComparisonPanel from '../../components/compare/CipherComparisonPanel'

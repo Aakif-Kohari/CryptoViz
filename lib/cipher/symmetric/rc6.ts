@@ -34,6 +34,15 @@ const DEFAULT_ROUNDS = 20;
 const P32 = 0xb7e15163;
 const Q32 = 0x9e3779b9;
 
+const METADATA: CipherMetadata = {
+  name: 'RC6',
+  blockSize: 128,
+  rounds: DEFAULT_ROUNDS,
+  securityStatus: 'secure',
+  yearDesigned: 1998,
+  standardBody: 'RC6 submission to AES',
+};
+
 function cleanHex(value: string): string {
   return value.trim().replace(/\s+/g, "").replace(/^0x/i, "").toUpperCase();
 }
@@ -309,6 +318,55 @@ export function traceRc6Encryption(
   };
 }
 
+export function encrypt(plaintext: string, key: string, options: CipherOptions = {}): CipherResult {
+  validateInput(plaintext);
+  validateKey(key);
+
+  const start = performance.now();
+  const keyHex = cleanHex(key);
+  const plaintextHex = assertHexLength(plaintext, 32, 'RC6 plaintext');
+  const rounds = (options.rounds as number | undefined) ?? DEFAULT_ROUNDS;
+
+  const trace = traceRc6Encryption(plaintextHex, keyHex, { rounds });
+  const steps: CipherStep[] = options.instrument
+    ? trace.roundTrace.map((r) => ({
+        index: r.round,
+        label: `Round ${r.round}`,
+        inputState: r.a,
+        outputState: r.output.toLowerCase(),
+        note: `subkeys A=${r.subkeyA}, C=${r.subkeyC}`,
+        isMilestone: r.round === 1 || r.round === 20,
+      }))
+    : [];
+
+  return {
+    output: trace.ciphertextHex.toLowerCase(),
+    outputEncoding: 'hex',
+    steps,
+    metadata: METADATA,
+    durationMs: performance.now() - start,
+  };
+}
+
+export function decrypt(ciphertext: string, key: string, options: CipherOptions = {}): CipherResult {
+  validateInput(ciphertext);
+  validateKey(key);
+
+  const start = performance.now();
+  const keyHex = cleanHex(key);
+  const ciphertextHex = assertHexLength(ciphertext, 32, 'RC6 ciphertext');
+  const rounds = (options.rounds as number | undefined) ?? DEFAULT_ROUNDS;
+  const plaintext = decryptRc6Block(ciphertextHex, keyHex, { rounds });
+
+  return {
+    output: plaintext.toLowerCase(),
+    outputEncoding: 'hex',
+    steps: [],
+    metadata: METADATA,
+    durationMs: performance.now() - start,
+  };
+}
+
 export function rc6ImplementationNotes(): string[] {
   return [
     "Uses RC6-w/r/b with w=32 and the default r=20 rounds.",
@@ -319,50 +377,9 @@ export function rc6ImplementationNotes(): string[] {
   ];
 }
 
-const METADATA: CipherMetadata = {
-  name: 'RC6',
-  keySize: 128,
-  blockSize: 128,
-  rounds: 20,
-  securityStatus: 'secure',
-  yearDesigned: 1998,
-  standardBody: 'RSA Security',
-}
 
-export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-  validateInput(input)
-  validateKey(key)
-  const start = performance.now()
-  const trace = traceRc6Encryption(input, key, { rounds: (options as Record<string, unknown>)?.rounds as number ?? 20 })
-  return {
-    output: trace.ciphertextHex.toLowerCase(),
-    outputEncoding: 'hex',
-    steps: trace.roundTrace.map((r) => ({
-      index: r.round,
-      label: `Round ${r.round}`,
-      inputState: r.a,
-      outputState: r.output.toLowerCase(),
-      note: `subkeys A=${r.subkeyA}, C=${r.subkeyC}`,
-      isMilestone: r.round === 1 || r.round === 20,
-    })),
-    metadata: METADATA,
-    durationMs: performance.now() - start,
-  }
-}
 
-export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-  validateInput(input)
-  validateKey(key)
-  const start = performance.now()
-  const outHex = decryptRc6Block(input, key, { rounds: (options as Record<string, unknown>)?.rounds as number ?? 20 })
-  return {
-    output: outHex.toLowerCase(),
-    outputEncoding: 'hex',
-    steps: [],
-    metadata: METADATA,
-    durationMs: performance.now() - start,
-  }
-}
+
 
 export const TEST_VECTORS: TestVector[] = [
   {

@@ -1,0 +1,30 @@
+import { describe, it, expect } from 'vitest'
+import { encrypt, decrypt, TEST_VECTORS } from '@/lib/cipher/symmetric/seed'
+
+describe('SEED-128', () => {
+    it('matches RFC 4269 test vector', () => {
+        const v = TEST_VECTORS[0]
+        expect(encrypt(v.input, v.key).output).toBe(v.expected)
+    })
+
+    it('round-trip encrypt then decrypt', () => {
+        const key = '00000000000000000000000000000000'
+        const pt = '000102030405060708090a0b0c0d0e0f'
+        expect(decrypt(encrypt(pt, key).output, key).output).toBe(pt)
+    })
+
+    it('different keys produce different ciphertexts', () => {
+        const pt = '000102030405060708090a0b0c0d0e0f'
+        const key1 = '00000000000000000000000000000000'
+        const key2 = '00000000000000000000000000000001'
+        expect(encrypt(pt, key1).output).not.toBe(encrypt(pt, key2).output)
+    })
+
+    it('throws for key not 16 bytes', () => {
+        expect(() => encrypt('00000000000000000000000000000000', '0011')).toThrow()
+    })
+
+    it('throws for input not multiple of 16 bytes', () => {
+        expect(() => encrypt('001122', '00000000000000000000000000000000')).toThrow()
+    })
+})
