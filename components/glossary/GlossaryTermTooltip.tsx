@@ -114,18 +114,27 @@ export default function GlossaryTermTooltip({
             </div>
           )}
 
-          <div className="mt-3 flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2.5 text-xs">
-            {term.relatedCipherId ? (
-              <Link
-                href={`/visualizer/${term.relatedCipherId}`}
-                className="flex items-center gap-1 font-semibold text-teal-600 dark:text-teal-400 hover:underline"
-              >
-                Test in Playground
-                <ArrowRight className="h-3 w-3" />
-              </Link>
-            ) : (
-              <span className="text-zinc-400">CryptoViz Term</span>
-            )}
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-zinc-100 dark:border-zinc-800 pt-2.5 text-xs">
+            <div className="flex items-center gap-2">
+              {term.relatedCipherId && (
+                <Link
+                  href={`/visualizer/${term.relatedCipherId}`}
+                  className="flex items-center gap-1 font-semibold text-teal-600 dark:text-teal-400 hover:underline"
+                >
+                  Playground
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              )}
+              {term.relatedDocSlug && (
+                <Link
+                  href={`/docs/${term.relatedDocSlug}`}
+                  className="flex items-center gap-1 font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Docs
+                  <ExternalLink className="h-3 w-3" />
+                </Link>
+              )}
+            </div>
 
             <Link
               href={`/glossary?term=${term.id}`}
