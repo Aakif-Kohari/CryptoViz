@@ -24,6 +24,8 @@ const resourceLinks = [
   { name: "GitHub Repository", href: "https://github.com/csxark/CryptoViz" },
   { name: "Contribution Guide", href: "https://github.com/csxark/CryptoViz/blob/main/CONTRIBUTING.md" },
   { name: "Discord Community", href: "https://github.com/csxark/CryptoViz/discussions" },
+];
+
 const documentationLinks = [
   { name: "Getting Started", href: "/docs" },
   { name: "Architecture", href: "/docs/architecture" },

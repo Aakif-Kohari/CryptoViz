@@ -160,12 +160,11 @@ export default function Navbar() {
 
   const isDevelopment = process.env.NODE_ENV === 'development';
 
-  const visibleNavLinks = isDevelopment ? [...navLinks, ...developerLinks] : navLinks;
-  const isDevelopmentMode = () => process.env.NODE_ENV === 'development'
-
-  const navLinks = isDevelopmentMode()
+  const navLinks = isDevelopment
     ? [...allNavLinks, ...developerOnlyLinks]
     : allNavLinks;
+
+  const visibleNavLinks = isDevelopment ? [...navLinks, ...developerLinks] : navLinks;
 
   return (
     <nav
@@ -212,6 +211,21 @@ export default function Navbar() {
             const isActive =
               pathname.startsWith(link.href) &&
               link.href !== '#'
+
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`text-[15px] font-semibold transition-all duration-300 ${
+                  isActive
+                    ? 'text-teal-500'
+                    : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
+                }`}
+              >
+                {link.name}
+              </Link>
+            )
+          })}
           {navCategories.map((category) => {
             const isCategoryActive = category.href
               ? pathname === category.href
@@ -451,6 +465,22 @@ export default function Navbar() {
               const isActive =
                 pathname.startsWith(link.href) &&
                 link.href !== '#'
+
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`rounded-xl px-4 py-3 text-base font-semibold transition-all duration-300 ${
+                    isActive
+                      ? 'bg-teal-500 text-white'
+                      : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              )
+            })}
             {navCategories.map((category) => {
               if (category.href) {
                 const isActive = pathname === category.href

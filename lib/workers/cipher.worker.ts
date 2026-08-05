@@ -71,7 +71,6 @@ import { encrypt as xchacha20Encrypt, decrypt as xchacha20Decrypt } from '../cip
 import { encrypt as gostEncrypt, decrypt as gostDecrypt } from '../cipher/symmetric/gost';
 import { encrypt as enigmaEncrypt, decrypt as enigmaDecrypt } from '../cipher/symmetric/enigma';
 import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20';
-import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20'
 import { encrypt as teaEncrypt, decrypt as teaDecrypt } from '../cipher/symmetric/tea';
 import { encrypt as chacha20Encrypt, decrypt as chacha20Decrypt } from "../cipher/symmetric/chacha20";
 import { encrypt as desEncrypt, decrypt as desDecrypt } from "../cipher/symmetric/des";
