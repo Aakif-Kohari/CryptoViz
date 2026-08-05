@@ -109,7 +109,7 @@ function anubisCore(input: string, key: string, doDecrypt: boolean, instrument: 
     }
 
     for (let b = 0; b < numBlocks; b++) {
-        let state = inBytes.slice(b * 16, b * 16 + 16)
+        let state: Bytes = inBytes.slice(b * 16, b * 16 + 16) as Bytes
 
         if (!doDecrypt) {
             for (let r = 0; r <= rounds; r++) {
