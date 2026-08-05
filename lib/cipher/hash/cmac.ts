@@ -169,7 +169,7 @@ export function encrypt(input: string, key: string, options: CipherOptions = {})
   return cmacCore(input, key, !!options.instrument)
 }
 
-export function decrypt(_input: string, _key: string, _options: CipherOptions = {}): CipherResult {
+export function decrypt(_input: string, _key: string, __options: CipherOptions = {}): CipherResult {
   throw new CipherError('ALGORITHM_UNSUPPORTED', 'CMAC is a one-way MAC — it has no decrypt operation. To verify, recompute the MAC and compare.')
 }
 

@@ -123,7 +123,7 @@ Create your implementation at `lib/cipher/[category]/[cipher].ts`.
 Add your new cipher metadata and configuration options to `lib/cipher/registry.ts`. Register its string identifier in the list of supported types.
 
 ### Step 5: Update the Web Worker Router
-Open `lib/workers/cipher.worker.ts` and add a route case for your new cipher inside the message handler.
+Open `lib/workers/cipher.worker.ts` and add a dynamic import loader entry for your new cipher in `cipherLoaders` (e.g. `'my-cipher': () => import('../cipher/category/my-cipher')`).
 > **Note:** Although classical ciphers run fast, they must be routed through the Web Worker via `useCipherWorker()` to maintain architectural consistency and keep the main UI thread clean.
 
 ### Step 6: Configure Static Page Pre-rendering

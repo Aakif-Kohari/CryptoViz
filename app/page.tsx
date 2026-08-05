@@ -180,12 +180,7 @@ export default function Home() {
                   <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform duration-250" />
                 </Link>
  
-                <a
-                  href="/docs"
-                  className="rounded-lg border border-zinc-200 dark:border-[#2A2A31] bg-zinc-50 dark:bg-[#101013] hover:bg-white dark:hover:bg-[#16161A] hover:border-zinc-300/60 dark:hover:border-[#8A8A94]/30 px-6 py-3.5 text-sm font-semibold text-zinc-900 dark:text-[#F5F5F5] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#00C2AE] focus:ring-offset-2 focus:ring-offset-white dark:ring-offset-[#09090B]"
-                >
-                  Documentation
-                </a>
+ 
               </div>
  
               {/* Hero Mini Stats */}
@@ -294,18 +289,6 @@ export default function Home() {
       <StatisticsRow />
       <WhyCryptoViz />
       <Footer />
-
-      {/* Background Grid Animation Style */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            @keyframes gridMove {
-              0% { background-position: 0 0; }
-              100% { background-position: 60px 60px; }
-            }
-          `,
-        }}
-      />
     </div>
   );
 }

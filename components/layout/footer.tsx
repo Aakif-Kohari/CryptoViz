@@ -24,6 +24,16 @@ const resourceLinks = [
   { name: "GitHub Repository", href: "https://github.com/csxark/CryptoViz" },
   { name: "Contribution Guide", href: "https://github.com/csxark/CryptoViz/blob/main/CONTRIBUTING.md" },
   { name: "Discord Community", href: "https://github.com/csxark/CryptoViz/discussions" },
+const documentationLinks = [
+  { name: "Getting Started", href: "/docs" },
+  { name: "Architecture", href: "/docs/architecture" },
+  { name: "Visualization Guide", href: "/docs/visualization-development-guide" },
+];
+
+const communityLinks = [
+  { name: "GitHub", href: "https://github.com/csxark/CryptoViz" },
+  { name: "Issues", href: "https://github.com/csxark/CryptoViz/issues" },
+  { name: "Contribute", href: "https://github.com/csxark/CryptoViz/blob/main/CONTRIBUTING.md" },
 ];
 
 function FooterColumn({ title, links }: { title: string; links: { name: string; href: string }[] }) {
@@ -54,7 +64,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-zinc-200/50 dark:border-[#2A2A31]/50 bg-zinc-100/80 dark:bg-black/40 transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-12 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-12 lg:grid-cols-4">
           {/* Brand */}
           <div className="col-span-2 lg:col-span-2">
             <div className="flex items-center gap-2">
@@ -88,9 +98,8 @@ export default function Footer() {
             </div>
           </div>
 
-          <FooterColumn title="Learn" links={learnLinks} />
-          <FooterColumn title="Project" links={projectLinks} />
-          <FooterColumn title="Resources" links={resourceLinks} />
+          <FooterColumn title="Documentation" links={documentationLinks} />
+          <FooterColumn title="Community" links={communityLinks} />
         </div>
 
         {/* Bottom bar */}

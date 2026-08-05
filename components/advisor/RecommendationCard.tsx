@@ -26,7 +26,7 @@ export default function RecommendationCard({ node }: RecommendationCardProps) {
     <div
       ref={containerRef}
       tabIndex={-1}
-      className="flex flex-col gap-8 outline-none"
+      className="flex flex-col gap-8 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50 focus-visible:ring-offset-2 rounded-3xl"
       aria-labelledby="recommendation-heading"
     >
       <div className="space-y-4 rounded-3xl bg-teal-500/10 p-8 border border-teal-500/20 dark:bg-teal-900/20 dark:border-teal-500/30">

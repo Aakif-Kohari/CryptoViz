@@ -1,4 +1,4 @@
-import { PaddingOracle, recoverBlock, type AttackStep, type OracleMode, BLOCK_SIZE } from '../attacks/paddingOracle';
+import { PaddingOracle, recoverBlock, type AttackStep, BLOCK_SIZE } from '../attacks/paddingOracle';
 
 const workerScope = self as unknown as Worker;
 
@@ -34,10 +34,10 @@ workerScope.addEventListener('message', (event: MessageEvent) => {
           queryCount: oracle.queryCount
         }
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       workerScope.postMessage({
         type: 'error',
-        payload: { message: error.message }
+        payload: { message: error instanceof Error ? error.message : 'Unknown error' }
       });
     }
   }
