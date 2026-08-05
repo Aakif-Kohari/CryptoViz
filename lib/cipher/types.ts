@@ -122,6 +122,7 @@ export type CipherName =
   | 'simon'
   | 'rabbit'
   | 'hc128'
+  | 'anubis'
   | 'mars'
   | 'misty1'
   | 'rc4'
