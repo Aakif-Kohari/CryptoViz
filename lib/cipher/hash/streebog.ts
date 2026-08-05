@@ -195,7 +195,7 @@ function streebogCore(input: string, instrument: boolean): CipherResult {
     const start = performance.now()
     const inBytes = parseHex(input, 'Streebog input')
 
-    const h: Bytes = new Uint8Array(64)
+    let h: Bytes = new Uint8Array(64)
     // Streebog-256 IV is (00000001)^64 bytes! (i.e. 0x01 for all 64 bytes)
     for (let i = 0; i < 64; i++) h[i] = 0x01
 
