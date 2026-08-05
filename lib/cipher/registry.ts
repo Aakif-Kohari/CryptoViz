@@ -768,6 +768,20 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'requested output length in bytes (default 32)',
   },
   {
+    id: 'pbkdf2',
+    name: 'PBKDF2',
+    category: 'hash',
+    description: 'RFC 8018 (PKCS #5). The most widely deployed KDF in the world (WPA2, iOS keychain). Iteratively applies HMAC to a password+salt. Slower iteration counts increase brute-force resistance.',
+    defaultKey: 'salt',
+    defaultInput: 'password',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Salt',
+    options: [
+      { name: 'Iterations (c)', id: 'iterations', type: 'number', default: 600000 },
+      { name: 'Output Length (dkLen)', id: 'keyLength', type: 'number', default: 32 }
+    ]
+  },
+  {
     id: 'md4',
     name: 'MD4',
     category: 'hash',
