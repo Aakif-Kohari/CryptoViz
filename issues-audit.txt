@@ -374,3 +374,44 @@
 [#682] (closed) by @Aakif-Kohari: [FEATURE] Add GIFT-64 ultra-lightweight block cipher (CHES 2017, 4-bit S-box, 28-round SPN, 128-bit key)
 [#681] (closed) by @Aakif-Kohari: [FEATURE] Add SEED-128 block cipher (Korean national standard, RFC 4269, ISO/IEC 18033-3, 16-round Feistel)
 [#680] (closed) by @Aakif-Kohari: [FEATURE] Add HC-128 stream cipher (key/IV-derived tables, 128-bit key)
+
+=== Audited 2026-08-05 06:23 UTC (39 new) ===
+[#773] (open) by @Aakif-Kohari: [FEATURE] Add PBKDF2 key derivation function (RFC 8018, HMAC-based iterative KDF, configurable hash and iteration count)
+[#772] (open) by @Aakif-Kohari: [FEATURE] Add Argon2id password hashing (PHC winner, RFC 9106, memory-hard KDF with hybrid data/time-independent addressing)
+[#771] (open) by @Aakif-Kohari: [FEATURE] Add Tiger hash function (Anderson & Biham, 1995, 192-bit output, 64-bit-word-optimized, 3×8 S-box passes)
+[#770] (open) by @Aakif-Kohari: [FEATURE] Add Anubis block cipher (NESSIE candidate, involutional SPN, 128-bit block, variable key, self-inverse S-box)
+[#769] (open) by @Aakif-Kohari: [FEATURE] Add MISTY1 block cipher (CRYPTREC-recommended, RFC 2994, FL/FO recursive Feistel structure)
+[#753] (closed) by @csxark: Export Learning Notes
+[#752] (open) by @csxark: Compare Multiple Algorithms Side-by-Side
+[#751] (closed) by @csxark: Attack Simulator Collection
+[#750] (closed) by @csxark: Interactive Glossary
+[#749] (closed) by @csxark: Cipher Pipeline Builder
+[#748] (closed) by @csxark: Cryptography Timeline
+[#747] (open) by @csxark: Avalanche Effect Visualizer
+[#745] (open) by @csxark: Round-by-Round Animation Controls
+[#744] (open) by @csxark: Real-World Usage Explorer
+[#743] (open) by @csxark: Interactive Formula Explorer
+[#742] (open) by @csxark: Achievement & Badge System
+[#741] (open) by @csxark: Add User Progress Dashboard
+[#740] (open) by @csxark: Build Interactive Learning Paths
+[#739] (open) by @csxark: Standardize Product Vocabulary and Information Architecture
+[#738] (open) by @csxark: Introduce Global Search Across Learning Content
+[#737] (open) by @csxark: Complete Footer Navigation and Community Links
+[#736] (open) by @csxark: Simplify Visualizer Discovery Experience
+[#735] (open) by @csxark: Remove or Hide Developer-only Routes
+[#734] (open) by @csxark: Improve Offline Experience Onboarding
+[#733] (open) by @csxark: Redesign Challenge Experience into One Guided Flow
+[#732] (open) by @csxark: Merge Resources and Reference into a Unified Knowledge Hub
+[#731] (open) by @csxark: Simplify Global Navigation Around User Goals
+[#730] (open) by @csxark: Build a Guided 'Start Here' Learning Journey
+[#729] (open) by @csxark: Introduce Mandatory Known-Answer Vector CI
+[#728] (open) by @csxark: Improve Reliability Baseline
+[#727] (open) by @csxark: Hide Internal Test & Diagnostic Routes
+[#726] (open) by @csxark: Simplify Navigation and Product Flow
+[#725] (open) by @csxark: Implement Shared Input Sanitization
+[#724] (open) by @csxark: Strengthen Content Security Policy
+[#723] (open) by @csxark: Fix Remaining TypeScript Errors
+[#722] (open) by @csxark: Restore RC6 API Compatibility
+[#721] (open) by @csxark: Replace Placeholder SEED Implementation
+[#720] (open) by @csxark: Fix Incorrect Cipher Implementations Failing Published Test Vectors
+[#719] (closed) by @ankitasahu83964: docs: Add "Troubleshooting" section to README
