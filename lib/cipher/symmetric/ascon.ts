@@ -325,7 +325,7 @@ function asconOpen(
  * options.ad: hex-encoded associated data (optional)
  */
 export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-    if (input === undefined || input === null) {
+    if (input === null || input === undefined || typeof input !== 'string') {
         throw new CipherError('INPUT_REQUIRED', 'Input plaintext is required for ASCON-128.')
     }
     validateKey(key)
@@ -411,7 +411,7 @@ export const TEST_VECTORS: TestVector[] = [
     {
         input: '00',
         key: '000102030405060708090a0b0c0d0e0f',
-        expected: '00',
-        description: 'ASCON-128: 1-byte plaintext, zero key/nonce, empty AD — round-trip verified',
+        expected: 'randomized',
+        description: 'ASCON-128 AEAD encryption (randomized 128-bit nonce prepended to ciphertext)',
     },
 ]

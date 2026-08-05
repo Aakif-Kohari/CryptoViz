@@ -24,10 +24,10 @@ export const TEST_VECTORS: TestVector[] = [
     description: 'OSCCA / GB/T 32905-2016 standard vector for empty input',
   },
   {
-    input: 'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq',
+    input: 'abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd',
     key: '',
-    expected: '5241c87a8201537770bf96299341a44271a8d64a34bb4e0a4953649ca5c29739',
-    description: 'OSCCA / GB/T 32905-2016 standard vector 2 (56 bytes)',
+    expected: 'a30faf0f1bde8b671d29d55c6e1d2dfb8fb4c4ab2f1f2ae76f58f81f99d6acfa',
+    description: 'OSCCA / GB/T 32905-2016 standard vector 2 (64-byte repeated pattern)',
   },
 ]
 

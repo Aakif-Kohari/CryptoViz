@@ -61,6 +61,7 @@ export function normalizeDomHtml(html: string): string {
   return html
     .trim()
     .replace(/\s+/g, " ")
+    .replace(/\s+>/g, ">")
     .replace(/>\s+</g, "><")
     .replace(/data-reactroot=""/g, "")
     .replace(/class="([^"]*)"/g, (match, p1) => {

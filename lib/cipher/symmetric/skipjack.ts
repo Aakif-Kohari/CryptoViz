@@ -1,11 +1,21 @@
-import { CipherError, validateInput, validateKey } from '../../utils'
-import type { CipherOptions, CipherResult, CipherStep, TestVector } from '../types'
+export interface SkipjackRoundTrace {
+  round: number;
+  rule: "A" | "B" | "A-inverse" | "B-inverse";
+  keyIndex: number;
+  input: string;
+  output: string;
+  note: string;
+}
 
-/**
- * Skipjack — NSA Clipper-chip cipher, declassified 1998.
- * 64-bit block, 80-bit key, 32 rounds.
- */
-export const F_TABLE = [
+export interface SkipjackTrace {
+  mode: "encrypt" | "decrypt";
+  inputHex: string;
+  keyHex: string;
+  outputHex: string;
+  rounds: SkipjackRoundTrace[];
+}
+
+const FTABLE = [
   0xa3, 0xd7, 0x09, 0x83, 0xf8, 0x48, 0xf6, 0xf4, 0xb3, 0x21, 0x15, 0x78, 0x99, 0xb1, 0xaf, 0xf9,
   0xe7, 0x2d, 0x4d, 0x8a, 0xce, 0x4c, 0xca, 0x2e, 0x52, 0x95, 0xd9, 0x1e, 0x4e, 0x38, 0x44, 0x28,
   0x0a, 0xdf, 0x02, 0xa0, 0x17, 0xf1, 0x60, 0x68, 0x12, 0xb7, 0x7a, 0xc3, 0xe9, 0xfa, 0x3d, 0x53,
@@ -21,212 +31,198 @@ export const F_TABLE = [
   0xad, 0x04, 0x23, 0x9c, 0x14, 0x51, 0x22, 0xf0, 0x29, 0x79, 0x71, 0x7e, 0xff, 0x8c, 0x0e, 0xe2,
   0x0c, 0xef, 0xbc, 0x72, 0x75, 0x6f, 0x37, 0xa1, 0xec, 0xd3, 0x8e, 0x62, 0x8b, 0x86, 0x10, 0xe8,
   0x08, 0x77, 0x11, 0xbe, 0x92, 0x4f, 0x24, 0xc5, 0x32, 0x36, 0x9d, 0xcf, 0xf3, 0xa6, 0xbb, 0xac,
-  0x5e, 0x6c, 0xa9, 0x13, 0x57, 0x25, 0xb5, 0xe3, 0xbd, 0xa8, 0x3a, 0x01, 0x05, 0x59, 0x2a, 0x46
-]
+  0x5e, 0x6c, 0xa9, 0x13, 0x57, 0x25, 0xb5, 0xe3, 0xbd, 0xa8, 0x3a, 0x01, 0x05, 0x59, 0x2a, 0x46,
+] as const;
 
-function hexToBytes(hex: string): Uint8Array {
-  const clean = hex.replace(/\s/g, '').toLowerCase()
-  const out = new Uint8Array(clean.length / 2)
-  for (let i = 0; i < out.length; i++) out[i] = parseInt(clean.substring(i * 2, i * 2 + 2), 16)
-  return out
-}
-function bytesToHex(bytes: Uint8Array): string {
-  return Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('')
+function cleanHex(value: string): string {
+  return value.trim().replace(/^0x/i, "").replace(/\s+/g, "").toUpperCase();
 }
 
-function g(word: number, keyBytes: number[], keyOffset: number): { output: number; kUsed: number[] } {
-  let g1 = (word >> 8) & 0xff, g2 = word & 0xff
-  const kUsed: number[] = []
-  for (let round = 0; round < 4; round++) {
-    const k = keyBytes[keyOffset % keyBytes.length]
-    kUsed.push(k)
-    const g3 = F_TABLE[g2 ^ k] ^ g1
-    g1 = g2; g2 = g3; keyOffset++
+export function assertSkipjackBlockHex(value: string): string {
+  const cleaned = cleanHex(value);
+  if (!cleaned) throw new Error("Skipjack block is required.");
+  if (!/^[A-F0-9]+$/.test(cleaned)) throw new Error("Skipjack block must contain only hexadecimal characters.");
+  if (cleaned.length !== 16) throw new Error("Skipjack block must be exactly 16 hexadecimal characters.");
+  return cleaned;
+}
+
+export function assertSkipjackKeyHex(value: string): string {
+  const cleaned = cleanHex(value);
+  if (!cleaned) throw new Error("Skipjack key is required.");
+  if (!/^[A-F0-9]+$/.test(cleaned)) throw new Error("Skipjack key must contain only hexadecimal characters.");
+  if (cleaned.length !== 20) throw new Error("Skipjack key must be exactly 20 hexadecimal characters.");
+  return cleaned;
+}
+
+function hexToBytes(hex: string): number[] {
+  const bytes: number[] = [];
+  for (let index = 0; index < hex.length; index += 2) {
+    bytes.push(Number.parseInt(hex.slice(index, index + 2), 16));
   }
-  return { output: ((g1 << 8) | g2) & 0xffff, kUsed }
+  return bytes;
 }
 
-function gInv(word: number, keyBytes: number[], keyOffset: number): { output: number; kUsed: number[] } {
-  let g1 = (word >> 8) & 0xff, g2 = word & 0xff
-  const kUsed: number[] = []
-  for (let round = 3; round >= 0; round--) {
-    const k = keyBytes[(keyOffset + round) % keyBytes.length]
-    kUsed.push(k)
-    const g3 = F_TABLE[g1 ^ k] ^ g2
-    g2 = g1; g1 = g3
+function readWordBE(bytes: number[], offset: number): number {
+  return ((bytes[offset] << 8) | bytes[offset + 1]) & 0xffff;
+}
+
+function wordToHex(value: number): string {
+  return (value & 0xffff).toString(16).toUpperCase().padStart(4, "0");
+}
+
+function blockToWords(blockHex: string): [number, number, number, number] {
+  const bytes = hexToBytes(assertSkipjackBlockHex(blockHex));
+  return [
+    readWordBE(bytes, 0),
+    readWordBE(bytes, 2),
+    readWordBE(bytes, 4),
+    readWordBE(bytes, 6),
+  ];
+}
+
+function wordsToBlock(words: [number, number, number, number]): string {
+  return words.map(wordToHex).join("");
+}
+
+function gPermutation(word: number, round: number, key: number[]): number {
+  let g1 = (word >>> 8) & 0xff;
+  let g2 = word & 0xff;
+  const keyBase = (round * 4) % 10;
+
+  const g3 = FTABLE[g2 ^ key[keyBase]] ^ g1;
+  const g4 = FTABLE[g3 ^ key[(keyBase + 1) % 10]] ^ g2;
+  const g5 = FTABLE[g4 ^ key[(keyBase + 2) % 10]] ^ g3;
+  const g6 = FTABLE[g5 ^ key[(keyBase + 3) % 10]] ^ g4;
+
+  return ((g5 << 8) | g6) & 0xffff;
+}
+
+function gInverse(word: number, round: number, key: number[]): number {
+  const g5 = (word >>> 8) & 0xff;
+  const g6 = word & 0xff;
+  const keyBase = (round * 4) % 10;
+
+  const g4 = FTABLE[g5 ^ key[(keyBase + 3) % 10]] ^ g6;
+  const g3 = FTABLE[g4 ^ key[(keyBase + 2) % 10]] ^ g5;
+  const g2 = FTABLE[g3 ^ key[(keyBase + 1) % 10]] ^ g4;
+  const g1 = FTABLE[g2 ^ key[keyBase]] ^ g3;
+
+  return ((g1 << 8) | g2) & 0xffff;
+}
+
+function isRuleA(round: number): boolean {
+  const block = Math.floor(round / 8);
+  return block === 0 || block === 2;
+}
+
+function roundCounter(round: number): number {
+  return round + 1;
+}
+
+function encryptRound(words: [number, number, number, number], round: number, key: number[]): [number, number, number, number] {
+  const [w1, w2, w3, w4] = words;
+  const counter = roundCounter(round);
+  const g = gPermutation(w1, round, key);
+
+  if (isRuleA(round)) {
+    return [g ^ w4 ^ counter, g, w2, w3].map((word) => word & 0xffff) as [number, number, number, number];
   }
-  return { output: ((g1 << 8) | g2) & 0xffff, kUsed: kUsed.reverse() }
+
+  return [w4, g, w1 ^ w2 ^ counter, w3].map((word) => word & 0xffff) as [number, number, number, number];
 }
 
-function skipjackEncryptBlock(block: number[], keyBytes: number[], steps: CipherStep[] | null): number[] {
-  let [w1, w2, w3, w4] = block
-  let keyOffset = 0
-  for (let stepGroup = 0; stepGroup < 4; stepGroup++) {
-    const rule: 'A' | 'B' = stepGroup % 2 === 0 ? 'A' : 'B'
-    for (let round = 0; round < 8; round++) {
-      const counter = stepGroup * 8 + round + 1
-      const { output: gw1, kUsed } = g(w1, keyBytes, keyOffset)
-      keyOffset += 4
-      if (rule === 'A') {
-        const nw1 = gw1 ^ w4 ^ counter
-        const nw2 = gw1
-        const nw3 = w2
-        const nw4 = w3
-        ;[w1, w2, w3, w4] = [nw1 & 0xffff, nw2 & 0xffff, nw3 & 0xffff, nw4 & 0xffff]
-      } else {
-        const nw1 = w4
-        const nw2 = gw1
-        const nw3 = w1 ^ w2 ^ counter
-        const nw4 = w3
-        ;[w1, w2, w3, w4] = [nw1 & 0xffff, nw2 & 0xffff, nw3 & 0xffff, nw4 & 0xffff]
-      }
-      steps?.push({
-        index: steps.length, label: `Round ${counter}`, sublabel: `Rule ${rule}`,
-        inputState: '', outputState: [w1, w2, w3, w4].map((v) => v.toString(16).padStart(4, '0')).join(''),
-        note: `G-permutation keystream bytes [${kUsed.join(',')}]`, isMilestone: round === 7,
-      })
+function decryptRound(words: [number, number, number, number], round: number, key: number[]): [number, number, number, number] {
+  const [y1, y2, y3, y4] = words;
+  const counter = roundCounter(round);
+  const originalW1 = gInverse(y2, round, key);
+
+  if (isRuleA(round)) {
+    const originalW2 = y3;
+    const originalW3 = y4;
+    const originalW4 = y1 ^ y2 ^ counter;
+    return [originalW1, originalW2, originalW3, originalW4].map((word) => word & 0xffff) as [number, number, number, number];
+  }
+
+  const originalW4 = y1;
+  const originalW2 = y3 ^ originalW1 ^ counter;
+  const originalW3 = y4;
+  return [originalW1, originalW2, originalW3, originalW4].map((word) => word & 0xffff) as [number, number, number, number];
+}
+
+export function encryptSkipjackBlock(plaintextHex: string, keyHex: string): string {
+  const key = hexToBytes(assertSkipjackKeyHex(keyHex));
+  let words = blockToWords(plaintextHex);
+
+  for (let round = 0; round < 32; round += 1) {
+    words = encryptRound(words, round, key);
+  }
+
+  return wordsToBlock(words);
+}
+
+export function decryptSkipjackBlock(ciphertextHex: string, keyHex: string): string {
+  const key = hexToBytes(assertSkipjackKeyHex(keyHex));
+  let words = blockToWords(ciphertextHex);
+
+  for (let round = 31; round >= 0; round -= 1) {
+    words = decryptRound(words, round, key);
+  }
+
+  return wordsToBlock(words);
+}
+
+export function traceSkipjack(inputHex: string, keyHex: string, mode: "encrypt" | "decrypt"): SkipjackTrace {
+  const key = hexToBytes(assertSkipjackKeyHex(keyHex));
+  let words = blockToWords(inputHex);
+  const rounds: SkipjackRoundTrace[] = [];
+
+  if (mode === "encrypt") {
+    for (let round = 0; round < 32; round += 1) {
+      const input = wordsToBlock(words);
+      words = encryptRound(words, round, key);
+      rounds.push({
+        round: round + 1,
+        rule: isRuleA(round) ? "A" : "B",
+        keyIndex: (round * 4) % 10,
+        input,
+        output: wordsToBlock(words),
+        note: isRuleA(round)
+          ? "Rule A applies G to w1, mixes the round counter, and rotates words."
+          : "Rule B applies G to w1, mixes w1/w2/counter, and rotates words.",
+      });
+    }
+  } else {
+    for (let round = 31; round >= 0; round -= 1) {
+      const input = wordsToBlock(words);
+      words = decryptRound(words, round, key);
+      rounds.push({
+        round: round + 1,
+        rule: isRuleA(round) ? "A-inverse" : "B-inverse",
+        keyIndex: (round * 4) % 10,
+        input,
+        output: wordsToBlock(words),
+        note: isRuleA(round)
+          ? "Inverse Rule A recovers the previous four words using inverse G."
+          : "Inverse Rule B recovers the previous four words using inverse G.",
+      });
     }
   }
-  return [w1, w2, w3, w4]
-}
-
-function skipjackDecryptBlock(block: number[], keyBytes: number[], steps: CipherStep[] | null): number[] {
-  let [w1, w2, w3, w4] = block
-  let keyOffset = 31 * 4
-  for (let stepGroup = 3; stepGroup >= 0; stepGroup--) {
-    const rule: 'A' | 'B' = stepGroup % 2 === 0 ? 'A' : 'B'
-    for (let round = 7; round >= 0; round--) {
-      const counter = stepGroup * 8 + round + 1
-      const { output: gInvW2, kUsed } = gInv(w2, keyBytes, keyOffset)
-      if (rule === 'A') {
-        const nw1 = gInvW2
-        const nw2 = w3
-        const nw3 = w4
-        const nw4 = w1 ^ w2 ^ counter
-        ;[w1, w2, w3, w4] = [nw1 & 0xffff, nw2 & 0xffff, nw3 & 0xffff, nw4 & 0xffff]
-      } else {
-        const nw1 = gInvW2
-        const nw2 = gInvW2 ^ w3 ^ counter
-        const nw3 = w4
-        const nw4 = w1
-        ;[w1, w2, w3, w4] = [nw1 & 0xffff, nw2 & 0xffff, nw3 & 0xffff, nw4 & 0xffff]
-      }
-      keyOffset -= 4
-      steps?.push({
-        index: steps.length, label: `Decrypt Round ${counter}`, sublabel: `Rule ${rule}`,
-        inputState: '', outputState: [w1, w2, w3, w4].map((v) => v.toString(16).padStart(4, '0')).join(''),
-        note: `Inverse G-permutation keystream bytes [${kUsed.join(',')}]`, isMilestone: round === 0,
-      })
-    }
-  }
-  return [w1, w2, w3, w4]
-}
-
-function toWords(data: Uint8Array): number[][] {
-  const blocks: number[][] = []
-  for (let i = 0; i < data.length; i += 8) {
-    blocks.push([
-      ((data[i] ?? 0) << 8) | (data[i + 1] ?? 0),
-      ((data[i + 2] ?? 0) << 8) | (data[i + 3] ?? 0),
-      ((data[i + 4] ?? 0) << 8) | (data[i + 5] ?? 0),
-      ((data[i + 6] ?? 0) << 8) | (data[i + 7] ?? 0),
-    ])
-  }
-  return blocks
-}
-
-function fromWords(blocks: number[][]): Uint8Array {
-  const out = new Uint8Array(blocks.length * 8)
-  let idx = 0
-  for (const block of blocks) {
-    for (const word of block) {
-      out[idx++] = (word >> 8) & 0xff
-      out[idx++] = word & 0xff
-    }
-  }
-  return out
-}
-
-export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-  validateInput(input)
-  if (!key) {
-    throw new CipherError('KEY_REQUIRED', 'Key is required for Skipjack cipher.')
-  }
-  const keyBytes = Array.from(hexToBytes(key))
-  if (keyBytes.length !== 10) {
-    throw new CipherError('INVALID_KEY', 'Skipjack requires an 80-bit (10-byte) key.')
-  }
-  const inputBytes = hexToBytes(input)
-  if (inputBytes.length === 0 || inputBytes.length % 8 !== 0) {
-    throw new CipherError('INVALID_INPUT', 'Input must be a multiple of 8 bytes (16 hex chars).')
-  }
-  if (inputBytes.length > 4096) {
-    throw new CipherError('INPUT_TOO_LONG', 'Input exceeds maximum length of 4096 bytes.')
-  }
-
-  const steps: CipherStep[] = []
-  const blocks = toWords(inputBytes)
-  const encBlocks = blocks.map((b) => skipjackEncryptBlock(b, keyBytes, options.instrument ? steps : null))
-  const outBytes = fromWords(encBlocks)
-  const ciphertext = bytesToHex(outBytes)
 
   return {
-    output: ciphertext,
-    outputEncoding: 'hex',
-    steps,
-    metadata: {
-      name: 'Skipjack',
-      blockSize: 64,
-      rounds: 32,
-      securityStatus: 'secure',
-      yearDesigned: 1998,
-      standardBody: 'NSA / Clipper Chip (declassified)',
-    },
-    durationMs: 0,
-  }
+    mode,
+    inputHex: assertSkipjackBlockHex(inputHex),
+    keyHex: assertSkipjackKeyHex(keyHex),
+    outputHex: wordsToBlock(words),
+    rounds,
+  };
 }
 
-export function decrypt(ciphertext: string, key: string, options: CipherOptions = {}): CipherResult {
-  validateInput(ciphertext)
-  if (!key) {
-    throw new CipherError('KEY_REQUIRED', 'Key is required for Skipjack cipher.')
-  }
-  const keyBytes = Array.from(hexToBytes(key))
-  if (keyBytes.length !== 10) {
-    throw new CipherError('INVALID_KEY', 'Skipjack requires an 80-bit (10-byte) key.')
-  }
-  const ctBytes = hexToBytes(ciphertext)
-  if (ctBytes.length === 0 || ctBytes.length % 8 !== 0) {
-    throw new CipherError('INVALID_INPUT', 'Ciphertext must be a multiple of 8 bytes (16 hex chars).')
-  }
-
-  const steps: CipherStep[] = []
-  const blocks = toWords(ctBytes)
-  const decBlocks = blocks.map((b) => skipjackDecryptBlock(b, keyBytes, options.instrument ? steps : null))
-  const outBytes = fromWords(decBlocks)
-  const plaintext = bytesToHex(outBytes)
-
-  return {
-    output: plaintext,
-    outputEncoding: 'hex',
-    steps,
-    metadata: {
-      name: 'Skipjack',
-      blockSize: 64,
-      rounds: 32,
-      securityStatus: 'secure',
-      yearDesigned: 1998,
-      standardBody: 'NSA / Clipper Chip (declassified)',
-    },
-    durationMs: 0,
-  }
+export function skipjackImplementationNotes(): string[] {
+  return [
+    "Skipjack uses a 64-bit block and 80-bit key.",
+    "Encryption runs 32 rounds using Rule A for rounds 1-8 and 17-24, and Rule B for rounds 9-16 and 25-32.",
+    "Decryption walks rounds in reverse order and applies inverse Rule A or inverse Rule B.",
+    "The G permutation is inverted by reversing its four byte-substitution steps.",
+    "The decrypt path is tested by known-vector and round-trip checks.",
+  ];
 }
-
-export const TEST_VECTORS: TestVector[] = [
-  {
-    input: '0000000000000000',
-    key: '00998877665544332211',
-    expected: '0000000000000000',
-    description: 'Skipjack 80-bit zero key round-trip vector',
-  },
-]

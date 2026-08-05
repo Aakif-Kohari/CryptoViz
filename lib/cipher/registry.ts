@@ -437,6 +437,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'xxtea',
+    name: 'XXTEA',
+    category: 'symmetric',
+    description:
+      'Corrected Block TEA (Wheeler & Needham, 1998). The final and strongest member of the TEA family. Unlike TEA/XTEA, it operates on the entire message as a single variable-length block (min 2 words) for full diffusion. Widely used historically but unauthenticated.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'blowfish',
     name: 'Blowfish',
     category: 'symmetric',
@@ -446,6 +457,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: 'fedcba9876543210',
     securityStatus: 'legacy',
     keyPlaceholder: '4–56 byte key as hex (8–112 hex chars)',
+  },
+  {
+    id: 'streebog',
+    name: 'Streebog-256',
+    category: 'hash',
+    description:
+      'Russian national hash function (GOST R 34.11-2012, RFC 6986). 512-bit internal state processed through 12 rounds of a Kuznyechik-family SPN in a Miyaguchi-Preneel-like compression function, with a unique checksum-based finalization step.',
+    defaultKey: '',
+    defaultInput: '323130393837363534333231303938373635343332313039383736353433323130393837363534333231303938373635343332313039383736353433323130',
+    securityStatus: 'secure',
   },
   {
     id: 'seed',
@@ -458,12 +479,34 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'kuznyechik',
+    name: 'Kuznyechik',
+    category: 'symmetric',
+    description:
+      'Russian national block cipher (GOST R 34.12-2015, RFC 7801). 128-bit block, 256-bit key, 9-round SPN. Replaces the legacy 1989 GOST cipher. Uses a fixed 256-byte S-box and a linear transform built from 16 GF(2^8) feedback steps.',
+    defaultKey: '8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef',
+    defaultInput: '1122334455667700ffeeddccbbaa9988',
+    securityStatus: 'secure',
+    keyPlaceholder: '256-bit key as 64 hex chars',
+  },
+  {
     id: 'simon',
     name: 'SIMON-128/128',
     category: 'symmetric',
     description: "NSA hardware-optimised lightweight block cipher (IACR 2013/404). Sibling of SPECK — SIMON targets gate-minimal hardware via bitwise AND while SPECK targets software via ARX. 128-bit block, 128-bit key, 68-round Feistel. Round function: f(x)=(x<<<1 & x<<<8)⊕x<<<2.",
     defaultKey: '0f0e0d0c0b0a09080706050403020100',
     defaultInput: '6373656420737265' + '6c6c657661726174',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
+    id: 'rabbit',
+    name: 'Rabbit',
+    category: 'symmetric',
+    description:
+      'eSTREAM Portfolio Phase 3 stream cipher (RFC 4503). 128-bit key, 64-bit IV. Distinctive non-linear counter system (no LFSR) using 64-bit squaring and XOR to generate 128 bits of keystream per iteration. Extremely fast in software.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
     securityStatus: 'secure',
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
@@ -476,6 +519,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '48656c6c6f20576f726c64',
     securityStatus: 'secure',
     keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
+    id: 'mars',
+    name: 'MARS',
+    category: 'symmetric',
+    description:
+      'IBM AES finalist (1998). 128-bit block, 32-round heterogeneous SPN. Unique for combining 4 different round types (forward mixing, forward E-rounds, backward E-rounds, backward mixing) for defense-in-depth. Lost to Rijndael (AES) on performance/simplicity, but unbroken.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
   },
   {
     id: "sha256",

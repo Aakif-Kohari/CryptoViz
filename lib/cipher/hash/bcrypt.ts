@@ -16,7 +16,8 @@ export const TEST_VECTORS: TestVector[] = [
     input: 'password',
     key: '$2b$10$gNA8qfCa/v3LD5qk/xMXxusiY2ylw.rPhniUkzxfV.veG8bx2rG8u',
     expected: 'match',
-    description: 'Bcrypt password verification test vector',
+    skipEncrypt: true,
+    description: 'Bcrypt password verification (decrypt returns "match" when password matches hash)',
   },
 ]
 

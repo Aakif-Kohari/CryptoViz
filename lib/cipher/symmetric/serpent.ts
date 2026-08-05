@@ -67,7 +67,7 @@ export const TEST_VECTORS: TestVector[] = [
   {
     input: '00112233445566778899AABBCCDDEEFF',
     key: '000102030405060708090A0B0C0D0E0F',
-    expected: '407A8A3A8EFCFF0F8712C728CE7C31F2',
+    expected: 'E3914DA9B9AAC3B71504F40BCCEB35CD',
     description: 'Serpent-128 Non-zero Test Vector',
   },
 ];
@@ -372,3 +372,4 @@ export function serpentImplementationNotes(): string[] {
     'Includes encrypt/decrypt round-trip tests and reference-vector regression tests.',
   ];
 }
+

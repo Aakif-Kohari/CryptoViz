@@ -29,6 +29,8 @@ export interface TimelineEntry {
   colour: string;
   /** Optional list of related algorithm IDs used elsewhere in CryptoViz */
   relatedCiphers?: string[];
+  /** Optional documentation article slug */
+  docSlug?: string;
   /** Significance tags */
   tags: string[];
 }
@@ -364,7 +366,7 @@ export const categoryLabels: Record<TimelineCategory, string> = {
   classical:    "Classical Era",
   "world-war":  "World War Era",
   modern:       "Modern Era",
-  "post-quantum": "Post‑Quantum Era",
+  "post-quantum": "Post-Quantum Era",
 };
 
 /** Sorted copy of entries (by sortYear ascending) */

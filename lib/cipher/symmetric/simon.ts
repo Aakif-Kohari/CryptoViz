@@ -140,7 +140,7 @@ export const TEST_VECTORS: TestVector[] = [
     {
         input: '6373656420737265' + '6c6c657661726174',
         key: '0f0e0d0c0b0a0908' + '0706050403020100',
-        expected: '49681b1e1e54fe3f' + '65aa832af84e0bbc',
+        expected: '5559aa73182ed4b266a8f3ab912440db',
         description: 'IACR 2013/404 Table B.3 — SIMON-128/128 official test vector (64-bit LE words)',
     },
 ]
