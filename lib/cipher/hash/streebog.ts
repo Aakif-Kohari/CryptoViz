@@ -252,7 +252,7 @@ function streebogCore(input: string, instrument: boolean): CipherResult {
 
     h = g_N(h, m_last, N)
 
-    const lenLast: Bytes: Bytes = new Uint8Array(64)
+    const lenLast: Bytes = new Uint8Array(64)
     const bits = L * 8
     lenLast[62] = (bits >> 8) & 0xFF
     lenLast[63] = bits & 0xFF
