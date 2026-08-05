@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Breadcrumbs from '../../components/layout/Breadcrumbs'
+
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/footer';
 import GlossaryModal from '@/components/glossary/GlossaryModal';
-import { GLOSSARY_TERMS, searchGlossaryTerms } from '@/lib/glossary/glossaryData';
+import { searchGlossaryTerms } from '@/lib/glossary/glossaryData';
 import { GlossaryTerm, TermCategory } from '@/lib/glossary/types';
-import { Search, BookOpen, ArrowRight, Sparkles, Filter } from 'lucide-react';
+import { Search, BookOpen, ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export default function GlossaryPage() {
@@ -45,6 +47,7 @@ export default function GlossaryPage() {
       <Navbar />
 
       <main id="main-content" className="flex-1 mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-10">
+        <Breadcrumbs items={[{ label: "Reference" }, { label: "Glossary" }]} />
         {/* Hero Section */}
         <section aria-labelledby="glossary-hero-title" className="relative overflow-hidden rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-br from-teal-500/10 via-cyan-500/5 to-transparent p-8 sm:p-12 backdrop-blur-2xl">
           <div className="max-w-3xl space-y-4">

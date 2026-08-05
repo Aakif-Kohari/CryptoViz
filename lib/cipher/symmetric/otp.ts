@@ -43,7 +43,7 @@ function calculateEntropy(bytes: Uint8Array): number {
 function otpInstrumented(
   inputBytes: Uint8Array,
   keyBytes: Uint8Array,
-  isDecrypt: boolean
+  _isDecrypt: boolean
 ): CipherStep[] {
   const steps: CipherStep[] = []
   const entropy = calculateEntropy(keyBytes)

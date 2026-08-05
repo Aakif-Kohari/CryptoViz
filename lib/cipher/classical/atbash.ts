@@ -102,7 +102,7 @@ function atbashFast(input: string): CipherResult {
 /** Atbash is self-inverse — encrypt and decrypt are identical. */
 export function encrypt(
   input: string,
-  key: string = '',
+  _key: string = '',
   options: CipherOptions = {}
 ): CipherResult {
   validateInput(input)

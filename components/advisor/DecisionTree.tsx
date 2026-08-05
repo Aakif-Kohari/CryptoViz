@@ -7,7 +7,7 @@ import RecommendationCard from './RecommendationCard'
 
 type HistoryEntry = {
   nodeId: string
-  summary: string
+  label: string
 }
 
 export default function DecisionTree() {
@@ -16,8 +16,8 @@ export default function DecisionTree() {
 
   const currentNode: DecisionNode = ADVISOR_TREE[currentNodeId]
 
-  const handleAnswer = (nextId: string, summary: string) => {
-    setHistory((prev) => [...prev, { nodeId: currentNodeId, summary }])
+  const handleAnswer = (nextId: string, label: string) => {
+    setHistory((prev) => [...prev, { nodeId: currentNodeId, label }])
     setCurrentNodeId(nextId)
   }
 
@@ -82,7 +82,7 @@ export default function DecisionTree() {
                   ✓
                 </span>
                 <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  {step.summary}
+                  You selected: {step.label}
                 </span>
               </li>
             ))}
