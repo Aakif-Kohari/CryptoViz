@@ -7,12 +7,25 @@ export interface SkipjackRoundTrace {
   note: string;
 }
 
+import { CipherError, validateInput, validateKey } from '../../utils/errors'
+import type { CipherResult, CipherStep, CipherOptions, CipherMetadata, TestVector } from '../types'
+
 export interface SkipjackTrace {
   mode: "encrypt" | "decrypt";
   inputHex: string;
   keyHex: string;
   outputHex: string;
   rounds: SkipjackRoundTrace[];
+}
+
+const METADATA: CipherMetadata = {
+  name: 'Skipjack',
+  blockSize: 64,
+  keySize: 80,
+  securityStatus: 'legacy',
+  breakingComplexity: 'Susceptible to brute-force key recovery due to short 80-bit key size.',
+  yearDesigned: 1998,
+  standardBody: 'NIST/NSA SKIPJACK',
 }
 
 const FTABLE = [
@@ -170,6 +183,45 @@ export function decryptSkipjackBlock(ciphertextHex: string, keyHex: string): str
 
   return wordsToBlock(words);
 }
+
+export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
+  validateInput(input)
+  const start = performance.now()
+  const plaintextHex = assertSkipjackBlockHex(input)
+  const keyHex = assertSkipjackKeyHex(key)
+  const output = encryptSkipjackBlock(plaintextHex, keyHex)
+  return {
+    output,
+    outputEncoding: 'hex',
+    steps: [],
+    metadata: METADATA,
+    durationMs: performance.now() - start,
+  }
+}
+
+export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
+  validateInput(input)
+  const start = performance.now()
+  const ciphertextHex = assertSkipjackBlockHex(input)
+  const keyHex = assertSkipjackKeyHex(key)
+  const output = decryptSkipjackBlock(ciphertextHex, keyHex)
+  return {
+    output,
+    outputEncoding: 'hex',
+    steps: [],
+    metadata: METADATA,
+    durationMs: performance.now() - start,
+  }
+}
+
+export const TEST_VECTORS: TestVector[] = [
+  {
+    input: '33221100DDCCBBAA',
+    key: '00998877665544332211',
+    expected: '2587CAEA7212D595',
+    description: 'Official Skipjack example vector',
+  },
+]
 
 export function traceSkipjack(inputHex: string, keyHex: string, mode: "encrypt" | "decrypt"): SkipjackTrace {
   const key = hexToBytes(assertSkipjackKeyHex(keyHex));

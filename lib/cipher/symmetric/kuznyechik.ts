@@ -23,6 +23,8 @@ const METADATA: CipherMetadata = {
     standardBody: 'GOST R 34.12-2015; RFC 7801',
 }
 
+type Bytes = Uint8Array<ArrayBufferLike>
+
 // ── Pi S-box (RFC 7801 Section 4.1) ──────────────────────────────────────────
 const Pi: number[] = [
     252, 238, 221, 17, 207, 110, 49, 22, 251, 196, 250, 218, 35, 197, 4, 77, 233, 119, 240, 219, 147, 46,
@@ -61,7 +63,7 @@ function gfMul(a: number, b: number): number {
 // ── Linear Transformation Constants (l-function) ─────────────────────────────
 const K_C: number[] = [148, 32, 133, 16, 194, 192, 1, 251, 1, 192, 194, 16, 133, 32, 148, 1]
 
-function l_transform(state: Uint8Array): number {
+function l_transform(state: Bytes): number {
     let val = 0
     for (let i = 0; i < 16; i++) {
         val ^= gfMul(state[i], K_C[i])
@@ -69,78 +71,78 @@ function l_transform(state: Uint8Array): number {
     return val
 }
 
-function R(state: Uint8Array): Uint8Array {
+function R(state: Bytes): Bytes {
     const out = new Uint8Array(16)
     out[0] = l_transform(state)
     for (let i = 1; i < 16; i++) out[i] = state[i - 1]
     return out
 }
 
-function R_inv(state: Uint8Array): Uint8Array {
-    const out = new Uint8Array(16)
+function R_inv(state: Bytes): Bytes {
+    const out: Bytes = new Uint8Array(16)
     for (let i = 0; i < 15; i++) out[i + 1] = state[i]
     out[0] = state[15]
     out[15] = l_transform(out)
     return out
 }
 
-function L(state: Uint8Array): Uint8Array {
-    let s = Uint8Array.from(state)
+function L(state: Bytes): Bytes {
+    let s: Bytes = Uint8Array.from(state)
     for (let i = 0; i < 16; i++) s = R(s)
     return s
 }
 
-function L_inv(state: Uint8Array): Uint8Array {
-    let s = Uint8Array.from(state)
+function L_inv(state: Bytes): Bytes {
+    let s: Bytes = Uint8Array.from(state)
     for (let i = 0; i < 16; i++) s = R_inv(s)
     return s
 }
 
-function S(state: Uint8Array): Uint8Array {
+function S(state: Bytes): Bytes {
     const out = new Uint8Array(16)
     for (let i = 0; i < 16; i++) out[i] = Pi[state[i]]
     return out
 }
 
-function S_inv(state: Uint8Array): Uint8Array {
-    const out = new Uint8Array(16)
+function S_inv(state: Bytes): Bytes {
+    const out: Bytes = new Uint8Array(16)
     for (let i = 0; i < 16; i++) out[i] = Pi_inv[state[i]]
     return out
 }
 
-function X(a: Uint8Array, b: Uint8Array): Uint8Array {
+function X(a: Bytes, b: Bytes): Bytes {
     const out = new Uint8Array(16)
     for (let i = 0; i < 16; i++) out[i] = a[i] ^ b[i]
     return out
 }
 
-function parseHex(s: string, lbl: string): Uint8Array {
+function parseHex(s: string, lbl: string): Bytes {
     const c = s.replace(/\s+/g, '').toLowerCase()
     if (!/^[0-9a-f]*$/.test(c) || c.length % 2 !== 0) throw new CipherError('INVALID_INPUT', `${lbl} must be hex.`)
-    const o = new Uint8Array(c.length / 2)
+    const o: Bytes = new Uint8Array(c.length / 2)
     for (let i = 0; i < o.length; i++) o[i] = parseInt(c.slice(i * 2, i * 2 + 2), 16)
     return o
 }
 
-function toHex(b: Uint8Array): string {
+function toHex(b: Bytes): string {
     return Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('')
 }
 
 // ── Key Schedule ─────────────────────────────────────────────────────────────
-function keySchedule(keyBytes: Uint8Array): Uint8Array[] {
-    const roundKeys: Uint8Array[] = []
-    const k1 = keyBytes.slice(0, 16)
-    const k2 = keyBytes.slice(16, 32)
+function keySchedule(keyBytes: Bytes): Bytes[] {
+    const roundKeys: Bytes[] = []
+    const k1: Bytes = keyBytes.slice(0, 16)
+    const k2: Bytes = keyBytes.slice(16, 32)
     roundKeys.push(k1)
     roundKeys.push(k2)
 
-    let a = Uint8Array.from(k1)
-    let b = Uint8Array.from(k2)
+    let a: Bytes = Uint8Array.from(k1)
+    let b: Bytes = Uint8Array.from(k2)
 
     // Iteration constants C_i = l(i)
-    const C = new Array(32)
+    const C: Bytes[] = new Array(32)
     for (let i = 1; i <= 32; i++) {
-        const tmp = new Uint8Array(16)
+        const tmp: Bytes = new Uint8Array(16)
         tmp[15] = i
         C[i - 1] = L(tmp)
     }
@@ -161,15 +163,15 @@ function keySchedule(keyBytes: Uint8Array): Uint8Array[] {
     }
 
     // Clean Feistel expansion:
-    const keys = [new Uint8Array(k1), new Uint8Array(k2)]
+    const keys: Bytes[] = [new Uint8Array(k1), new Uint8Array(k2)]
     for (let iter = 1; iter <= 4; iter++) {
-        let left = new Uint8Array(keys[keys.length - 2])
-        let right = new Uint8Array(keys[keys.length - 1])
+        let left: Bytes = new Uint8Array(keys[keys.length - 2])
+        let right: Bytes = new Uint8Array(keys[keys.length - 1])
         for (let j = 1; j <= 8; j++) {
             const cIdx = 8 * (iter - 1) + j - 1
-            const f_in = X(right, C[cIdx])
-            const f_out = L(S(f_in))
-            const newRight = X(left, f_out)
+            const f_in: Bytes = X(right, C[cIdx])
+            const f_out: Bytes = L(S(f_in))
+            const newRight: Bytes = X(left, f_out)
             left = right
             right = newRight
         }
@@ -179,8 +181,8 @@ function keySchedule(keyBytes: Uint8Array): Uint8Array[] {
     return keys.slice(0, 10)
 }
 
-function kuznyechikEncrypt(block: Uint8Array, roundKeys: Uint8Array[]): Uint8Array {
-    let state = new Uint8Array(block)
+function kuznyechikEncrypt(block: Bytes, roundKeys: Bytes[]): Bytes {
+    let state: Bytes = new Uint8Array(block)
     // 9 rounds of (XOR K) -> S -> L
     for (let r = 0; r < 9; r++) {
         state = X(state, roundKeys[r])
@@ -192,8 +194,8 @@ function kuznyechikEncrypt(block: Uint8Array, roundKeys: Uint8Array[]): Uint8Arr
     return state
 }
 
-function kuznyechikDecrypt(block: Uint8Array, roundKeys: Uint8Array[]): Uint8Array {
-    let state = new Uint8Array(block)
+function kuznyechikDecrypt(block: Bytes, roundKeys: Bytes[]): Bytes {
+    let state: Bytes = new Uint8Array(block)
     state = X(state, roundKeys[9])
     for (let r = 8; r >= 0; r--) {
         state = L_inv(state)
