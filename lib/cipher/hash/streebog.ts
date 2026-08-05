@@ -187,7 +187,7 @@ function parseHex(s: string, lbl: string): Bytes {
     return o
 }
 
-function toHex(b: Uint8Array): string {
+function toHex(b: Bytes): string {
     return Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('')
 }
 
@@ -195,12 +195,12 @@ function streebogCore(input: string, instrument: boolean): CipherResult {
     const start = performance.now()
     const inBytes = parseHex(input, 'Streebog input')
 
-    let h = new Uint8Array(64)
+    const h: Bytes = new Uint8Array(64)
     // Streebog-256 IV is (00000001)^64 bytes! (i.e. 0x01 for all 64 bytes)
     for (let i = 0; i < 64; i++) h[i] = 0x01
 
-    let N = new Uint8Array(64)
-    let EPSILON = new Uint8Array(64)
+    let N: Bytes = new Uint8Array(64)
+    let EPSILON: Bytes = new Uint8Array(64)
 
     const steps: CipherStep[] = []
     if (instrument) {
@@ -214,14 +214,14 @@ function streebogCore(input: string, instrument: boolean): CipherResult {
         })
     }
 
-    let remaining = inBytes
+    let remaining: Bytes = inBytes
     while (remaining.length >= 64) {
         // Process from the end of the message
-        const m = remaining.slice(remaining.length - 64)
+        const m: Bytes = remaining.slice(remaining.length - 64)
         remaining = remaining.slice(0, remaining.length - 64)
         h = g_N(h, m, N)
 
-        const lenBlock = new Uint8Array(64)
+        const lenBlock: Bytes = new Uint8Array(64)
         lenBlock[63] = 0x02 // 512 = 0x200. Big Endian: 64 bytes. The lowest byte is 0x00, next is 0x02.
         // Wait, 512 is 0x0200. In Big Endian, byte 62 is 0x02, byte 63 is 0x00.
         lenBlock[62] = 0x02
@@ -242,7 +242,7 @@ function streebogCore(input: string, instrument: boolean): CipherResult {
     }
 
     // Padding
-    const m_last = new Uint8Array(64)
+    const m_last: Bytes = new Uint8Array(64)
     const L = remaining.length
     // m_last = 0...01 || remaining
     // So the last L bytes are the remaining message.
@@ -252,15 +252,15 @@ function streebogCore(input: string, instrument: boolean): CipherResult {
 
     h = g_N(h, m_last, N)
 
-    const lenLast = new Uint8Array(64)
+    const lenLast: Bytes: Bytes = new Uint8Array(64)
     const bits = L * 8
     lenLast[62] = (bits >> 8) & 0xFF
     lenLast[63] = bits & 0xFF
     N = add512(N, lenLast)
     EPSILON = add512(EPSILON, m_last)
 
-    h = g_N(h, N, new Uint8Array(64))
-    h = g_N(h, EPSILON, new Uint8Array(64))
+    h = g_N(h, N, new Uint8Array(64) as Bytes)
+    h = g_N(h, EPSILON, new Uint8Array(64) as Bytes)
 
     // Truncate to 256 bits (first 32 bytes of h)
     const finalHash = h.slice(0, 32)
