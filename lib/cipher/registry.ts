@@ -757,6 +757,22 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'broken',
   },
   {
+    id: 'argon2',
+    name: 'Argon2id',
+    category: 'hash',
+    description: 'PHC Winner (2015), RFC 9106. Memory-hard password hashing with hybrid addressing (Argon2i for side-channel resistance, Argon2d for GPU resistance). Modern successor to bcrypt.',
+    defaultKey: 'salt',
+    defaultInput: 'password',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Salt (min 8 bytes)',
+    options: [
+      { name: 'Memory Cost (KiB)', id: 'memoryCost', type: 'number', default: 19456 },
+      { name: 'Time Cost (Iterations)', id: 'timeCost', type: 'number', default: 2 },
+      { name: 'Parallelism', id: 'parallelism', type: 'number', default: 1 },
+      { name: 'Output Length (bytes)', id: 'keyLength', type: 'number', default: 32 }
+    ]
+  },
+  {
     id: 'skein',
     name: 'Skein-256',
     category: 'hash',
