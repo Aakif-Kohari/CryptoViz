@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { encrypt, decrypt, TEST_VECTORS } from '../../../lib/cipher/symmetric/idea';
-import { CipherError } from '../../../lib/utils/errors';
 
 describe('IDEA cipher', () => {
   it('round-trips test vectors', () => {
     for (const v of TEST_VECTORS) {
       const ct = encrypt(v.input, v.key);
+      expect(ct.output).toBe(v.expected);
       const dt = decrypt(ct.output, v.key);
       // IDEA implementation pads input to 8-byte blocks
       expect(dt.output.startsWith(v.input)).toBe(true);

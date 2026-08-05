@@ -13,7 +13,7 @@ const METADATA = {
   yearDesigned: -100, // Ancient Greek scytale / historical
 }
 
-function validateRailsKey(key: string, inputLength: number): number {
+function validateRailsKey(key: string, _inputLength: number): number {
   const rails = parseInt(key, 10)
   if (isNaN(rails) || rails < 2) {
     throw new CipherError('INVALID_KEY', 'Rail Fence key must be an integer >= 2.')

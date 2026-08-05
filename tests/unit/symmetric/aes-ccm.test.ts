@@ -17,14 +17,14 @@ describe('AES-CCM', () => {
     const plaintext = '48656c6c6f2c20574f524c4421'
     const enc = encrypt(plaintext, keyWithNonce)
     const tampered = enc.output.slice(0, -2) + (enc.output.slice(-2) === '00' ? '01' : '00')
-    expect(() => decrypt(tampered, keyWithNonce)).toThrow(/VERIFICATION_FAILED/)
+    expect(() => decrypt(tampered, keyWithNonce)).toThrow(/tag verification failed/i)
   })
 
   it('detects tampering in associated data', () => {
     const plaintext = '48656c6c6f'
     const aad = '0102030405'
     const enc = encrypt(plaintext, `${keyWithNonce}|${aad}`)
-    expect(() => decrypt(enc.output, `${keyWithNonce}|0602030405`)).toThrow(/VERIFICATION_FAILED/)
+    expect(() => decrypt(enc.output, `${keyWithNonce}|0602030405`)).toThrow(/tag verification failed/i)
   })
 
   it('rejects a nonce that is not 12 bytes', () => {

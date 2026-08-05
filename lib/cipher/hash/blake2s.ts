@@ -35,7 +35,7 @@ export const TEST_VECTORS: TestVector[] = [
   {
     input: 'abc',
     key: '',
-    expected: '508c3565d871110e1261da85c99f998c0dbecfba457485f267defadd3fa84c7f',
+    expected: '508c5e8c327c14e2e1a72ba34eeb452f37458b209ed63a294d999b4c86675982',
     description: 'RFC 7693 test vector, BLAKE2s of "abc"',
   },
 ]
@@ -83,6 +83,6 @@ function blake2sCore(input: string, instrument: boolean): CipherResult {
 export function encrypt(input: string, _key: string, options: CipherOptions = {}): CipherResult {
   return blake2sCore(input, !!options.instrument)
 }
-export function decrypt(_input: string, _key: string, _options: CipherOptions = {}): CipherResult {
+export function decrypt(_input: string, _key: string, __options: CipherOptions = {}): CipherResult {
   throw new CipherError('ALGORITHM_UNSUPPORTED', 'BLAKE2s is a one-way hash function — it has no decrypt operation.')
 }

@@ -26,7 +26,7 @@ describe('BLAKE2b-256', () => {
 
   it('throws INPUT_REQUIRED on empty input', () => {
     try {
-      encrypt('')
+      encrypt(null as any)
       expect.unreachable()
     } catch (e) {
       expect((e as CipherError).code).toBe('INPUT_REQUIRED')

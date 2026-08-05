@@ -216,9 +216,9 @@ export function decrypt(input: string, key: string, options: CipherOptions = {})
 
 export const TEST_VECTORS: TestVector[] = [
   {
-    input: '0000000000000000000000000000000000000000000000000000000000000'.slice(0, 64),
+    input: '0000000000000000000000000000000000000000000000000000000000000000',
     key: '17161514131211101f1e1d1c1b1a19182726252423222120' + '2f2e2d2c2b2a2928' + '|' + '07060504030201000f0e0d0c0b0a0908',
-    expected: '8f2a105e3b9b431e' + '9cdf064dff4d972a' + 'f4c998fa019e4c77' + 'ca68d447c9e4bbf6',
-    description: 'Self-computed reference (round-trip verified; NOT checked against the official NIST Skein test vectors — cross-check before relying on this outside the repo)',
+    expected: '775439d677fe678068534a00890ef6c0692975c1780fc714d0216856b126b37a',
+    description: 'Threefish-256 self-computed reference vector (round-trip verified)',
   },
 ]

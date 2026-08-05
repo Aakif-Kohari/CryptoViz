@@ -118,7 +118,7 @@ function ripemd160Instrumented(inputBytes: Uint8Array): CipherResult {
   }
 }
 
-export function encrypt(input: string, key: string = '', options: CipherOptions = {}): CipherResult {
+export function encrypt(input: string, _key: string = '', options: CipherOptions = {}): CipherResult {
   if (input === null || input === undefined || typeof input !== 'string') {
     throw new CipherError('INPUT_REQUIRED', 'Input is required.')
   }

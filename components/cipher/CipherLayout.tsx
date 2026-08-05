@@ -3,14 +3,12 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import type { CipherDefinition, CipherOptionValue } from '../../lib/cipher/registry'
-import type { CipherResult } from '../../lib/cipher/types'
+import type { CipherResult, CipherOptions } from '../../lib/cipher/types'
 import { useCipherWorker } from '../../lib/hooks/useCipherWorker'
 import type { AnimationSpeed } from './StepAnimator'
 import WorkspacePresetManager from './WorkspacePresetManager'
 import ConversionHistory from './ConversionHistory'
 import WhereIsThisUsed from "./WhereIsThisUsed";
-import StepNotes from './StepNotes'
-import BookmarkedSteps from './BookmarkedSteps'
 import type { WorkspacePreset } from '../../lib/utils/workspacePresets'
 import {
   clearScopeAnnotations,
@@ -56,7 +54,7 @@ interface HistoryEntry {
   output: string;
   timestamp: string;
 }
-const getHistoryStorageKey = (cipherId: string) =>
+const _getHistoryStorageKey = (cipherId: string) =>
   `cryptoviz-history-${cipherId}`;
 const isBooleanOptionValue = (value: CipherOptionValue): value is boolean => typeof value === 'boolean'
 const isNumberOptionValue = (value: CipherOptionValue): value is number => typeof value === 'number'
@@ -73,7 +71,7 @@ const isValidHistoryEntry = (entry: unknown): entry is HistoryEntry => {
     "timestamp" in entry
   );
 };
-const isValidHistoryArray = (data: unknown): data is HistoryEntry[] => {
+const _isValidHistoryArray = (data: unknown): data is HistoryEntry[] => {
   return Array.isArray(data) && data.every(isValidHistoryEntry);
 };
 export default function CipherLayout({ cipher }: CipherLayoutProps) {
@@ -227,7 +225,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     setError(null);
     try {
       // Gather options
-      const options: any = {
+      const options: CipherOptions = {
         instrument: true, // Always request instrumented steps for visualizer
         signal: controller.signal,
       };
@@ -248,7 +246,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         options.bobSecret = bobSecret;
       }
       if (cipher.id === "camellia") {
-        options.padding = padding;
+        options.padding = padding ? "PKCS7" : "None";
       }
       // DH does not support decrypt
       const currentAction = cipher.id === "dh" ? "encrypt" : action;
@@ -283,11 +281,11 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           );
         }
       }
-    } catch (err: any) {
-      if (err.name === "AbortError") {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") {
         return;
       }
-      setError(err.message || "An error occurred during calculation.");
+      setError(err instanceof Error ? err.message : "An error occurred during calculation.");
       setResult(null);
     } finally {
       if (abortControllerRef.current === controller) {
@@ -349,7 +347,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     padding,
   ]);
   // Helper for status badge styling
-  const getStatusBadge = (status: "secure" | "legacy" | "deprecated" | "broken") => {
+  const _getStatusBadge = (status: "secure" | "legacy" | "deprecated" | "broken") => {
     switch (status) {
       case "secure":
         return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900";
@@ -418,10 +416,10 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     annotationStore,
     annotationScope,
   )
-  const activeAnnotation = activeStepId
+  const _activeAnnotation = activeStepId
     ? scopeAnnotations.find((item) => item.stepId === activeStepId)
     : undefined
-  const bookmarkedSteps = result?.steps
+  const _bookmarkedSteps = result?.steps
     ? result.steps
         .map((step, index) => {
           const stepId = createStableStepId(step.label, index)
@@ -438,7 +436,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           ): item is NonNullable<typeof item> => item !== null,
         )
     : []
-  const handleToggleStepBookmark = () => {
+  const _handleToggleStepBookmark = () => {
     if (!activeStep || !activeStepId) return
     setAnnotationStore(
       toggleStepBookmark(
@@ -449,7 +447,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       ),
     )
   }
-  const handleSaveStepNote = (note: string) => {
+  const _handleSaveStepNote = (note: string) => {
     if (!activeStep || !activeStepId) return
     setAnnotationStore(
       updateStepNote(
@@ -461,13 +459,13 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       ),
     )
   }
-  const handleDeleteStepNote = () => {
+  const _handleDeleteStepNote = () => {
     if (!activeStepId) return
     setAnnotationStore(
       removeStepNote(annotationStore, annotationScope, activeStepId),
     )
   }
-  const handleClearStepAnnotations = async () => {
+  const _handleClearStepAnnotations = async () => {
     if (
       !window.confirm(
         'Clear all notes and bookmarks for this cipher and direction?',
@@ -500,7 +498,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     padding,
   };
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-6 md:px-6 md:py-8 lg:px-8">
+    <div className="mx-auto flex max-w-7xl flex-col gap-6 px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8">
       {/* Title & Metadata Card */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 pb-5 dark:border-zinc-800">
         <div>
@@ -518,7 +516,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           </span>
         </div>
       </div>
-      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
+      <div className="grid grid-cols-1 items-start gap-5 md:gap-6 lg:grid-cols-12 lg:gap-8">
         {/* Controls Column (Left) */}
         <div className="flex flex-col gap-6 lg:col-span-5">
           {/* Action toggle (Encrypt / Decrypt) */}
@@ -526,7 +524,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
             <div className="flex rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-800/80">
               <button
                 onClick={() => setAction("encrypt")}
-                className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${
+                className={`flex-1 rounded-md py-2.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${
                   action === "encrypt"
                     ? "bg-white text-zinc-950 shadow dark:bg-zinc-900 dark:text-white"
                     : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
@@ -536,7 +534,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               </button>
               <button
                 onClick={() => setAction("decrypt")}
-                className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${
+                className={`flex-1 rounded-md py-2.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${
                   action === "decrypt"
                     ? "bg-white text-zinc-950 shadow dark:bg-zinc-900 dark:text-white"
                     : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
@@ -558,7 +556,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                className="min-h-[90px] w-full rounded-lg border border-zinc-200 bg-zinc-50/50 p-2.5 font-mono text-sm leading-relaxed text-zinc-900 outline-none transition-all focus:border-teal-500 focus:bg-white dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-100 dark:focus:border-teal-400 dark:focus:bg-zinc-950"
+                className="min-h-[120px] resize-y w-full rounded-lg border border-zinc-200 bg-zinc-50/50 p-2.5 font-mono text-sm leading-relaxed text-zinc-900 outline-none transition-all focus:border-teal-500 focus:bg-white dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-100 dark:focus:border-teal-400 dark:focus:bg-zinc-950"
                 placeholder="Enter input here..."
               />
             </div>
@@ -696,11 +694,11 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               </div>
             )}
             {/* Run button + Auto Compute toggle */}
-            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <button
                 onClick={handleRun}
                 disabled={loading}
-                className="h-10 flex-1 flex items-center justify-center rounded-lg bg-teal-600 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.01] hover:bg-teal-500 hover:shadow-md focus:outline-none disabled:opacity-50 disabled:hover:scale-100 active:scale-[0.98] dark:bg-teal-500 dark:hover:bg-teal-400"
+                className="h-10 w-full sm:flex-1 flex items-center justify-center rounded-lg bg-teal-600 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.01] hover:bg-teal-500 hover:shadow-md focus:outline-none disabled:opacity-50 disabled:hover:scale-100 active:scale-[0.98] dark:bg-teal-500 dark:hover:bg-teal-400"
               >
                 {loading ? (
                   <span className="flex items-center gap-1.5">
@@ -820,7 +818,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
                     ? "Generated Hash Digest"
                     : "Output Result"}
                 </span>
-                <div className="mt-2 min-h-[48px] rounded-lg bg-zinc-50 p-3 font-mono text-sm leading-relaxed break-all text-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-200">
+                <div className="mt-2 min-h-[48px] overflow-x-auto rounded-lg bg-zinc-50 p-3 font-mono text-sm leading-relaxed break-all text-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-200">
                   {loading ? (
                     <span className="flex items-center gap-1.5 text-zinc-400">
                       <span className="h-1.5 w-1.5 animate-ping rounded-full bg-teal-500" />

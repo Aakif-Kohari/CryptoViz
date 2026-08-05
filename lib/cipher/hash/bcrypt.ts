@@ -16,7 +16,8 @@ export const TEST_VECTORS: TestVector[] = [
     input: 'password',
     key: '$2b$10$gNA8qfCa/v3LD5qk/xMXxusiY2ylw.rPhniUkzxfV.veG8bx2rG8u',
     expected: 'match',
-    description: 'Bcrypt password verification test vector',
+    skipEncrypt: true,
+    description: 'Bcrypt password verification (decrypt returns "match" when password matches hash)',
   },
 ]
 
@@ -102,7 +103,7 @@ export function encrypt(
 export function decrypt(
   input: string,
   key: string = '',
-  options: CipherOptions = {}
+  _options: CipherOptions = {}
 ): CipherResult {
   // For bcrypt, "decrypt" verifies a password (input) against a hash (key)
   validateHashInput(input)
@@ -114,7 +115,7 @@ export function decrypt(
   let isMatch = false
   try {
     isMatch = bcrypt.compareSync(input, key)
-  } catch (err) {
+  } catch (_err) {
     throw new CipherError('INVALID_KEY', 'Invalid bcrypt hash format.')
   }
 

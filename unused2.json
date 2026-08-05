@@ -1,0 +1,686 @@
+[
+  {
+    "file": "/Users/aayu/CryptoViz-1/app/not-found.tsx",
+    "unused": [
+      {
+        "line": 142,
+        "msg": "'setCancelled' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/ReedSolomonVisualizer.tsx",
+    "unused": [
+      {
+        "line": 10,
+        "msg": "'decoded' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/attacks/BirthdayAttackSimulator.tsx",
+    "unused": [
+      {
+        "line": 37,
+        "msg": "'collisionsCount' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/attacks/PaddingOracleSimulator.tsx",
+    "unused": [
+      {
+        "line": 51,
+        "msg": "'allSteps' is assigned a value but never used."
+      },
+      {
+        "line": 53,
+        "msg": "'loading' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/benchmark/AlgorithmDiffTable.tsx",
+    "unused": [
+      {
+        "line": 186,
+        "msg": "'isSimilar' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/benchmark/EducationalSessionInsights.tsx",
+    "unused": [
+      {
+        "line": 12,
+        "msg": "'delta' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/benchmark/SessionDeltaCard.tsx",
+    "unused": [
+      {
+        "line": 15,
+        "msg": "'sessionALabel' is assigned a value but never used."
+      },
+      {
+        "line": 16,
+        "msg": "'sessionBLabel' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/challenge/ChallengeMode.tsx",
+    "unused": [
+      {
+        "line": 120,
+        "msg": "'replayMode' is assigned a value but never used."
+      },
+      {
+        "line": 301,
+        "msg": "'resetSession' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/cipher/CipherLayout.tsx",
+    "unused": [
+      {
+        "line": 57,
+        "msg": "'getHistoryStorageKey' is assigned a value but never used."
+      },
+      {
+        "line": 74,
+        "msg": "'isValidHistoryArray' is assigned a value but never used."
+      },
+      {
+        "line": 350,
+        "msg": "'getStatusBadge' is assigned a value but never used."
+      },
+      {
+        "line": 419,
+        "msg": "'activeAnnotation' is assigned a value but never used."
+      },
+      {
+        "line": 422,
+        "msg": "'bookmarkedSteps' is assigned a value but never used."
+      },
+      {
+        "line": 439,
+        "msg": "'handleToggleStepBookmark' is assigned a value but never used."
+      },
+      {
+        "line": 450,
+        "msg": "'handleSaveStepNote' is assigned a value but never used."
+      },
+      {
+        "line": 462,
+        "msg": "'handleDeleteStepNote' is assigned a value but never used."
+      },
+      {
+        "line": 468,
+        "msg": "'handleClearStepAnnotations' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/cipher/CustomCipherEditor.tsx",
+    "unused": [
+      {
+        "line": 16,
+        "msg": "'setCategory' is assigned a value but never used."
+      },
+      {
+        "line": 20,
+        "msg": "'setDefaultInput' is assigned a value but never used."
+      },
+      {
+        "line": 21,
+        "msg": "'setDefaultKey' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/cipher/HmacVisualizer.tsx",
+    "unused": [
+      {
+        "line": 22,
+        "msg": "'originalKey' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/cipher/ModuleLoadMetricsCard.tsx",
+    "unused": [
+      {
+        "line": 16,
+        "msg": "'isError' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/docs/VisualizationDevelopmentGuide.tsx",
+    "unused": [
+      {
+        "line": 13,
+        "msg": "'stageIds' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/merkle/MerkleVisualizer.tsx",
+    "unused": [
+      {
+        "line": 199,
+        "msg": "'activeVerificationStepCoords' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/tests/SnapshotDiffViewer.tsx",
+    "unused": [
+      {
+        "line": 15,
+        "msg": "'title' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/components/tests/SnapshotTestRunner.tsx",
+    "unused": [
+      {
+        "line": 24,
+        "msg": "'copiedReport' is assigned a value but never used."
+      },
+      {
+        "line": 115,
+        "msg": "'handleExportMarkdown' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/fix.ts",
+    "unused": [
+      {
+        "line": 1,
+        "msg": "'Identifier' is defined but never used."
+      },
+      {
+        "line": 35,
+        "msg": "'e' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/asymmetric/dh.ts",
+    "unused": [
+      {
+        "line": 326,
+        "msg": "'key' is assigned a value but never used."
+      },
+      {
+        "line": 327,
+        "msg": "'options' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/asymmetric/dsa.ts",
+    "unused": [
+      {
+        "line": 144,
+        "msg": "'keyPart' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/asymmetric/ecc.ts",
+    "unused": [
+      {
+        "line": 37,
+        "msg": "'err' is defined but never used."
+      },
+      {
+        "line": 208,
+        "msg": "'err' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/asymmetric/ecies.ts",
+    "unused": [
+      {
+        "line": 137,
+        "msg": "'err' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/asymmetric/shamir-secret-sharing.ts",
+    "unused": [
+      {
+        "line": 124,
+        "msg": "'idx' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/classical/atbash.ts",
+    "unused": [
+      {
+        "line": 105,
+        "msg": "'key' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/classical/caesar.ts",
+    "unused": [
+      {
+        "line": 75,
+        "msg": "'r' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/classical/railfence.ts",
+    "unused": [
+      {
+        "line": 16,
+        "msg": "'inputLength' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/classical/rot13.ts",
+    "unused": [
+      {
+        "line": 15,
+        "msg": "'key' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/bcrypt.ts",
+    "unused": [
+      {
+        "line": 105,
+        "msg": "'options' is assigned a value but never used."
+      },
+      {
+        "line": 117,
+        "msg": "'err' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/blake2s.ts",
+    "unused": [
+      {
+        "line": 86,
+        "msg": "'_options' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/blake3.ts",
+    "unused": [
+      {
+        "line": 84,
+        "msg": "'_options' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/cmac.ts",
+    "unused": [
+      {
+        "line": 172,
+        "msg": "'_options' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/hmac.ts",
+    "unused": [
+      {
+        "line": 163,
+        "msg": "'options' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/md4.ts",
+    "unused": [
+      {
+        "line": 29,
+        "msg": "'MASK' is assigned a value but never used."
+      },
+      {
+        "line": 166,
+        "msg": "'_options' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/md5.ts",
+    "unused": [
+      {
+        "line": 256,
+        "msg": "'key' is assigned a value but never used."
+      },
+      {
+        "line": 279,
+        "msg": "'key' is assigned a value but never used."
+      },
+      {
+        "line": 280,
+        "msg": "'options' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/ripemd160.ts",
+    "unused": [
+      {
+        "line": 121,
+        "msg": "'key' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/sha2-truncated.ts",
+    "unused": [
+      {
+        "line": 78,
+        "msg": "'_options' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/sha256.ts",
+    "unused": [
+      {
+        "line": 294,
+        "msg": "'key' is assigned a value but never used."
+      },
+      {
+        "line": 317,
+        "msg": "'key' is assigned a value but never used."
+      },
+      {
+        "line": 318,
+        "msg": "'options' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/sha3.ts",
+    "unused": [
+      {
+        "line": 237,
+        "msg": "'key' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/sha512.ts",
+    "unused": [
+      {
+        "line": 305,
+        "msg": "'key' is assigned a value but never used."
+      },
+      {
+        "line": 328,
+        "msg": "'key' is assigned a value but never used."
+      },
+      {
+        "line": 329,
+        "msg": "'options' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/shake.ts",
+    "unused": [
+      {
+        "line": 91,
+        "msg": "'_options' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/sm3.ts",
+    "unused": [
+      {
+        "line": 380,
+        "msg": "'key' is assigned a value but never used."
+      },
+      {
+        "line": 403,
+        "msg": "'key' is assigned a value but never used."
+      },
+      {
+        "line": 404,
+        "msg": "'options' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/whirlpool.ts",
+    "unused": [
+      {
+        "line": 248,
+        "msg": "'mat' is defined but never used."
+      },
+      {
+        "line": 284,
+        "msg": "'key' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/hash/xxhash.ts",
+    "unused": [
+      {
+        "line": 61,
+        "msg": "'toUint32' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/matrixData.ts",
+    "unused": [
+      {
+        "line": 14,
+        "msg": "'getCipherAttr' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/symmetric/aes-gcm.ts",
+    "unused": [
+      {
+        "line": 389,
+        "msg": "'keystream' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/symmetric/gost.ts",
+    "unused": [
+      {
+        "line": 34,
+        "msg": "'MASK' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/symmetric/otp.ts",
+    "unused": [
+      {
+        "line": 46,
+        "msg": "'isDecrypt' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/symmetric/rc6.ts",
+    "unused": [
+      {
+        "line": 30,
+        "msg": "'MASK' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/symmetric/skipjack.ts",
+    "unused": [
+      {
+        "line": 49,
+        "msg": "'gInv' is defined but never used."
+      },
+      {
+        "line": 89,
+        "msg": "'_block' is defined but never used."
+      },
+      {
+        "line": 89,
+        "msg": "'_keyBytes' is defined but never used."
+      },
+      {
+        "line": 89,
+        "msg": "'_steps' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/symmetric/tea.ts",
+    "unused": [
+      {
+        "line": 31,
+        "msg": "'MASK' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/symmetric/xor.ts",
+    "unused": [
+      {
+        "line": 30,
+        "msg": "'isDecrypt' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/cipher/symmetric/xsalsa20.ts",
+    "unused": [
+      {
+        "line": 24,
+        "msg": "'MASK' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/encoding/encodingErrors.ts",
+    "unused": [
+      {
+        "line": 114,
+        "msg": "'corrupted' is assigned a value but never used."
+      },
+      {
+        "line": 145,
+        "msg": "'sourceEncoding' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/hooks/useCipherWorker.ts",
+    "unused": [
+      {
+        "line": 68,
+        "msg": "'_' is assigned a value but never used."
+      },
+      {
+        "line": 68,
+        "msg": "'__' is assigned a value but never used."
+      },
+      {
+        "line": 299,
+        "msg": "'_' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/offline/swRegister.ts",
+    "unused": [
+      {
+        "line": 56,
+        "msg": "'e' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/lib/utils/conversionHistory.ts",
+    "unused": [
+      {
+        "line": 90,
+        "msg": "'_cipherId' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/public/theme-init.js",
+    "unused": [
+      {
+        "line": 7,
+        "msg": "'e' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/tests/unit/asymmetric/ecc.test.ts",
+    "unused": [
+      {
+        "line": 14,
+        "msg": "'vector' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/tests/unit/asymmetric/ed25519.test.ts",
+    "unused": [
+      {
+        "line": 56,
+        "msg": "'pubKeyHex' is assigned a value but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/tests/unit/components/scryptVisualizer.test.tsx",
+    "unused": [
+      {
+        "line": 20,
+        "msg": "'message' is defined but never used."
+      }
+    ]
+  },
+  {
+    "file": "/Users/aayu/CryptoViz-1/tests/unit/hooks/useCipherWorker.test.ts",
+    "unused": [
+      {
+        "line": 226,
+        "msg": "'promise2' is assigned a value but never used."
+      },
+      {
+        "line": 236,
+        "msg": "'worker' is assigned a value but never used."
+      },
+      {
+        "line": 277,
+        "msg": "'promiseEvicted' is assigned a value but never used."
+      }
+    ]
+  }
+]
