@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import GlobalSearch from '../search/GlobalSearch'
+
 import LanguageSelector from '../i18n/LanguageSelector'
 import { useTranslation } from '@/lib/i18n/context'
 import { safeGetItem, safeSetItem } from '../../lib/utils/storage'
@@ -313,6 +315,10 @@ export default function Navbar() {
 
         {/* Right Side */}
         <div className="flex items-center gap-2 sm:gap-4">
+          {/* Global Search */}
+          <GlobalSearch />
+
+          {/* Theme Toggle */}
           <LanguageSelector />
 
           <button
