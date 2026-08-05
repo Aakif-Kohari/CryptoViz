@@ -168,6 +168,7 @@ export type CipherName =
   | 'shake128'
   | 'shake256'
   | 'md4'
+  | 'argon2'
   | 'skein'
   | 'tiger'
   | 'poly1305'
