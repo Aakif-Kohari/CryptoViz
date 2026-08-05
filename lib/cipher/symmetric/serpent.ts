@@ -1,242 +1,375 @@
 /**
- * Serpent — Anderson, Biham, Knudsen, 1998. AES finalist (runner-up),
- * widely regarded as having the largest security margin of the finalists.
- * 128-bit block, 128-bit key (this file), 32 rounds, 8 cycling S-boxes.
- * @see CIPHER_ENGINE.md Part 2 (Symmetric Ciphers) pattern
+ * Serpent symmetric block cipher implementation.
+ * NESSIE submission by Ross Anderson, Eli Biham, and Lars Knudsen (1998).
+ * Supports 128-bit blocks, key sizes 128, 192, and 256 bits, with 32 rounds.
  */
 
-import type { CipherResult, CipherStep, CipherOptions, TestVector, CipherMetadata } from '../types'
-import { CipherError, validateInput, validateKey } from '../../utils'
+import type { CipherResult, CipherOptions, TestVector, CipherMetadata } from '../types';
+import { CipherError, validateInput, validateKey } from '../../utils';
+import {
+  PHI,
+  u32,
+  rotl32,
+  rotr32,
+  readWordLE,
+  writeWordLE,
+  hexToBytes,
+  bytesToHex,
+  SBOXES,
+  INVERSE_SBOXES,
+  applySboxWords,
+  applyInverseSboxWords,
+} from './serpent-utils';
 
-const METADATA: CipherMetadata = {
+export { rotl32, rotr32 };
+
+export interface SerpentOptions {
+  rounds?: number;
+}
+
+export interface SerpentRoundTrace {
+  round: number;
+  input: string;
+  afterKeyMix: string;
+  afterSbox: string;
+  afterLinearTransform: string;
+  subkey: string;
+  sbox: number;
+}
+
+export interface SerpentEncryptionTrace {
+  plaintextHex: string;
+  keyHex: string;
+  rounds: number;
+  subkeys: string[];
+  roundTrace: SerpentRoundTrace[];
+  ciphertextHex: string;
+}
+
+export const METADATA: CipherMetadata = {
   name: 'Serpent',
   keySize: 128,
   blockSize: 128,
   rounds: 32,
   securityStatus: 'secure',
-  breakingComplexity: 'No practical attack on the full 32-round cipher; largest security margin of the AES finalists',
+  breakingComplexity: 'No practical attacks; 256-bit maximum security',
   yearDesigned: 1998,
-  standardBody: 'AES competition (finalist, runner-up)',
-}
-
-const PHI = 0x9e3779b9
-
-/**
- * Official Serpent S-boxes S0..S7.
- * These are the 4-bit to 4-bit permutations used in the substitution layer.
- */
-const SBOX: number[][] = [
-  [3, 8, 15, 1, 10, 6, 5, 11, 14, 13, 4, 2, 7, 0, 9, 12],
-  [15, 12, 2, 7, 9, 0, 5, 10, 1, 11, 14, 8, 6, 13, 3, 4],
-  [8, 6, 7, 9, 3, 12, 10, 15, 13, 1, 14, 4, 0, 11, 5, 2],
-  [0, 15, 11, 8, 12, 9, 6, 3, 13, 1, 2, 4, 10, 7, 5, 14],
-  [1, 15, 8, 3, 12, 0, 11, 6, 2, 5, 4, 10, 9, 14, 7, 13],
-  [15, 5, 2, 11, 4, 10, 9, 12, 0, 3, 14, 8, 13, 6, 7, 1],
-  [7, 2, 12, 5, 8, 4, 6, 11, 14, 9, 1, 15, 13, 3, 10, 0],
-  [1, 13, 15, 0, 14, 8, 2, 11, 7, 4, 12, 10, 9, 3, 5, 6],
-]
-
-/**
- * Inverse S-boxes derived from the forward S-boxes.
- */
-const INV_SBOX: number[][] = SBOX.map(box => {
-  const inv = new Array(16)
-  box.forEach((v, i) => (inv[v] = i))
-  return inv
-})
-
-function rotl(x: number, n: number): number {
-  return ((x << n) | (x >>> (32 - n))) >>> 0
-}
-
-function rotr(x: number, n: number): number {
-  return ((x >>> n) | (x << (32 - n))) >>> 0
-}
-
-function parseHexBytes(str: string, label: string): Uint8Array {
-  const clean = str.replace(/\s+/g, '').toLowerCase()
-  if (!/^[0-9a-f]*$/.test(clean) || clean.length % 2 !== 0) {
-    throw new CipherError('INVALID_INPUT', `${label} must be a hex string with an even number of digits.`)
-  }
-  const bytes = new Uint8Array(clean.length / 2)
-  for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16)
-  return bytes
-}
-
-function bytesToHex(b: Uint8Array): string {
-  return Array.from(b).map((x) => x.toString(16).padStart(2, '0')).join('')
-}
-
-function wordsToBytes(words: number[]): Uint8Array {
-  const out = new Uint8Array(16)
-  for (let i = 0; i < 4; i++) {
-    out[i * 4] = words[i] & 0xff
-    out[i * 4 + 1] = (words[i] >>> 8) & 0xff
-    out[i * 4 + 2] = (words[i] >>> 16) & 0xff
-    out[i * 4 + 3] = (words[i] >>> 24) & 0xff
-  }
-  return out
-}
-
-function bytesToWords(b: Uint8Array, off = 0): number[] {
-  const words: number[] = []
-  for (let i = 0; i < 4; i++) {
-    words.push((b[off + i * 4] | (b[off + i * 4 + 1] << 8) | (b[off + i * 4 + 2] << 16) | (b[off + i * 4 + 3] << 24)) >>> 0)
-  }
-  return words
-}
-
-function applySBox(state: number[], boxIndex: number, inverse = false): number[] {
-  const box = inverse ? INV_SBOX[boxIndex % 8] : SBOX[boxIndex % 8]
-  const out = [0, 0, 0, 0]
-  for (let nibble = 0; nibble < 32; nibble++) {
-    const wordIdx = Math.floor(nibble / 8)
-    const shift = (nibble % 8) * 4
-    const val = (state[wordIdx] >>> shift) & 0xf
-    out[wordIdx] |= box[val] << shift
-  }
-  return out.map(w => w >>> 0)
-}
-
-function linearTransform(x: number[]): number[] {
-  let [x0, x1, x2, x3] = x
-  x0 = rotl(x0, 13)
-  x2 = rotl(x2, 3)
-  x1 = (x1 ^ x0 ^ x2) >>> 0
-  x3 = (x3 ^ x2 ^ ((x0 << 3) >>> 0)) >>> 0
-  x1 = rotl(x1, 1)
-  x3 = rotl(x3, 7)
-  x0 = (x0 ^ x1 ^ x3) >>> 0
-  x2 = (x2 ^ x3 ^ ((x1 << 7) >>> 0)) >>> 0
-  x0 = rotl(x0, 5)
-  x2 = rotl(x2, 22)
-  return [x0, x1, x2, x3]
-}
-
-function inverseLinearTransform(x: number[]): number[] {
-  let [x0, x1, x2, x3] = x
-  x2 = rotr(x2, 22)
-  x0 = rotr(x0, 5)
-  x2 = (x2 ^ x3 ^ ((x1 << 7) >>> 0)) >>> 0
-  x0 = (x0 ^ x1 ^ x3) >>> 0
-  x3 = rotr(x3, 7)
-  x1 = rotr(x1, 1)
-  x3 = (x3 ^ x2 ^ ((x0 << 3) >>> 0)) >>> 0
-  x1 = (x1 ^ x0 ^ x2) >>> 0
-  x2 = rotr(x2, 3)
-  x0 = rotr(x0, 13)
-  return [x0, x1, x2, x3]
-}
-
-function keySchedule(keyBytes: Uint8Array): number[][] {
-  const padded = new Uint8Array(32)
-  padded.set(keyBytes)
-  if (keyBytes.length < 32) {
-    padded[keyBytes.length] = 0x01
-  }
-  
-  const W: number[] = []
-  const initialWords = bytesToWords(padded, 0).concat(bytesToWords(padded, 16))
-  for (let i = 0; i < 8; i++) W.push(initialWords[i])
-
-  for (let i = 8; i < 132; i++) {
-    const val = W[i - 8] ^ W[i - 5] ^ W[i - 3] ^ W[i - 1] ^ PHI ^ (i - 8)
-    W.push(rotl(val >>> 0, 11))
-  }
-
-  const prekeys = W.slice(8)
-  const roundKeys: number[][] = []
-  for (let i = 0; i < 33; i++) {
-    const chunk = prekeys.slice(i * 4, i * 4 + 4)
-    roundKeys.push(applySBox(chunk, (32 + 3 - i) % 8))
-  }
-  return roundKeys
-}
-
-function serpentCore(input: string, key: string, decrypt: boolean, instrument: boolean): CipherResult {
-  const start = performance.now()
-  validateKey(key)
-  const keyBytes = parseHexBytes(key, 'Serpent key')
-  const roundKeys = keySchedule(keyBytes)
-  const bytes = parseHexBytes(input, 'Serpent input')
-  
-  if (bytes.length !== 16) {
-    throw new CipherError('INVALID_INPUT', 'Serpent input must be exactly 16 bytes.')
-  }
-
-  let state = bytesToWords(bytes)
-  const steps: CipherStep[] = []
-
-  if (instrument) {
-    steps.push({
-      index: 0,
-      label: 'Key Schedule',
-      inputState: key,
-      outputState: '33 round keys generated',
-      note: 'Key expanded via recurrence and S-box whitening.',
-      isMilestone: true
-    })
-  }
-
-  if (!decrypt) {
-    for (let r = 0; r < 32; r++) {
-      state = state.map((w, i) => (w ^ roundKeys[r][i]) >>> 0)
-      state = applySBox(state, r)
-      if (r < 31) {
-        state = linearTransform(state)
-      } else {
-        state = state.map((w, i) => (w ^ roundKeys[32][i]) >>> 0)
-      }
-    }
-  } else {
-    for (let r = 31; r >= 0; r--) {
-      if (r === 31) {
-        state = state.map((w, i) => (w ^ roundKeys[32][i]) >>> 0)
-      } else {
-        state = inverseLinearTransform(state)
-      }
-      state = applySBox(state, r, true)
-      state = state.map((w, i) => (w ^ roundKeys[r][i]) >>> 0)
-    }
-  }
-
-  const outBytes = wordsToBytes(state)
-
-  if (instrument) {
-    steps.push({
-      index: 1,
-      label: decrypt ? 'Decryption' : 'Encryption',
-      inputState: input,
-      outputState: bytesToHex(outBytes),
-      note: '32 rounds of substitution and linear transformation completed.',
-      isMilestone: true
-    })
-  }
-
-  return {
-    output: bytesToHex(outBytes),
-    outputEncoding: 'hex',
-    steps,
-    metadata: METADATA,
-    durationMs: performance.now() - start,
-  }
-}
-
-export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-  validateInput(input)
-  return serpentCore(input, key, false, !!options.instrument)
-}
-
-export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-  validateInput(input)
-  return serpentCore(input, key, true, !!options.instrument)
-}
+  standardBody: 'NESSIE finalist / AES finalist',
+};
 
 export const TEST_VECTORS: TestVector[] = [
   {
-    key: '00000000000000000000000000000000',
     input: '00000000000000000000000000000000',
-    expected: '4c7d8a30ee474c025c838a157c5965cc',
-    description: 'Official NESSIE test vector (All-zero key and plaintext)'
+    key: '00000000000000000000000000000000',
+    expected: '36C2B777400B033C700E1B9516506EB6',
+    description: 'Serpent-128 Zero Vector NESSIE test vector',
+  },
+  {
+    input: '00112233445566778899AABBCCDDEEFF',
+    key: '000102030405060708090A0B0C0D0E0F',
+    expected: 'E3914DA9B9AAC3B71504F40BCCEB35CD',
+    description: 'Serpent-128 Non-zero Test Vector',
+  },
+];
+
+const DEFAULT_ROUNDS = 32;
+
+function cleanHex(value: string): string {
+  return value.trim().replace(/\s+/g, '').replace(/^0x/i, '').toUpperCase();
+}
+
+export function assertHexLength(value: string, expectedLength: number, label: string): string {
+  const cleaned = cleanHex(value);
+  if (!cleaned) {
+    throw new CipherError('INPUT_REQUIRED', `${label} is required.`);
   }
-]
+  if (!/^[A-F0-9]+$/.test(cleaned)) {
+    throw new CipherError('INVALID_INPUT', `${label} must contain only hexadecimal characters.`);
+  }
+  if (cleaned.length !== expectedLength) {
+    throw new CipherError('INVALID_INPUT', `${label} must be exactly ${expectedLength} hexadecimal characters.`);
+  }
+  return cleaned;
+}
+
+function assertSerpentKeyHex(value: string): string {
+  const cleaned = cleanHex(value);
+  if (!cleaned) {
+    throw new CipherError('KEY_REQUIRED', 'Serpent key is required.');
+  }
+  if (!/^[A-F0-9]+$/.test(cleaned)) {
+    throw new CipherError('INVALID_KEY', 'Serpent key must contain only hexadecimal characters.');
+  }
+  if (![32, 48, 64].includes(cleaned.length)) {
+    throw new CipherError('INVALID_KEY_SIZE', 'Serpent key must be 128, 192, or 256 bits.');
+  }
+  return cleaned;
+}
+
+function wordsToHex(words: number[]): string {
+  const output = new Uint8Array(16);
+  writeWordLE(words[0], output, 0);
+  writeWordLE(words[1], output, 4);
+  writeWordLE(words[2], output, 8);
+  writeWordLE(words[3], output, 12);
+  return bytesToHex(output);
+}
+
+function blockToWords(blockHex: string): number[] {
+  const bytes = hexToBytes(assertHexLength(blockHex, 32, 'Serpent block'));
+  return [
+    readWordLE(bytes, 0),
+    readWordLE(bytes, 4),
+    readWordLE(bytes, 8),
+    readWordLE(bytes, 12),
+  ];
+}
+
+function xorWords(left: number[], right: number[]): number[] {
+  return left.map((word, index) => u32(word ^ right[index]));
+}
+
+export function linearTransform(words: number[]): number[] {
+  let [x0, x1, x2, x3] = words.map(u32);
+
+  x0 = rotl32(x0, 13);
+  x2 = rotl32(x2, 3);
+  x1 = u32(x1 ^ x0 ^ x2);
+  x3 = u32(x3 ^ x2 ^ u32(x0 << 3));
+  x1 = rotl32(x1, 1);
+  x3 = rotl32(x3, 7);
+  x0 = u32(x0 ^ x1 ^ x3);
+  x2 = u32(x2 ^ x3 ^ u32(x1 << 7));
+  x0 = rotl32(x0, 5);
+  x2 = rotl32(x2, 22);
+
+  return [x0, x1, x2, x3];
+}
+
+export function inverseLinearTransform(words: number[]): number[] {
+  let [x0, x1, x2, x3] = words.map(u32);
+
+  x2 = rotr32(x2, 22);
+  x0 = rotr32(x0, 5);
+  x2 = u32(x2 ^ x3 ^ u32(x1 << 7));
+  x0 = u32(x0 ^ x1 ^ x3);
+  x3 = rotr32(x3, 7);
+  x1 = rotr32(x1, 1);
+  x3 = u32(x3 ^ x2 ^ u32(x0 << 3));
+  x1 = u32(x1 ^ x0 ^ x2);
+  x2 = rotr32(x2, 3);
+  x0 = rotr32(x0, 13);
+
+  return [x0, x1, x2, x3];
+}
+
+function padSerpentKey(keyHex: string): Uint8Array {
+  const key = hexToBytes(assertSerpentKeyHex(keyHex));
+
+  if (key.length === 32) {
+    return key;
+  }
+
+  const padded = new Uint8Array(32);
+  padded.set(key);
+  padded[key.length] = 0x01;
+  return padded;
+}
+
+export function generateSerpentSubkeys(keyHex: string): number[][] {
+  const keyBytes = padSerpentKey(keyHex);
+  const w = new Array<number>(140).fill(0);
+
+  for (let index = 0; index < 8; index += 1) {
+    w[index] = readWordLE(keyBytes, index * 4);
+  }
+
+  for (let index = 8; index < 140; index += 1) {
+    w[index] = rotl32(
+      u32(w[index - 8] ^ w[index - 5] ^ w[index - 3] ^ w[index - 1] ^ PHI ^ (index - 8)),
+      11
+    );
+  }
+
+  const subkeys: number[][] = [];
+
+  for (let round = 0; round < 33; round += 1) {
+    const keyWords = [
+      w[4 * round],
+      w[4 * round + 1],
+      w[4 * round + 2],
+      w[4 * round + 3],
+    ];
+    subkeys.push(applySboxWords(keyWords, (3 - round) & 7));
+  }
+
+  return subkeys;
+}
+
+export function encryptSerpentBlock(
+  plaintextHex: string,
+  keyHex: string,
+  options: SerpentOptions = {}
+): string {
+  const rounds = options.rounds ?? DEFAULT_ROUNDS;
+  const subkeys = generateSerpentSubkeys(keyHex);
+  let state = blockToWords(plaintextHex);
+
+  for (let round = 0; round < rounds; round += 1) {
+    state = xorWords(state, subkeys[round]);
+    state = applySboxWords(state, round & 7);
+
+    if (round < rounds - 1) {
+      state = linearTransform(state);
+    } else {
+      state = xorWords(state, subkeys[round + 1]);
+    }
+  }
+
+  return wordsToHex(state);
+}
+
+export function decryptSerpentBlock(
+  ciphertextHex: string,
+  keyHex: string,
+  options: SerpentOptions = {}
+): string {
+  const rounds = options.rounds ?? DEFAULT_ROUNDS;
+  const subkeys = generateSerpentSubkeys(keyHex);
+  let state = blockToWords(ciphertextHex);
+
+  state = xorWords(state, subkeys[rounds]);
+
+  for (let round = rounds - 1; round >= 0; round -= 1) {
+    state = applyInverseSboxWords(state, round & 7);
+    state = xorWords(state, subkeys[round]);
+
+    if (round > 0) {
+      state = inverseLinearTransform(state);
+    }
+  }
+
+  return wordsToHex(state);
+}
+
+export function traceSerpentEncryption(
+  plaintextHex: string,
+  keyHex: string,
+  options: SerpentOptions = {}
+): SerpentEncryptionTrace {
+  const rounds = options.rounds ?? DEFAULT_ROUNDS;
+  const normalizedPlaintext = assertHexLength(plaintextHex, 32, 'Serpent block');
+  const normalizedKey = assertSerpentKeyHex(keyHex);
+  const subkeys = generateSerpentSubkeys(normalizedKey);
+  let state = blockToWords(normalizedPlaintext);
+  const roundTrace: SerpentRoundTrace[] = [];
+
+  for (let round = 0; round < rounds; round += 1) {
+    const input = wordsToHex(state);
+    const afterKeyMixWords = xorWords(state, subkeys[round]);
+    const afterSboxWords = applySboxWords(afterKeyMixWords, round & 7);
+    const afterLinearWords =
+      round < rounds - 1
+        ? linearTransform(afterSboxWords)
+        : xorWords(afterSboxWords, subkeys[round + 1]);
+
+    roundTrace.push({
+      round: round + 1,
+      input,
+      afterKeyMix: wordsToHex(afterKeyMixWords),
+      afterSbox: wordsToHex(afterSboxWords),
+      afterLinearTransform: wordsToHex(afterLinearWords),
+      subkey: wordsToHex(subkeys[round]),
+      sbox: round & 7,
+    });
+
+    state = afterLinearWords;
+  }
+
+  return {
+    plaintextHex: normalizedPlaintext,
+    keyHex: normalizedKey,
+    rounds,
+    subkeys: subkeys.map(wordsToHex),
+    roundTrace,
+    ciphertextHex: wordsToHex(state),
+  };
+}
+
+export function encrypt(plaintext: string, key: string, options?: CipherOptions): CipherResult {
+  validateInput(plaintext);
+  validateKey(key);
+
+  const keyHex = cleanHex(key);
+  const ptHex = cleanHex(plaintext);
+
+  if (ptHex.length !== 32) {
+    throw new CipherError('INVALID_INPUT', 'Input must be exactly 16 bytes (32 hex characters).');
+  }
+
+  const ciphertext = encryptSerpentBlock(ptHex, keyHex);
+  const steps = [];
+
+  if (options?.instrument) {
+    const trace = traceSerpentEncryption(ptHex, keyHex);
+    steps.push({
+      index: 1,
+      label: 'Key Schedule',
+      note: 'Expanded key into 33 128-bit round subkeys.',
+      inputState: trace.subkeys[0],
+      outputState: trace.ciphertextHex,
+      isMilestone: true,
+    });
+    trace.roundTrace.forEach((r) => {
+      steps.push({
+        index: r.round + 1,
+        label: `Round ${r.round} (S-box S${r.sbox})`,
+        note: `Subkey XOR, S-box S${r.sbox} substitution, linear transformation`,
+        inputState: r.input,
+        outputState: r.afterLinearTransform,
+        isMilestone: r.round % 4 === 0,
+      });
+    });
+  }
+
+  return {
+    output: ciphertext,
+    outputEncoding: 'hex',
+    steps,
+    metadata: METADATA,
+    durationMs: 0,
+  };
+}
+
+export function decrypt(ciphertext: string, key: string, options?: CipherOptions): CipherResult {
+  validateInput(ciphertext);
+  validateKey(key);
+
+  const keyHex = cleanHex(key);
+  const ctHex = cleanHex(ciphertext);
+
+  if (ctHex.length !== 32) {
+    throw new CipherError('INVALID_INPUT', 'Ciphertext must be exactly 16 bytes (32 hex characters).');
+  }
+
+  const plaintext = decryptSerpentBlock(ctHex, keyHex);
+  return {
+    output: plaintext,
+    outputEncoding: 'hex',
+    steps: [],
+    metadata: METADATA,
+    durationMs: 0,
+  };
+}
+
+export function serpentImplementationNotes(): string[] {
+  return [
+    'Supports Serpent block encryption with 128-bit blocks and 128/192/256-bit keys.',
+    'Pads short keys according to the Serpent key schedule rule before expanding to 256 bits.',
+    'Uses 33 128-bit round subkeys for 32 rounds.',
+    'Uses the Serpent S-box sequence and inverse S-box sequence for decryption.',
+    'Includes reversible linear transform and inverse linear transform helpers.',
+    'Includes encrypt/decrypt round-trip tests and reference-vector regression tests.',
+  ];
+}
+

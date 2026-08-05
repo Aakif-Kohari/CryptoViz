@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  CIPHER_WORKER_OPTION_HANDLERS,
   createCipherWorkerOptions,
   createDefaultComparisonPanelState,
   getSupportedDirections,
@@ -61,7 +62,14 @@ describe('cipher comparison utilities', () => {
     })
   })
 
-  it('maps registry options into worker options', () => {
+  it('maps registry options into worker options via handler map', () => {
+    expect(CIPHER_WORKER_OPTION_HANDLERS.rsa).toBeDefined()
+    expect(CIPHER_WORKER_OPTION_HANDLERS.bcrypt).toBeDefined()
+    expect(CIPHER_WORKER_OPTION_HANDLERS.des).toBeDefined()
+    expect(CIPHER_WORKER_OPTION_HANDLERS['3des']).toBeDefined()
+    expect(CIPHER_WORKER_OPTION_HANDLERS.aes).toBeDefined()
+    expect(CIPHER_WORKER_OPTION_HANDLERS.dh).toBeDefined()
+
     expect(
       createCipherWorkerOptions(getCipher('rsa'), {
         demoMode: false,
@@ -72,6 +80,13 @@ describe('cipher comparison utilities', () => {
     })
 
     expect(
+      createCipherWorkerOptions(getCipher('rsa'), {}),
+    ).toEqual({
+      instrument: true,
+      mode: 'demo',
+    })
+
+    expect(
       createCipherWorkerOptions(getCipher('bcrypt'), {
         rounds: 8,
       }),
@@ -79,23 +94,53 @@ describe('cipher comparison utilities', () => {
       instrument: true,
       rounds: 8,
     })
-  })
-  it('creates AES worker options with default hex input', () => {
+
     expect(
-      createCipherWorkerOptions(getCipher('aes'), {}),
+      createCipherWorkerOptions(getCipher('bcrypt'), {}),
     ).toEqual({
+      instrument: true,
+      rounds: 4,
+    })
+  })
+
+  it('creates DES, 3DES, and AES worker options with hexInput options', () => {
+    expect(createCipherWorkerOptions(getCipher('des'), {})).toEqual({
+      instrument: true,
+      hexInput: true,
+    })
+    expect(
+      createCipherWorkerOptions(getCipher('3des'), { hexInput: false }),
+    ).toEqual({
+      instrument: true,
+      hexInput: false,
+    })
+    expect(createCipherWorkerOptions(getCipher('aes'), {})).toEqual({
       instrument: true,
       hexInput: true,
     })
   })
 
-  it('creates DH worker options with default secret', () => {
-    expect(
-      createCipherWorkerOptions(getCipher('dh'), {}),
-    ).toEqual({
+  it('creates DH worker options with default and custom secret', () => {
+    expect(createCipherWorkerOptions(getCipher('dh'), {})).toEqual({
       instrument: true,
       mode: 'demo',
       bobSecret: '15',
     })
+    expect(
+      createCipherWorkerOptions(getCipher('dh'), { bobSecret: '27' }),
+    ).toEqual({
+      instrument: true,
+      mode: 'demo',
+      bobSecret: '27',
+    })
   })
-})
+
+  it('returns default options for ciphers without custom option handlers', () => {
+    expect(createCipherWorkerOptions(getCipher('caesar'), {})).toEqual({
+      instrument: true,
+    })
+    expect(createCipherWorkerOptions(getCipher('sha256'), {})).toEqual({
+      instrument: true,
+    })
+  })
+})

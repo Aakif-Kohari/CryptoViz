@@ -2,8 +2,6 @@
 
 import { useMemo, useRef, useState } from "react";
 import {
-  PaddingOracle,
-  recoverPlaintext,
   type AttackStep,
   type OracleMode,
   BLOCK_SIZE,
@@ -50,9 +48,9 @@ export default function PaddingOracleSimulator() {
 
   const cancelRef = useRef(false);
 
-  const allSteps = useMemo(() => [] as AttackStep[], []); // populated per-run below
+  const _allSteps = useMemo(() => [] as AttackStep[], []); // populated per-run below
 
-  const { recoverPlaintextConcurrently, cancel, loading } = useAttackWorker();
+  const { recoverPlaintextConcurrently, cancel, loading: _loading } = useAttackWorker();
 
   async function runAttack() {
     setError(null);

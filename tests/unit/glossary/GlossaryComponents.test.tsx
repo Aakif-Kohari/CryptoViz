@@ -6,8 +6,16 @@ import GlossaryTextRenderer from '@/components/glossary/GlossaryTextRenderer';
 import GlossaryTermTooltip from '@/components/glossary/GlossaryTermTooltip';
 import { GLOSSARY_TERMS } from '@/lib/glossary/glossaryData';
 
-vi.mock('next/navigation', () => ({
-  usePathname: () => '/glossary',
+vi.mock('@/components/layout/Navbar', () => ({
+  default: () => <nav>Navbar</nav>,
+}));
+
+vi.mock('@/components/layout/footer', () => ({
+  default: () => <footer>Footer</footer>,
+}));
+
+vi.mock('next/link', () => ({
+  default: ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>,
 }));
 
 describe('Glossary Components & Explorer Page', () => {

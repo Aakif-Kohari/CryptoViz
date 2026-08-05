@@ -37,7 +37,7 @@ describe('DecisionTree', () => {
     
     // Should show breadcrumb history
     expect(screen.getByRole('navigation', { name: /decision history/i })).toBeInTheDocument()
-    expect(screen.getByText('Goal: Encryption')).toBeInTheDocument()
+    expect(screen.getByText('You selected: Hide data (Encryption)')).toBeInTheDocument()
   })
 
   it('allows going back to the previous question', () => {
@@ -45,7 +45,7 @@ describe('DecisionTree', () => {
     
     // Go forward
     fireEvent.click(screen.getByText('Hide data (Encryption)'))
-    expect(screen.getByText('Goal: Encryption')).toBeInTheDocument()
+    expect(screen.getByText('You selected: Hide data (Encryption)')).toBeInTheDocument()
     
     // Go back
     fireEvent.click(screen.getByRole('button', { name: /go back one step/i }))
@@ -88,5 +88,20 @@ describe('DecisionTree', () => {
     // Should be back at start
     const startNode = ADVISOR_TREE['start'] as QuestionNode
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(startNode.question)
+  })
+
+  it('manages focus correctly when navigating questions', () => {
+    render(<DecisionTree />)
+    
+    // Initial start node should be focused on mount
+    let container = screen.getByRole('heading', { level: 2 }).parentElement?.parentElement ?? screen.getByRole('heading', { level: 2 }).parentElement
+    expect(container).toHaveFocus()
+
+    // Answer the question
+    fireEvent.click(screen.getByText('Hide data (Encryption)'))
+
+    // The new container should be focused automatically
+    container = screen.getByRole('heading', { level: 2 }).parentElement?.parentElement ?? screen.getByRole('heading', { level: 2 }).parentElement
+    expect(container).toHaveFocus()
   })
 })

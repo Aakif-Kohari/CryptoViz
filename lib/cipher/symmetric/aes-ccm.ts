@@ -13,6 +13,7 @@
 
 import { expandKey, processBlock } from './aes'
 import { CipherError, type CipherErrorCode } from '../../utils/errors'
+import { constantTimeEqual } from '../../utils/constantTime'
 import type { CipherResult, CipherStep, CipherMetadata, CipherOptions, TestVector } from '../types'
 
 const METADATA: CipherMetadata = {
@@ -183,14 +184,14 @@ function ccmCore(input: string, key: string, decrypt: boolean, instrument: boole
     const s0 = processBlock(buildCtrBlock(nonce, 0), roundKeys, false)
     const expectedTag = xor(rawMac, s0).slice(0, TAG_LEN)
 
-    const tagsMatch = bytesToHex(expectedTag) === bytesToHex(receivedTag)
+    const tagsMatch = constantTimeEqual(expectedTag, receivedTag)
     if (instrument) {
       steps.push({
         index: 0,
         label: 'Verify tag before returning plaintext',
         inputState: bytesToHex(receivedTag),
         outputState: tagsMatch ? 'MATCH' : 'MISMATCH',
-        note: 'Tag is recomputed from the decrypted plaintext and compared BEFORE any plaintext is returned to the caller.',
+        note: 'Tag is recomputed from the decrypted plaintext and compared in constant time BEFORE any plaintext is returned to the caller.',
         isMilestone: true,
       })
     }
@@ -219,7 +220,7 @@ export const TEST_VECTORS: TestVector[] = [
   {
     input: '202122232425262728292a2b2c2d2e2f',
     key: '404142434445464748494a4b4c4d4e4f|101112131415161718191a1b|0001020304050607',
-    expected: 'd37b1ec5b2019353244b65d024545239aeaf8b90c82291256065c9981c733325',
+    expected: 'e3b201a9f5b71a7a9b1ceaeccd97e70b7c9cf9fedbe02bfe1be159bf5b7d0a3e',
     description: 'NIST SP 800-38C Appendix C.1: 128-bit key, 12-byte nonce, 8-byte AAD, 16-byte payload.'
   }
 ]

@@ -298,3 +298,120 @@
 [#475] (open) by @csxark: [FEATURE] Complete Cryptography Resources Library
 [#474] (closed) by @csxark: [FEATURE] Sync Every Cipher Documentation into Docs
 [#473] (open) by @csxark: [FEATURE] Build a Dedicated Cipher Visualizers Hub
+
+=== Audited 2026-07-30 19:58 UTC (16 new) ===
+[#603] (closed) by @MOHITKOURAV01: [FEATURE] Add NIST SP 800-90A DRBG Internals Visualizer — HMAC-DRBG and CTR-DRBG state machines with backtracking resistance
+[#602] (open) by @MOHITKOURAV01: [FEATURE] Add Zero-Knowledge Proof / Sigma-Protocol Playground — Schnorr identification, knowledge extractor, ZK simulator and Fiat–Shamir
+[#601] (closed) by @MOHITKOURAV01: [FEATURE] Add Many-Time Pad / Keystream Reuse Workbench — crib dragging and the space heuristic
+[#600] (closed) by @MOHITKOURAV01: [FEATURE] Add AES-GCM Nonce Reuse (Forbidden Attack) Playground — recover the GHASH auth key H in GF(2^128) and forge tags
+[#599] (open) by @MOHITKOURAV01: [FEATURE] Add RSA Attack Playground — Fermat factorization, Wiener's attack, common modulus and Håstad broadcast
+[#589] (closed) by @MOHITKOURAV01: [FEATURE] Add Elliptic Curve Point Arithmetic Playground — group law, double-and-add ladder, subgroup structure and ECDLP over small F_p
+[#588] (closed) by @MOHITKOURAV01: [FEATURE] Add Randomness Quality Test Suite (NIST SP 800-22 battery) comparing crypto.getRandomValues, Math.random and a weak LCG
+[#587] (closed) by @MOHITKOURAV01: [FEATURE] Add ASN.1 / DER Structure Decoder — PEM to TLV tree with OID resolution and byte-range highlighting
+[#586] (closed) by @MOHITKOURAV01: [FEATURE] Add TOTP/HOTP Authenticator Visualizer (RFC 4226 / RFC 6238) with dynamic-truncation trace and clock-skew explorer
+[#585] (closed) by @MOHITKOURAV01: [FEATURE] Add Vigenère Cryptanalysis Workbench — Kasiski examination + Index of Coincidence + per-column chi-squared key recovery
+[#578] (open) by @Aakif-Kohari: [FEATURE] Add Twofish symmetric block cipher (AES finalist, 128-bit block, key-dependent S-boxes, MDS matrix)
+[#577] (open) by @Aakif-Kohari: [FEATURE] Add RC2 variable-key-size block cipher (RFC 2268, historically significant, used in early TLS/S/MIME)
+[#576] (open) by @Aakif-Kohari: [FEATURE] Add ASCON-128 authenticated encryption (NIST SP 800-232, 2023 Lightweight Crypto Standard)
+[#575] (open) by @Aakif-Kohari: [FEATURE] Add SM4 symmetric block cipher (Chinese national standard, GB/T 32907-2016, ISO/IEC 18033-3)
+[#574] (open) by @Aakif-Kohari: [FEATURE] Add Blowfish symmetric block cipher (64-bit block, 32–448-bit key, 16-round Feistel)
+[#559] (open) by @durdana3105: [BUG] Refactor Cipher Modules into a Plugin-Based Architecture for Extensible Algorithm Support
+
+=== Audited 2026-07-31 14:19 UTC (37 new) ===
+[#645] (open) by @Aakif-Kohari: [FEATURE] Add Skein-256 cryptographic hash (SHA-3 finalist, Threefish-256-based UBI chaining, NIST competition)
+[#644] (open) by @Aakif-Kohari: [FEATURE] Add Trivium stream cipher (eSTREAM Phase 3 portfolio, 288-bit state, three non-linear feedback shift registers)
+[#643] (open) by @Aakif-Kohari: [FEATURE] Add PRESENT ultra-lightweight block cipher (ISO/IEC 29192-2, 64-bit block, 4-bit S-box, 31-round SPN, 80/128-bit key)
+[#642] (open) by @Aakif-Kohari: [FEATURE] Add LEA-128 lightweight encryption algorithm (Korean standard, ARX cipher, IETF RFC 9998, 24-round)
+[#641] (open) by @Aakif-Kohari: [FEATURE] Add SIMON-128/128 lightweight block cipher (NSA 2013, 64-bit words, 68-round Feistel with bitwise AND)
+[#635] (open) by @csxark: Simplify Repetitive Page Layouts
+[#634] (open) by @csxark: Introduce Breadcrumbs Across Learning Pages
+[#633] (open) by @csxark: Improve Learning Progression
+[#632] (open) by @csxark: Transform Visualizer into a Workspace
+[#631] (open) by @csxark: Hide Internal Developer Routes
+[#630] (open) by @csxark: Refine Footer Experience
+[#629] (open) by @csxark: Convert Docs into Guided Learning
+[#628] (open) by @csxark: Build a Unified Reference Hub
+[#627] (open) by @csxark: Redesign Global Navigation Around User Goals
+[#626] (open) by @csxark: Create a Guided 'Start Here' User Journey
+[#625] (open) by @csxark: Introduce CI Quality Gates
+[#624] (open) by @csxark: Reduce Implementation Drift
+[#623] (open) by @csxark: Improve Keyboard Navigation
+[#622] (open) by @csxark: Optimize Worker Cache
+[#621] (open) by @csxark: Centralize Input Validation
+[#620] (open) by @csxark: Remove Dead Code
+[#619] (open) by @csxark: Synchronize Docs with Implementation
+[#618] (open) by @csxark: Eliminate Broad any Usage
+[#617] (open) by @csxark: Harden localStorage Wrapper
+[#616] (open) by @csxark: Lazy-load Cipher Modules
+[#615] (open) by @csxark: Verify Placeholder Crypto Vectors
+[#614] (open) by @csxark: Refactor Worker Dispatch Layer
+[#613] (open) by @csxark: Remove dangerouslySetInnerHTML
+[#612] (open) by @csxark: Improve Advisor Focus Accessibility
+[#611] (open) by @csxark: Stabilize Failing Test Suite
+[#610] (open) by @csxark: Correct XTEA Implementation
+[#609] (open) by @csxark: Correct Serpent Implementation
+[#608] (open) by @csxark: Correct RC6 Implementation
+[#607] (open) by @csxark: Fix Salsa20 API & Test Vector Mismatch
+[#606] (open) by @csxark: Implement Skipjack Decryption Support
+[#605] (open) by @Ayush-0918: [FEATURE] Constant-Time Comparison Utilities
+[#604] (closed) by @Ayush-0918: [FEATURE]Add Comprehensive Cipher Performance Profiling and Regression Testing Framework
+
+=== Audited 2026-08-04 06:16 UTC (17 new) ===
+[#717] (closed) by @ankitasahu83964: docs: Add a Frequently Asked Questions (FAQ) section to the README
+[#716] (open) by @Aakif-Kohari: [FEATURE] Add XXTEA (Corrected Block TEA) cipher — variable-length block, Feistel-like MX function, full-block diffusion
+[#715] (open) by @Aakif-Kohari: [FEATURE] Add Streebog-256 cryptographic hash (Russian GOST R 34.11-2012, 512-bit internal state, Miyaguchi-Preneel-like compression)
+[#714] (open) by @Aakif-Kohari: [FEATURE] Add Kuznyechik block cipher (Russian GOST R 34.12-2015, 128-bit block, 9-round SPN with nonlinear GF(2⁸) transform)
+[#713] (open) by @Aakif-Kohari: [FEATURE] Add Rabbit stream cipher (eSTREAM Portfolio Phase 2/3, RFC 4503, 8-round-per-word counter system)
+[#712] (open) by @Aakif-Kohari: [FEATURE] Add MARS block cipher (IBM AES finalist, 128-bit block, 32-round heterogeneous SPN, type-3 Feistel core)
+[#695] (closed) by @ankitasahu83964: docs: Add a Browser Compatibility section to README
+[#692] (closed) by @Babin123456: [BUG] Uncompressed $0x04$ point coordinate parsing failure in ECC P-256 and Ed25519 scalar validation
+[#691] (closed) by @Babin123456: [BUG] SM3 64-bit length padding misalignment, Whirlpool feedforward bug, and incomplete Skipjack cipher
+[#690] (closed) by @Babin123456: [BUG] Cipher Web Worker race conditions and unhandled rejection during rapid tab switching
+[#689] (closed) by @Babin123456: [BUG] AEAD tag truncation and nonce length validation failure in Ascon, ChaCha20-Poly1305, and XChaCha20-Poly1305
+[#688] (closed) by @Babin123456: [BUG] Unhandled RangeError and modular rotation misalignment in Serpent & LEA cipher implementations
+[#684] (closed) by @Aakif-Kohari: [FEATURE] Add SIMON-32/64 lightweight block cipher (NSA 2013, IACR 2013/404, 16-bit words, 32-round Feistel)
+[#683] (closed) by @Aakif-Kohari: [FEATURE] Add NOEKEON block cipher (NESSIE candidate, 128-bit block, no S-box lookup table, pure bitsliced design)
+[#682] (closed) by @Aakif-Kohari: [FEATURE] Add GIFT-64 ultra-lightweight block cipher (CHES 2017, 4-bit S-box, 28-round SPN, 128-bit key)
+[#681] (closed) by @Aakif-Kohari: [FEATURE] Add SEED-128 block cipher (Korean national standard, RFC 4269, ISO/IEC 18033-3, 16-round Feistel)
+[#680] (closed) by @Aakif-Kohari: [FEATURE] Add HC-128 stream cipher (key/IV-derived tables, 128-bit key)
+
+=== Audited 2026-08-05 06:23 UTC (39 new) ===
+[#773] (open) by @Aakif-Kohari: [FEATURE] Add PBKDF2 key derivation function (RFC 8018, HMAC-based iterative KDF, configurable hash and iteration count)
+[#772] (open) by @Aakif-Kohari: [FEATURE] Add Argon2id password hashing (PHC winner, RFC 9106, memory-hard KDF with hybrid data/time-independent addressing)
+[#771] (open) by @Aakif-Kohari: [FEATURE] Add Tiger hash function (Anderson & Biham, 1995, 192-bit output, 64-bit-word-optimized, 3×8 S-box passes)
+[#770] (open) by @Aakif-Kohari: [FEATURE] Add Anubis block cipher (NESSIE candidate, involutional SPN, 128-bit block, variable key, self-inverse S-box)
+[#769] (open) by @Aakif-Kohari: [FEATURE] Add MISTY1 block cipher (CRYPTREC-recommended, RFC 2994, FL/FO recursive Feistel structure)
+[#753] (closed) by @csxark: Export Learning Notes
+[#752] (open) by @csxark: Compare Multiple Algorithms Side-by-Side
+[#751] (closed) by @csxark: Attack Simulator Collection
+[#750] (closed) by @csxark: Interactive Glossary
+[#749] (closed) by @csxark: Cipher Pipeline Builder
+[#748] (closed) by @csxark: Cryptography Timeline
+[#747] (open) by @csxark: Avalanche Effect Visualizer
+[#745] (open) by @csxark: Round-by-Round Animation Controls
+[#744] (open) by @csxark: Real-World Usage Explorer
+[#743] (open) by @csxark: Interactive Formula Explorer
+[#742] (open) by @csxark: Achievement & Badge System
+[#741] (open) by @csxark: Add User Progress Dashboard
+[#740] (open) by @csxark: Build Interactive Learning Paths
+[#739] (open) by @csxark: Standardize Product Vocabulary and Information Architecture
+[#738] (open) by @csxark: Introduce Global Search Across Learning Content
+[#737] (open) by @csxark: Complete Footer Navigation and Community Links
+[#736] (open) by @csxark: Simplify Visualizer Discovery Experience
+[#735] (open) by @csxark: Remove or Hide Developer-only Routes
+[#734] (open) by @csxark: Improve Offline Experience Onboarding
+[#733] (open) by @csxark: Redesign Challenge Experience into One Guided Flow
+[#732] (open) by @csxark: Merge Resources and Reference into a Unified Knowledge Hub
+[#731] (open) by @csxark: Simplify Global Navigation Around User Goals
+[#730] (open) by @csxark: Build a Guided 'Start Here' Learning Journey
+[#729] (open) by @csxark: Introduce Mandatory Known-Answer Vector CI
+[#728] (open) by @csxark: Improve Reliability Baseline
+[#727] (open) by @csxark: Hide Internal Test & Diagnostic Routes
+[#726] (open) by @csxark: Simplify Navigation and Product Flow
+[#725] (open) by @csxark: Implement Shared Input Sanitization
+[#724] (open) by @csxark: Strengthen Content Security Policy
+[#723] (open) by @csxark: Fix Remaining TypeScript Errors
+[#722] (open) by @csxark: Restore RC6 API Compatibility
+[#721] (open) by @csxark: Replace Placeholder SEED Implementation
+[#720] (open) by @csxark: Fix Incorrect Cipher Implementations Failing Published Test Vectors
+[#719] (closed) by @ankitasahu83964: docs: Add "Troubleshooting" section to README

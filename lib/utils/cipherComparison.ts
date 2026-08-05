@@ -1,7 +1,7 @@
 import type {
   CipherDefinition,
 } from '../cipher/registry'
-import type { CipherDirection } from '../cipher/types'
+import type { CipherDirection, CipherOptions } from '../cipher/types'
 
 export interface ComparisonSelection {
   leftCipherId: string
@@ -15,7 +15,7 @@ export interface ComparisonPanelState {
   options: Record<string, string | number | boolean>
 }
 
-export interface CipherWorkerOptions {
+export interface CipherWorkerOptions extends CipherOptions {
   instrument: true
   hexInput?: boolean
   rounds?: number
@@ -74,33 +74,43 @@ export function swapComparisonSelection(
   }
 }
 
+type CipherOptionHandler = (
+  options: Record<string, string | number | boolean>,
+) => Partial<CipherWorkerOptions>
+
+const handleHexInputOptions: CipherOptionHandler = (options) => ({
+  hexInput: typeof options.hexInput === 'boolean' ? options.hexInput : true,
+})
+
+export const CIPHER_WORKER_OPTION_HANDLERS: Record<
+  string,
+  CipherOptionHandler
+> = {
+  des: handleHexInputOptions,
+  '3des': handleHexInputOptions,
+  aes: handleHexInputOptions,
+  bcrypt: (options) => ({
+    rounds: typeof options.rounds === 'number' ? options.rounds : 4,
+  }),
+  rsa: (options) => ({
+    mode: options.demoMode === false ? 'real' : 'demo',
+  }),
+  dh: (options) => ({
+    mode: 'demo',
+    bobSecret: typeof options.bobSecret === 'string' ? options.bobSecret : '15',
+  }),
+}
+
 export function createCipherWorkerOptions(
   cipher: CipherDefinition,
   options: Record<string, string | number | boolean>,
 ): CipherWorkerOptions {
-  const workerOptions: CipherWorkerOptions = {
+  const handler = CIPHER_WORKER_OPTION_HANDLERS[cipher.id]
+  const specificOptions = handler ? handler(options) : {}
+
+  return {
     instrument: true,
+    ...specificOptions,
   }
-
-  if (cipher.id === 'des' || cipher.id === '3des' || cipher.id === 'aes') {
-    workerOptions.hexInput =
-      typeof options.hexInput === 'boolean' ? options.hexInput : true
-  }
-
-  if (cipher.id === 'bcrypt') {
-    workerOptions.rounds =
-      typeof options.rounds === 'number' ? options.rounds : 4
-  }
-
-  if (cipher.id === 'rsa') {
-    workerOptions.mode = options.demoMode === false ? 'real' : 'demo'
-  }
-
-  if (cipher.id === 'dh') {
-    workerOptions.mode = 'demo'
-    workerOptions.bobSecret =
-      typeof options.bobSecret === 'string' ? options.bobSecret : '15'
-  }
-
-  return workerOptions
 }
+

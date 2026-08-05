@@ -26,6 +26,13 @@ describe('ChaCha20-Poly1305 AEAD', () => {
     expect(() => decrypt(enc.output, `${keyStr}|50515253c0c1c2c3c4c5c6c8`)).toThrow(/tag verification failed/)
   })
 
+  it('handles zero-length empty plaintext payloads', () => {
+    const enc = encrypt('', keyStr)
+    expect(enc.output).toBeDefined()
+    const dec = decrypt(enc.output, keyStr)
+    expect(dec.output).toBe('')
+  })
+
   it('matches the RFC 8439 Section 2.8.2 official test vector', () => {
     const v = TEST_VECTORS[0]
     const res = encrypt(v.input, v.key)

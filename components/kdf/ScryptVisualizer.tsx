@@ -9,7 +9,7 @@ import {
   type ScryptStageStep
 } from '@/lib/kdf/scrypt'
 import type { WorkerRequest } from '@/types/worker'
-import { Info, HelpCircle, ShieldAlert, Cpu } from 'lucide-react'
+import { HelpCircle, ShieldAlert, Cpu } from 'lucide-react'
 
 function randomSaltHex(bytes = 16): string {
   const arr = crypto.getRandomValues(new Uint8Array(bytes))
@@ -30,11 +30,11 @@ async function deriveScryptKeyViaWorker(
       options: params
     },
   }
-  const response = await sharedCipherPool.execute(message)
+  const response = await sharedCipherPool.execute(message) as { success: boolean; payload: { result?: { derivedKeyHex: string; saltHex: string }; error?: string } }
   if (response.success === false) {
     throw new Error(response.payload.error ?? 'Scrypt derivation failed.')
   }
-  return response.payload.result as unknown as { derivedKeyHex: string; saltHex: string }
+  return response.payload.result as { derivedKeyHex: string; saltHex: string }
 }
 
 export default function ScryptVisualizer() {
