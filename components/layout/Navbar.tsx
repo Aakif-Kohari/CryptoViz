@@ -149,6 +149,16 @@ export default function Navbar() {
     { name: 'Worker Tests', href: '/tests/worker' },
   ];
 
+  const developerLinks = [
+    { name: 'Integration Tests', href: '/tests/integration' },
+    { name: 'Snapshot Tests', href: '/tests/snapshots' },
+    { name: 'Worker Tests', href: '/tests/worker' },
+    { name: 'Benchmark History', href: '/benchmarks/history' },
+  ];
+
+  const isDevelopment = process.env.NODE_ENV === 'development';
+
+  const visibleNavLinks = isDevelopment ? [...navLinks, ...developerLinks] : navLinks;
   const isDevelopmentMode = () => process.env.NODE_ENV === 'development'
 
   const navLinks = isDevelopmentMode()
@@ -196,6 +206,10 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-10 xl:flex">
+          {visibleNavLinks.map((link) => {
+            const isActive =
+              pathname.startsWith(link.href) &&
+              link.href !== '#'
           {navCategories.map((category) => {
             const isCategoryActive = category.href
               ? pathname === category.href
@@ -427,6 +441,10 @@ export default function Navbar() {
           "
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6">
+            {visibleNavLinks.map((link) => {
+              const isActive =
+                pathname.startsWith(link.href) &&
+                link.href !== '#'
             {navCategories.map((category) => {
               if (category.href) {
                 const isActive = pathname === category.href
