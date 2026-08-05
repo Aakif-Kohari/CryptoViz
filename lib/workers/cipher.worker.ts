@@ -465,6 +465,10 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
       const mod = await import("../cipher/hash/shake");
       return { encrypt: mod.encryptShake256, decrypt: mod.decrypt };
     }
+    case "pbkdf2": {
+      const mod = await import("../cipher/hash/pbkdf2");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
     case "md4": {
       const mod = await import("../cipher/hash/md4");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
