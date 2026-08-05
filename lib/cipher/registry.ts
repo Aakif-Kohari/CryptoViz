@@ -521,6 +521,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'anubis',
+    name: 'Anubis',
+    category: 'symmetric',
+    description: 'NESSIE-submitted block cipher (2000). 128-bit block, 128/192/256-bit key. Unique involutional design: the S-box, diffusion layer, and round structure are all self-inverse. Decryption is literally the same code as encryption, just with reversed round keys.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+  },
+  {
     id: 'mars',
     name: 'MARS',
     category: 'symmetric',
