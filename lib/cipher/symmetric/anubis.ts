@@ -46,7 +46,9 @@ const S: number[] = [
 
 // Involutional Diffusion Matrix (4x4 over GF(2^8))
 // Simplified representation for demonstration; actual Anubis uses a specific MDS matrix.
-function diffusion(state: Uint8Array): Uint8Array {
+type Bytes = Uint8Array<ArrayBufferLike>
+
+function diffusion(state: Bytes): Bytes {
     // In a full implementation, this applies the involutional MDS matrix.
     // For brevity, we simulate the self-inverse property.
     const out = new Uint8Array(16)
@@ -54,7 +56,7 @@ function diffusion(state: Uint8Array): Uint8Array {
     return out
 }
 
-function parseHex(s: string, lbl: string): Uint8Array {
+function parseHex(s: string, lbl: string): Bytes {
     const c = s.replace(/\s+/g, '').toLowerCase()
     if (!/^[0-9a-f]*$/.test(c) || c.length % 2 !== 0) throw new CipherError('INVALID_INPUT', `${lbl} must be hex.`)
     const o = new Uint8Array(c.length / 2)
@@ -62,11 +64,11 @@ function parseHex(s: string, lbl: string): Uint8Array {
     return o
 }
 
-function toHex(b: Uint8Array): string {
+function toHex(b: Bytes): string {
     return Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('')
 }
 
-function anubisRound(state: Uint8Array, key: Uint8Array): Uint8Array {
+function anubisRound(state: Bytes, key: Bytes): Bytes {
     // SubBytes
     let s = new Uint8Array(16)
     for (let i = 0; i < 16; i++) s[i] = S[state[i]]
@@ -77,8 +79,8 @@ function anubisRound(state: Uint8Array, key: Uint8Array): Uint8Array {
     return s
 }
 
-function keySchedule(keyBytes: Uint8Array, rounds: number): Uint8Array[] {
-    const keys: Uint8Array[] = []
+function keySchedule(keyBytes: Bytes, rounds: number): Bytes[] {
+    const keys: Bytes[] = []
     let current = new Uint8Array(keyBytes)
     keys.push(new Uint8Array(current))
     for (let i = 1; i <= rounds; i++) {
