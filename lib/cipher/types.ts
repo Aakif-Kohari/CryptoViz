@@ -123,6 +123,7 @@ export type CipherName =
   | 'rabbit'
   | 'hc128'
   | 'mars'
+  | 'misty1'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
