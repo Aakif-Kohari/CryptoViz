@@ -480,6 +480,10 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
       const mod = await import("../cipher/hash/skein");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
+    case "tiger": {
+      const mod = await import("../cipher/hash/tiger");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
     case "pbkdf2": {
       return {
         encrypt: (input, _key, options) => deriveKey(input, {

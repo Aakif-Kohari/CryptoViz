@@ -786,6 +786,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: '(no key — this is a hash function)',
   },
+  {
+    id: 'tiger',
+    name: 'Tiger',
+    category: 'hash',
+    description: 'Fast 192-bit hash designed for 64-bit processors (Anderson & Biham, 1995). Uses three 64-bit chaining variables and 3 passes of 8 rounds over four 256-entry 64-bit S-boxes. Fills the 192-bit output gap in this repo.',
+    defaultKey: '',
+    defaultInput: '616263',
+    securityStatus: 'secure',
+  },
   // Asymmetric
   {
     id: "rsa",
