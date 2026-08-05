@@ -20,6 +20,8 @@ const METADATA: CipherMetadata = {
     standardBody: 'GOST R 34.11-2012; RFC 6986',
 }
 
+type Bytes = Uint8Array<ArrayBufferLike>
+
 // ── Shared Pi S-box with Kuznyechik ──────────────────────────────────────────
 const Pi: number[] = [
     252, 238, 221, 17, 207, 110, 49, 22, 251, 196, 250, 218, 35, 197, 4, 77, 233, 119, 240, 219, 147, 46,
@@ -80,20 +82,20 @@ function l_word(b: Uint8Array, offset: number): bigint {
     return c_val
 }
 
-function S(state: Uint8Array): Uint8Array {
-    const out = new Uint8Array(64)
+function S(state: Bytes): Bytes {
+    const out: Bytes = new Uint8Array(64)
     for (let i = 0; i < 64; i++) out[i] = Pi[state[i]]
     return out
 }
 
-function P(state: Uint8Array): Uint8Array {
-    const out = new Uint8Array(64)
+function P(state: Bytes): Bytes {
+    const out: Bytes = new Uint8Array(64)
     for (let i = 0; i < 64; i++) out[i] = state[Tau[i]]
     return out
 }
 
-function L(state: Uint8Array): Uint8Array {
-    const out = new Uint8Array(64)
+function L(state: Bytes): Bytes {
+    const out: Bytes = new Uint8Array(64)
     for (let i = 0; i < 8; i++) {
         const offset = i * 8
         const c_val = l_word(state, offset)
@@ -104,8 +106,8 @@ function L(state: Uint8Array): Uint8Array {
     return out
 }
 
-function X(a: Uint8Array<ArrayBufferLike>, b: Uint8Array<ArrayBufferLike>): Uint8Array {
-    const out = new Uint8Array(64) as Uint8Array
+function X(a: Bytes, b: Bytes): Bytes {
+    const out: Bytes = new Uint8Array(64)
     for (let i = 0; i < 64; i++) out[i] = a[i] ^ b[i]
     return out
 }
@@ -125,16 +127,16 @@ const C_iter_str: string[] = [
     "7bcd9ed0efc889fb3002c6cd635afe94d8fa6bbbebab076120018021148466798a1d71efea48b9caefbacd1d7d476e98dea2594ac06fd85d6bcaa4cd81f32d1b",
     "378ee767f11631bad21380b00449b17acda43c32bcdf1d77f82012d430219f9b5d80ef9d1891cc86e71da4aa88e12852faf417d5d9b21b9948bc924af11bd720"
 ]
-const C_iter: Uint8Array[] = C_iter_str.map(h => {
-    const arr = new Uint8Array(64)
+const C_iter: Bytes[] = C_iter_str.map(h => {
+    const arr: Bytes = new Uint8Array(64)
     for (let i = 0; i < 64; i++) arr[i] = parseInt(h.slice(i * 2, i * 2 + 2), 16)
     return arr
 })
 
 // ── 12-round Key Schedule for E ──────────────────────────────────────────────
-function E_KeySchedule(K: Uint8Array): Uint8Array[] {
-    const keys: Uint8Array[] = [new Uint8Array(K)]
-    let curr: Uint8Array = new Uint8Array(K)
+function E_KeySchedule(K: Bytes): Bytes[] {
+    const keys: Bytes[] = [new Uint8Array(K)]
+    let curr: Bytes = new Uint8Array(K)
     for (let i = 0; i < 12; i++) {
         curr = L(P(S(X(curr, C_iter[i]))))
         keys.push(new Uint8Array(curr))
@@ -142,8 +144,8 @@ function E_KeySchedule(K: Uint8Array): Uint8Array[] {
     return keys // Returns 13 keys: K[1]..K[13]
 }
 
-function E_Encrypt(keys: Uint8Array[], m: Uint8Array): Uint8Array {
-    let state = new Uint8Array(m)
+function E_Encrypt(keys: Bytes[], m: Bytes): Bytes {
+    let state: Bytes = new Uint8Array(m)
     for (let i = 1; i <= 12; i++) {
         state = X(state, keys[i - 1]) // keys[0] is K[1]
         state = L(P(S(state)))
@@ -152,7 +154,7 @@ function E_Encrypt(keys: Uint8Array[], m: Uint8Array): Uint8Array {
     return state
 }
 
-function g_N(h: Uint8Array, m: Uint8Array, N: Uint8Array): Uint8Array {
+function g_N(h: Bytes, m: Bytes, N: Bytes): Bytes {
     const K_base = X(h, N)
     const K = L(P(S(K_base)))
     const keys = E_KeySchedule(K)
@@ -161,7 +163,7 @@ function g_N(h: Uint8Array, m: Uint8Array, N: Uint8Array): Uint8Array {
 }
 
 // ── 512-bit addition (mod 2^512) ─────────────────────────────────────────────
-function add512(a: Uint8Array, b: Uint8Array): Uint8Array {
+function add512(a: Bytes, b: Bytes): Bytes {
     // We use BigInt for simple 512-bit addition
     let a_val = 0n
     let b_val = 0n
@@ -177,7 +179,7 @@ function add512(a: Uint8Array, b: Uint8Array): Uint8Array {
     return out
 }
 
-function parseHex(s: string, lbl: string): Uint8Array {
+function parseHex(s: string, lbl: string): Bytes {
     const c = s.replace(/\s+/g, '').toLowerCase()
     if (!/^[0-9a-f]*$/.test(c) || c.length % 2 !== 0) throw new CipherError('INVALID_INPUT', `${lbl} must be hex.`)
     const o = new Uint8Array(c.length / 2)
