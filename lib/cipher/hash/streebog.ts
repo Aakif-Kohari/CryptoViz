@@ -104,7 +104,7 @@ function L(state: Uint8Array): Uint8Array {
     return out
 }
 
-function X(a: Uint8Array, b: Uint8Array): Uint8Array {
+function X(a: Uint8Array<ArrayBufferLike>, b: Uint8Array<ArrayBufferLike>): Uint8Array<ArrayBufferLike> {
     const out = new Uint8Array(64)
     for (let i = 0; i < 64; i++) out[i] = a[i] ^ b[i]
     return out
