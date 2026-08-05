@@ -532,6 +532,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
   },
   {
+    id: 'misty1',
+    name: 'MISTY1',
+    category: 'symmetric',
+    description: 'CRYPTREC-recommended, RFC 2994. 64-bit block, 128-bit key. Unique recursive Feistel network: main rounds call FO, which calls FI, which uses 7-bit/9-bit S-boxes. Ancestor of KASUMI (3G/GSM).',
+    defaultKey: '00112233445566778899aabbccddeeff',
+    defaultInput: '0123456789abcdef',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
