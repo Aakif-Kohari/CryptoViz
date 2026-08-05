@@ -147,7 +147,7 @@ export const TEST_VECTORS: TestVector[] = [
     {
         input: '48656c6c6f20576f726c64',
         key: '00000000000000000000',
-        expected: '(round-trip verified — use eSTREAM official vectors to validate keystream)',
-        description: 'Trivium round-trip with 80-bit zero key. "Hello World" XOR keystream → ciphertext → XOR same keystream → plaintext.',
+        expected: 'randomized',
+        description: 'Trivium stream cipher with 80-bit key (randomized 80-bit IV prepended to ciphertext)',
     },
 ]

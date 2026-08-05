@@ -213,6 +213,6 @@ export function decrypt(input: string, key: string, options: CipherOptions = {})
 }
 
 export const TEST_VECTORS: TestVector[] = [
-    { input: '0000000000000000', key: '0000000000000000', expected: 'ebb773f993278eff', description: 'RFC 2268 §5 vector 1: 8-byte zero key, effectiveBits=63' },
-    { input: 'ffffffffffffffff', key: 'ffffffffffffffff', expected: '278b27e42e2f0d49', description: 'RFC 2268 §5 vector 2: 8-byte 0xff key, effectiveBits=64' },
+    { input: '0000000000000000', key: '0000000000000000', expected: 'ebb773f993278eff', options: { effectiveBits: 63 }, description: 'RFC 2268 §5 vector 1: 8-byte zero key, effectiveBits=63' },
+    { input: 'ffffffffffffffff', key: 'ffffffffffffffff', expected: '278b27e42e2f0d49', options: { effectiveBits: 64 }, description: 'RFC 2268 §5 vector 2: 8-byte 0xff key, effectiveBits=64' },
 ]
