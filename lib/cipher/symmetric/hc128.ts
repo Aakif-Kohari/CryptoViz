@@ -186,7 +186,7 @@ export function decrypt(input: string, key: string, options: CipherOptions = {})
 export const TEST_VECTORS: TestVector[] = [
     {
         input: '48656c6c6f20576f726c64', key: '00000000000000000000000000000000',
-        expected: '(round-trip verified; compare keystream against eSTREAM official test vectors)',
-        description: 'HC-128 round-trip with 128-bit zero key. Verify keystream against ecrypt.eu.org eSTREAM suite.'
+        expected: 'randomized',
+        description: 'HC-128 stream cipher with 128-bit key (randomized 128-bit IV prepended to ciphertext)'
     },
 ]

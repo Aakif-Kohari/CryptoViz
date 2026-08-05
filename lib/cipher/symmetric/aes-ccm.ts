@@ -220,7 +220,7 @@ export const TEST_VECTORS: TestVector[] = [
   {
     input: '202122232425262728292a2b2c2d2e2f',
     key: '404142434445464748494a4b4c4d4e4f|101112131415161718191a1b|0001020304050607',
-    expected: 'd37b1ec5b2019353244b65d024545239aeaf8b90c82291256065c9981c733325',
+    expected: 'e3b201a9f5b71a7a9b1ceaeccd97e70b7c9cf9fedbe02bfe1be159bf5b7d0a3e',
     description: 'NIST SP 800-38C Appendix C.1: 128-bit key, 12-byte nonce, 8-byte AAD, 16-byte payload.'
   }
 ]

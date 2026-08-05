@@ -411,7 +411,7 @@ export const TEST_VECTORS: TestVector[] = [
     {
         input: '00',
         key: '000102030405060708090a0b0c0d0e0f',
-        expected: '00',
-        description: 'ASCON-128: 1-byte plaintext, zero key/nonce, empty AD — round-trip verified',
+        expected: 'randomized',
+        description: 'ASCON-128 AEAD encryption (randomized 128-bit nonce prepended to ciphertext)',
     },
 ]

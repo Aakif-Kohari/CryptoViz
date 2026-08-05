@@ -92,11 +92,20 @@ export function decrypt(_input: string, _key: string, __options: CipherOptions =
   throw new CipherError('ALGORITHM_UNSUPPORTED', 'SHAKE is a one-way extendable-output function — it has no decrypt operation.')
 }
 
-export const TEST_VECTORS: TestVector[] = [
+export const TEST_VECTORS_128: TestVector[] = [
   {
     input: '',
-    key: '32',
+    key: '',
     expected: '7f9c2ba4e88f827d616045507605853ed73b8093f6efbc88eb1a6eacfa66ef26',
-    description: 'NIST FIPS 202 SHAKE128 test vector, empty input, 32-byte output',
+    description: 'NIST SHAKE128 test vector (empty input, 32-byte output)',
   },
 ]
+export const TEST_VECTORS_256: TestVector[] = [
+  {
+    input: '',
+    key: '',
+    expected: '46b9dd2b0ba88d13233b3feb743eeb243fcd52ea62b81b82b50c27646ed5762f',
+    description: 'NIST SHAKE256 test vector (empty input, 32-byte output)',
+  },
+]
+export const TEST_VECTORS: TestVector[] = [...TEST_VECTORS_128, ...TEST_VECTORS_256]

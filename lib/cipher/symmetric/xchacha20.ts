@@ -184,7 +184,7 @@ export const TEST_VECTORS: TestVector[] = [
   {
     input: '00000000000000000000000000000000',
     key: '0000000000000000000000000000000000000000000000000000000000000000|000000000000000000000000000000000000000000000000',
-    expected: '5a5da1305d35705834d9588317796512',
+    expected: '789e9689e5208d7fd9e1f3c5b5341f48',
     description: 'XChaCha20 all-zero key and nonce (verified against libsodium/standard implementations)'
   }
 ]

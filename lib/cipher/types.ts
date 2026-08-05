@@ -175,5 +175,13 @@ export interface TestVector {
   input: string
   key: string
   expected: string
+  /** Expected output for decrypt (if different from encrypt) */
+  expectedDecrypt?: string
   description?: string
+  /** Skip the encrypt direction in the KAT runner */
+  skipEncrypt?: boolean
+  /** Skip the decrypt direction in the KAT runner */
+  skipDecrypt?: boolean
+  /** Extra options forwarded to encrypt/decrypt (e.g. effectiveBits, length) */
+  options?: Record<string, unknown>
 }

@@ -79,7 +79,25 @@ export function decrypt(_input: string, _key: string, __options: CipherOptions =
   throw new CipherError('ALGORITHM_UNSUPPORTED', 'This is a one-way hash function — it has no decrypt operation.')
 }
 
+export const TEST_VECTORS_224: TestVector[] = [
+  {
+    input: '',
+    key: '',
+    expected: 'd14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f',
+    description: 'NIST SHA-224 test vector (empty input)',
+  },
+]
+export const TEST_VECTORS_384: TestVector[] = [
+  {
+    input: '',
+    key: '',
+    expected: '38b060a751ac96384cd9327eb1b1e36a21fdb71114be07434c0cc7bf63f6e1da274edebfe76f65fbd51ad2f14898b95b',
+    description: 'NIST SHA-384 test vector (empty input)',
+  },
+]
 export const TEST_VECTORS: TestVector[] = [
+  ...TEST_VECTORS_224,
+  ...TEST_VECTORS_384,
   {
     input: 'abc',
     key: '',
