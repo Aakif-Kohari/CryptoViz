@@ -134,7 +134,7 @@ const C_iter: Uint8Array[] = C_iter_str.map(h => {
 // ── 12-round Key Schedule for E ──────────────────────────────────────────────
 function E_KeySchedule(K: Uint8Array): Uint8Array[] {
     const keys: Uint8Array[] = [new Uint8Array(K)]
-    let curr = new Uint8Array(K)
+    let curr: Uint8Array = new Uint8Array(K)
     for (let i = 0; i < 12; i++) {
         curr = L(P(S(X(curr, C_iter[i]))))
         keys.push(new Uint8Array(curr))
