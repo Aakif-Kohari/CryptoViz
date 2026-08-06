@@ -171,6 +171,7 @@ export type CipherName =
   | 'md4'
   | 'argon2'
   | 'skein'
+  | 'lsh256'
   | 'tiger'
   | 'poly1305'
   | 'hmac'

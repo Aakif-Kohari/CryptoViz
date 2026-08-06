@@ -817,6 +817,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '(no key — this is a hash function)',
   },
   {
+    id: 'lsh256',
+    name: 'LSH-256',
+    category: 'hash',
+    description: 'Korean national hash standard (KS X 3262, 2014). Wide-pipe ARX+Boolean design with 1024-bit internal state. Completes the SEED/LEA/ARIA/LSH Korean cryptographic suite.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+  },
+  {
     id: 'tiger',
     name: 'Tiger',
     category: 'hash',
