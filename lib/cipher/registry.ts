@@ -552,6 +552,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'aria',
+    name: 'ARIA',
+    category: 'symmetric',
+    description: 'Korean national standard block cipher (KS X 1213, RFC 5794). AES-like SPN but alternates between two involutional S-box pairs (SB1/SB2) and uses a pure GF(2) involutional diffusion matrix. Completes the SEED/LEA/ARIA Korean trio.',
+    defaultKey: '000102030405060708090a0b0c0d0e0f',
+    defaultInput: '00112233445566778899aabbccddeeff',
+    securityStatus: 'secure',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",

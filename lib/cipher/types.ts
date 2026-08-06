@@ -125,6 +125,7 @@ export type CipherName =
   | 'anubis'
   | 'mars'
   | 'misty1'
+  | 'aria'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
