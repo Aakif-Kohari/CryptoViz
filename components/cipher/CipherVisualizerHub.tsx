@@ -114,6 +114,16 @@ export const SPECIALIZED_VISUALIZERS: SpecializedVisualizer[] = [
     docsLink: '/docs',
   },
   {
+  id: "secret-recovery",
+  name: "Interactive Secret Recovery Simulator",
+  category: "specialized",
+  description:
+    "Interactive visualization of Shamir's Secret Sharing showing threshold-based secret reconstruction using polynomial interpolation.",
+  route: "/visualizer/secret-recovery/",
+  securityStatus: "recommended",
+  docsLink: "/docs/secret-recovery",
+},
+  {
     id: 'idea',
     name: 'IDEA Cipher Structure Visualizer',
     category: 'specialized',
@@ -267,6 +277,7 @@ export default function CipherVisualizerHub() {
     setSelectedSecurity('all')
     setSortBy('name')
   }
+  
 
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-100">
