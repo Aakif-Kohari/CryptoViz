@@ -1006,4 +1006,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'totalShares,threshold (split) — leave blank for combine',
   },
+  {
+    id: 'ntru',
+    name: 'NTRU',
+    category: 'asymmetric',
+    description: 'Lattice-based public-key cryptosystem (IEEE P1363.1, 1996). Operates in polynomial ring Z[x]/(x^N-1). Predates NIST PQC by 20+ years. WARNING: Visualizer uses small pedagogical parameters (N=11) for teaching; NOT secure at this size.',
+    defaultKey: 'pub,priv',
+    defaultInput: '01',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
 ];
