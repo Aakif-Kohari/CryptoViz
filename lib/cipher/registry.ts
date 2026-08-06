@@ -542,6 +542,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
   },
   {
+    id: 'clefia',
+    name: 'CLEFIA',
+    category: 'symmetric',
+    description: 'ISO/IEC 29192-2 lightweight block cipher (Sony, 2007). 4-branch generalized Feistel network (GFN) with parallel F0/F1 functions using distinct S-boxes and diffusion matrices. Pairs with PRESENT to complete the ISO lightweight standard duo.',
+    defaultKey: 'ffeeddccbbaa99887766554433221100',
+    defaultInput: '000102030405060708090a0b0c0d0e0f',
+    securityStatus: 'secure',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+  },
+  {
     id: 'misty1',
     name: 'MISTY1',
     category: 'symmetric',
