@@ -500,6 +500,10 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
       const mod = await import("../cipher/hash/skein");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
+    case "lsh256": {
+      const mod = await import("../cipher/hash/lsh256");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
     case "tiger": {
       const mod = await import("../cipher/hash/tiger");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
