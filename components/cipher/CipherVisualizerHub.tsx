@@ -12,6 +12,8 @@ import {
   type CipherDefinition,
 } from '../../lib/cipher/registry'
 
+
+
 export interface SpecializedVisualizer {
   id: string
   name: string
@@ -53,6 +55,16 @@ export const SPECIALIZED_VISUALIZERS: SpecializedVisualizer[] = [
     securityStatus: 'broken',
     docsLink: '/docs',
   },
+  {
+  id: "tls13-handshake",
+  name: "TLS 1.3 Handshake Visualizer",
+  category: "specialized",
+  description:
+    "Interactive visualization of the TLS 1.3 handshake covering ClientHello, ServerHello, ECDHE key exchange, certificate authentication, Finished messages, and encrypted application data.",
+  route: "/visualizer/tls13-handshake/",
+  securityStatus: "recommended",
+  docsLink: "/docs",
+},
   {
     id: 'ecb-pattern',
     name: 'ECB Mode Pattern Leakage Visualizer',
