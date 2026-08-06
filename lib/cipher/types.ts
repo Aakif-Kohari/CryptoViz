@@ -174,6 +174,7 @@ export type CipherName =
   | 'argon2'
   | 'skein'
   | 'tiger'
+  | 'grostl'
   | 'poly1305'
   | 'hmac'
   | 'cmac'

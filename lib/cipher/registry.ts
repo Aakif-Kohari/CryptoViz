@@ -845,6 +845,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '616263',
     securityStatus: 'secure',
   },
+  {
+    id: 'grostl',
+    name: 'Grøstl-256',
+    category: 'hash',
+    description: 'SHA-3 finalist (2008). AES-based wide-pipe hash using dual permutations P and Q in a Davies-Meyer-like compression function. Operates on an 8x8 byte state with AES-style SubBytes/ShiftBytes/MixBytes rounds.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+  },
   // Asymmetric
   {
     id: "rsa",
