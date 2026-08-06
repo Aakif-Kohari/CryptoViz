@@ -124,6 +124,7 @@ export type CipherName =
   | 'hc128'
   | 'anubis'
   | 'mars'
+  | 'clefia'
   | 'misty1'
   | 'rc4'
   | 'salsa20'
