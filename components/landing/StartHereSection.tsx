@@ -1,21 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { ArrowRight, Compass, Sparkles, BookOpenCheck } from "lucide-react";
 
-export function StartHereSection() {
-  const [lastVisited, setLastVisited] = useState<string | null>(null);
+const STORAGE_KEY = "cryptoviz_last_path";
+// SSR-safe store subscription functions for useSyncExternalStore
+const subscribe = (callback: () => void) => {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+};
 
-  useEffect(() => {
-    // Basic session/progress tracking
-    const saved = localStorage.getItem("cryptoviz_last_path");
-    if (saved) setLastVisited(saved);
-  }, []);
+const getClientSnapshot = () => {
+  return localStorage.getItem(STORAGE_KEY);
+};
+
+const getServerSnapshot = () => null;
+
+export function StartHereSection() {
+  const lastVisited = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
 
   const handleTrackClick = (pathKey: string) => {
     if (typeof window !== "undefined") {
-      localStorage.setItem("cryptoviz_last_path", pathKey);
+      localStorage.setItem(STORAGE_KEY, pathKey);
+// Dispatch custom storage event so current tab updates immediately
+      window.dispatchEvent(new Event("storage"));
     }
   };
 
@@ -50,8 +59,8 @@ export function StartHereSection() {
   ];
 
   return (
-    <section className="w-full py-16 bg-white dark:bg-[#09090B] border-b border-zinc-200 dark:border-[#2A2A31] font-sans">
-      <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
+    <section className="w-full py-24 bg-white dark:bg-[#09090B] border-b border-zinc-200 dark:border-[#2A2A31] font-sans">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#00C2AE] bg-[#00C2AE]/10 border border-[#00C2AE]/20 rounded-full mb-3">
             <span>Guided Onboarding</span>
@@ -96,13 +105,10 @@ export function StartHereSection() {
                 >
                   {track.action}
                 </Link>
-                <Link href={track.link}
-                 onClick={() => handleTrackClick(track.id)}>
                 <ArrowRight
                   size={14}
                   className="text-[#00C2AE] transition-transform duration-200 group-hover:translate-x-1"
                 />
-                </Link>
               </div>
             </div>
           ))}

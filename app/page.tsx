@@ -226,7 +226,9 @@ export default function Home() {
           </div>
         </div>
       </section>
- 
+
+  {/* Quick Entry Section */}
+      <StartHereSection />
       {/* Library Grid Section */}
       <section className="w-full py-24 bg-zinc-50 dark:bg-[#101013] border-y border-zinc-200 dark:border-[#2A2A31] transition-colors duration-300">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -286,8 +288,6 @@ export default function Home() {
       </section>
 
       <LearningJourney />
-      {/* Quick Entry Section */}
-      <StartHereSection />
       <InteractivePreview />
       <StatisticsRow />
       <WhyCryptoViz />
