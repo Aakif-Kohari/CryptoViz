@@ -364,6 +364,10 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
       const mod = await import("../cipher/asymmetric/ml-kem");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
+    case "frodokem": {
+      const mod = await import("../cipher/asymmetric/frodokem");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
     case "ecdsa": {
       const mod = await import("../cipher/asymmetric/ecdsa");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
