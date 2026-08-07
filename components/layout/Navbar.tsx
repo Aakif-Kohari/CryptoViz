@@ -75,15 +75,19 @@ export default function Navbar() {
       name: t('nav.learn') || 'Learn',
       items: [
         { name: t('nav.lifecycle') || 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+        { name: 'Docs & Guides', href: '/docs' },
         { name: t('nav.mythBusters') || 'Myth Busters', href: '/myth-busters' },
         { name: t('nav.encodingErrors') || 'Encoding Errors', href: '/encoding-errors' },
         { name: t('nav.merkle') || 'Merkle Tree', href: '/merkle' },
         { name: t('nav.padding') || 'Padding', href: '/padding' },
+        { name: 'Case Studies', href: '/case-studies' },
+        { name: 'Timeline', href: '/timeline' },
       ],
     },
     {
       name: t('nav.practice') || 'Practice',
       items: [
+        { name: 'Interactive Visualizers', href: '/visualizer' },
         { name: t('nav.playground') || 'Playground', href: '/visualizer/caesar/' },
         { name: t('nav.cipherSandbox') || 'Cipher Sandbox', href: '/cipher-sandbox' },
         { name: 'Attack Simulators', href: '/attacks' },
@@ -95,6 +99,7 @@ export default function Navbar() {
     {
       name: t('nav.reference') || 'Reference',
       items: [
+        { name: 'Reference Hub', href: '/reference' },
         { name: t('nav.glossary') || 'Glossary', href: '/glossary' },
         { name: t('nav.modes') || 'Modes', href: '/modes' },
         { name: t('nav.compare') || 'Compare', href: '/compare' },
@@ -102,6 +107,8 @@ export default function Navbar() {
         { name: t('nav.matrix') || 'Matrix', href: '/matrix' },
         { name: t('nav.benchmark') || 'Benchmark', href: '/benchmark' },
         { name: t('nav.avalanche') || 'Avalanche', href: '/avalanche' },
+        { name: 'S-Box Explorer', href: '/sbox' },
+        { name: 'Rainbow Table', href: '/rainbow-table' },
       ],
     },
     {
@@ -114,43 +121,6 @@ export default function Navbar() {
     },
   ];
 
-  const allNavLinks = [
-    { name: 'Visualizers', href: '/visualizer' },
-    { name: 'Playground', href: '/visualizer/caesar/' },
-    { name: 'Cipher Sandbox', href: '/cipher-sandbox' },
-    { name: 'Advisor', href: '/advisor' },
-    { name: 'Modes', href: '/modes' },
-    { name: 'Protocols', href: '/protocols' },
-    { name: 'Compare', href: '/compare' },
-    { name: 'Collections', href: '/collections' },
-    { name: 'Matrix', href: '/matrix' },
-    { name: 'Benchmark', href: '/benchmark' },
-    { name: 'Avalanche', href: '/avalanche' },
-    { name: 'S-Box Explorer', href: '/sbox' },
-    { name: 'Merkle Tree', href: '/merkle' },
-    { name: 'Padding', href: '/padding' },
-    { name: 'Challenge', href: '/challenge' },
-    { name: 'Rainbow Table', href: '/rainbow-table' },
-    { name: 'Docs', href: '/docs' },
-    { name: 'Reference Hub', href: '/reference' },
-    { name: 'Offline', href: '/offline' },
-    { name: 'Glossary', href: '/glossary' },
-    { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
-    { name: 'Cipher Graph', href: '/timeline' },
-    { name: 'Case Studies', href: '/case-studies' },
-    { name: 'Myth Busters', href: '/myth-busters' },
-    { name: 'Encoding Errors', href: '/encoding-errors' },
-    { name: 'Resources', href: '/resources' },
-    { name: 'Timeline', href: '/timeline' },
-  ];
-
-  const developerOnlyLinks = [
-    { name: 'Benchmark History', href: '/benchmarks/history' },
-    { name: 'Integration Tests', href: '/tests/integration' },
-    { name: 'Snapshot Tests', href: '/tests/snapshots' },
-    { name: 'Worker Tests', href: '/tests/worker' },
-  ];
-
   const developerLinks = [
     { name: 'Integration Tests', href: '/tests/integration' },
     { name: 'Snapshot Tests', href: '/tests/snapshots' },
@@ -159,12 +129,7 @@ export default function Navbar() {
   ];
 
   const isDevelopment = process.env.NODE_ENV === 'development';
-
-  const navLinks = isDevelopment
-    ? [...allNavLinks, ...developerOnlyLinks]
-    : allNavLinks;
-
-  const visibleNavLinks = isDevelopment ? [...navLinks, ...developerLinks] : navLinks;
+  const visibleNavLinks = isDevelopment ? developerLinks : [];
 
   return (
     <nav
