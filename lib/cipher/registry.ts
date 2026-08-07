@@ -863,6 +863,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '',
     securityStatus: 'secure',
   },
+  {
+    id: 'jh',
+    name: 'JH-256',
+    category: 'hash',
+    description: 'SHA-3 finalist (2008). Fixed 1024-bit permutation with generalized AES-like rounds using 4-bit S-boxes and bit-level grouping permutation. Double message XOR injection. Completes the five-of-five SHA-3 finalist set.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+  },
   // Asymmetric
   {
     id: "rsa",

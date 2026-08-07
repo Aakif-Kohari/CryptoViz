@@ -177,6 +177,7 @@ export type CipherName =
   | 'lsh256'
   | 'tiger'
   | 'grostl'
+  | 'jh'
   | 'poly1305'
   | 'hmac'
   | 'cmac'
