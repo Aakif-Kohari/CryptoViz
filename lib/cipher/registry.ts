@@ -572,6 +572,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
   },
   {
+    id: 'kasumi',
+    name: 'KASUMI',
+    category: 'symmetric',
+    description: '3GPP TS 35.202 (GSM A5/3, UMTS f8/f9). MISTY1-derived hardware-optimized cipher. Status: BROKEN (2010 related-key attack). Included for educational value as a once-deployed mobile standard.',
+    defaultKey: '9900aabbccddeeff1122334455667788',
+    defaultInput: 'fedcba0987654321',
+    securityStatus: 'broken',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",

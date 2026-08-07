@@ -127,6 +127,7 @@ export type CipherName =
   | 'clefia'
   | 'misty1'
   | 'aria'
+  | 'kasumi'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
