@@ -154,6 +154,7 @@ export type CipherName =
   | 'ed448'
   | 'shamir-secret-sharing'
   | 'ntru'
+  | 'mceliece'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
