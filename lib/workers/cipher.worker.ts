@@ -388,6 +388,10 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
       const mod = await import("../cipher/asymmetric/shamir-secret-sharing");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
+    case "sidh": {
+      const mod = await import("../cipher/asymmetric/sidh");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
     case "ntru": {
       const mod = await import("../cipher/asymmetric/ntru");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };

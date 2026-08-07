@@ -153,6 +153,7 @@ export type CipherName =
   | 'frodokem'
   | 'ed448'
   | 'shamir-secret-sharing'
+  | 'sidh'
   | 'ntru'
   | 'mceliece'
   | 'ed25519'
