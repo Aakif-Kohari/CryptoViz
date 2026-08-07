@@ -9,6 +9,8 @@ export interface CipherDefinition {
   defaultInput: string;
   securityStatus: "recommended" | "secure" | "legacy" | "deprecated" | "broken" | "experimental";
   keyPlaceholder?: string;
+  keySize?: string;
+  practicalUseCases?: string[];
   /** Cipher IDs the learner should be comfortable with before tackling this one */
   prerequisites?: string[];
   /** Cipher IDs that make natural next steps after exploring this one */
@@ -132,6 +134,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "0123456789ABCDEF",
     securityStatus: "broken",
     keyPlaceholder: "16-character hex key",
+    keySize: "56 bits",
+    practicalUseCases: ["Legacy systems interoperability", "Educational purposes (understanding classical block ciphers)"],
     prerequisites: ["xor"],
     recommendedNext: ["3des", "aes"],
     options: [
@@ -184,6 +188,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "00112233445566778899aabbccddeeff",
     securityStatus: "recommended",
     keyPlaceholder: "32/48/64-character hex key",
+    keySize: "128, 192, or 256 bits",
+    practicalUseCases: ["Secure web traffic (HTTPS)", "File encryption", "VPNs", "Disk encryption"],
     prerequisites: ["des"],
     recommendedNext: ["chacha20-poly1305", "sha256", "hmac"],
     options: [
@@ -580,6 +586,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: "",
     defaultInput: "abc",
     securityStatus: "recommended",
+    keySize: "None (hash function)",
+    practicalUseCases: ["Data integrity verification", "Digital signatures", "Blockchain proof-of-work", "Password hashing (via HMAC/PBKDF2)"],
     recommendedNext: ["hmac", "sha512", "bcrypt"],
   },
   {
@@ -875,6 +883,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: "secure",
     keyPlaceholder:
       "Enter: 3 values (p,q,e) or 2 values (n,e / n,d) if you already have n",
+    keySize: "Typically 2048 to 4096 bits",
+    practicalUseCases: ["Secure key exchange", "Digital signatures", "Secure email (PGP/S/MIME)", "SSL/TLS certificates"],
     prerequisites: ["hmac"],
     recommendedNext: ["ecc", "dh", "ml-kem"],
     options: [
@@ -993,7 +1003,19 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'recipient public key (encapsulate) or private key (decapsulate)',
     prerequisites: ["ecc", "dh"],
-    recommendedNext: ["ml-dsa", "ecies"],
+    recommendedNext: ["frodokem", "ml-dsa", "ecies"],
+  },
+  {
+    id: 'frodokem',
+    name: 'FrodoKEM-640',
+    category: 'asymmetric',
+    description: 'Post-quantum key encapsulation mechanism (KEM) based on unstructured Learning With Errors (LWE) on standard matrices, offering conservative security without algebraic ring assumptions.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+    keyPlaceholder: 'recipient public key JSON (encapsulate) or private key JSON (decapsulate)',
+    prerequisites: ["ml-kem", "ecc"],
+    recommendedNext: ["ml-dsa", "ntru"],
   },
   {
     id: 'ed448',
