@@ -22,6 +22,20 @@ type Protocol = {
 
 const protocols: Protocol[] = [
   {
+    id: 'blockchain',
+    name: 'Blockchain Transaction Signatures',
+    purpose: 'Secure decentralized state transitions using secp256k1 ECDSA, BIP-340 Schnorr, and Ed25519.',
+    actors: ['Wallet (Signer)', 'Mempool / Validator', 'Smart Contract (EVM / Solana)'],
+    concepts: ['secp256k1 Curve', 'ecrecover Precompile', 'BIP-340 Schnorr Aggregation', 'Nonce Reuse Prevention'],
+    differences: 'Uses public key recovery (ecrecover) or Schnorr signatures over RLP/SegWit payloads so validators can authenticate transactions without centralized CAs.',
+    steps: [
+      { title: 'Payload Serialization (RLP / SigHash)', description: 'Wallet constructs raw transaction payload and hashes it with Keccak-256 or Double SHA-256.', sender: 'Wallet', receiver: 'Wallet', message: 'Keccak256 / SHA256 SigHash' },
+      { title: 'ECDSA / Schnorr Signing', description: 'Wallet signs the hash using private key d to produce (r, s, v) or Schnorr (R, s).', sender: 'Wallet', receiver: 'Wallet', message: 'ECDSA (r, s, v)' },
+      { title: 'Broadcast to Mempool', description: 'Signed raw transaction hex is broadcast to P2P validator network.', sender: 'Wallet', receiver: 'Mempool', message: 'Signed Tx Payload' },
+      { title: 'EVM ecrecover & State Execution', description: 'Validators recover public key Q via ecrecover(h, v, r, s), verify 0x address, and execute state transition.', sender: 'Mempool', receiver: 'Validator', message: 'Address Verified & State Executed' }
+    ]
+  },
+  {
     id: 'tls',
     name: 'TLS (Transport Layer Security)',
     purpose: 'Secure communication over a computer network, widely used for web traffic (HTTPS).',
