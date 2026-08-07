@@ -11,6 +11,7 @@ import LearningJourney from "../components/landing/LearningJourney";
 import InteractivePreview from "../components/landing/InteractivePreview";
 import WhyCryptoViz from "../components/landing/WhyCryptoViz";
 import StatisticsRow from "../components/landing/StatisticsRow";
+import { StartHereSection } from '@/components/landing/StartHereSection'
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -225,7 +226,9 @@ export default function Home() {
           </div>
         </div>
       </section>
- 
+
+  {/* Quick Entry Section */}
+      <StartHereSection />
       {/* Library Grid Section */}
       <section className="w-full py-24 bg-zinc-50 dark:bg-[#101013] border-y border-zinc-200 dark:border-[#2A2A31] transition-colors duration-300">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
