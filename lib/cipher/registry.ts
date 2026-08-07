@@ -562,6 +562,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'feal',
+    name: 'FEAL-8',
+    category: 'symmetric',
+    description: 'Japanese Feistel cipher (1987). Pure arithmetic design (no S-boxes). Status: BROKEN. Canonical target for differential cryptanalysis development. Included to demonstrate why differential characteristics are traceable in weak designs.',
+    defaultKey: '0000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'broken',
+    keyPlaceholder: '64-bit key as 16 hex chars',
+  },
+  {
     id: 'aria',
     name: 'ARIA',
     category: 'symmetric',
