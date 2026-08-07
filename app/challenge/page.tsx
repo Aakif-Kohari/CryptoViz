@@ -3,7 +3,7 @@
 import Breadcrumbs from '../../components/layout/Breadcrumbs'
 import WorkspaceLayout from "../../components/layout/WorkspaceLayout";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import ChallengeMode from "../../components/challenge/ChallengeMode";
 import DailyQuiz from "../../components/challenge/DailyQuiz";
 import QuestionBankQuiz from "../../components/challenge/QuestionBankQuiz";

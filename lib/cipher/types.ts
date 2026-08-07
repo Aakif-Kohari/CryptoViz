@@ -148,6 +148,7 @@ export type CipherName =
   | 'ml-dsa'
   | 'ecies'
   | 'ml-kem'
+  | 'frodokem'
   | 'ed448'
   | 'shamir-secret-sharing'
   | 'ntru'

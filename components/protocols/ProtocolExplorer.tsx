@@ -22,17 +22,17 @@ type Protocol = {
 
 const protocols: Protocol[] = [
   {
-    id: 'blockchain',
-    name: 'Blockchain Transaction Signatures',
-    purpose: 'Secure decentralized state transitions using secp256k1 ECDSA, BIP-340 Schnorr, and Ed25519.',
-    actors: ['Wallet (Signer)', 'Mempool / Validator', 'Smart Contract (EVM / Solana)'],
-    concepts: ['secp256k1 Curve', 'ecrecover Precompile', 'BIP-340 Schnorr Aggregation', 'Nonce Reuse Prevention'],
-    differences: 'Uses public key recovery (ecrecover) or Schnorr signatures over RLP/SegWit payloads so validators can authenticate transactions without centralized CAs.',
+    id: 'openpgp',
+    name: 'OpenPGP (Pretty Good Privacy)',
+    purpose: 'End-to-end email, file, and message encryption & digital signing standard (RFC 4880 / RFC 9580).',
+    actors: ['Alice (Sender)', 'Bob (Recipient)'],
+    concepts: ['Sign-Compress-Encrypt', 'Packet Hierarchy (Tags)', 'Radix-64 ASCII Armor', 'SEIPD & MDC'],
+    differences: 'Combines asymmetric signing, DEFLATE payload compression, and symmetric session key encryption in a canonical multi-stage pipeline.',
     steps: [
-      { title: 'Payload Serialization (RLP / SigHash)', description: 'Wallet constructs raw transaction payload and hashes it with Keccak-256 or Double SHA-256.', sender: 'Wallet', receiver: 'Wallet', message: 'Keccak256 / SHA256 SigHash' },
-      { title: 'ECDSA / Schnorr Signing', description: 'Wallet signs the hash using private key d to produce (r, s, v) or Schnorr (R, s).', sender: 'Wallet', receiver: 'Wallet', message: 'ECDSA (r, s, v)' },
-      { title: 'Broadcast to Mempool', description: 'Signed raw transaction hex is broadcast to P2P validator network.', sender: 'Wallet', receiver: 'Mempool', message: 'Signed Tx Payload' },
-      { title: 'EVM ecrecover & State Execution', description: 'Validators recover public key Q via ecrecover(h, v, r, s), verify 0x address, and execute state transition.', sender: 'Mempool', receiver: 'Validator', message: 'Address Verified & State Executed' }
+      { title: 'Digital Signature (Sign)', description: 'Alice hashes the plaintext payload and computes a digital signature using her private key.', sender: 'Alice', receiver: 'Alice', message: 'Signature Packet (Tag 2)' },
+      { title: 'Payload Compression (Compress)', description: 'Plaintext and signature packets are bundled and compressed with DEFLATE/ZIP to remove statistical redundancy.', sender: 'Alice', receiver: 'Alice', message: 'Compressed Data (Tag 8)' },
+      { title: 'Symmetric & Asymmetric Encryption (Encrypt)', description: 'A random symmetric session key is generated to encrypt compressed data (SEIPD Tag 18). The session key is encrypted with Bob\'s Public Key (PKESK Tag 1).', sender: 'Alice', receiver: 'Bob', message: 'PKESK + SEIPD Ciphertext' },
+      { title: 'Decryption & Verification (Decrypt)', description: 'Bob decrypts the session key using his private key, decrypts and decompresses the payload, and authenticates Alice\'s signature.', sender: 'Bob', receiver: 'Bob', message: 'MDC Verified & Valid Signature' }
     ]
   },
   {
