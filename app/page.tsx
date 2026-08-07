@@ -11,6 +11,7 @@ import LearningJourney from "../components/landing/LearningJourney";
 import InteractivePreview from "../components/landing/InteractivePreview";
 import WhyCryptoViz from "../components/landing/WhyCryptoViz";
 import StatisticsRow from "../components/landing/StatisticsRow";
+import { StartHereSection } from '@/components/landing/StartHereSection'
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -285,6 +286,8 @@ export default function Home() {
       </section>
 
       <LearningJourney />
+      {/* Quick Entry Section */}
+      <StartHereSection />
       <InteractivePreview />
       <StatisticsRow />
       <WhyCryptoViz />
