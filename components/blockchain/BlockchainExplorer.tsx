@@ -34,32 +34,36 @@ import {
   simulateSignatureMalleability,
 } from '@/lib/blockchain/blockchainEngine';
 
+const ETHEREUM_TX_PRESET: EthereumTxInput = {
+  nonce: 12,
+  gasPriceGwei: 28.5,
+  gasLimit: 21000,
+  toAddress: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
+  valueEth: 1.5,
+  dataPayloadHex: '00',
+  chainId: 1,
+};
+
+const BITCOIN_TX_PRESET: BitcoinTxInput = {
+  version: 2,
+  inputTxHash: 'a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f90',
+  inputVout: 0,
+  outputAddress: 'bc1p0xlxvlhemja6w4dqv2uf2wak2jchd2e2qqx92v',
+  valueBtc: 0.5,
+  feeBtc: 0.00015,
+  locktime: 0,
+};
+
 const PRESETS = [
   {
     name: 'Ethereum Mainnet Transfer (secp256k1 ECDSA)',
     network: 'Ethereum' as BlockchainNetwork,
-    ethTx: {
-      nonce: 12,
-      gasPriceGwei: 28.5,
-      gasLimit: 21000,
-      toAddress: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-      valueEth: 1.5,
-      dataPayloadHex: '00',
-      chainId: 1,
-    },
+    ethTx: ETHEREUM_TX_PRESET,
   },
   {
     name: 'Bitcoin Taproot Transfer (BIP-340 Schnorr)',
     network: 'Bitcoin' as BlockchainNetwork,
-    btcTx: {
-      version: 2,
-      inputTxHash: 'a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f90',
-      inputVout: 0,
-      outputAddress: 'bc1p0xlxvlhemja6w4dqv2uf2wak2jchd2e2qqx92v',
-      valueBtc: 0.5,
-      feeBtc: 0.00015,
-      locktime: 0,
-    },
+    btcTx: BITCOIN_TX_PRESET,
   },
 ];
 
@@ -76,8 +80,8 @@ export default function BlockchainExplorer() {
   }, [selectedNetwork, seed]);
 
   // Tx Inputs state
-  const [ethInput, setEthInput] = useState<EthereumTxInput>(PRESETS[0].ethTx);
-  const [btcInput, setBtcInput] = useState<BitcoinTxInput>(PRESETS[1].btcTx);
+  const [ethInput, setEthInput] = useState<EthereumTxInput>(ETHEREUM_TX_PRESET);
+  const [btcInput, setBtcInput] = useState<BitcoinTxInput>(BITCOIN_TX_PRESET);
 
   // Signed Tx computation
   const signedTx: SignedBlockchainTx = useMemo(() => {
@@ -499,7 +503,7 @@ export default function BlockchainExplorer() {
             <div className="p-5 bg-zinc-50 dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-2">
               <h4 className="text-sm font-bold text-amber-400">1. EIP-155: Replay Protection</h4>
               <p className="text-xs text-zinc-300 leading-relaxed">
-                EIP-155 encodes the `chainId` directly into the $v$ component of the ECDSA signature ($v = \text{chainId} \times 2 + 35$). This prevents a valid transaction signed on Ethereum Mainnet from being replayed on Ethereum Classic or Polygon!
+                EIP-155 encodes the chain ID directly into the v component of the ECDSA signature. This prevents a valid transaction signed on Ethereum Mainnet from being replayed on Ethereum Classic or Polygon!
               </p>
             </div>
 
@@ -513,14 +517,14 @@ export default function BlockchainExplorer() {
             <div className="p-5 bg-zinc-50 dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-2">
               <h4 className="text-sm font-bold text-amber-400">3. RFC 6979: Deterministic Nonces</h4>
               <p className="text-xs text-zinc-300 leading-relaxed">
-                To eliminate Nonce Reuse Attacks caused by bad random number generators (RNGs), RFC 6979 derives ephemeral nonce $k = \text{HMAC-SHA256}(d, m)$ deterministically, ensuring $k$ is always unique per message without relying on system entropy.
+                To eliminate Nonce Reuse Attacks caused by bad random number generators (RNGs), RFC 6979 derives an ephemeral nonce deterministically, ensuring it is always unique per message without relying on system entropy.
               </p>
             </div>
 
             <div className="p-5 bg-zinc-50 dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-2">
               <h4 className="text-sm font-bold text-amber-400">4. Hardware Wallet Security (Ledger / Trezor)</h4>
               <p className="text-xs text-zinc-300 leading-relaxed">
-                Hardware wallets isolate private key $d$ inside a Secure Element (SE) chip. The raw transaction payload is sent over USB/Bluetooth to the hardware wallet, which displays transaction details for physical button confirmation before signing.
+                Hardware wallets isolate the private key inside a Secure Element (SE) chip. The raw transaction payload is sent over USB/Bluetooth to the hardware wallet, which displays transaction details for physical button confirmation before signing.
               </p>
             </div>
           </div>

@@ -332,7 +332,7 @@ export default function SignalMessagingLab() {
                 <Zap className="w-4 h-4" /> 1. KDF Chain (Symmetric Ratchet)
               </h4>
               <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                For every message sent in a chain, the chain key is stepped: $MK, CK_{'{i+1}'} = \text{KDF}(CK_i)$. Message keys ($MK$) are deleted immediately after use.
+                For every message sent in a chain, the chain key advances through a key derivation step. Message keys are deleted immediately after use.
               </p>
               <div className="p-3 bg-zinc-100 dark:bg-zinc-900 font-mono text-xs rounded-xl space-y-1 text-emerald-400">
                 <p>CK_0 ──► [KDF Step] ──► MK_1 (Encrypted Payload 1)</p>
@@ -345,7 +345,7 @@ export default function SignalMessagingLab() {
                 <RefreshCw className="w-4 h-4" /> 2. Diffie-Hellman Ratchet (Asymmetric)
               </h4>
               <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                When a recipient receives a message with a new ephemeral DH public key, a new ECDH shared secret is derived to ratchet the Root Key: $RK_{'{next}'}, CK_{'{recv}'} = \text{KDF}(RK, \text{ECDH})$.
+                When a recipient receives a message with a new ephemeral DH public key, a new ECDH shared secret is derived to ratchet the root key and update the receiving chain keys.
               </p>
               <div className="p-3 bg-zinc-100 dark:bg-zinc-900 font-mono text-xs rounded-xl space-y-1 text-teal-400">
                 <p>RK_0 ──► + ECDH(Alice_DH, Bob_DH) ──► RK_1 (New Root Key)</p>
@@ -464,7 +464,7 @@ export default function SignalMessagingLab() {
               </div>
             </div>
             <p className="text-zinc-400 text-xs">
-              Master Initial Root Key = $\text{HKDF}(DH_1 \parallel DH_2 \parallel DH_3 \parallel DH_4)$.
+              Master initial root key is derived from all four X3DH shared secrets.
             </p>
           </div>
         </div>
