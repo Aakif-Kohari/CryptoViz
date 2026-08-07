@@ -22,6 +22,20 @@ type Protocol = {
 
 const protocols: Protocol[] = [
   {
+    id: 'emv',
+    name: 'EMV Payment Cryptography',
+    purpose: 'Global standard for chip-and-PIN and contactless payment card authentication (EMVCo Books 1-4).',
+    actors: ['Chip Card', 'POS Terminal', 'Acquirer Host', 'Issuer HSM'],
+    concepts: ['ARQC / ARPC Cryptograms', 'Key Derivation (MK -> UDK -> SK)', 'DDA / CDA Signatures', 'ATC Counter'],
+    differences: 'Uses hardware chip card dynamic cryptograms (ARQC) computed over transaction fields to authenticate cards to Issuer HSMs in real-time.',
+    steps: [
+      { title: 'Card Select & Read', description: 'POS Terminal selects EMV AID and reads card profile records.', sender: 'Terminal', receiver: 'Chip Card', message: 'Read Records (PAN, Expiry)' },
+      { title: 'Dynamic Card Authentication (DDA)', description: 'Chip card generates dynamic RSA signature over terminal Unpredictable Number.', sender: 'Chip Card', receiver: 'Terminal', message: 'DDA RSA Signature' },
+      { title: 'ARQC Cryptogram Generation', description: 'Chip card computes 64-bit ARQC MAC using session key SK_AC over ATC and amount.', sender: 'Chip Card', receiver: 'Terminal', message: 'ARQC (Tag 9F26)' },
+      { title: 'Issuer HSM Validation & ARPC', description: 'Bank Host HSM derives SK_AC, validates ARQC, and returns ARPC response code 00.', sender: 'Issuer HSM', receiver: 'Chip Card', message: 'ARPC Response (00 Approved)' }
+    ]
+  },
+  {
     id: 'tls',
     name: 'TLS (Transport Layer Security)',
     purpose: 'Secure communication over a computer network, widely used for web traffic (HTTPS).',
