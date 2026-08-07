@@ -173,11 +173,11 @@ function ariaCore(input: string, key: string, doDecrypt: boolean, instrument: bo
     }
 
     for (let b = 0; b < numBlocks; b++) {
-        let state = inBytes.slice(b * 16, b * 16 + 16)
+        let state: Uint8Array = new Uint8Array(inBytes.slice(b * 16, b * 16 + 16))
 
         for (let r = 0; r < rounds; r++) {
             // Add Round Key
-            state = xor128(state, roundKeys[r])
+            state = xor128(state, roundKeys[r]) as Uint8Array
 
             // Substitution Layer (Odd/Even alternation)
             const sub = new Uint8Array(16)
@@ -195,7 +195,7 @@ function ariaCore(input: string, key: string, doDecrypt: boolean, instrument: bo
 
             // Diffusion Layer (Involutional GF(2) matrix A)
             if (r < rounds - 1) {
-                state = diffusionA(state)
+                state = diffusionA(state) as Uint8Array
             }
 
             if (instrument && r % 4 === 0) {
@@ -204,7 +204,7 @@ function ariaCore(input: string, key: string, doDecrypt: boolean, instrument: bo
         }
 
         // Final Round (No diffusion, just AddRoundKey)
-        state = xor128(state, roundKeys[rounds])
+        state = xor128(state, roundKeys[rounds]) as Uint8Array
 
         outBuf.set(state, b * 16)
     }

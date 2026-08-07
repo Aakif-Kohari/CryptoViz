@@ -70,6 +70,26 @@ export const PQC_ALGORITHMS: PqcAlgorithm[] = [
     tags: ["lattice", "key exchange", "KEM", "ML-KEM"],
   },
   {
+    id: "frodokem",
+    name: "FrodoKEM",
+    family: "KEM",
+    difficulty: "Advanced",
+    status: "ISO/IEC & NIST Round 3 Candidate post-quantum key encapsulation mechanism",
+    securityBasis: "Unstructured Learning With Errors (LWE)",
+    primaryUse: "Conservative post-quantum key encapsulation without algebraic ring structure assumptions.",
+    shortSummary:
+      "FrodoKEM is a lattice-based KEM constructed directly on standard unstructured matrix Learning With Errors (LWE). It trades larger public key sizes for conservative security confidence.",
+    keyIdeas: [
+      "Operates directly on standard matrices rather than polynomial rings.",
+      "Public Key is B = A * S + E mod q with discrete noise E.",
+      "Avoids algebraic ring vulnerabilities by avoiding ring structure altogether.",
+    ],
+    strengths: ["Conservative security assumption (unstructured LWE)", "Simple matrix arithmetic concept", "Resilient to ring-specific cryptanalysis"],
+    tradeoffs: ["Larger public key and ciphertext sizes (~9.6 KB for Frodo640)", "Higher matrix computation time O(n^2)", "Requires higher bandwidth"],
+    visualizerConnections: ["Key Exchange", "Matrix LWE Visualizer", "PQC Comparison Matrix"],
+    tags: ["lattice", "key exchange", "KEM", "LWE", "FrodoKEM"],
+  },
+  {
     id: "dilithium",
     name: "Dilithium / ML-DSA",
     family: "Signature",

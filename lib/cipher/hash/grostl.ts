@@ -126,23 +126,23 @@ function addRoundConstantQ(state: Uint8Array, round: number): Uint8Array {
 }
 
 function P(state: Uint8Array): Uint8Array {
-    let s = new Uint8Array(state)
+    let s: Uint8Array = new Uint8Array(state)
     for (let r = 0; r < 10; r++) {
-        s = addRoundConstantP(s, r)
-        s = subBytes(s)
-        s = shiftBytesP(s)
-        s = mixBytes(s)
+        s = addRoundConstantP(s, r) as Uint8Array
+        s = subBytes(s) as Uint8Array
+        s = shiftBytesP(s) as Uint8Array
+        s = mixBytes(s) as Uint8Array
     }
     return s
 }
 
 function Q(state: Uint8Array): Uint8Array {
-    let s = new Uint8Array(state)
+    let s: Uint8Array = new Uint8Array(state)
     for (let r = 0; r < 10; r++) {
-        s = addRoundConstantQ(s, r)
-        s = subBytes(s)
-        s = shiftBytesQ(s)
-        s = mixBytes(s)
+        s = addRoundConstantQ(s, r) as Uint8Array
+        s = subBytes(s) as Uint8Array
+        s = shiftBytesQ(s) as Uint8Array
+        s = mixBytes(s) as Uint8Array
     }
     return s
 }

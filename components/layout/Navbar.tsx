@@ -75,15 +75,19 @@ export default function Navbar() {
       name: t('nav.learn') || 'Learn',
       items: [
         { name: t('nav.lifecycle') || 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+        { name: 'Docs & Guides', href: '/docs' },
         { name: t('nav.mythBusters') || 'Myth Busters', href: '/myth-busters' },
         { name: t('nav.encodingErrors') || 'Encoding Errors', href: '/encoding-errors' },
         { name: t('nav.merkle') || 'Merkle Tree', href: '/merkle' },
         { name: t('nav.padding') || 'Padding', href: '/padding' },
+        { name: 'Case Studies', href: '/case-studies' },
+        { name: 'Timeline', href: '/timeline' },
       ],
     },
     {
       name: t('nav.practice') || 'Practice',
       items: [
+        { name: 'Interactive Visualizers', href: '/visualizer' },
         { name: t('nav.playground') || 'Playground', href: '/visualizer/caesar/' },
         { name: t('nav.cipherSandbox') || 'Cipher Sandbox', href: '/cipher-sandbox' },
         { name: 'Attack Simulators', href: '/attacks' },
@@ -96,6 +100,7 @@ export default function Navbar() {
     {
       name: t('nav.reference') || 'Reference',
       items: [
+        { name: 'Reference Hub', href: '/reference' },
         { name: t('nav.glossary') || 'Glossary', href: '/glossary' },
         { name: t('nav.modes') || 'Modes', href: '/modes' },
         { name: t('nav.compare') || 'Compare', href: '/compare' },
@@ -103,6 +108,8 @@ export default function Navbar() {
         { name: t('nav.matrix') || 'Matrix', href: '/matrix' },
         { name: t('nav.benchmark') || 'Benchmark', href: '/benchmark' },
         { name: t('nav.avalanche') || 'Avalanche', href: '/avalanche' },
+        { name: 'S-Box Explorer', href: '/sbox' },
+        { name: 'Rainbow Table', href: '/rainbow-table' },
       ],
     },
     {
@@ -161,12 +168,7 @@ export default function Navbar() {
   ];
 
   const isDevelopment = process.env.NODE_ENV === 'development';
-
-  const navLinks = isDevelopment
-    ? [...allNavLinks, ...developerOnlyLinks]
-    : allNavLinks;
-
-  const visibleNavLinks = isDevelopment ? [...navLinks, ...developerLinks] : navLinks;
+  const visibleNavLinks = isDevelopment ? developerLinks : [];
 
   return (
     <nav

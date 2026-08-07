@@ -406,3 +406,89 @@ export function rc6ImplementationNotes(): string[] {
     "Passes the RC6-32/20/16 published zero-key vector.",
   ];
 }
+
+export const TEST_VECTORS = [
+  {
+    input: '00000000000000000000000000000000',
+    key: '00000000000000000000000000000000',
+    expected: '8FC3A53656B1F778C129DF4E9848A41E',
+    description: 'RC6-32/20/16 Published Zero Vector',
+  },
+]
+
+export function encrypt(input: string, key: string, options?: any) {
+  if (!input) {
+    throw new Error('Input message is required.')
+  }
+  if (!key || key.length !== 32) {
+    throw new Error('Invalid key: RC6 requires a 128-bit key (32 hex characters).')
+  }
+  if (input.length % 32 !== 0 || !/^[0-9a-fA-F]+$/.test(input)) {
+    throw new Error('Input must be a valid hex string with length multiple of 32 hexadecimal characters.')
+  }
+  
+  const numBlocks = input.length / 32
+  let outHex = ''
+  const steps: any[] = []
+  
+  for (let b = 0; b < numBlocks; b++) {
+    const block = input.slice(b * 32, (b + 1) * 32)
+    const trace = traceRc6Encryption(block, key, options?.rounds ? { rounds: options.rounds } : undefined)
+    outHex += trace.ciphertextHex
+    
+    if (options?.instrument) {
+      trace.roundTrace.forEach((rt) => {
+        steps.push({
+          index: steps.length,
+          label: `Block ${b + 1} - Round ${rt.round}`,
+          inputState: block,
+          outputState: rt.output,
+          note: `A: ${rt.a}, B: ${rt.b}, C: ${rt.c}, D: ${rt.d}`,
+        })
+      })
+    }
+  }
+  
+  return {
+    output: outHex,
+    outputEncoding: 'hex' as const,
+    steps,
+    metadata: {
+      name: 'RC6',
+      securityStatus: 'legacy' as const,
+    },
+    durationMs: 0,
+  }
+}
+
+export function decrypt(input: string, key: string, options?: any) {
+  if (!input) {
+    throw new Error('Input message is required.')
+  }
+  if (!key || key.length !== 32) {
+    throw new Error('Invalid key: RC6 requires a 128-bit key (32 hex characters).')
+  }
+  if (input.length % 32 !== 0 || !/^[0-9a-fA-F]+$/.test(input)) {
+    throw new Error('Input must be a valid hex string with length multiple of 32 hexadecimal characters.')
+  }
+  
+  const numBlocks = input.length / 32
+  let outHex = ''
+  
+  for (let b = 0; b < numBlocks; b++) {
+    const block = input.slice(b * 32, (b + 1) * 32)
+    outHex += decryptRc6Block(block, key, options?.rounds ? { rounds: options.rounds } : undefined)
+  }
+  
+  return {
+    output: outHex,
+    outputEncoding: 'hex' as const,
+    steps: [],
+    metadata: {
+      name: 'RC6',
+      securityStatus: 'legacy' as const,
+    },
+    durationMs: 0,
+  }
+}
+
