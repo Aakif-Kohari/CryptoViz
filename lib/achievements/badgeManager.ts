@@ -64,7 +64,7 @@ export const INITIAL_BADGES: Badge[] = [
 ]
 
 export function getBadges(): Badge[] {
-  const saved = safeGetItemJson<Record<string, number>>(BADGE_STORAGE_KEY) || {}
+  const saved = safeGetItemJson<Record<string, number>>(BADGE_STORAGE_KEY, {} as Record<string, number>) || {}
   return INITIAL_BADGES.map((badge) => {
     if (saved[badge.id]) {
       return {
@@ -78,7 +78,7 @@ export function getBadges(): Badge[] {
 }
 
 export function unlockBadge(badgeId: string): Badge[] {
-  const saved = safeGetItemJson<Record<string, number>>(BADGE_STORAGE_KEY) || {}
+  const saved = safeGetItemJson<Record<string, number>>(BADGE_STORAGE_KEY, {} as Record<string, number>) || {}
   if (!saved[badgeId]) {
     saved[badgeId] = Date.now()
     safeSetItemJson(BADGE_STORAGE_KEY, saved)
@@ -92,7 +92,7 @@ export function checkAndAutoUnlockBadges(stats: {
   quizCount?: number
   docsCount?: number
 }): Badge[] {
-  const saved = safeGetItemJson<Record<string, number>>(BADGE_STORAGE_KEY) || {}
+  const saved = safeGetItemJson<Record<string, number>>(BADGE_STORAGE_KEY, {} as Record<string, number>) || {}
   let updated = false
 
   if ((stats.exploredCount || 0) >= 1 && !saved['first_cipher']) {

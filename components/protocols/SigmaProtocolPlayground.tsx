@@ -151,7 +151,7 @@ export default function SigmaProtocolPlayground() {
             ) : null}
           </aside>
 
-          {!model.error && "keys" in model ? (
+          {model.error === null ? (
             <section className="grid gap-4">
               <Metric
                 label="Public key y = g^x mod p"
@@ -173,7 +173,7 @@ export default function SigmaProtocolPlayground() {
           ) : null}
         </section>
 
-        {!model.error && "keys" in model ? (
+        {model.error === null ? (
           <>
             <section className="grid gap-6 lg:grid-cols-2">
               <Panel
