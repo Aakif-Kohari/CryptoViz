@@ -1025,4 +1025,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
   },
+    {
+    id: 'mceliece',
+    name: 'Classic McEliece',
+    category: 'asymmetric',
+    description: 'Code-based Post-Quantum KEM (NIST PQC Finalist, 1978). Security rests on decoding random linear codes. WARNING: Visualizer uses small pedagogical parameters (n=15) for teaching; NOT secure at this size. Real McEliece has an exceptionally long unbroken track record.',
+    defaultKey: 'pub,priv',
+    defaultInput: '01',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
 ];
