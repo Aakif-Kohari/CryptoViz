@@ -150,6 +150,7 @@ export type CipherName =
   | 'ml-kem'
   | 'ed448'
   | 'shamir-secret-sharing'
+  | 'sidh'
   | 'ntru'
   | 'ed25519'
   | 'rabin'

@@ -1016,6 +1016,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'totalShares,threshold (split) — leave blank for combine',
   },
   {
+    id: 'sidh',
+    name: 'SIDH',
+    category: 'asymmetric',
+    description: 'Isogeny-based key exchange (SIKE). Status: FULLY BROKEN (2022). Included as an educational case study demonstrating how a promising NIST PQC candidate was completely broken via classical mathematics exploiting auxiliary torsion-point data.',
+    defaultKey: 'pub,priv',
+    defaultInput: '01',
+    securityStatus: 'broken',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
+  {
     id: 'ntru',
     name: 'NTRU',
     category: 'asymmetric',
