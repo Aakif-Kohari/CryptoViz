@@ -100,6 +100,21 @@ export default function Home() {
       glowClass: "hover:border-[#00C2AE]/50 hover:shadow-[0_0_30px_rgba(0,194,174,0.1)]"
     },
     {
+      title: "Signal Secure Messaging Lab",
+      difficulty: "Advanced",
+      time: "30 min",
+      popular: true,
+      description:
+        "Master the Double Ratchet Algorithm & X3DH protocol. Chat interactively between Alice & Bob, inspect KDF/DH key ratchets, and simulate self-healing break-in recovery.",
+      icon: (
+        <svg className="h-6 w-6 text-[#00C2AE]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+      ),
+      link: "/signal-lab",
+      glowClass: "hover:border-[#00C2AE]/50 hover:shadow-[0_0_30px_rgba(0,194,174,0.1)]"
+    },
+    {
       title: "Key Size Security Estimator",
       difficulty: "Beginner",
       time: "10 min",
