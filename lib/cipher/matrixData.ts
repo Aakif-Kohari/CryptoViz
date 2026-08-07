@@ -170,6 +170,16 @@ export const ALGORITHM_MATRIX_DATA: MatrixEntry[] = [
     speed: 'Moderate',
     applications: ['Key Exchange (Forward Secrecy)'],
   },
+  {
+    id: 'frodokem',
+    name: 'FrodoKEM-640',
+    category: 'asymmetric',
+    blockSize: 'N/A',
+    keySize: '640 (Matrix LWE)',
+    securityStatus: 'secure',
+    speed: 'Moderate (O(n^2) Matrix Ops)',
+    applications: ['Post-Quantum Key Exchange', 'Conservative PQC', 'Lattice Cryptography'],
+  },
   // Classical
   {
     id: 'caesar',
