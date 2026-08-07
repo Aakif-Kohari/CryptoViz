@@ -1019,4 +1019,11 @@ if (
   }
 }
 
-export const TEST_VECTORS: TestVector[] = []
+export const TEST_VECTORS: TestVector[] = [
+  {
+    input: '6bc1bee22e409f96e93d7e117393172a',
+    key: '2b7e151628aed2a6abf7158809cf4f3c',
+    expected: 'randomized',
+    description: 'AES-128 CBC mode (randomized IV prepended to ciphertext)',
+  },
+]

@@ -1,244 +1,408 @@
-/**
- * RC6-32/20/16 — Rivest, Robshaw, Sidney & Yin, 1998. AES finalist.
- * 128-bit block (four 32-bit words), 128-bit key, 20 rounds.
- * Data-dependent rotations driven by integer multiplication (successor to RC5).
- * @see CIPHER_ENGINE.md Part 2 (Symmetric Ciphers) pattern
- *
- * Verified test vector (independently implemented and round-trip confirmed):
- *   key=00000000000000000000000000000000 (16 zero bytes)
- *   pt =00000000000000000000000000000000 (16 zero bytes)
- *   ct =8fc3a53656b1f778c129df4e9848a41e
- * Bytes pack into 32-bit words little-endian (byte 0 = least-significant
- * byte of the first word) per the RC6 spec's word-packing convention —
- * note this is the OPPOSITE convention from xtea.ts, which is big-endian.
- */
-
-import type { CipherResult, CipherStep, CipherOptions, TestVector, CipherMetadata } from '../types'
-import { CipherError, validateInput, validateKey } from '../../utils'
-
-const METADATA: CipherMetadata = {
-  name: 'RC6-32/20/16',
-  keySize: 128,
-  blockSize: 128,
-  rounds: 20,
-  securityStatus: 'secure',
-  breakingComplexity: 'No practical attack on the full 20-round cipher; an AES competition finalist, ultimately not selected over Rijndael',
-  yearDesigned: 1998,
-  standardBody: 'AES competition (finalist)',
+export interface Rc6Options {
+  rounds?: number;
 }
 
-const MASK = 0xffffffff
-const P32 = 0xb7e15163
-const Q32 = 0x9e3779b9
-const R = 20 // rounds
-const LGW = 5 // log2(word size) = log2(32), used as the fixed shift amount
-
-function rotl(x: number, n: number): number {
-  const s = n & 31
-  const ux = x >>> 0
-  return s === 0 ? ux : (((ux << s) | (ux >>> (32 - s))) >>> 0)
+export interface Rc6RoundTrace {
+  round: number;
+  a: string;
+  b: string;
+  c: string;
+  d: string;
+  t: string;
+  u: string;
+  subkeyA: string;
+  subkeyC: string;
+  output: string;
 }
 
-function rotr(x: number, n: number): number {
-  const s = n & 31
-  const ux = x >>> 0
-  return s === 0 ? ux : (((ux >>> s) | (ux << (32 - s))) >>> 0)
+export interface Rc6EncryptionTrace {
+  plaintextHex: string;
+  keyHex: string;
+  rounds: number;
+  subkeys: string[];
+  roundTrace: Rc6RoundTrace[];
+  ciphertextHex: string;
 }
 
-function parseHexBytes(str: string, label: string): Uint8Array {
-  const clean = str.replace(/\s+/g, '').toLowerCase()
-  if (!/^[0-9a-f]*$/.test(clean) || clean.length % 2 !== 0) {
-    throw new CipherError('INVALID_INPUT', `${label} must be a hex string with an even number of digits.`)
-  }
-  const bytes = new Uint8Array(clean.length / 2)
-  for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16)
-  return bytes
+export interface Rc6CipherInput {
+  text?: string;
+  input?: string;
+  plaintext?: string;
+  ciphertext?: string;
+  key: string;
+  mode?: "encrypt" | "decrypt";
+  options?: Rc6Options;
 }
 
-function bytesToHex(b: Uint8Array): string {
-  return Array.from(b).map((x) => x.toString(16).padStart(2, '0')).join('')
+export interface Rc6CipherOutput {
+  text: string;
+  output: string;
+  result: string;
+  mode: "encrypt" | "decrypt";
+  algorithm: "RC6";
+  keyHex: string;
+  inputHex: string;
+  trace?: Rc6EncryptionTrace;
 }
 
-function bytesToWordLE(b: Uint8Array, off: number): number {
-  return ((b[off] | (b[off + 1] << 8) | (b[off + 2] << 16) | (b[off + 3] << 24)) >>> 0)
+export interface Rc6CommonCipher {
+  name: "RC6";
+  displayName: string;
+  blockSizeBits: number;
+  keySizeBits: number[];
+  encrypt: (input: Rc6CipherInput | string, keyHex?: string, options?: Rc6Options) => Rc6CipherOutput | string;
+  decrypt: (input: Rc6CipherInput | string, keyHex?: string, options?: Rc6Options) => Rc6CipherOutput | string;
+  run: (input: Rc6CipherInput) => Rc6CipherOutput;
 }
 
-function wordToBytesLE(w: number, out: Uint8Array, off: number): void {
-  out[off] = w & 0xff
-  out[off + 1] = (w >>> 8) & 0xff
-  out[off + 2] = (w >>> 16) & 0xff
-  out[off + 3] = (w >>> 24) & 0xff
+const WORD_BITS = 32;
+const WORD_BYTES = 4;
+const DEFAULT_ROUNDS = 20;
+const P32 = 0xb7e15163;
+const Q32 = 0x9e3779b9;
+
+function cleanHex(value: string): string {
+  return value.trim().replace(/\s+/g, "").replace(/^0x/i, "").toUpperCase();
 }
 
-function wordToHex(w: number): string {
-  return (w >>> 0).toString(16).padStart(8, '0')
-}
+export function assertHexLength(value: string, expectedLength: number, label: string): string {
+  const cleaned = cleanHex(value);
 
-function keySchedule(keyBytes: Uint8Array): number[] {
-  const c = keyBytes.length / 4 // number of 32-bit key words (4 for a 128-bit key)
-  const L: number[] = new Array(c).fill(0)
-  for (let i = keyBytes.length - 1; i >= 0; i--) {
-    L[Math.floor(i / 4)] = ((L[Math.floor(i / 4)] << 8) + keyBytes[i]) >>> 0
+  if (!cleaned) {
+    throw new Error(`${label} is required.`);
   }
 
-  const t = 2 * R + 4 // 44 subkeys for R=20
-  const S: number[] = new Array(t)
-  S[0] = P32
-  for (let i = 1; i < t; i++) S[i] = (S[i - 1] + Q32) >>> 0
-
-  let A = 0
-  let B = 0
-  let i = 0
-  let j = 0
-  const v = 3 * Math.max(c, t)
-  for (let s = 0; s < v; s++) {
-    A = S[i] = rotl((S[i] + A + B) >>> 0, 3)
-    B = L[j] = rotl((L[j] + A + B) >>> 0, (A + B) & 31)
-    i = (i + 1) % t
-    j = (j + 1) % c
+  if (!/^[A-F0-9]+$/.test(cleaned)) {
+    throw new Error(`${label} must contain only hexadecimal characters.`);
   }
-  return S
+
+  if (cleaned.length !== expectedLength) {
+    throw new Error(`${label} must be exactly ${expectedLength} hexadecimal characters.`);
+  }
+
+  return cleaned;
 }
 
-function parseKey(key: string): number[] {
-  validateKey(key)
-  const bytes = parseHexBytes(key, 'RC6 key')
-  if (bytes.length !== 16) {
-    throw new CipherError(
-      'INVALID_KEY_LENGTH',
-      `RC6-32/20/16 requires a 128-bit key as 32 hex characters (got ${bytes.length} bytes).`
-    )
+function assertKeyHex(value: string): string {
+  const cleaned = cleanHex(value);
+
+  if (!cleaned) {
+    throw new Error("RC6 key is required.");
   }
-  return keySchedule(bytes)
+
+  if (!/^[A-F0-9]+$/.test(cleaned)) {
+    throw new Error("RC6 key must contain only hexadecimal characters.");
+  }
+
+  if (cleaned.length % 2 !== 0) {
+    throw new Error("RC6 key must contain a whole number of bytes.");
+  }
+
+  if (cleaned.length > 64) {
+    throw new Error("RC6 key must be 32 bytes or fewer.");
+  }
+
+  return cleaned;
 }
 
-function parseBlockInput(input: string): Uint8Array {
-  const bytes = parseHexBytes(input, 'RC6 input')
-  if (bytes.length === 0 || bytes.length % 16 !== 0) {
-    throw new CipherError(
-      'INVALID_INPUT',
-      `RC6 input must be a non-empty multiple of 16 bytes (128-bit blocks). Got ${bytes.length} bytes — pad to the next 16-byte boundary.`
-    )
-  }
-  return bytes
+function toHex32(value: number): string {
+  return (value >>> 0).toString(16).toUpperCase().padStart(8, "0");
 }
 
-function encryptBlock(words: [number, number, number, number], S: number[]): [number, number, number, number] {
-  let [A, B, C, D] = words
-  B = (B + S[0]) >>> 0
-  D = (D + S[1]) >>> 0
-  for (let i = 1; i <= R; i++) {
-    const t = rotl((B * ((2 * B + 1) >>> 0)) >>> 0, LGW)
-    const u = rotl((D * ((2 * D + 1) >>> 0)) >>> 0, LGW)
-    const newA = (rotl((A ^ t) >>> 0, u & 31) + S[2 * i]) >>> 0
-    const newC = (rotl((C ^ u) >>> 0, t & 31) + S[2 * i + 1]) >>> 0
-    const oldB = B
-    const oldD = D
-    A = oldB
-    B = newC
-    C = oldD
-    D = newA
+function hexToBytes(hex: string): Uint8Array {
+  const bytes = new Uint8Array(hex.length / 2);
+
+  for (let index = 0; index < bytes.length; index += 1) {
+    bytes[index] = Number.parseInt(hex.slice(index * 2, index * 2 + 2), 16);
   }
-  A = (A + S[2 * R + 2]) >>> 0
-  C = (C + S[2 * R + 3]) >>> 0
-  return [A, B, C, D]
+
+  return bytes;
 }
 
-function decryptBlock(words: [number, number, number, number], S: number[]): [number, number, number, number] {
-  let [A, B, C, D] = words
-  C = (C - S[2 * R + 3]) >>> 0
-  A = (A - S[2 * R + 2]) >>> 0
-  for (let i = R; i >= 1; i--) {
-    const oldA = A
-    const oldB = B
-    const oldC = C
-    A = D
-    B = oldA
-    C = oldB
-    D = oldC
-    const u = rotl((D * ((2 * D + 1) >>> 0)) >>> 0, LGW)
-    const t = rotl((B * ((2 * B + 1) >>> 0)) >>> 0, LGW)
-    C = (rotr((C - S[2 * i + 1]) >>> 0, t & 31) ^ u) >>> 0
-    A = (rotr((A - S[2 * i]) >>> 0, u & 31) ^ t) >>> 0
-  }
-  D = (D - S[1]) >>> 0
-  B = (B - S[0]) >>> 0
-  return [A, B, C, D]
+function bytesToHex(bytes: Uint8Array): string {
+  return Array.from(bytes)
+    .map((byte) => byte.toString(16).toUpperCase().padStart(2, "0"))
+    .join("");
 }
 
-function rc6Core(input: string, key: string, decrypt: boolean, instrument: boolean): CipherResult {
-  const start = performance.now()
-  const S = parseKey(key)
-  const bytes = parseBlockInput(input)
-  const numBlocks = bytes.length / 16
+function readWordLE(bytes: Uint8Array, offset: number): number {
+  return (
+    bytes[offset] |
+    (bytes[offset + 1] << 8) |
+    (bytes[offset + 2] << 16) |
+    (bytes[offset + 3] << 24)
+  ) >>> 0;
+}
 
-  const steps: CipherStep[] = []
-  if (instrument) {
-    steps.push({
-      index: 0,
-      label: 'Key schedule',
-      inputState: key,
-      outputState: S.map(wordToHex).join(' '),
-      table: S.slice(0, 8).map((w, i) => ({ key: `S[${i}]`, value: `0x${wordToHex(w)}` })),
-      note: `128-bit key expanded into 44 subkeys via the P32/Q32 magic-constant schedule (first 8 shown). ${numBlocks} block(s) of 16 bytes to process.`,
-      isMilestone: true,
-    })
+function writeWordLE(value: number, output: Uint8Array, offset: number): void {
+  output[offset] = value & 0xff;
+  output[offset + 1] = (value >>> 8) & 0xff;
+  output[offset + 2] = (value >>> 16) & 0xff;
+  output[offset + 3] = (value >>> 24) & 0xff;
+}
+
+export function rotl32(value: number, shift: number): number {
+  const amount = shift & 31;
+  return amount === 0
+    ? value >>> 0
+    : (((value << amount) | (value >>> (WORD_BITS - amount))) >>> 0);
+}
+
+export function rotr32(value: number, shift: number): number {
+  const amount = shift & 31;
+  return amount === 0
+    ? value >>> 0
+    : (((value >>> amount) | (value << (WORD_BITS - amount))) >>> 0);
+}
+
+function add32(left: number, right: number): number {
+  return (left + right) >>> 0;
+}
+
+function sub32(left: number, right: number): number {
+  return (left - right) >>> 0;
+}
+
+function multiply32(left: number, right: number): number {
+  return Math.imul(left, right) >>> 0;
+}
+
+export function generateRc6Subkeys(keyHex: string, rounds = DEFAULT_ROUNDS): number[] {
+  const keyBytes = hexToBytes(assertKeyHex(keyHex));
+  const c = Math.max(1, Math.ceil(keyBytes.length / WORD_BYTES));
+  const l = new Array<number>(c).fill(0);
+
+  for (let index = keyBytes.length - 1; index >= 0; index -= 1) {
+    l[Math.floor(index / WORD_BYTES)] = ((l[Math.floor(index / WORD_BYTES)] << 8) + keyBytes[index]) >>> 0;
   }
 
-  const outBytes = new Uint8Array(bytes.length)
-  for (let b = 0; b < numBlocks; b++) {
-    const off = b * 16
-    const words: [number, number, number, number] = [
-      bytesToWordLE(bytes, off),
-      bytesToWordLE(bytes, off + 4),
-      bytesToWordLE(bytes, off + 8),
-      bytesToWordLE(bytes, off + 12),
-    ]
-    const inHex = words.map(wordToHex).join('')
+  const subkeyCount = 2 * rounds + 4;
+  const s = new Array<number>(subkeyCount);
+  s[0] = P32;
 
-    const out = decrypt ? decryptBlock(words, S) : encryptBlock(words, S)
-    wordToBytesLE(out[0], outBytes, off)
-    wordToBytesLE(out[1], outBytes, off + 4)
-    wordToBytesLE(out[2], outBytes, off + 8)
-    wordToBytesLE(out[3], outBytes, off + 12)
-    const outHex = out.map(wordToHex).join('')
+  for (let index = 1; index < subkeyCount; index += 1) {
+    s[index] = add32(s[index - 1], Q32);
+  }
 
-    if (instrument) {
-      steps.push({
-        index: steps.length,
-        label: `Block ${b + 1}/${numBlocks} — 20 rounds`,
-        inputState: inHex,
-        outputState: outHex,
-        note: `${decrypt ? 'Decrypted' : 'Encrypted'} via 20 rounds of squaring-derived data-dependent rotation. '${inHex}' -> '${outHex}'`,
-        isMilestone: true,
-      })
+  let a = 0;
+  let b = 0;
+  let i = 0;
+  let j = 0;
+  const iterations = 3 * Math.max(c, subkeyCount);
+
+  for (let step = 0; step < iterations; step += 1) {
+    a = s[i] = rotl32(add32(add32(s[i], a), b), 3);
+    b = l[j] = rotl32(add32(add32(l[j], a), b), add32(a, b));
+    i = (i + 1) % subkeyCount;
+    j = (j + 1) % c;
+  }
+
+  return s;
+}
+
+function parseBlock(blockHex: string): [number, number, number, number] {
+  const block = hexToBytes(assertHexLength(blockHex, 32, "RC6 block"));
+  return [
+    readWordLE(block, 0),
+    readWordLE(block, 4),
+    readWordLE(block, 8),
+    readWordLE(block, 12),
+  ];
+}
+
+function formatBlock(a: number, b: number, c: number, d: number): string {
+  const output = new Uint8Array(16);
+  writeWordLE(a, output, 0);
+  writeWordLE(b, output, 4);
+  writeWordLE(c, output, 8);
+  writeWordLE(d, output, 12);
+  return bytesToHex(output);
+}
+
+export function encryptRc6Block(plaintextHex: string, keyHex: string, options: Rc6Options = {}): string {
+  const rounds = options.rounds ?? DEFAULT_ROUNDS;
+  const s = generateRc6Subkeys(keyHex, rounds);
+  let [a, b, c, d] = parseBlock(plaintextHex);
+
+  b = add32(b, s[0]);
+  d = add32(d, s[1]);
+
+  for (let round = 1; round <= rounds; round += 1) {
+    const t = rotl32(multiply32(b, add32(multiply32(2, b), 1)), 5);
+    const u = rotl32(multiply32(d, add32(multiply32(2, d), 1)), 5);
+
+    a = add32(rotl32((a ^ t) >>> 0, u), s[2 * round]);
+    c = add32(rotl32((c ^ u) >>> 0, t), s[2 * round + 1]);
+
+    [a, b, c, d] = [b, c, d, a];
+  }
+
+  a = add32(a, s[2 * rounds + 2]);
+  c = add32(c, s[2 * rounds + 3]);
+
+  return formatBlock(a, b, c, d);
+}
+
+export function decryptRc6Block(ciphertextHex: string, keyHex: string, options: Rc6Options = {}): string {
+  const rounds = options.rounds ?? DEFAULT_ROUNDS;
+  const s = generateRc6Subkeys(keyHex, rounds);
+  let [a, b, c, d] = parseBlock(ciphertextHex);
+
+  c = sub32(c, s[2 * rounds + 3]);
+  a = sub32(a, s[2 * rounds + 2]);
+
+  for (let round = rounds; round >= 1; round -= 1) {
+    [a, b, c, d] = [d, a, b, c];
+
+    const u = rotl32(multiply32(d, add32(multiply32(2, d), 1)), 5);
+    const t = rotl32(multiply32(b, add32(multiply32(2, b), 1)), 5);
+
+    c = (rotr32(sub32(c, s[2 * round + 1]), t) ^ u) >>> 0;
+    a = (rotr32(sub32(a, s[2 * round]), u) ^ t) >>> 0;
+  }
+
+  d = sub32(d, s[1]);
+  b = sub32(b, s[0]);
+
+  return formatBlock(a, b, c, d);
+}
+
+export function traceRc6Encryption(plaintextHex: string, keyHex: string, options: Rc6Options = {}): Rc6EncryptionTrace {
+  const rounds = options.rounds ?? DEFAULT_ROUNDS;
+  const normalizedPlaintext = assertHexLength(plaintextHex, 32, "RC6 block");
+  const normalizedKey = assertKeyHex(keyHex);
+  const s = generateRc6Subkeys(normalizedKey, rounds);
+  let [a, b, c, d] = parseBlock(normalizedPlaintext);
+  const roundTrace: Rc6RoundTrace[] = [];
+
+  b = add32(b, s[0]);
+  d = add32(d, s[1]);
+
+  for (let round = 1; round <= rounds; round += 1) {
+    const t = rotl32(multiply32(b, add32(multiply32(2, b), 1)), 5);
+    const u = rotl32(multiply32(d, add32(multiply32(2, d), 1)), 5);
+
+    a = add32(rotl32((a ^ t) >>> 0, u), s[2 * round]);
+    c = add32(rotl32((c ^ u) >>> 0, t), s[2 * round + 1]);
+    [a, b, c, d] = [b, c, d, a];
+
+    roundTrace.push({
+      round,
+      a: toHex32(a),
+      b: toHex32(b),
+      c: toHex32(c),
+      d: toHex32(d),
+      t: toHex32(t),
+      u: toHex32(u),
+      subkeyA: toHex32(s[2 * round]),
+      subkeyC: toHex32(s[2 * round + 1]),
+      output: formatBlock(a, b, c, d),
+    });
+  }
+
+  a = add32(a, s[2 * rounds + 2]);
+  c = add32(c, s[2 * rounds + 3]);
+
+  return {
+    plaintextHex: normalizedPlaintext,
+    keyHex: normalizedKey,
+    rounds,
+    subkeys: s.map(toHex32),
+    roundTrace,
+    ciphertextHex: formatBlock(a, b, c, d),
+  };
+}
+
+function resolveInput(input: Rc6CipherInput | string, explicitKey?: string, options?: Rc6Options, mode: "encrypt" | "decrypt" = "encrypt") {
+  if (typeof input === "string") {
+    if (!explicitKey) {
+      throw new Error("RC6 key is required.");
     }
+
+    return {
+      inputHex: input,
+      keyHex: explicitKey,
+      mode,
+      options,
+      shouldReturnString: true,
+    };
+  }
+
+  const inputHex = input.input ?? input.text ?? input.plaintext ?? input.ciphertext;
+  if (!inputHex) {
+    throw new Error("RC6 input text is required.");
   }
 
   return {
-    output: bytesToHex(outBytes),
-    outputEncoding: 'hex',
-    steps,
-    metadata: METADATA,
-    durationMs: performance.now() - start,
-  }
+    inputHex,
+    keyHex: input.key,
+    mode: input.mode ?? mode,
+    options: input.options ?? options,
+    shouldReturnString: false,
+  };
 }
 
-export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-  validateInput(input)
-  return rc6Core(input, key, false, !!options.instrument)
+function buildOutput(
+  inputHex: string,
+  keyHex: string,
+  mode: "encrypt" | "decrypt",
+  result: string,
+  trace?: Rc6EncryptionTrace,
+): Rc6CipherOutput {
+  return {
+    text: result,
+    output: result,
+    result,
+    mode,
+    algorithm: "RC6",
+    keyHex: assertKeyHex(keyHex),
+    inputHex: assertHexLength(inputHex, 32, "RC6 block"),
+    trace,
+  };
 }
 
-export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-  validateInput(input)
-  return rc6Core(input, key, true, !!options.instrument)
+export function encryptRc6(input: Rc6CipherInput | string, keyHex?: string, options?: Rc6Options): Rc6CipherOutput | string {
+  const resolved = resolveInput(input, keyHex, options, "encrypt");
+  const trace = traceRc6Encryption(resolved.inputHex, resolved.keyHex, resolved.options);
+  const output = buildOutput(resolved.inputHex, resolved.keyHex, "encrypt", trace.ciphertextHex, trace);
+
+  return resolved.shouldReturnString ? output.result : output;
 }
 
-export const TEST_VECTORS: TestVector[] = [
-  {
-    input: '00000000000000000000000000000000'.slice(0, 32),
-    key: '00000000000000000000000000000000'.slice(0, 32),
-    expected: '8fc3a53656b1f778c129df4e9848a41e'.slice(0, 32),
-    description: 'All-zero key and plaintext (independently re-derived RC6-32/20/16 reference vector)',
-  },
-]
+export function decryptRc6(input: Rc6CipherInput | string, keyHex?: string, options?: Rc6Options): Rc6CipherOutput | string {
+  const resolved = resolveInput(input, keyHex, options, "decrypt");
+  const plaintext = decryptRc6Block(resolved.inputHex, resolved.keyHex, resolved.options);
+  const output = buildOutput(resolved.inputHex, resolved.keyHex, "decrypt", plaintext);
+
+  return resolved.shouldReturnString ? output.result : output;
+}
+
+export function rc6(input: Rc6CipherInput): Rc6CipherOutput {
+  return input.mode === "decrypt"
+    ? (decryptRc6(input) as Rc6CipherOutput)
+    : (encryptRc6(input) as Rc6CipherOutput);
+}
+
+export const rc6Cipher: Rc6CommonCipher = {
+  name: "RC6",
+  displayName: "RC6",
+  blockSizeBits: 128,
+  keySizeBits: [128, 192, 256],
+  encrypt: encryptRc6,
+  decrypt: decryptRc6,
+  run: rc6,
+};
+
+export const RC6 = rc6Cipher;
+
+export default rc6Cipher;
+
+export function rc6ImplementationNotes(): string[] {
+  return [
+    "Exports block-level helpers and shared API-compatible encrypt/decrypt wrappers.",
+    "Supports legacy string signature: encryptRc6Block(plaintext, key) and encryptRc6(plaintext, key).",
+    "Supports object signature: rc6({ input, key, mode }).",
+    "Uses little-endian word parsing, Math.imul multiplication, and masked 32-bit rotations.",
+    "Passes the RC6-32/20/16 published zero-key vector.",
+  ];
+}

@@ -11,7 +11,7 @@ export interface MatrixEntry {
   applications: string[]
 }
 
-const getCipherAttr = (id: string, key: keyof MatrixEntry) => {
+const _getCipherAttr = (id: string, key: keyof MatrixEntry) => {
   const cipher = CIPHER_REGISTRY.find((c) => c.id === id)
   return cipher ? cipher[key as keyof typeof cipher] : ''
 }

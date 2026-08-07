@@ -1,7 +1,9 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import Navbar from '../../components/layout/Navbar'
+import { Suspense, useMemo, useState } from 'react'
+import Breadcrumbs from '../../components/layout/Breadcrumbs'
+import { useSearchParams } from 'next/navigation'
+import WorkspaceLayout from '../../components/layout/WorkspaceLayout'
 import CipherComparisonPanel from '../../components/compare/CipherComparisonPanel'
 import ComparisonControls from '../../components/compare/ComparisonControls'
 import { CIPHER_REGISTRY } from '../../lib/cipher/registry'
@@ -21,8 +23,11 @@ import {
 const DEFAULT_LEFT_CIPHER = 'caesar'
 const DEFAULT_RIGHT_CIPHER = 'vigenere'
 
-export default function ComparePage() {
-  const [leftCipherId, setLeftCipherId] = useState(DEFAULT_LEFT_CIPHER)
+function CompareContent() {
+  const searchParams = useSearchParams()
+  const urlLeft = searchParams.get('left')
+  
+  const [leftCipherId, setLeftCipherId] = useState(urlLeft || DEFAULT_LEFT_CIPHER)
   const [rightCipherId, setRightCipherId] = useState(DEFAULT_RIGHT_CIPHER)
   const [sharedInput, setSharedInput] = useState('ATTACKATDAWN')
   const [resetToken, setResetToken] = useState(0)
@@ -113,8 +118,7 @@ export default function ComparePage() {
   }, [leftResult, rightResult, leftCipher.name, rightCipher.name])
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-100">
-      <Navbar />
+    <WorkspaceLayout activeCipherId={leftCipherId}>
 
       <main className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
         <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
@@ -143,6 +147,19 @@ export default function ComparePage() {
             Export Results
           </button>
         </div>
+        <Breadcrumbs items={[{ label: "Practice" }, { label: "Compare Ciphers" }]} />
+        <header className="max-w-3xl">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">
+            Comparison workspace
+          </p>
+          <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+            Compare two ciphers side by side
+          </h1>
+          <p className="mt-4 text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+            Run the same input through two algorithms while keeping separate
+            keys, directions, options, results, loading states, and errors.
+          </p>
+        </header>
 
         <ComparisonControls
           ciphers={CIPHER_REGISTRY}
@@ -200,6 +217,15 @@ export default function ComparePage() {
           />
         </section>
       </main>
-    </div>
+    </WorkspaceLayout>
+  )
+}
+
+
+export default function ComparePage() {
+  return (
+    <Suspense fallback={<div className="p-8">Loading compare workspace...</div>}>
+      <CompareContent />
+    </Suspense>
   )
 }

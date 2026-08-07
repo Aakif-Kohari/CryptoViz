@@ -1,4 +1,9 @@
 import { CIPHER_REGISTRY } from "../cipher/registry";
+import {
+  safeGetItemJson,
+  safeSetItemJson,
+  safeRemoveItem,
+} from "./storage";
 
 export const RECENT_CIPHERS_STORAGE_KEY = "cryptoviz-recent-ciphers";
 export const MAX_RECENT_CIPHERS = 8;
@@ -31,31 +36,13 @@ export function normalizeRecentCipherIds(
 }
 
 export function loadRecentCipherIds(): string[] {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const raw = window.localStorage.getItem(RECENT_CIPHERS_STORAGE_KEY);
-    if (!raw) return [];
-    return normalizeRecentCipherIds(JSON.parse(raw));
-  } catch {
-    return [];
-  }
+  const parsed = safeGetItemJson<unknown>(RECENT_CIPHERS_STORAGE_KEY, null);
+  return parsed !== null ? normalizeRecentCipherIds(parsed) : [];
 }
 
 export function saveRecentCipherIds(ids: string[]): string[] {
   const normalized = normalizeRecentCipherIds(ids);
-
-  if (typeof window !== "undefined") {
-    try {
-      window.localStorage.setItem(
-        RECENT_CIPHERS_STORAGE_KEY,
-        JSON.stringify(normalized),
-      );
-    } catch {
-      // localStorage can be unavailable in private mode or when quota is full.
-    }
-  }
-
+  safeSetItemJson(RECENT_CIPHERS_STORAGE_KEY, normalized);
   return normalized;
 }
 
@@ -75,11 +62,5 @@ export function recordRecentCipher(
 }
 
 export function clearRecentCipherIds(): void {
-  if (typeof window === "undefined") return;
-
-  try {
-    window.localStorage.removeItem(RECENT_CIPHERS_STORAGE_KEY);
-  } catch {
-    // Clearing history should remain a no-op when storage is unavailable.
-  }
+  safeRemoveItem(RECENT_CIPHERS_STORAGE_KEY);
 }
