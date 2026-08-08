@@ -411,7 +411,7 @@ function aesInstrumented(
             label: `Block 1 — Round ${r} — MixColumns`,
             inputState: fromByteArray(stateBeforeMix, 'hex'),
             outputState: fromByteArray(state, 'hex'),
-            note: 'Multiplied state columns by fixed polynomial in GF(2^8).',
+           note: 'Treated each state column as a degree-3 polynomial over GF(2^8) and multiplied it by c(x) = {03}x³ + {01}x² + {01}x + {02}, reduced modulo x⁴ + 1. All coefficient arithmetic is performed in GF(2^8).',
           })
 
           // AddRoundKey
@@ -510,7 +510,7 @@ function aesInstrumented(
             label: `Block 1 — Decryption Round ${roundNum} — InvMixColumns`,
             inputState: fromByteArray(stateBeforeMixDecRound, 'hex'),
             outputState: fromByteArray(state, 'hex'),
-            note: 'Multiplied state columns by inverse fixed polynomial.',
+            note: 'Treated each state column as a degree-3 polynomial over GF(2^8) and multiplied it by c(x) = {03}x³ + {01}x² + {01}x + {02}, reduced modulo x⁴ + 1. All coefficient arithmetic is performed in GF(2^8).',
           })
 
           const stateBeforeShiftDecRound = new Uint8Array(state)
