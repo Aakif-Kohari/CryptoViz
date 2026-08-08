@@ -2,9 +2,16 @@ import { describe, it, expect } from 'vitest'
 import { encrypt, decrypt, TEST_VECTORS } from '@/lib/cipher/symmetric/seed'
 
 describe('SEED-128', () => {
-    it('matches RFC 4269 test vector', () => {
-        const v = TEST_VECTORS[0]
-        expect(encrypt(v.input, v.key).output).toBe(v.expected)
+    it('matches all RFC 4269 Appendix B test vectors (encrypt)', () => {
+        for (const v of TEST_VECTORS) {
+            expect(encrypt(v.input, v.key).output.toLowerCase()).toBe(v.expected.toLowerCase())
+        }
+    })
+
+    it('matches all RFC 4269 Appendix B test vectors (decrypt)', () => {
+        for (const v of TEST_VECTORS) {
+            expect(decrypt(v.expected, v.key).output.toLowerCase()).toBe(v.input.toLowerCase())
+        }
     })
 
     it('round-trip encrypt then decrypt', () => {

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import WorkspaceLayout from "../../../components/layout/WorkspaceLayout";
 import CipherLayout from "../../../components/cipher/CipherLayout";
 import GcmTamperDemo from "../../../components/cipher/GcmTamperDemo";
+import FrodoKemVisualizer from "../../../components/cipher/FrodoKemVisualizer";
 import WorkerErrorBoundary from "../../../components/error/WorkerErrorBoundary";
 import RecentCipherTracker from "../../../components/cipher/RecentCipherTracker";
 import LearningProgressionFooter from "../../../components/learning/LearningProgressionFooter";
@@ -49,6 +50,12 @@ export default async function VisualizerPage({
             {cipher.id === "aes-gcm" && (
               <div className="mx-auto max-w-5xl px-4 pb-8 md:px-6 lg:px-8">
                 <GcmTamperDemo />
+              </div>
+            )}
+
+            {cipher.id === "frodokem" && (
+              <div className="mx-auto max-w-5xl px-4 pb-8 md:px-6 lg:px-8">
+                <FrodoKemVisualizer />
               </div>
             )}
 
