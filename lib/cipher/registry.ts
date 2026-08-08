@@ -9,6 +9,8 @@ export interface CipherDefinition {
   defaultInput: string;
   securityStatus: "recommended" | "secure" | "legacy" | "deprecated" | "broken" | "experimental";
   keyPlaceholder?: string;
+  keySize?: string;
+  practicalUseCases?: string[];
   /** Cipher IDs the learner should be comfortable with before tackling this one */
   prerequisites?: string[];
   /** Cipher IDs that make natural next steps after exploring this one */
@@ -132,6 +134,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "0123456789ABCDEF",
     securityStatus: "broken",
     keyPlaceholder: "16-character hex key",
+    keySize: "56 bits",
+    practicalUseCases: ["Legacy systems interoperability", "Educational purposes (understanding classical block ciphers)"],
     prerequisites: ["xor"],
     recommendedNext: ["3des", "aes"],
     options: [
@@ -184,6 +188,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "00112233445566778899aabbccddeeff",
     securityStatus: "recommended",
     keyPlaceholder: "32/48/64-character hex key",
+    keySize: "128, 192, or 256 bits",
+    practicalUseCases: ["Secure web traffic (HTTPS)", "File encryption", "VPNs", "Disk encryption"],
     prerequisites: ["des"],
     recommendedNext: ["chacha20-poly1305", "sha256", "hmac"],
     options: [
@@ -542,6 +548,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
   },
   {
+    id: 'clefia',
+    name: 'CLEFIA',
+    category: 'symmetric',
+    description: 'ISO/IEC 29192-2 lightweight block cipher (Sony, 2007). 4-branch generalized Feistel network (GFN) with parallel F0/F1 functions using distinct S-boxes and diffusion matrices. Pairs with PRESENT to complete the ISO lightweight standard duo.',
+    defaultKey: 'ffeeddccbbaa99887766554433221100',
+    defaultInput: '000102030405060708090a0b0c0d0e0f',
+    securityStatus: 'secure',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+  },
+  {
     id: 'misty1',
     name: 'MISTY1',
     category: 'symmetric',
@@ -549,6 +565,36 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: '00112233445566778899aabbccddeeff',
     defaultInput: '0123456789abcdef',
     securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
+    id: 'feal',
+    name: 'FEAL-8',
+    category: 'symmetric',
+    description: 'Japanese Feistel cipher (1987). Pure arithmetic design (no S-boxes). Status: BROKEN. Canonical target for differential cryptanalysis development. Included to demonstrate why differential characteristics are traceable in weak designs.',
+    defaultKey: '0000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'broken',
+    keyPlaceholder: '64-bit key as 16 hex chars',
+  },
+  {
+    id: 'aria',
+    name: 'ARIA',
+    category: 'symmetric',
+    description: 'Korean national standard block cipher (KS X 1213, RFC 5794). AES-like SPN but alternates between two involutional S-box pairs (SB1/SB2) and uses a pure GF(2) involutional diffusion matrix. Completes the SEED/LEA/ARIA Korean trio.',
+    defaultKey: '000102030405060708090a0b0c0d0e0f',
+    defaultInput: '00112233445566778899aabbccddeeff',
+    securityStatus: 'secure',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+  },
+  {
+    id: 'kasumi',
+    name: 'KASUMI',
+    category: 'symmetric',
+    description: '3GPP TS 35.202 (GSM A5/3, UMTS f8/f9). MISTY1-derived hardware-optimized cipher. Status: BROKEN (2010 related-key attack). Included for educational value as a once-deployed mobile standard.',
+    defaultKey: '9900aabbccddeeff1122334455667788',
+    defaultInput: 'fedcba0987654321',
+    securityStatus: 'broken',
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
@@ -560,6 +606,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: "",
     defaultInput: "abc",
     securityStatus: "recommended",
+    keySize: "None (hash function)",
+    practicalUseCases: ["Data integrity verification", "Digital signatures", "Blockchain proof-of-work", "Password hashing (via HMAC/PBKDF2)"],
     recommendedNext: ["hmac", "sha512", "bcrypt"],
   },
   {
@@ -817,12 +865,39 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '(no key — this is a hash function)',
   },
   {
+    id: 'lsh256',
+    name: 'LSH-256',
+    category: 'hash',
+    description: 'Korean national hash standard (KS X 3262, 2014). Wide-pipe ARX+Boolean design with 1024-bit internal state. Completes the SEED/LEA/ARIA/LSH Korean cryptographic suite.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+  },
+  {
     id: 'tiger',
     name: 'Tiger',
     category: 'hash',
     description: 'Fast 192-bit hash designed for 64-bit processors (Anderson & Biham, 1995). Uses three 64-bit chaining variables and 3 passes of 8 rounds over four 256-entry 64-bit S-boxes. Fills the 192-bit output gap in this repo.',
     defaultKey: '',
     defaultInput: '616263',
+    securityStatus: 'secure',
+  },
+  {
+    id: 'grostl',
+    name: 'Grøstl-256',
+    category: 'hash',
+    description: 'SHA-3 finalist (2008). AES-based wide-pipe hash using dual permutations P and Q in a Davies-Meyer-like compression function. Operates on an 8x8 byte state with AES-style SubBytes/ShiftBytes/MixBytes rounds.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+  },
+  {
+    id: 'jh',
+    name: 'JH-256',
+    category: 'hash',
+    description: 'SHA-3 finalist (2008). Fixed 1024-bit permutation with generalized AES-like rounds using 4-bit S-boxes and bit-level grouping permutation. Double message XOR injection. Completes the five-of-five SHA-3 finalist set.',
+    defaultKey: '',
+    defaultInput: '',
     securityStatus: 'secure',
   },
   // Asymmetric
@@ -837,6 +912,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: "secure",
     keyPlaceholder:
       "Enter: 3 values (p,q,e) or 2 values (n,e / n,d) if you already have n",
+    keySize: "Typically 2048 to 4096 bits",
+    practicalUseCases: ["Secure key exchange", "Digital signatures", "Secure email (PGP/S/MIME)", "SSL/TLS certificates"],
     prerequisites: ["hmac"],
     recommendedNext: ["ecc", "dh", "ml-kem"],
     options: [
@@ -955,7 +1032,19 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'recipient public key (encapsulate) or private key (decapsulate)',
     prerequisites: ["ecc", "dh"],
-    recommendedNext: ["ml-dsa", "ecies"],
+    recommendedNext: ["frodokem", "ml-dsa", "ecies"],
+  },
+  {
+    id: 'frodokem',
+    name: 'FrodoKEM-640',
+    category: 'asymmetric',
+    description: 'Post-quantum key encapsulation mechanism (KEM) based on unstructured Learning With Errors (LWE) on standard matrices, offering conservative security without algebraic ring assumptions.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+    keyPlaceholder: 'recipient public key JSON (encapsulate) or private key JSON (decapsulate)',
+    prerequisites: ["ml-kem", "ecc"],
+    recommendedNext: ["ml-dsa", "ntru"],
   },
   {
     id: 'ed448',
@@ -976,5 +1065,35 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: 'deadbeef',
     securityStatus: 'secure',
     keyPlaceholder: 'totalShares,threshold (split) — leave blank for combine',
+  },
+  {
+    id: 'sidh',
+    name: 'SIDH',
+    category: 'asymmetric',
+    description: 'Isogeny-based key exchange (SIKE). Status: FULLY BROKEN (2022). Included as an educational case study demonstrating how a promising NIST PQC candidate was completely broken via classical mathematics exploiting auxiliary torsion-point data.',
+    defaultKey: 'pub,priv',
+    defaultInput: '01',
+    securityStatus: 'broken',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
+  {
+    id: 'ntru',
+    name: 'NTRU',
+    category: 'asymmetric',
+    description: 'Lattice-based public-key cryptosystem (IEEE P1363.1, 1996). Operates in polynomial ring Z[x]/(x^N-1). Predates NIST PQC by 20+ years. WARNING: Visualizer uses small pedagogical parameters (N=11) for teaching; NOT secure at this size.',
+    defaultKey: 'pub,priv',
+    defaultInput: '01',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
+    {
+    id: 'mceliece',
+    name: 'Classic McEliece',
+    category: 'asymmetric',
+    description: 'Code-based Post-Quantum KEM (NIST PQC Finalist, 1978). Security rests on decoding random linear codes. WARNING: Visualizer uses small pedagogical parameters (n=15) for teaching; NOT secure at this size. Real McEliece has an exceptionally long unbroken track record.',
+    defaultKey: 'pub,priv',
+    defaultInput: '01',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
   },
 ];
