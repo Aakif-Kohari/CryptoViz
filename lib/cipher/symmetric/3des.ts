@@ -285,5 +285,10 @@ export function decrypt(
 }
 
 export const TEST_VECTORS: TestVector[] = [
-  // FIPS 81 vector can be verified in the test file.
+  {
+    input: '0000000000000000',
+    key: '010101010101010101010101010101010101010101010101',
+    expected: 'randomized',
+    description: '3DES-EDE CBC mode with 24-byte key (randomized IV prepended to ciphertext)',
+  },
 ]

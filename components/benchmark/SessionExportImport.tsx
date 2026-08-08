@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { BenchmarkSession } from "@/types/benchmark";
+import type { BenchmarkSession, BenchmarkResult } from "@/types/benchmark";
 import {
   exportSessionComparisonJSON,
   exportSessionComparisonCSV,
@@ -84,7 +84,7 @@ export default function SessionExportImport({
         }
 
         importedSession.timestamp = new Date(importedSession.timestamp);
-        importedSession.results = importedSession.results.map((r: any) => ({
+        importedSession.results = importedSession.results.map((r: BenchmarkResult) => ({
           ...r,
           timestamp: new Date(r.timestamp),
         }));
@@ -93,8 +93,8 @@ export default function SessionExportImport({
           onImportSession(importedSession);
           setImportSuccess(`Successfully imported session (${importedSession.results.length} ciphers).`);
         }
-      } catch (err: any) {
-        setImportError(err.message || "Failed to parse benchmark session JSON file.");
+      } catch (err: unknown) {
+        setImportError(err instanceof Error ? err.message : "Failed to parse benchmark session JSON file.");
       }
     };
 

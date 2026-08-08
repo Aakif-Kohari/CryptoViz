@@ -10,7 +10,7 @@ export function getDeviceInfo(): DeviceInfo {
   return {
     userAgent: navigator?.userAgent || 'Unknown',
     hardwareConcurrency: navigator?.hardwareConcurrency || 1,
-    deviceMemory: (navigator as any)?.deviceMemory,
+    deviceMemory: navigator && 'deviceMemory' in navigator ? (navigator as Navigator & { deviceMemory?: number }).deviceMemory : undefined,
     language: navigator?.language || 'Unknown',
     platform: navigator?.platform || 'Unknown',
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,

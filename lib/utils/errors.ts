@@ -10,6 +10,8 @@ export type CipherErrorCode =
   | 'INVALID_INPUT'
   | 'INVALID_KEY'
   | 'INVALID_KEY_LENGTH'
+  | 'INVALID_KEY_SIZE'
+  | 'KEY_REQUIRED'
   | 'INVALID_PADDING'
   | 'INVALID_IV'
   | 'WEAK_KEY'
@@ -21,6 +23,7 @@ export type CipherErrorCode =
   | 'WORKER_TIMEOUT'
   | 'KDF_ERROR'
   | 'UNSUPPORTED_KDF'
+  | 'ONE_WAY_HASH'
 
 export class CipherError extends Error {
   public readonly code: CipherErrorCode
@@ -65,5 +68,43 @@ export function validateKey(key: unknown): asserts key is string {
   }
   if (typeof key !== 'string') {
     throw new CipherError('INVALID_KEY', 'Key must be a string.')
+  }
+}
+/**
+ * Validate that a string is a valid hexadecimal value.
+ */
+export function validateHexString(
+  value: string,
+  field = "Input"
+): void {
+  if (/[^0-9a-fA-F]/.test(value)) {
+    throw new CipherError(
+      "INVALID_INPUT",
+      `${field} contains non-hexadecimal characters.`
+    )
+  }
+
+  if (value.length % 2 !== 0) {
+    throw new CipherError(
+      "INVALID_INPUT",
+      `${field} must contain an even number of hexadecimal characters.`
+    )
+  }
+}
+
+/**
+ * Validate maximum byte length.
+ */
+export function validateMaxInputBytes(
+  input: string,
+  maxBytes: number
+): void {
+  const size = new TextEncoder().encode(input).length
+
+  if (size > maxBytes) {
+    throw new CipherError(
+      "INPUT_TOO_LONG",
+      `Input exceeds maximum size of ${maxBytes} bytes.`
+    )
   }
 }

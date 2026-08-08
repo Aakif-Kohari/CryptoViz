@@ -58,7 +58,7 @@ export const TEST_VECTORS: TestVector[] = [
   },
 ];
 
-function toUint32(value: number): number {
+function _toUint32(value: number): number {
   return value >>> 0;
 }
 

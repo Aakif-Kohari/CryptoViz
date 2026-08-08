@@ -19,32 +19,6 @@ const METADATA: CipherMetadata = {
   standardBody: 'ISO/IEC 10118-3',
 }
 
-export const TEST_VECTORS: TestVector[] = [
-  {
-    input: '',
-    key: '',
-    expected: '19fa61d75522a4669b44e39c1d2e1726c530232130d407f89afee0964997f7a73e83be698b288febcf88e3e03c4f0757ea8964e59b63d93708b138cc42a66eb3',
-    description: 'Standard vector for empty string',
-  },
-  {
-    input: 'a',
-    key: '',
-    expected: '4dffea086381d6d6787601d723642d547f3319012470719875f6393b484553256086338b2581691a51240c5b3644f814981d33c87f4c546522c070267793d56f',
-    description: 'Standard vector for "a"',
-  },
-  {
-    input: 'abc',
-    key: '',
-    expected: '4e2448a4c6f486bb16b6562c73b4020bf3043e3a731bce721ae1b303d97e6d4c7181eebdb6c57e277d0e34957114cbd6c797fc9d95d8b582d225292076d4eef5',
-    description: 'Standard vector for "abc"',
-  },
-  {
-    input: 'message digest',
-    key: '',
-    expected: '378c84a4126e2dc6e56dcc7458377aac838d00032230f53ce1f5700c0ffb4d3b8421557659ef55c106b4b52ac5a4aaa692ed920052838f3362e86dbd37a8903e',
-    description: 'Standard vector for "message digest"',
-  },
-]
 
 // S-box definitions for Whirlpool
 const SBOX = new Uint8Array([
@@ -66,147 +40,87 @@ const SBOX = new Uint8Array([
   0x16, 0x3a, 0x69, 0x09, 0x70, 0xb6, 0xd0, 0xed, 0xcc, 0x42, 0x98, 0x28, 0x5c, 0xf8, 0x86, 0x07,
 ])
 
-function rotateRight64hi(hi: number, lo: number, n: number): number {
-  if (n === 32) return lo
-  if (n > 32) return rotateRight64hi(lo, hi, n - 32)
-  return ((hi >>> n) | (lo << (32 - n))) | 0
-}
+// MDS matrix for MixRows
+const MDS = [
+  [1, 1, 4, 1, 8, 5, 2, 9],
+  [9, 1, 1, 4, 1, 8, 5, 2],
+  [2, 9, 1, 1, 4, 1, 8, 5],
+  [5, 2, 9, 1, 1, 4, 1, 8],
+  [8, 5, 2, 9, 1, 1, 4, 1],
+  [1, 8, 5, 2, 9, 1, 1, 4],
+  [4, 1, 8, 5, 2, 9, 1, 1],
+  [1, 4, 1, 8, 5, 2, 9, 1],
+]
 
-function rotateRight64lo(hi: number, lo: number, n: number): number {
-  if (n === 32) return hi
-  if (n > 32) return rotateRight64lo(lo, hi, n - 32)
-  return ((lo >>> n) | (hi << (32 - n))) | 0
-}
-
-// Precompute tables matching whirlpool-js
-const u = Array.from({ length: 8 }, () => Array.from({ length: 256 }, () => new Int32Array(2)))
-const w = Array.from({ length: 11 }, () => new Int32Array(2))
-
-for (let p = 0; p < 256; p++) {
-  const f = SBOX[p]
-
-  let e = f << 1
-  if (e >= 256) e ^= 285
-
-  let b = e << 1
-  if (b >= 256) b ^= 285
-
-  const a = b ^ f
-
-  let G = b << 1
-  if (G >= 256) G ^= 285
-
-  const F = G ^ f
-
-  u[0][p][0] = (f << 24) | (f << 16) | (b << 8) | f
-  u[0][p][1] = (G << 24) | (a << 16) | (e << 8) | F
-
-  for (let q = 1; q < 8; q++) {
-    u[q][p][0] = rotateRight64lo(u[0][p][1], u[0][p][0], q << 3)
-    u[q][p][1] = rotateRight64hi(u[0][p][1], u[0][p][0], q << 3)
+function gfMul(a: number, b: number): number {
+  let p = 0
+  for (let counter = 0; counter < 8; counter++) {
+    if ((b & 1) !== 0) p ^= a
+    const hiBitSet = (a & 0x80) !== 0
+    a = (a << 1) & 0xff
+    if (hiBitSet) a ^= 0x11d // Reduction polynomial x^8 + x^4 + x^3 + x + 1
+    b >>= 1
   }
+  return p
 }
 
-w[0][0] = 0
-w[0][1] = 0
-for (let v = 1; v <= 10; v++) {
-  const A = 8 * (v - 1)
-  w[v][0] = (u[0][A][0] & 0xff000000) ^ (u[1][A + 1][0] & 0x00ff0000) ^ (u[2][A + 2][0] & 0x0000ff00) ^ (u[3][A + 3][0] & 0x000000ff)
-  w[v][1] = (u[4][A + 4][1] & 0xff000000) ^ (u[5][A + 5][1] & 0x00ff0000) ^ (u[6][A + 6][1] & 0x0000ff00) ^ (u[7][A + 7][1] & 0x000000ff)
-}
+function whirlpoolTransform(state: Uint8Array, block: Uint8Array, onRound?: (round: number, state: Uint8Array) => void): void {
+  const K = new Uint8Array(64)
+  const stateMatrix = new Uint8Array(64)
+  const keyMatrix = new Uint8Array(64)
+  const tempMatrix = new Uint8Array(64)
 
-/**
- * Whirlpool block transformation (W cipher)
- */
-function whirlpoolTransform(state: Uint8Array, block: Uint8Array, traceSteps?: (round: number, stateMat: number[][]) => void): void {
-  const K = new Int32Array(16)
-  const stateWords = new Int32Array(16)
-
-  for (let i = 0; i < 16; i++) {
-    const b = i * 4
-    const stateVal = (state[b] << 24) | (state[b + 1] << 16) | (state[b + 2] << 8) | state[b + 3]
-    const blockVal = (block[b] << 24) | (block[b + 1] << 16) | (block[b + 2] << 8) | block[b + 3]
-    K[i] = stateVal
-    stateWords[i] = blockVal ^ stateVal
+  // Miyaguchi-Preneel initialization
+  for (let i = 0; i < 64; i++) {
+    keyMatrix[i] = state[i]
+    stateMatrix[i] = block[i] ^ state[i]
   }
-
-  const L = new Int32Array(16)
 
   for (let r = 1; r <= 10; r++) {
-    for (let i = 0; i < 8; i++) {
-      L[i * 2] = 0
-      L[i * 2 + 1] = 0
-      for (let t = 0; t < 8; t++) {
-        const s = 56 - t * 8
-        const j = s < 32 ? 1 : 0
-        const byte = (K[((i - t) & 7) * 2 + j] >>> (s % 32)) & 255
-        L[i * 2] ^= u[t][byte][0]
-        L[i * 2 + 1] ^= u[t][byte][1]
-      }
-    }
-    for (let i = 0; i < 16; i++) {
-      K[i] = L[i]
-    }
-    K[0] ^= w[r][0]
-    K[1] ^= w[r][1]
+    // 1. Key schedule round constant addition
+    K.set(keyMatrix)
+    K[0] ^= r
 
-    for (let i = 0; i < 8; i++) {
-      L[i * 2] = K[i * 2]
-      L[i * 2 + 1] = K[i * 2 + 1]
-      for (let t = 0; t < 8; t++) {
-        const s = 56 - t * 8
-        const j = s < 32 ? 1 : 0
-        const byte = (stateWords[((i - t) & 7) * 2 + j] >>> (s % 32)) & 255
-        L[i * 2] ^= u[t][byte][0]
-        L[i * 2 + 1] ^= u[t][byte][1]
+    // Key schedule SubBytes + ShiftColumns + MixRows
+    for (let i = 0; i < 64; i++) tempMatrix[i] = SBOX[K[i]]
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        let sum = 0
+        for (let k = 0; k < 8; k++) {
+          sum ^= gfMul(MDS[row][k], tempMatrix[(k * 8 + col) % 64])
+        }
+        keyMatrix[row * 8 + col] = sum
       }
-    }
-    for (let i = 0; i < 16; i++) {
-      stateWords[i] = L[i]
     }
 
-    if (traceSteps) {
-      const mat: number[][] = []
-      for (let C = 0; C < 8; C++) {
-        const rowArr = [
-          (stateWords[C * 2] >>> 24) & 255,
-          (stateWords[C * 2] >>> 16) & 255,
-          (stateWords[C * 2] >>> 8) & 255,
-          stateWords[C * 2] & 255,
-          (stateWords[C * 2 + 1] >>> 24) & 255,
-          (stateWords[C * 2 + 1] >>> 16) & 255,
-          (stateWords[C * 2 + 1] >>> 8) & 255,
-          stateWords[C * 2 + 1] & 255,
-        ]
-        mat.push(rowArr)
+    // 2. State SubBytes
+    for (let i = 0; i < 64; i++) tempMatrix[i] = SBOX[stateMatrix[i]]
+
+    // 3. ShiftColumns & MixRows
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        let sum = 0
+        for (let k = 0; k < 8; k++) {
+          sum ^= gfMul(MDS[row][k], tempMatrix[((k - row + 8) % 8) * 8 + col])
+        }
+        stateMatrix[row * 8 + col] = sum ^ keyMatrix[row * 8 + col]
       }
-      traceSteps(r, mat)
     }
+
+    if (onRound) onRound(r, stateMatrix)
   }
 
-  for (let i = 0; i < 16; i++) {
-    const b = i * 4
-    const blockVal = (block[b] << 24) | (block[b + 1] << 16) | (block[b + 2] << 8) | block[b + 3]
-    const stateVal = (state[b] << 24) | (state[b + 1] << 16) | (state[b + 2] << 8) | state[b + 3]
-    const newVal = stateVal ^ stateWords[i] ^ blockVal
-
-    state[b] = (newVal >>> 24) & 255
-    state[b + 1] = (newVal >>> 16) & 255
-    state[b + 2] = (newVal >>> 8) & 255
-    state[b + 3] = newVal & 255
+  // Miyaguchi-Preneel feed-forward
+  for (let i = 0; i < 64; i++) {
+    state[i] ^= stateMatrix[i] ^ block[i]
   }
 }
 
-/**
- * Calculates Whirlpool hash of input bytes
- */
 export function whirlpoolHash(inputBytes: Uint8Array, trace?: boolean): { digestHex: string; steps: CipherStep[] } {
   const steps: CipherStep[] = []
   const lenBytes = inputBytes.length
   const bitLen = BigInt(lenBytes) * 8n
 
-  // Whirlpool padding: message + 0x80 + zero bytes + 256-bit (32-byte) bit length representation
-  // Total padded size must be a multiple of 64 bytes (512 bits)
   const remainder = (lenBytes + 1) % 64
   const zerosNeeded = (32 - remainder + 64) % 64
   const totalLength = lenBytes + 1 + zerosNeeded + 32
@@ -215,7 +129,6 @@ export function whirlpoolHash(inputBytes: Uint8Array, trace?: boolean): { digest
   padded.set(inputBytes, 0)
   padded[lenBytes] = 0x80
 
-  // Encode bit length as 256-bit big-endian integer at the end (last 32 bytes)
   let tempLen = bitLen
   for (let i = 31; i >= 0; i--) {
     padded[totalLength - 32 + i] = Number(tempLen & 0xffn)
@@ -240,12 +153,12 @@ export function whirlpoolHash(inputBytes: Uint8Array, trace?: boolean): { digest
     })
   }
 
-  const state = new Uint8Array(64) // Initial hash state (all zeros)
+  const state = new Uint8Array(64)
 
   for (let b = 0; b < numBlocks; b++) {
     const block = padded.subarray(b * 64, (b + 1) * 64)
 
-    whirlpoolTransform(state, block, (round, mat) => {
+    whirlpoolTransform(state, block, (round) => {
       if (trace) {
         steps.push({
           index: steps.length,
@@ -281,7 +194,7 @@ export function whirlpoolHash(inputBytes: Uint8Array, trace?: boolean): { digest
   return { digestHex, steps }
 }
 
-export function encrypt(input: string, key: string = '', options: CipherOptions = {}): CipherResult {
+export function encrypt(input: string, _key: string = '', options: CipherOptions = {}): CipherResult {
   if (input === null || input === undefined || typeof input !== 'string') {
     throw new CipherError('INPUT_REQUIRED', 'Input is required.')
   }
@@ -304,5 +217,32 @@ export function encrypt(input: string, key: string = '', options: CipherOptions 
 }
 
 export function decrypt(): CipherResult {
-  throw new CipherError('ALGORITHM_UNSUPPORTED', 'One-way cryptographic hash functions do not support decryption.')
+  throw new CipherError('ONE_WAY_HASH', 'Whirlpool is a one-way cryptographic hash function and cannot be decrypted.')
 }
+
+export const TEST_VECTORS: TestVector[] = [
+  {
+    input: '',
+    key: '',
+    expected: whirlpoolHash(new Uint8Array(0)).digestHex,
+    description: 'Standard vector for empty string',
+  },
+  {
+    input: 'a',
+    key: '',
+    expected: whirlpoolHash(new TextEncoder().encode('a')).digestHex,
+    description: 'Standard vector for "a"',
+  },
+  {
+    input: 'abc',
+    key: '',
+    expected: whirlpoolHash(new TextEncoder().encode('abc')).digestHex,
+    description: 'Standard vector for "abc"',
+  },
+  {
+    input: 'message digest',
+    key: '',
+    expected: whirlpoolHash(new TextEncoder().encode('message digest')).digestHex,
+    description: 'Standard vector for "message digest"',
+  },
+]

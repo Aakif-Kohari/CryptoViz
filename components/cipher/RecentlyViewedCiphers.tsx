@@ -3,24 +3,23 @@
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import type { CipherDefinition } from '../../lib/cipher/registry'
+import { safeGetItemJson, safeRemoveItem } from '../../lib/utils/storage'
 
 const RECENTLY_VIEWED_CIPHER_IDS_KEY = 'recentlyViewedCipherIds'
 
-function loadRecentlyViewedCipherIds() {
-  if (typeof window === 'undefined') return []
-
-  try {
-    const stored = window.localStorage.getItem(RECENTLY_VIEWED_CIPHER_IDS_KEY)
-    return stored ? (JSON.parse(stored) as string[]) : []
-  } catch {
-    return []
-  }
+function loadRecentlyViewedCipherIds(): string[] {
+  return safeGetItemJson<string[]>(
+    RECENTLY_VIEWED_CIPHER_IDS_KEY,
+    [],
+    (val): val is string[] => Array.isArray(val),
+  )
 }
 
 function clearRecentlyViewedCipherIds() {
-  if (typeof window === 'undefined') return
-  window.localStorage.removeItem(RECENTLY_VIEWED_CIPHER_IDS_KEY)
-  window.dispatchEvent(new Event('storage'))
+  safeRemoveItem(RECENTLY_VIEWED_CIPHER_IDS_KEY)
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('storage'))
+  }
 }
 
 interface RecentlyViewedCiphersProps {

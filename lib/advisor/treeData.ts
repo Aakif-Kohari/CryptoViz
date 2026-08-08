@@ -196,12 +196,11 @@ export const ADVISOR_TREE: Record<string, DecisionNode> = {
   rec_aes_gcm: {
     type: 'recommendation',
     id: 'rec_aes_gcm',
-    cipherIds: ['aes'], // We don't have aes-gcm separately in the registry, wait... Let me check CIPHER_REGISTRY.
-    // Actually we have aes, aes-ccm. Let's recommend aes and aes-ccm and mention GCM in rationale.
+    cipherIds: ['aes-ccm'],
     title: 'Hardware-Accelerated AEAD',
-    rationale: 'For modern platforms with AES-NI or ARM Crypto extensions, AES in Galois/Counter Mode (AES-GCM) or AES-CCM is the industry standard for Authenticated Encryption. It provides high performance and strong security guarantees.',
-    tradeOffs: 'AES is exceptionally fast when hardware acceleration is available. However, in pure software implementations, it can be vulnerable to cache-timing side-channel attacks. AES-CCM is slightly slower than GCM but is often preferred in constrained environments (like IoT) due to smaller code size.',
-    commonMistakes: 'Never reuse a nonce/IV with the same key. In GCM, nonce reuse instantly destroys the authentication key, completely breaking security.',
+    rationale: 'For modern platforms with AES-NI or ARM Crypto extensions, AES in Authenticated Modes (like AES-GCM or AES-CCM) is the industry standard for Authenticated Encryption. It provides high performance and strong security guarantees. The playground link below opens AES-CCM to demonstrate authenticated encryption in action.',
+    tradeOffs: 'AES is exceptionally fast when hardware acceleration is available. However, in pure software implementations, it can be vulnerable to cache-timing side-channel attacks. AES-CCM is often preferred in constrained environments (like IoT) due to smaller code size.',
+    commonMistakes: 'Never reuse a nonce/IV with the same key. Nonce reuse instantly destroys the authentication key, completely breaking security.',
   },
   rec_chacha20: {
     type: 'recommendation',
@@ -237,7 +236,7 @@ export const ADVISOR_TREE: Record<string, DecisionNode> = {
     title: 'Legacy Block Ciphers',
     rationale: 'If you must interoperate with a legacy system that does not support AES, you may be forced to use older algorithms like Triple DES (3DES).',
     tradeOffs: 'DES is completely broken and can be brute-forced in hours. 3DES is deprecated and extremely slow, with a small 64-bit block size making it vulnerable to collision attacks (Sweet32) on large datasets.',
-    commonMistakes: 'These should never be used in new designs. If forced to use 3DES, limit the amount of data encrypted under a single key to mitigate collision attacks.',
+    commonMistakes: 'WARNING: Never use DES or 3DES in new systems. They are cryptographically broken or severely deprecated. If forced to use 3DES, strictly limit the amount of data encrypted under a single key to mitigate collision attacks.',
   },
 
   // Integrity Recommendations
@@ -273,7 +272,7 @@ export const ADVISOR_TREE: Record<string, DecisionNode> = {
   rec_ecdsa: {
     type: 'recommendation',
     id: 'rec_ecdsa',
-    cipherIds: ['ecc', 'dsa'],
+    cipherIds: ['ecc'],
     title: 'Standard Digital Signatures',
     rationale: 'Digital signatures prove that a message was created by the owner of a private key. ECDSA (Elliptic Curve Digital Signature Algorithm) over NIST curves like P-256 is the standard used in TLS, X.509 certificates, and most modern web protocols.',
     tradeOffs: 'ECDSA provides equivalent security to RSA but with significantly smaller keys and signatures (e.g., 256 bits vs 2048 bits), resulting in less bandwidth overhead. However, signature verification is mathematically intensive.',

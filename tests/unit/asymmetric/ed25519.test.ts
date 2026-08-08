@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { encrypt, decrypt, TEST_VECTORS } from '../../../lib/cipher/asymmetric/ed25519'
 import { CipherError } from '../../../lib/utils/errors'
+import { toByteArray, fromByteArray } from '../../../lib/utils/encoding'
+import { ed25519 } from '@noble/curves/ed25519.js'
 import fc from 'fast-check'
 
 describe('Ed25519 (EdDSA) Unit Tests', () => {
@@ -13,8 +15,6 @@ describe('Ed25519 (EdDSA) Unit Tests', () => {
 
   it('verifies signatures produced by the standard test vectors', () => {
     for (const vector of TEST_VECTORS) {
-      // Derive the public key the same way encrypt() does, by signing again and
-      // reading the deterministic signature — then verify against it.
       const sig = encrypt(vector.input, vector.key)
       expect(sig.output).toBe(vector.expected)
     }
@@ -50,12 +50,6 @@ describe('Ed25519 (EdDSA) Unit Tests', () => {
     fc.assert(
       fc.property(fc.string({ minLength: 1, maxLength: 300 }), (message) => {
         const signed = encrypt(message, key)
-        // recover the public key the same way encrypt() derived it, by re-deriving
-        // via a second signing call is unnecessary — instead verify using the same
-        // deterministic key material through decrypt()'s public interface:
-        const pubKeyHex = require('@noble/curves/ed25519.js').ed25519
-          ? undefined
-          : undefined
         expect(signed.output).toHaveLength(128)
       }),
       { numRuns: 100 }
@@ -67,12 +61,8 @@ describe('Ed25519 (EdDSA) Unit Tests', () => {
     const message = 'do not tamper with me'
     const signed = encrypt(message, key)
     const tampered = signed.output.slice(0, -2) + (signed.output.slice(-2) === '00' ? '01' : '00')
-    // Derive the matching public key via a throwaway signature over the same key,
-    // then verify: tampered signature must be rejected.
-    const pubKeyHex = require('@noble/curves/ed25519.js').ed25519.getPublicKey(
-      require('../../../lib/utils/encoding').toByteArray(key, 'hex')
-    )
-    const pubHex = require('../../../lib/utils/encoding').fromByteArray(pubKeyHex, 'hex')
+    const pubKeyBytes = ed25519.getPublicKey(toByteArray(key, 'hex'))
+    const pubHex = fromByteArray(pubKeyBytes, 'hex')
     const result = decrypt(message, `${tampered},${pubHex}`)
     expect(result.output).toBe('invalid')
   })

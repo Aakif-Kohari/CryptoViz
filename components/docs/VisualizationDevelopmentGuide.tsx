@@ -10,7 +10,7 @@ import {
   type GuideStageId,
 } from "../../lib/docs/visualizationGuide";
 
-const stageIds = VISUALIZATION_GUIDE_STAGES.map((stage) => stage.id);
+const _stageIds = VISUALIZATION_GUIDE_STAGES.map((stage) => stage.id);
 
 export default function VisualizationDevelopmentGuide() {
   const [activeStageId, setActiveStageId] = useState<GuideStageId>("scope");
