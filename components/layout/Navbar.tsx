@@ -74,6 +74,7 @@ export default function Navbar() {
     {
       name: t('nav.learn') || 'Learn',
       items: [
+        { name: 'Learning Paths', href: '/learning-paths' },
         { name: t('nav.lifecycle') || 'Cipher Lifecycle', href: '/cipher-lifecycle' },
         { name: 'Docs & Guides', href: '/docs' },
         { name: t('nav.mythBusters') || 'Myth Busters', href: '/myth-busters' },
