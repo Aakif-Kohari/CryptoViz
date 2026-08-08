@@ -686,15 +686,94 @@ export default function DocumentationPage() {
           </div>
         </DocumentationSection>
 
-        <DocumentationSection title="Real-world Applications">
-          <ul className="list-disc list-inside space-y-2 text-zinc-550 dark:text-zinc-400">
-            {cipher.realWorldApplications.map((app, idx) => (
-              <li key={idx} className="pl-1">
-                {renderFormattedText(app, activeQuery)}
-              </li>
-            ))}
-          </ul>
-        </DocumentationSection>
+       <DocumentationSection title="Real-world Applications">
+  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+    {cipher.realWorldApplications.map((app, idx) => (
+      <div
+        key={idx}
+        className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-950"
+      >
+        <div className="mb-3 flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 text-teal-600 dark:bg-teal-950/40 dark:text-teal-400">
+            <span className="text-sm font-bold">
+              {idx + 1}
+            </span>
+          </div>
+
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            Real-world usage
+          </h3>
+        </div>
+
+        <p className="text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+          {renderFormattedText(app, activeQuery)}
+        </p>
+      </div>
+    ))}
+  </div>
+
+  <div className="mt-6 rounded-xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-900/50">
+    <div className="mb-3 flex items-center justify-between">
+      <div>
+        <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
+          Security Status
+        </h3>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          Based on the documented security analysis
+        </p>
+      </div>
+
+      <span
+        className={`rounded-full px-3 py-1 text-xs font-semibold ${
+          cipher.securityAnalysis.weaknesses.length === 0
+            ? "bg-teal-100 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300"
+            : "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300"
+        }`}
+      >
+        {cipher.securityAnalysis.weaknesses.length === 0
+          ? "No documented weaknesses"
+          : "Security concerns documented"}
+      </span>
+    </div>
+
+    <ul className="space-y-2">
+      {cipher.securityAnalysis.weaknesses.slice(0, 3).map((weak, idx) => (
+        <li
+          key={idx}
+          className="flex gap-2 text-sm text-zinc-600 dark:text-zinc-400"
+        >
+          <span className="mt-0.5 text-amber-600">!</span>
+          <span>{renderFormattedText(weak, activeQuery)}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {cipher.references.length > 0 && (
+    <div className="mt-6">
+      <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-500">
+        References & Protocol Resources
+      </h3>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {cipher.references.map((reference, idx) => (
+          <a
+            key={idx}
+            href={reference.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg border border-zinc-200 bg-white p-4 text-sm text-teal-700 transition-colors hover:border-teal-400 hover:bg-teal-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-teal-400 dark:hover:bg-teal-950/30"
+          >
+            <span className="font-medium">{reference.title}</span>
+            <span className="mt-1 block text-xs text-zinc-500">
+              Open reference →
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  )}
+</DocumentationSection>
 
         <DocumentationSection title="Implementation Snippets">
           <p className="text-zinc-500 dark:text-zinc-400 mb-2">Python:</p>
