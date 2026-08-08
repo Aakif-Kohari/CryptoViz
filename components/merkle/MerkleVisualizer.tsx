@@ -318,7 +318,7 @@ export default function MerkleVisualizer() {
               const isSelected = selectedLeafIndex === index
               return (
                 <div
-                  key={index}
+                  key={`leaf-${index}-${leaf.slice(0, 10)}`}
                   onClick={() => setSelectedLeafIndex(index)}
                   className={`group relative flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition ${
                     isSelected
@@ -696,7 +696,7 @@ export default function MerkleVisualizer() {
 
                     return (
                       <div
-                        key={idx}
+                        key={`step-${idx}-${step.label}`}
                         onClick={() => setVerificationStep(stepNum)}
                         className={`flex items-start gap-3 rounded-xl border p-3 cursor-pointer transition ${
                           isActive

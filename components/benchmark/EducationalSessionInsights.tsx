@@ -91,7 +91,7 @@ export default function EducationalSessionInsights({
 
           return (
             <div
-              key={idx}
+              key={item.title} // static list, title is unique
               className={`rounded-xl border transition-all ${
                 isExpanded
                   ? "border-teal-300 bg-white shadow-md dark:border-teal-800 dark:bg-zinc-900"

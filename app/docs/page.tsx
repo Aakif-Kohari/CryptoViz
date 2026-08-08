@@ -218,18 +218,18 @@ export default function DocumentationPage() {
         if (isCode) {
           node = (
             <code
-              key={idx}
+              key={`code-${idx}-${part}`}
               className="bg-zinc-200/60 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-1.5 py-0.5 rounded font-mono text-xs text-rose-600 dark:text-rose-455"
             >
               {node}
             </code>
           );
         } else if (typeof part === "string") {
-          node = <GlossaryTextRenderer key={idx} content={part} />;
+          node = <GlossaryTextRenderer key={`text-${idx}-${part}`} content={part} />;
           if (isBold) {
             node = (
               <strong
-                key={idx}
+                key={`bold-${idx}-${part}`}
                 className="font-semibold text-zinc-900 dark:text-white"
               >
                 {node}
@@ -239,7 +239,7 @@ export default function DocumentationPage() {
         } else if (isBold) {
           node = (
             <strong
-              key={idx}
+              key={`bold-obj-${idx}`}
               className="font-semibold text-zinc-900 dark:text-white"
             >
               {node}
@@ -250,7 +250,7 @@ export default function DocumentationPage() {
         if (isHighlight) {
           node = (
             <mark
-              key={`hl-${idx}`}
+              key={`hl-${idx}-${typeof node === 'string' ? node.slice(0, 10) : 'object'}`}
               className="bg-yellow-200/80 dark:bg-yellow-500/35 text-zinc-950 dark:text-yellow-100 px-0.5 rounded shadow-xs font-semibold"
             >
               {node}
@@ -488,7 +488,7 @@ export default function DocumentationPage() {
             if (paragraph.startsWith("•")) {
               return (
                 <div
-                  key={idx}
+                  key={`bullet-${idx}-${paragraph.slice(0, 20)}`}
                   className="flex items-center gap-3 pl-2 py-1 text-zinc-650 dark:text-zinc-300 font-sans"
                 >
                   <span className="h-1.5 w-1.5 rounded-full bg-teal-500 flex-shrink-0" />
@@ -509,7 +509,7 @@ export default function DocumentationPage() {
             ) {
               return (
                 <div
-                  key={idx}
+                  key={`command-${idx}-${paragraph.slice(0, 20)}`}
                   className="bg-zinc-50 dark:bg-zinc-950 rounded-lg p-4 border border-zinc-200 dark:border-zinc-800 font-mono text-xs text-teal-600 dark:text-teal-400 flex justify-between items-center group shadow-sm dark:shadow-inner my-4 transition-colors"
                 >
                   <code className="break-all select-text">{paragraph}</code>
@@ -562,7 +562,7 @@ export default function DocumentationPage() {
             }
 
             return (
-              <p key={idx} className="whitespace-pre-line">
+              <p key={`paragraph-${idx}-${paragraph.slice(0, 20)}`} className="whitespace-pre-line">
                 {renderFormattedText(paragraph, activeQuery)}
               </p>
             );
@@ -597,7 +597,7 @@ export default function DocumentationPage() {
           <MathBlock formula={cipher.mathematics.decryptionFormula} />
           <ul className="list-disc list-inside space-y-2 mt-4 text-zinc-500 dark:text-zinc-400">
             {cipher.mathematics.explanation.map((exp, idx) => (
-              <li key={idx} className="pl-1">
+              <li key={`math-exp-${idx}-${exp.slice(0, 20)}`} className="pl-1">
                 {renderFormattedText(exp, activeQuery)}
               </li>
             ))}
@@ -629,7 +629,7 @@ export default function DocumentationPage() {
               </h4>
               <ul className="space-y-2">
                 {cipher.securityAnalysis.advantages.map((adv, idx) => (
-                  <li key={idx} className="flex gap-2 items-start">
+                  <li key={`adv-${idx}-${adv.slice(0, 20)}`} className="flex gap-2 items-start">
                     <span className="text-teal-500 select-none">✓</span>
                     <span className="text-zinc-600 dark:text-zinc-400 text-xs">
                       {renderFormattedText(adv, activeQuery)}
@@ -644,7 +644,7 @@ export default function DocumentationPage() {
               </h4>
               <ul className="space-y-2">
                 {cipher.securityAnalysis.weaknesses.map((weak, idx) => (
-                  <li key={idx} className="flex gap-2 items-start">
+                  <li key={`weak-${idx}-${weak.slice(0, 20)}`} className="flex gap-2 items-start">
                     <span className="text-red-500 select-none">✗</span>
                     <span className="text-zinc-600 dark:text-zinc-400 text-xs">
                       {renderFormattedText(weak, activeQuery)}
@@ -659,7 +659,7 @@ export default function DocumentationPage() {
         <DocumentationSection title="Real-world Applications">
           <ul className="list-disc list-inside space-y-2 text-zinc-550 dark:text-zinc-400">
             {cipher.realWorldApplications.map((app, idx) => (
-              <li key={idx} className="pl-1">
+              <li key={`app-${idx}-${app.slice(0, 20)}`} className="pl-1">
                 {renderFormattedText(app, activeQuery)}
               </li>
             ))}
@@ -743,7 +743,7 @@ export default function DocumentationPage() {
                     const isFocused = idx === activeIndex;
                     return (
                       <button
-                        key={idx}
+                        key={`${item.category.title}-${item.field}-${item.snippet.slice(0, 20)}`}
                         id={`search-option-${idx}`}
                         role="option"
                         aria-selected={isFocused}
