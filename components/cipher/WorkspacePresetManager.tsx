@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type {
-  AnimationSpeed,
   WorkspacePreset,
   WorkspacePresetDraft,
 } from "../../lib/utils/workspacePresets";

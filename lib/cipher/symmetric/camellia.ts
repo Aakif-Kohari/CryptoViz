@@ -4,7 +4,7 @@
  * Supports Camellia-128, Camellia-192, and Camellia-256.
  */
 
-import type { CipherResult, CipherStep } from '../types'
+import type { CipherResult, CipherStep, CipherOptions, TestVector } from '../types'
 import { fromByteArray, toByteArray, CipherError, validateInput, validateKey } from '../../utils'
 
 const METADATA = {
@@ -359,7 +359,7 @@ function unpadPKCS7(bytes: Uint8Array): Uint8Array {
   return new Uint8Array(bytes.subarray(0, bytes.length - paddingVal))
 }
 
-function getKeyBytes(key: string, options?: Record<string, any>): Uint8Array {
+function getKeyBytes(key: string, options?: CipherOptions): Uint8Array {
   const encoding = options?.hexInput ? 'hex' : 'utf8'
   const keyBytes = toByteArray(key, encoding)
 
@@ -379,7 +379,7 @@ function getKeyBytes(key: string, options?: Record<string, any>): Uint8Array {
 export function encrypt(
   input: string | Uint8Array,
   key: string | Uint8Array,
-  options?: Record<string, any>
+  options?: CipherOptions
 ): CipherResult {
   if (typeof input === 'string') validateInput(input)
   if (typeof key === 'string') validateKey(key)
@@ -404,16 +404,17 @@ export function encrypt(
   let iv: Uint8Array = new Uint8Array(16)
   if (useCbc) {
     if (options?.iv) {
-      if (typeof options.iv === 'string') {
-        if (!/^[0-9a-fA-F]{32}$/.test(options.iv)) {
+      const ivValue = options.iv as string | Uint8Array
+      if (typeof ivValue === 'string') {
+        if (!/^[0-9a-fA-F]{32}$/.test(ivValue)) {
           throw new CipherError('INVALID_IV', 'Camellia IV must be exactly 32 hex characters (16 bytes).')
         }
-        iv = toByteArray(options.iv, 'hex')
-      } else if (options.iv instanceof Uint8Array) {
-        if (options.iv.length !== 16) {
+        iv = toByteArray(ivValue, 'hex')
+      } else if (ivValue instanceof Uint8Array) {
+        if (ivValue.length !== 16) {
           throw new CipherError('INVALID_IV', 'Camellia IV must be exactly 16 bytes.')
         }
-        iv = options.iv
+        iv = ivValue
       } else {
         throw new CipherError('INVALID_IV', 'Invalid IV format.')
       }
@@ -444,7 +445,7 @@ export function encrypt(
 export function decrypt(
   input: string | Uint8Array,
   key: string | Uint8Array,
-  options?: Record<string, any>
+  options?: CipherOptions
 ): CipherResult {
   if (typeof input === 'string') validateInput(input)
   if (typeof key === 'string') validateKey(key)
@@ -470,16 +471,17 @@ export function decrypt(
 
   if (useCbc) {
     if (options?.iv) {
-      if (typeof options.iv === 'string') {
-        if (!/^[0-9a-fA-F]{32}$/.test(options.iv)) {
-          throw new CipherError('INVALID_IV', 'Camellia IV must be exactly 32 hex characters (16 bytes).')
-        }
-        iv = toByteArray(options.iv, 'hex')
-      } else if (options.iv instanceof Uint8Array) {
-        if (options.iv.length !== 16) {
+      const ivValue = options.iv as string | Uint8Array
+      if (ivValue instanceof Uint8Array) {
+        if (ivValue.length !== 16) {
           throw new CipherError('INVALID_IV', 'Camellia IV must be exactly 16 bytes.')
         }
-        iv = options.iv
+        iv = ivValue
+      } else if (typeof ivValue === 'string') {
+        if (!/^[0-9a-fA-F]{32}$/.test(ivValue)) {
+          throw new CipherError('INVALID_IV', 'Camellia IV must be exactly 32 hex characters (16 bytes).')
+        }
+        iv = toByteArray(ivValue, 'hex')
       } else {
         throw new CipherError('INVALID_IV', 'Invalid IV format.')
       }
@@ -520,7 +522,7 @@ function executeCamellia(
   inputBytes: Uint8Array,
   keyBytes: Uint8Array,
   isDecrypt: boolean,
-  options?: Record<string, any>,
+  options?: CipherOptions,
   iv: Uint8Array = new Uint8Array(16)
 ): CipherResult {
   const start = performance.now()
@@ -540,7 +542,7 @@ function executeCamellia(
     isMilestone: true,
   })
 
-  const usePadding = options?.padding !== false
+  const usePadding = options?.padding !== 'None'
   let processedInput = inputBytes
   if (usePadding) {
     if (!isDecrypt) {
@@ -567,7 +569,7 @@ function executeCamellia(
     const offset = b * 16
     const blockLen = Math.min(16, processedInput.length - offset)
     
-    let block = new Uint8Array(16)
+    const block = new Uint8Array(16)
     block.set(processedInput.subarray(offset, offset + blockLen))
 
     let resultBlock: Uint8Array
@@ -609,3 +611,12 @@ function executeCamellia(
     durationMs: performance.now() - start,
   }
 }
+
+export const TEST_VECTORS: TestVector[] = [
+  {
+    input: '0123456789ABCDEFFEDCBA9876543210',
+    key: '0123456789ABCDEFFEDCBA9876543210',
+    expected: 'randomized',
+    description: 'Camellia-128 CBC mode (randomized IV prepended to ciphertext)',
+  },
+]

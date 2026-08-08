@@ -1,4 +1,6 @@
 import Navbar from '../../components/layout/Navbar'
+import Breadcrumbs from '../../components/layout/Breadcrumbs'
+
 import Footer from '../../components/layout/footer'
 import PaddingExplorer from '../../components/padding/PaddingExplorer'
 
@@ -14,6 +16,7 @@ export default function PaddingPage() {
         <Navbar />
 
         <main className="mx-auto max-w-5xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
+        <Breadcrumbs items={[{ label: "Learn" }, { label: "Padding Schemes" }]} />
           <header className="max-w-3xl">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">
               Data Alignment & Security

@@ -1,0 +1,39 @@
+---
+title: "Import & Export Test Vectors"
+description: "Understand how cryptographic test vectors validate implementations."
+difficulty: beginner
+readingTime: 5
+tags: ["nist","json","test-vectors","aes"]
+prerequisites: []
+publishedAt: 2026-08-06
+updatedAt: 2026-08-06
+---
+
+# Import & Export Test Vectors
+
+Test vectors are standardized inputs and expected outputs used to verify cryptographic implementations.
+
+## Why Use Test Vectors?
+
+- Validate implementations
+- Compare algorithm outputs
+- Detect implementation errors
+- Improve interoperability
+
+## Supported JSON Format
+
+```json
+[
+  {
+    "algorithm": "AES-128",
+    "plaintext": "...",
+    "key": "...",
+    "ciphertext": "..."
+  }
+]
+```
+
+## References
+
+- NIST Cryptographic Algorithm Validation Program (CAVP)
+- FIPS 197 – Advanced Encryption Standard

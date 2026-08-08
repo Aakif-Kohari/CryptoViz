@@ -1,4 +1,6 @@
 import ModesLab from '@/components/modes/ModesLab'
+import Breadcrumbs from '../../components/layout/Breadcrumbs'
+
 import EcbPenguin from '@/components/modes/EcbPenguin'
 import Footer from "@/components/layout/footer";
 
@@ -11,6 +13,7 @@ export const metadata = {
 export default function ModesPage() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
+        <Breadcrumbs items={[{ label: "Learn" }, { label: "Block Cipher Modes" }]} />
       <h1 className="mb-2 text-2xl font-semibold text-zinc-900 dark:text-white">
         Block Cipher Modes Lab
       </h1>

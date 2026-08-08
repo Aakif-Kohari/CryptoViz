@@ -64,6 +64,8 @@ function createFallbackNonce(): string {
       }
     } else {
       throw new Error("CSPRNG not available");
+    for (let index = 0; index < randomValues.length; index += 1) {
+      randomValues[index] = Math.floor(Math.random() * 256);
     }
   }
 
@@ -132,6 +134,7 @@ export function serializeContentSecurityPolicy(directives: Record<string, string
 
 export function cspContainsUnsafeInline(headerValue: string): boolean {
   return /(^|\s)'unsafe-inline'(\s|;|$)/.test(headerValue);
+  return /(^|\\s)'unsafe-inline'(\\s|;|$)/.test(headerValue);
 }
 
 export function validateStrictContentSecurityPolicy(headerValue: string): string[] {

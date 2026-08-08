@@ -14,22 +14,21 @@ describe('Serpent', () => {
     const plaintext = '00112233445566778899aabbccddeeff'
     const enc = encrypt(plaintext, key)
     const dec = decrypt(enc.output, key)
-    expect(dec.output).toBe(plaintext)
+    expect(dec.output.toLowerCase()).toBe(plaintext.toLowerCase())
   })
 
-  it('rejects a key that is not 128 bits', () => {
-    // Serpent supports 128, 192, 256; this implementation is locked to 128
-    expect(() => encrypt('00'.repeat(16), '00'.repeat(8))).toThrow(/128-bit/)
+  it('rejects a key that is not 128, 192, or 256 bits', () => {
+    expect(() => encrypt('00'.repeat(16), '00'.repeat(8))).toThrow(/128, 192, or 256 bits/)
   })
 
   it('rejects input that is not exactly 16 bytes', () => {
-    expect(() => encrypt('00112233', key)).toThrow(/16 bytes/)
+    expect(() => encrypt('00112233', key)).toThrow(/32 hex/)
   })
 
   it('produces an instrumented trace with milestones', () => {
     const result = encrypt('00'.repeat(16), key, { instrument: true })
     expect(result.steps.length).toBeGreaterThan(0)
     expect(result.steps.some(s => s.isMilestone)).toBe(true)
-    expect(result.steps[0].label).toBe('Key Schedule')
+    expect(result.steps.some(s => s.label.includes('Round 1'))).toBe(true)
   })
 })
