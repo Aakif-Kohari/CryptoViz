@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Navbar from '../components/layout/Navbar'
+import Footer from '../components/layout/footer'
 
 const CIPHER_CHARS = '01アイウエオカキクケコABCDEF!@#$%^&*'
 const COUNTDOWN_START = 10
@@ -183,10 +184,10 @@ export default function NotFound() {
     const progress = ((COUNTDOWN_START - countdown) / COUNTDOWN_START) * circumference
 
     return (
-        <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 font-sans transition-colors duration-300 flex flex-col">
+        <div className="min-h-screen bg-white dark:bg-[#09090B] font-sans transition-colors duration-300 flex flex-col">
             <Navbar />
 
-            <main className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-4 py-16 sm:px-6 lg:px-8">
+            <main className="relative flex flex-1 flex-col items-center justify-center overflow-visible px-4 py-16 sm:px-6 lg:px-8">
                 <MatrixRain />
 
                 {/* Radial glow */}
@@ -317,6 +318,9 @@ export default function NotFound() {
                     </div>
                 </div>
             </main>
+
+            <Footer />    
+
         </div>
     )
 }
