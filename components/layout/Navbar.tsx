@@ -113,6 +113,13 @@ export default function Navbar() {
       ],
     },
     {
+      name: t('nav.more') || 'More',
+      items: [
+        { name: t('nav.reference') || 'Reference', href: '/reference' },
+        { name: 'Learning Notes', href: '/notes' },
+        { name: t('nav.offline') || 'Offline', href: '/offline' },
+      ],
+    },
       {
   name: t('nav.tools') || 'Tools',
   items: [
