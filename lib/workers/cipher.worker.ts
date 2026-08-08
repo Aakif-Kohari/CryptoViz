@@ -69,7 +69,6 @@ import { encrypt as threefishEncrypt, decrypt as threefishDecrypt } from '../cip
 import { encrypt as xchacha20Encrypt, decrypt as xchacha20Decrypt } from '../cipher/symmetric/xchacha20'
 import { encrypt as gostEncrypt, decrypt as gostDecrypt } from '../cipher/symmetric/gost';
 import { encrypt as enigmaEncrypt, decrypt as enigmaDecrypt } from '../cipher/symmetric/enigma';
-import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20'
 import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20';
 import { encrypt as teaEncrypt, decrypt as teaDecrypt } from '../cipher/symmetric/tea';
 import { encrypt as serpentEncrypt, decrypt as serpentDecrypt } from '../cipher/symmetric/serpent';
@@ -89,6 +88,7 @@ import { deriveKey } from "../kdf/pbkdf2";
 import { deriveScryptKey } from "../kdf/scrypt";
 import { CipherError } from "../utils/errors";
 import type { WorkerRequest, WorkerResponse } from "../../types/worker";
+import type { CipherResult } from "../cipher/types";
 
 type WorkerRequestMessage = WorkerRequest | Uint8Array;
 
@@ -330,19 +330,19 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         break
       case "pbkdf2":
         result = await deriveKey(input, {
-          iterations: options?.iterations ?? 10000,
-          hash: options?.hash ?? "SHA-256",
-          keyLength: options?.keyLength ?? 32,
-          salt: options?.salt,
+          iterations: typeof options?.iterations === 'number' ? options.iterations : 10000,
+          hash: (options?.hash === 'SHA-256' || options?.hash === 'SHA-512') ? options.hash : "SHA-256",
+          keyLength: typeof options?.keyLength === 'number' ? options.keyLength : 32,
+          salt: typeof options?.salt === 'string' ? options.salt : undefined,
         });
         break;
       case "scrypt":
         result = await deriveScryptKey(input, {
-          N: options?.N ?? 16384,
-          r: options?.r ?? 8,
-          p: options?.p ?? 1,
-          dkLen: options?.dkLen ?? 32,
-          salt: options?.salt,
+          N: typeof options?.N === 'number' ? options.N : 16384,
+          r: typeof options?.r === 'number' ? options.r : 8,
+          p: typeof options?.p === 'number' ? options.p : 1,
+          dkLen: typeof options?.dkLen === 'number' ? options.dkLen : 32,
+          salt: typeof options?.salt === 'string' ? options.salt : undefined,
         });
         break;
       case "rc4":
@@ -384,7 +384,7 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
     const response: WorkerResponse = {
       requestId,
       success: true,
-      payload: { result: result as any },
+      payload: { result: result as CipherResult },
       timings: { durationMs },
     };
     workerScope.postMessage(response);
