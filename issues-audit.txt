@@ -449,3 +449,65 @@
 [#855] (open) by @Aakif-Kohari: [FEATURE] Add SAFER+ block cipher (Bluetooth pairing algorithm, AES candidate, byte-oriented SPN with Pseudo-Hadamard Transform diffusion)
 [#854] (open) by @Aakif-Kohari: [FEATURE] Add GOST R 34.10-2012 digital signature algorithm (Russian national standard, completes GOST+Kuznyechik+Streebog+GOST-R-34.10 suite)
 [#853] (open) by @Aakif-Kohari: [FEATURE] Add SM2 elliptic curve cryptography (Chinese national standard, GB/T 32918, completes SM2+SM3+SM4 national suite)
+
+=== Audited 2026-08-08 21:16 UTC (60 new) ===
+[#940] (open) by @Aakif-Kohari: [FEATURE] Add RIPEMD-128 hash function (distinct-output sibling of RIPEMD-160, dual-parallel-line MD4-family design)
+[#939] (open) by @Aakif-Kohari: [FEATURE] Add Cramer-Shoup cryptosystem (first practical IND-CCA2-secure public-key scheme without random oracles, major theoretical milestone)
+[#938] (open) by @Aakif-Kohari: [FEATURE] Add GOST R 34.11-94 hash function (older Russian standard, predecessor to Streebog, completes old-vs-new Russian hash comparison)
+[#937] (open) by @Aakif-Kohari: [FEATURE] Add KCDSA digital signature algorithm (Korean national standard, completes SEED+LEA+ARIA+LSH-256+KCDSA national crypto suite)
+[#936] (open) by @Aakif-Kohari: [FEATURE] Add 3-Way block cipher (Daemen, 1994, three-fold cyclic symmetry, 96-bit block, direct predecessor to Square/Rijndael lineage)
+[#920] (open) by @csxark: README Table of Contents Not Linked
+[#919] (open) by @csxark: README CI Badge Points to Non-Existent Workflow
+[#918] (open) by @csxark: Vercel Analytics Dependency for Static Site
+[#917] (open) by @csxark: Missing `loading.tsx` for Route Segments
+[#916] (open) by @csxark: Service Worker Precache List May Be Stale
+[#915] (open) by @csxark: ESLint Rule Suppressions in Production Code
+[#914] (open) by @csxark: Console Logging in Production Components
+[#913] (open) by @csxark: Permissions-Policy Discrepancy Between Middleware and vercel.json
+[#912] (open) by @csxark: `test-suite.yml` Lacks `persist-credentials: false`
+[#911] (open) by @csxark: Duplicate CI Workflows for Testing
+[#910] (closed) by @csxark: 404 Page Lacks Footer and Has Inconsistent Styling
+[#909] (open) by @csxark: Footer Contains Unused Link Arrays
+[#908] (open) by @csxark: Inconsistent Dual Hook Locations
+[#907] (open) by @csxark: Navbar Re-creates Navigation Arrays on Every Render
+[#906] (open) by @csxark: Unused State Setter `_setCancelled` in not-found.tsx
+[#905] (open) by @csxark: Missing `router` in `useEffect` Dependency Array
+[#904] (open) by @csxark: Missing `HSTS` Header in `vercel.json`
+[#903] (open) by @csxark: Security Test Suite Contains Only Header Tests
+[#902] (open) by @csxark: Single Integration Test Covering All Ciphers
+[#901] (open) by @csxark: Desktop Navigation Only Visible at `xl` Breakpoint
+[#900] (open) by @csxark: Cipher Sandbox Missing ARIA Labels on Interactive Controls
+[#899] (open) by @csxark: Missing `id="main-content"` Target for Skip Link
+[#895] (open) by @csxark: 828-Line God Component — CipherSandbox
+[#894] (open) by @csxark: Committed Build Artifacts in VCS
+[#893] (open) by @csxark: Home Page Is a Client Component Rendering Analytics
+[#891] (closed) by @csxark: Array Index Used as React Key in 48+ Locations
+[#890] (closed) by @csxark: Untyped `CipherHandler` Uses `any` Input and Output
+[#889] (open) by @csxark: `@ts-ignore` Suppression Without Proper Resolution
+[#888] (open) by @csxark: Permalink State Embeds User Input in URLs Without Sanitization
+[#887] (open) by @csxark: SECURITY.md Contains Only GitHub Template Placeholder
+[#886] (closed) by @csxark: `Math.random()` Fallback in CSP Nonce Generation
+[#885] (open) by @csxark: `dangerouslySetInnerHTML` Usage Without Sanitization
+[#884] (open) by @csxark: 675-Line Monolithic Worker File
+[#883] (open) by @csxark: Artificial 1.5s Loading Delay on Home Page
+[#882] (open) by @csxark: No E2E Tests, No Visual Regression Tests
+[#881] (closed) by @csxark: No Error Boundaries on Feature Pages
+[#880] (open) by @csxark: Duplicate Navigation Link Definitions
+[#879] (open) by @csxark: Widespread `as any` Type Assertions in Production Code
+[#878] (open) by @csxark: `vercel.json` CSP Allows `unsafe-inline` for Scripts
+[#877] (open) by @csxark: Cipher Worker Eagerly Imports All 100+ Cipher Modules
+[#876] (open) by @csxark: Middleware CSP Is Dead Code Under Static Export
+[#874] (open) by @Diwakar-odds: Security: Harden the Cipher Engine against Prototype Pollution and XSS
+[#873] (open) by @Diwakar-odds: Performance: Implement Memoization and Substring Caching for Cipher Streams
+[#872] (open) by @Diwakar-odds: Architecture: Implement Web Worker Offloading for Intensive Cryptographic Operations
+[#868] (open) by @csxark: Add security documentation for RSA real-mode embedded static private key
+[#867] (open) by @csxark: Document Rail Fence test vector convention and verify against standard references
+[#866] (open) by @csxark: Document Columnar Transposition trailing-X padding ambiguity
+[#865] (open) by @csxark: Add optional primality validation for RSA demo mode user-supplied primes
+[#864] (open) by @csxark: Document ElGamal `Math.random()` limitation for ephemeral key generation
+[#863] (open) by @csxark: Add Diffie-Hellman generator validation note and primitive root educational content
+[#862] (closed) by @csxark: Improve AES MixColumns educational step description for GF(2⁸) polynomial multiplication
+[#861] (open) by @csxark: Add One-Time Pad key reuse detection and educational warning
+[#860] (open) by @csxark: Fix Affine cipher modular inverse silent fallback when multiplier is not coprime to 26
+[#859] (open) by @csxark: Clarify RSA φ(n) vs λ(n) mathematical inconsistency between Key Wizard and Cipher Engine
+[#858] (open) by @csxark: Fix incorrect Columnar Transposition ZEBRAS test vector
