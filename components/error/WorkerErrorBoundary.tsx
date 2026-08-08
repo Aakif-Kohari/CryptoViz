@@ -38,12 +38,20 @@ export default class WorkerErrorBoundary extends Component<Props, State> {
           <p className="mb-6 max-w-md text-sm text-red-600 dark:text-red-300">
             The cryptographic Web Worker crashed, likely due to an Out of Memory (OOM) exception from an extreme payload size. 
           </p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-          >
-            Restart Visualizer
-          </button>
+          <div className="flex gap-3">
+            <button 
+              onClick={() => this.setState({ hasError: false, errorMsg: '' })}
+              className="rounded-lg bg-zinc-800 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600"
+            >
+              Reset State
+            </button>
+            <button 
+              onClick={() => window.location.reload()}
+              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            >
+              Restart Visualizer
+            </button>
+          </div>
         </div>
       )
     }

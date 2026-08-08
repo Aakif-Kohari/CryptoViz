@@ -38,23 +38,32 @@ export interface MitmResult {
   attemptsUntilMatch: number
   steps: MitmStep[]
 }
-
-function desEncryptBlock(plaintextBlock: Uint8Array, keyBytes: Uint8Array): Uint8Array {
+function processDesBlock(
+  blockBytes: Uint8Array,
+  keyBytes: Uint8Array,
+  decrypt: boolean
+): Uint8Array {
   const subkeys = generateSubkeys(keyBytes)
-  const block = bytesToBlock(plaintextBlock, 0)
-  const result = processBlock(block, subkeys, false)
+  const block = bytesToBlock(blockBytes, 0)
+  const result = processBlock(block, subkeys, decrypt)
+
   const out = new Uint8Array(DES_BLOCK_SIZE)
   blockToBytes(result, out, 0)
+
   return out
 }
+function desEncryptBlock(
+  plaintextBlock: Uint8Array,
+  keyBytes: Uint8Array
+): Uint8Array {
+  return processDesBlock(plaintextBlock, keyBytes, false)
+}
 
-function desDecryptBlock(ciphertextBlock: Uint8Array, keyBytes: Uint8Array): Uint8Array {
-  const subkeys = generateSubkeys(keyBytes)
-  const block = bytesToBlock(ciphertextBlock, 0)
-  const result = processBlock(block, subkeys, true)
-  const out = new Uint8Array(DES_BLOCK_SIZE)
-  blockToBytes(result, out, 0)
-  return out
+function desDecryptBlock(
+  ciphertextBlock: Uint8Array,
+  keyBytes: Uint8Array
+): Uint8Array {
+  return processDesBlock(ciphertextBlock, keyBytes, true)
 }
 
 export function doubleDesEncrypt(plaintextBlock: Uint8Array, keyA: Uint8Array, keyB: Uint8Array): Uint8Array {
@@ -107,9 +116,16 @@ export function meetInTheMiddleAttack(
   if (plaintextBlock.length !== DES_BLOCK_SIZE || ciphertextBlock.length !== DES_BLOCK_SIZE) {
     throw new CipherError('INVALID_INPUT', `Plaintext and ciphertext blocks must each be exactly ${DES_BLOCK_SIZE} bytes (one DES block).`)
   }
-  if (keySpaceBits < MIN_KEYSPACE_BITS || keySpaceBits > MAX_KEYSPACE_BITS) {
-    throw new CipherError('INVALID_INPUT', `keySpaceBits must be between ${MIN_KEYSPACE_BITS} and ${MAX_KEYSPACE_BITS} for a browser-tractable demo.`)
-  }
+ if (
+  !Number.isInteger(keySpaceBits) ||
+  keySpaceBits < MIN_KEYSPACE_BITS ||
+  keySpaceBits > MAX_KEYSPACE_BITS
+) {
+  throw new CipherError(
+    "INVALID_INPUT",
+    `keySpaceBits must be an integer between ${MIN_KEYSPACE_BITS} and ${MAX_KEYSPACE_BITS} for a browser-tractable demo.`
+  )
+}
 
   const steps: MitmStep[] = []
   const spaceSize = 2 ** keySpaceBits
@@ -129,11 +145,32 @@ export function meetInTheMiddleAttack(
   )
 
   const forwardTable = new Map<string, number>()
-  for (let k1 = 0; k1 < spaceSize; k1++) {
-    const candidateKey = keyFromInt(k1, keySpaceBits)
-    const intermediate = desEncryptBlock(plaintextBlock, candidateKey)
-    forwardTable.set(bytesToHex(intermediate), k1)
+
+// Emit progress every 5% (minimum once every iteration for very small keyspaces)
+const progressInterval = Math.max(1, Math.floor(spaceSize / 20))
+let lastReportedProgress = -1
+
+for (let k1 = 0; k1 < spaceSize; k1++) {
+  const candidateKey = keyFromInt(k1, keySpaceBits)
+  const intermediate = desEncryptBlock(plaintextBlock, candidateKey)
+  forwardTable.set(bytesToHex(intermediate), k1)
+
+  if (
+    k1 === spaceSize - 1 ||
+    k1 % progressInterval === 0
+  ) {
+    const progress = Math.floor(((k1 + 1) / spaceSize) * 100)
+
+    if (progress !== lastReportedProgress) {
+      lastReportedProgress = progress
+
+      emit({
+        label: 'Forward pass progress',
+        detail: `Generated ${k1 + 1} of ${spaceSize.toLocaleString()} lookup entries (${progress}%).`,
+      })
+    }
   }
+}
 
   emitStep(
     'Backward pass',

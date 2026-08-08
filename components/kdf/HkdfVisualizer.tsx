@@ -21,7 +21,7 @@ async function deriveHkdfViaWorker(
       options,
     },
   }
-  const response = await sharedCipherPool.execute(message)
+  const response = await sharedCipherPool.execute(message) as { success: boolean; payload: { result?: CipherResult; error?: string } }
   if (response.success === false) {
     throw new Error(response.payload.error ?? 'HKDF key derivation failed.')
   }

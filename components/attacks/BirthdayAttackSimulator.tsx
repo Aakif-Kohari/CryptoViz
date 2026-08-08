@@ -34,7 +34,7 @@ export default function BirthdayAttackSimulator() {
   // Output Statistics
   const [samplesCount, setSamplesCount] = useState<number>(0);
   const [firstCollision, setFirstCollision] = useState<CollisionDetail | null>(null);
-  const [collisionsCount, setCollisionsCount] = useState<number>(0);
+  const [_collisionsCount, setCollisionsCount] = useState<number>(0);
   const [log, setLog] = useState<string[]>(["Click Start to simulate hash generation."]);
 
   // Visual grid hits (only active for 8-bit = 256 keys)

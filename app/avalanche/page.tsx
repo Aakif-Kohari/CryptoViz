@@ -1,6 +1,8 @@
 'use client'
 
 import Navbar from '../../components/layout/Navbar'
+import Breadcrumbs from '../../components/layout/Breadcrumbs'
+
 import AvalancheVisualizer from '../../components/avalanche/AvalancheVisualizer'
 
 export default function AvalanchePage() {
@@ -9,6 +11,7 @@ export default function AvalanchePage() {
       <Navbar />
 
       <main className="mx-auto max-w-4xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
+        <Breadcrumbs items={[{ label: "Learn" }, { label: "Avalanche Effect" }]} />
         <header className="max-w-3xl">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">
             Diffusion workspace

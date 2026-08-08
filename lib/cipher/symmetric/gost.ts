@@ -31,7 +31,7 @@ const METADATA: CipherMetadata = {
   standardBody: 'GOST 28147-89 (declassified 1994)',
 }
 
-const MASK = 0xffffffff
+const _MASK = 0xffffffff
 
 // Reference S-box set — see file header. 8 boxes, each a 16-entry
 // (4-bit -> 4-bit) lookup table, applied one per nibble of the 32-bit

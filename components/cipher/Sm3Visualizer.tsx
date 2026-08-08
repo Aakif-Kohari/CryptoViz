@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Hash, Layers, ShieldCheck, Binary, Cpu } from 'lucide-react'
+import { ShieldCheck, Binary, Cpu } from 'lucide-react'
 import type { CipherResult } from '../../lib/cipher/types'
 
 interface Sm3VisualizerProps {

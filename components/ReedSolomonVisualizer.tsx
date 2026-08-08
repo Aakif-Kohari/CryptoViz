@@ -3,11 +3,10 @@ import React from 'react';
 interface Props {
   encoded: number[];
   errorPositions: number[];
-  decoded: string;
 }
 
 // Simple grid visualizer for RS symbols
-const ReedSolomonVisualizer: React.FC<Props> = ({ encoded, errorPositions, decoded }) => {
+const ReedSolomonVisualizer: React.FC<Props> = ({ encoded, errorPositions }) => {
   return (
     <div className="grid grid-cols-8 gap-2 mt-4">
       {encoded.map((symbol, idx) => (

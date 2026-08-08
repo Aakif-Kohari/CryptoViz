@@ -9,7 +9,7 @@ import {
   autoFixEncodingError,
   buildByteInspector,
 } from '@/lib/encoding/encodingErrors';
-import { AlertCircle, CheckCircle2, Wrench, Sparkles, RefreshCw, Zap, Bug, FileCode } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Wrench, Zap, Bug, FileCode } from 'lucide-react';
 
 export default function EncodingErrorPlayground() {
   const [activeTab, setActiveTab] = useState<'debugger' | 'faults' | 'mojibake'>('debugger');

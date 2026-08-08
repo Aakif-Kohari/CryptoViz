@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import { motion } from 'framer-motion'
 import { ArrowRight, Key, FileText, Hash, Info, Plus } from 'lucide-react'
 import type { CipherResult } from '../../lib/cipher/types'
 
@@ -20,7 +19,7 @@ export default function HmacVisualizer({ currentStep, result }: HmacVisualizerPr
   const isHighlighted = (blocks: number[]) => blocks.includes(currentStep)
 
   // Extract values from step states
-  const originalKey = steps[0].inputState
+  const _originalKey = steps[0].inputState
   const preparedKey = steps[0].outputState
   const innerKey = steps[1].outputState
   const innerHash = steps[2].outputState

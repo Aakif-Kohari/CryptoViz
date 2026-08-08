@@ -17,15 +17,12 @@ import {
   GitBranch,
   Copy,
   Check,
-  ChevronRight,
-  HelpCircle,
-  Code
+  ChevronRight
 } from 'lucide-react'
 import {
   buildMerkleTree,
   generateMerkleProof,
   verifyMerkleProof,
-  computeSingleHash,
   MerkleNode,
   MerkleProof,
   HashType,
@@ -199,7 +196,7 @@ export default function MerkleVisualizer() {
   }
 
   // Active computed verification path elements for visual step-by-step debug
-  const activeVerificationStepCoords = React.useMemo(() => {
+  const _activeVerificationStepCoords = React.useMemo(() => {
     if (selectedLeafIndex === null || !proof || !verificationResult) return null
 
     const path: { left: number; top: number; hash: string; label: string; level: number }[] = []

@@ -196,7 +196,7 @@ function sha1core(
 // ─── Input Validation ─────────────────────────────────────────────────────────
 
 function validate(input: string): Uint8Array {
-  if (input === undefined || input === null || input === '') {
+  if (input === undefined || input === null) {
     throw new CipherError('INPUT_REQUIRED', 'Input message is required.')
   }
   const bytes = new TextEncoder().encode(input)

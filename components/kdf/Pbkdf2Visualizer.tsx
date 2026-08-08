@@ -22,11 +22,11 @@ async function deriveKeyViaWorker(
     requestId: crypto.randomUUID(),
     payload: { cipherId: 'pbkdf2', input: password, key: '', options: params },
   }
-  const response = await sharedCipherPool.execute(message)
+  const response = await sharedCipherPool.execute(message) as { success: boolean; payload: { result?: { derivedKeyHex: string; saltHex: string }; error?: string } }
   if (response.success === false) {
     throw new Error(response.payload.error ?? 'KDF derivation failed.')
   }
-  return response.payload.result as unknown as { derivedKeyHex: string; saltHex: string }
+  return response.payload.result as { derivedKeyHex: string; saltHex: string }
 }
 
 export default function Pbkdf2Visualizer() {

@@ -5,6 +5,15 @@ import { useCipherWorker } from '../../lib/hooks/useCipherWorker'
 import { generateChallengeData, type ChallengeData, type ChallengeDifficulty } from '../../lib/challenge/generator'
 import { getWrongAnswerExplanation } from '../../lib/challenge/explain'
 import { CIPHER_REGISTRY } from '../../lib/cipher/registry'
+import LearningProgressionFooter from '../learning/LearningProgressionFooter'
+
+import {
+  safeGetItem,
+  safeSetItem,
+  safeGetItemJson,
+  safeSetItemJson,
+  safeJsonParse,
+} from '../../lib/utils/storage'
 
 type FeedbackState = 'idle' | 'correct' | 'incorrect'
 
@@ -88,15 +97,6 @@ function computeEarnedXp(params: {
   return Math.max(XP_MIN_CORRECT, earned)
 }
 
-function safeJsonParse<T>(s: string | null): T | null {
-  if (!s) return null
-  try {
-    return JSON.parse(s) as T
-  } catch {
-    return null
-  }
-}
-
 function uid() {
   return Math.random().toString(36).slice(2) + '-' + Date.now().toString(36)
 }
@@ -117,7 +117,7 @@ export default function ChallengeMode() {
   const [questionCount, setQuestionCount] = useState<QuestionCountOption>(DEFAULT_QUESTION_COUNT)
   const [timeLimit, setTimeLimit] = useState<TimeLimitOption>(DEFAULT_TIME_LIMIT)
   const [started, setStarted] = useState(false)
-  const [replayMode, setReplayMode] = useState(false)
+  const [_replayMode, setReplayMode] = useState(false)
 
   const [isHydrated, setIsHydrated] = useState(false)
 
@@ -145,12 +145,12 @@ export default function ChallengeMode() {
 
   const handleQuestionCountChange = useCallback((count: QuestionCountOption) => {
     setQuestionCount(count)
-    localStorage.setItem(QUESTION_COUNT_KEY, String(count))
+    safeSetItem(QUESTION_COUNT_KEY, String(count))
   }, [])
 
   const handleTimeLimitChange = useCallback((limit: TimeLimitOption) => {
     setTimeLimit(limit)
-    localStorage.setItem(TIME_LIMIT_KEY, String(limit))
+    safeSetItem(TIME_LIMIT_KEY, String(limit))
   }, [])
 
   const currentChallenge = useMemo(() => {
@@ -169,17 +169,17 @@ export default function ChallengeMode() {
 
   // Hydration + persisted values
   useEffect(() => {
-    const savedBest = localStorage.getItem(BEST_SCORE_KEY)
+    const savedBest = safeGetItem(BEST_SCORE_KEY)
     if (savedBest) setBestScore(parseInt(savedBest, 10) || 0)
 
-    const savedXp = localStorage.getItem(XP_TOTAL_KEY)
+    const savedXp = safeGetItem(XP_TOTAL_KEY)
     if (savedXp) setXpTotal(parseInt(savedXp, 10) || 0)
 
-    const savedStreakCount = localStorage.getItem(STREAK_COUNT_KEY)
+    const savedStreakCount = safeGetItem(STREAK_COUNT_KEY)
 
     if (savedStreakCount) setStreak(parseInt(savedStreakCount, 10) || 0)
 
-    const savedCount = localStorage.getItem(QUESTION_COUNT_KEY)
+    const savedCount = safeGetItem(QUESTION_COUNT_KEY)
     if (savedCount) {
       const val = parseInt(savedCount, 10)
       if (QUESTION_COUNT_OPTIONS.includes(val as QuestionCountOption)) {
@@ -187,7 +187,7 @@ export default function ChallengeMode() {
       }
     }
 
-    const savedTime = localStorage.getItem(TIME_LIMIT_KEY)
+    const savedTime = safeGetItem(TIME_LIMIT_KEY)
     if (savedTime !== null) {
       const val = parseInt(savedTime, 10)
       if (TIME_LIMIT_OPTIONS.includes(val as TimeLimitOption)) {
@@ -298,7 +298,7 @@ export default function ChallengeMode() {
     return () => clearTimeout(t)
   }, [currentChallenge, feedback, loading, timeLeft, currentQuestionIndex, showHintIndex, timeLimit, advanceQuestion])
 
-  const resetSession = useCallback(() => {
+  const _resetSession = useCallback(() => {
     successTimeoutRef.current && clearTimeout(successTimeoutRef.current)
     sessionPersistedRef.current = false
     setReplayMode(false)
@@ -485,16 +485,16 @@ export default function ChallengeMode() {
 
     const now = new Date()
     const todayKey = formatLocalDateKey(now)
-    const lastKey = localStorage.getItem(STREAK_LAST_DATE_KEY)
+    const lastKey = safeGetItem(STREAK_LAST_DATE_KEY)
     const lastDate = lastKey ? parseLocalDateKey(lastKey) : null
 
     let newStreak = 1
     if (lastDate) {
       const diff = daysBetweenLocalDates(lastDate, now)
       if (diff === 0) {
-        newStreak = parseInt(localStorage.getItem(STREAK_COUNT_KEY) || '0', 10) || 0
+        newStreak = parseInt(safeGetItem(STREAK_COUNT_KEY) || '0', 10) || 0
       } else if (diff === 1) {
-        newStreak = (parseInt(localStorage.getItem(STREAK_COUNT_KEY) || '0', 10) || 0) + 1
+        newStreak = (parseInt(safeGetItem(STREAK_COUNT_KEY) || '0', 10) || 0) + 1
       } else {
         newStreak = 1
       }
@@ -505,9 +505,9 @@ export default function ChallengeMode() {
     setStreak(newStreak)
     setXpTotal((prev) => prev + sessionXp)
 
-    localStorage.setItem(XP_TOTAL_KEY, String((parseInt(localStorage.getItem(XP_TOTAL_KEY) || '0', 10) || 0) + sessionXp))
-    localStorage.setItem(STREAK_COUNT_KEY, String(newStreak))
-    localStorage.setItem(STREAK_LAST_DATE_KEY, todayKey)
+    safeSetItem(XP_TOTAL_KEY, String((parseInt(safeGetItem(XP_TOTAL_KEY) || '0', 10) || 0) + sessionXp))
+    safeSetItem(STREAK_COUNT_KEY, String(newStreak))
+    safeSetItem(STREAK_LAST_DATE_KEY, todayKey)
 
     // history
     const accuracy = completed.length ? correctCount / completed.length : 0
@@ -528,14 +528,14 @@ export default function ChallengeMode() {
       })),
     }
 
-    const prevHistory = safeJsonParse<ChallengeHistoryEntry[]>(localStorage.getItem(HISTORY_KEY)) ?? []
+    const prevHistory = safeGetItemJson<ChallengeHistoryEntry[]>(HISTORY_KEY, [])
     const nextHistory = [entry, ...prevHistory].slice(0, HISTORY_CAP)
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(nextHistory))
+    safeSetItemJson(HISTORY_KEY, nextHistory)
 
     // best score legacy
     setBestScore((prev) => {
       const next = Math.max(prev, legacyScore)
-      localStorage.setItem(BEST_SCORE_KEY, String(next))
+      safeSetItem(BEST_SCORE_KEY, String(next))
       return next
     })
 
@@ -564,6 +564,11 @@ export default function ChallengeMode() {
     const sessionCorrect = sessionSummary.correctCount
     const totalQuestions = questionCount
     const isNewBest = sessionCorrect * XP_BASE_CORRECT >= bestScore && sessionCorrect > 0
+
+    // Find the cipher most frequently seen in this session
+    const mostPracticedCipherId = sessionSummary.perCipher.length > 0
+      ? sessionSummary.perCipher.reduce((a, b) => (b.attempts > a.attempts ? b : a)).cipherId
+      : 'aes'
 
     return (
       <div className="max-w-3xl mx-auto space-y-6">
@@ -655,6 +660,13 @@ export default function ChallengeMode() {
             <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Saved locally in your browser.</p>
           </div>
         </div>
+
+        {/* Learning progression — visible after challenge is done */}
+        <LearningProgressionFooter
+          cipherId={mostPracticedCipherId}
+          context="challenge"
+          sessionAccuracy={sessionSummary.accuracy}
+        />
       </div>
     )
   }
