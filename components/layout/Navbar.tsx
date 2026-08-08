@@ -74,20 +74,26 @@ export default function Navbar() {
     {
       name: t('nav.learn') || 'Learn',
       items: [
+        { name: 'Learning Paths', href: '/learning-paths' },
         { name: t('nav.lifecycle') || 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+        { name: 'Docs & Guides', href: '/docs' },
         { name: t('nav.mythBusters') || 'Myth Busters', href: '/myth-busters' },
         { name: t('nav.encodingErrors') || 'Encoding Errors', href: '/encoding-errors' },
         { name: t('nav.merkle') || 'Merkle Tree', href: '/merkle' },
         { name: t('nav.padding') || 'Padding', href: '/padding' },
+        { name: 'Case Studies', href: '/case-studies' },
+        { name: 'Timeline', href: '/timeline' },
       ],
     },
     {
       name: t('nav.practice') || 'Practice',
       items: [
+        { name: 'Interactive Visualizers', href: '/visualizer' },
         { name: t('nav.playground') || 'Playground', href: '/visualizer/caesar/' },
         { name: t('nav.cipherSandbox') || 'Cipher Sandbox', href: '/cipher-sandbox' },
         { name: 'Attack Simulators', href: '/attacks' },
         { name: 'Cipher Pipeline', href: '/pipeline' },
+        { name: 'OpenPGP Explorer', href: '/openpgp' },
         { name: t('nav.challenge') || 'Challenge', href: '/challenge' },
         { name: t('nav.advisor') || 'Advisor', href: '/advisor' },
       ],
@@ -95,6 +101,7 @@ export default function Navbar() {
     {
       name: t('nav.reference') || 'Reference',
       items: [
+        { name: 'Reference Hub', href: '/reference' },
         { name: t('nav.glossary') || 'Glossary', href: '/glossary' },
         { name: t('nav.modes') || 'Modes', href: '/modes' },
         { name: t('nav.compare') || 'Compare', href: '/compare' },
@@ -102,22 +109,36 @@ export default function Navbar() {
         { name: t('nav.matrix') || 'Matrix', href: '/matrix' },
         { name: t('nav.benchmark') || 'Benchmark', href: '/benchmark' },
         { name: t('nav.avalanche') || 'Avalanche', href: '/avalanche' },
+        { name: 'S-Box Explorer', href: '/sbox' },
+        { name: 'Rainbow Table', href: '/rainbow-table' },
       ],
     },
     {
       name: t('nav.more') || 'More',
       items: [
-        { name: t('nav.resources') || 'Resources', href: '/resources' },
+        { name: t('nav.reference') || 'Reference', href: '/reference' },
         { name: 'Learning Notes', href: '/notes' },
         { name: t('nav.offline') || 'Offline', href: '/offline' },
       ],
     },
+      {
+  name: t('nav.tools') || 'Tools',
+  items: [
+    { name: 'Benchmark', href: '/benchmark' },
+    { name: 'Matrix', href: '/matrix' },
+    { name: 'Timeline', href: '/timeline' },
+    { name: t('nav.resources') || 'Resources', href: '/resources' },
+    { name: 'Learning Notes', href: '/notes' },
+    { name: t('nav.offline') || 'Offline', href: '/offline' },
+  ],
+},
   ];
 
   const allNavLinks = [
     { name: 'Visualizers', href: '/visualizer' },
     { name: 'Playground', href: '/visualizer/caesar/' },
     { name: 'Cipher Sandbox', href: '/cipher-sandbox' },
+    { name: 'OpenPGP Explorer', href: '/openpgp' },
     { name: 'Advisor', href: '/advisor' },
     { name: 'Modes', href: '/modes' },
     { name: 'Protocols', href: '/protocols' },
@@ -159,12 +180,7 @@ export default function Navbar() {
   ];
 
   const isDevelopment = process.env.NODE_ENV === 'development';
-
-  const navLinks = isDevelopment
-    ? [...allNavLinks, ...developerOnlyLinks]
-    : allNavLinks;
-
-  const visibleNavLinks = isDevelopment ? [...navLinks, ...developerLinks] : navLinks;
+  const visibleNavLinks = isDevelopment ? developerLinks : [];
 
   return (
     <nav
@@ -207,7 +223,7 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-10 xl:flex">
-          {visibleNavLinks.map((link) => {
+          {/* {visibleNavLinks.map((link) => {
             const isActive =
               pathname.startsWith(link.href) &&
               link.href !== '#'
@@ -225,7 +241,7 @@ export default function Navbar() {
                 {link.name}
               </Link>
             )
-          })}
+          })} */}
           {navCategories.map((category) => {
             const isCategoryActive = category.href
               ? pathname === category.href
@@ -461,7 +477,7 @@ export default function Navbar() {
           "
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6">
-            {visibleNavLinks.map((link) => {
+            {/* {visibleNavLinks.map((link) => {
               const isActive =
                 pathname.startsWith(link.href) &&
                 link.href !== '#'
@@ -480,7 +496,7 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               )
-            })}
+            })} */}
             {navCategories.map((category) => {
               if (category.href) {
                 const isActive = pathname === category.href
