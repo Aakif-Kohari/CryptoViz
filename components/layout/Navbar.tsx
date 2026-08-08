@@ -105,13 +105,17 @@ export default function Navbar() {
       ],
     },
     {
-      name: t('nav.more') || 'More',
-      items: [
-        { name: t('nav.resources') || 'Resources', href: '/resources' },
-        { name: 'Learning Notes', href: '/notes' },
-        { name: t('nav.offline') || 'Offline', href: '/offline' },
-      ],
-    },
+      {
+  name: t('nav.tools') || 'Tools',
+  items: [
+    { name: 'Benchmark', href: '/benchmark' },
+    { name: 'Matrix', href: '/matrix' },
+    { name: 'Timeline', href: '/timeline' },
+    { name: t('nav.resources') || 'Resources', href: '/resources' },
+    { name: 'Learning Notes', href: '/notes' },
+    { name: t('nav.offline') || 'Offline', href: '/offline' },
+  ],
+},
   ];
 
   const allNavLinks = [
@@ -207,7 +211,7 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-10 xl:flex">
-          {visibleNavLinks.map((link) => {
+          {/* {visibleNavLinks.map((link) => {
             const isActive =
               pathname.startsWith(link.href) &&
               link.href !== '#'
@@ -225,7 +229,7 @@ export default function Navbar() {
                 {link.name}
               </Link>
             )
-          })}
+          })} */}
           {navCategories.map((category) => {
             const isCategoryActive = category.href
               ? pathname === category.href
@@ -461,7 +465,7 @@ export default function Navbar() {
           "
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6">
-            {visibleNavLinks.map((link) => {
+            {/* {visibleNavLinks.map((link) => {
               const isActive =
                 pathname.startsWith(link.href) &&
                 link.href !== '#'
@@ -480,7 +484,7 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               )
-            })}
+            })} */}
             {navCategories.map((category) => {
               if (category.href) {
                 const isActive = pathname === category.href
