@@ -5,6 +5,24 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import GlobalSearch from '../search/GlobalSearch'
 
+const navLinks = [
+  { name: 'Playground', href: '/visualizer/caesar/' },
+  { name: 'Advisor', href: '/advisor' },
+  { name: 'Modes', href: '/modes' },
+  { name: 'Compare', href: '/compare' },
+  { name: 'Matrix', href: '/matrix' },
+  { name: 'Benchmark', href: '/benchmark' },
+  { name: 'Avalanche', href: '/avalanche' },
+  { name: 'Merkle Tree', href: '/merkle' },
+  { name: 'Padding', href: '/padding' },
+  { name: 'Challenge', href: '/challenge' },
+  { name: 'Docs', href: '/docs' },
+  { name: 'Glossary', href: '/glossary' },
+  { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+  { name: 'Myth Busters', href: '/myth-busters' },
+  { name: 'Resources', href: '/resources' },
+]
+
 import LanguageSelector from '../i18n/LanguageSelector'
 import { useTranslation } from '@/lib/i18n/context'
 import { safeGetItem, safeSetItem } from '../../lib/utils/storage'
