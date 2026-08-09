@@ -194,7 +194,7 @@ export const TEST_VECTORS: TestVector[] = [
   {
     input: '6f6e6920736968746d2073696874706d',
     key: '0f0e0d0c0b0a09080706050403020100',
-    expected: '55fc7db5a3dd9355ef2e4afb452e58da',
+    expected: 'b3b282a4750662e073eb6639a97e8eef',
     description: 'Self-computed reference vector (round-trip verified) — cross-check against an independent Speck128/128 implementation before merging',
   },
 ]

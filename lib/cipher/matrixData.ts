@@ -11,7 +11,7 @@ export interface MatrixEntry {
   applications: string[]
 }
 
-const getCipherAttr = (id: string, key: keyof MatrixEntry) => {
+const _getCipherAttr = (id: string, key: keyof MatrixEntry) => {
   const cipher = CIPHER_REGISTRY.find((c) => c.id === id)
   return cipher ? cipher[key as keyof typeof cipher] : ''
 }
@@ -169,6 +169,16 @@ export const ALGORITHM_MATRIX_DATA: MatrixEntry[] = [
     securityStatus: 'secure',
     speed: 'Moderate',
     applications: ['Key Exchange (Forward Secrecy)'],
+  },
+  {
+    id: 'frodokem',
+    name: 'FrodoKEM-640',
+    category: 'asymmetric',
+    blockSize: 'N/A',
+    keySize: '640 (Matrix LWE)',
+    securityStatus: 'secure',
+    speed: 'Moderate (O(n^2) Matrix Ops)',
+    applications: ['Post-Quantum Key Exchange', 'Conservative PQC', 'Lattice Cryptography'],
   },
   // Classical
   {

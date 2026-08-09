@@ -9,7 +9,7 @@ describe('ECDSA (secp256k1)', () => {
   it('passes standard test vectors', () => {
     const vector = TEST_VECTORS[0]
     const result = encrypt(vector.input, vector.key)
-    expect(result.output).toBeDefined()
+    expect(result.output).toBe(vector.expected)
     expect(result.output.length).toBe(128) // 64-byte compact r||s hex
   })
 

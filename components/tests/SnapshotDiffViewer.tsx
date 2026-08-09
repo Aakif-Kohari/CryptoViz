@@ -6,13 +6,13 @@ import { CheckCircle, AlertTriangle, FileCode } from "lucide-react";
 interface SnapshotDiffViewerProps {
   diffResult: SnapshotDiffResult;
   componentName: string;
-  title: string;
+  _title: string;
 }
 
 export default function SnapshotDiffViewer({
   diffResult,
   componentName,
-  title,
+  _title,
 }: SnapshotDiffViewerProps) {
   return (
     <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
@@ -48,7 +48,7 @@ export default function SnapshotDiffViewer({
 
           return (
             <div
-              key={idx}
+              key={`line-${line.lineNumber}-${line.type}`}
               className={`flex items-start gap-3 py-0.5 px-2 font-mono leading-relaxed transition-colors ${
                 isAdded
                   ? "bg-emerald-950/70 text-emerald-300 font-semibold"

@@ -25,7 +25,7 @@ export interface CipherStep {
   /** Key-value table for key schedule display */
   table?: { key: string; value: string }[]
   /** Human-readable explanation of what happened */
-  note: string
+  note?: string
   /** True for major steps (show in summary mode) */
   isMilestone?: boolean
 }
@@ -60,7 +60,16 @@ export interface CipherOptions {
   info?: string
   /** When true, capture state after every sub-step (for visualizer) */
   instrument?: boolean
-  [key: string]: string | number | boolean | Encoding | undefined
+  signal?: AbortSignal
+  hexInput?: boolean
+  rounds?: number
+  N?: number
+  r?: number
+  p?: number
+  dkLen?: number
+  salt?: string
+  iterations?: number
+  [key: string]: unknown
 }
 
 export type CipherName =
@@ -91,10 +100,37 @@ export type CipherName =
   | 'aes-ccm'
   | 'threefish'
   | 'xchacha20'
+  | 'twofish'
   | 'gost'
+  | 'rc2'
   | 'enigma'
+  | 'ascon'
   | 'xsalsa20'
+  | 'trivium'
+  | 'sm4'
+  | 'present'
+  | 'simon32'
   | 'tea'
+  | 'noekeon'
+  | 'lea'
+  | 'gift'
+  | 'xxtea'
+  | 'blowfish'
+  | 'streebog'
+  | 'seed'
+  | 'kuznyechik'
+  | 'simon'
+  | 'rabbit'
+  | 'hc128'
+  | 'anubis'
+  | 'mars'
+  | 'clefia'
+  | 'misty1'
+  | 'square'
+  | 'feal'
+  | 'safer-plus'
+  | 'aria'
+  | 'kasumi'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
@@ -116,8 +152,14 @@ export type CipherName =
   | 'ml-dsa'
   | 'ecies'
   | 'ml-kem'
+  | 'frodokem'
   | 'ed448'
   | 'shamir-secret-sharing'
+  | 'sidh'
+  | 'ntru'
+  | 'gost-r34-10'
+  | 'mceliece'
+  | 'sm2'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
@@ -137,7 +179,15 @@ export type CipherName =
   | 'sha384'
   | 'shake128'
   | 'shake256'
+  | 'pbkdf2'
   | 'md4'
+  | 'argon2'
+  | 'skein'
+  | 'lsh256'
+  | 'tiger'
+  | 'grostl'
+  | 'jh'
+  | 'haval'
   | 'poly1305'
   | 'hmac'
   | 'cmac'
@@ -151,5 +201,13 @@ export interface TestVector {
   input: string
   key: string
   expected: string
+  /** Expected output for decrypt (if different from encrypt) */
+  expectedDecrypt?: string
   description?: string
+  /** Skip the encrypt direction in the KAT runner */
+  skipEncrypt?: boolean
+  /** Skip the decrypt direction in the KAT runner */
+  skipDecrypt?: boolean
+  /** Extra options forwarded to encrypt/decrypt (e.g. effectiveBits, length) */
+  options?: Record<string, unknown>
 }

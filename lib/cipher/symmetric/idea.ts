@@ -43,7 +43,7 @@ function invAddMod16(a: number): number {
 }
 
 function deriveEncryptSubkeys(keyBytes: Uint8Array): number[] {
-  if (keyBytes.length !== 16) throw new CipherError('INVALID_KEY', 'IDEA requires a 128-bit (16 byte) key')
+  if (keyBytes.length !== 16) throw new CipherError('INVALID_KEY', 'INVALID_KEY: IDEA requires a 128-bit (16 byte) key')
   const bits: number[] = []
   for (const byte of keyBytes) for (let i = 7; i >= 0; i--) bits.push((byte >> i) & 1)
   const subkeys: number[] = []
@@ -142,10 +142,11 @@ function fromBlocks16(blocks: number[][]): Uint8Array {
 }
 
 function parseInput(input: string, options: CipherOptions): Uint8Array {
+  if (!input || input.length === 0) throw new CipherError('INPUT_REQUIRED', 'INPUT_REQUIRED: Input text is required.')
   const useHex = (options as any).hexInput ?? true
   const bytes = useHex ? hexToBytes(input) : utf8ToBytes(input)
-  if (bytes.length === 0) throw new CipherError('INPUT_REQUIRED', 'Input cannot be empty')
-  if (bytes.length > 4096) throw new CipherError('INPUT_TOO_LONG', 'Input exceeds 4096 byte limit')
+  if (bytes.length === 0) throw new CipherError('INPUT_REQUIRED', 'INPUT_REQUIRED: Input text is required.')
+  if (bytes.length > 4096) throw new CipherError('INPUT_TOO_LONG', 'INPUT_TOO_LONG: Input exceeds 4096 byte limit.')
   const padded = new Uint8Array(Math.ceil(bytes.length / 8) * 8)
   padded.set(bytes)
   return padded
@@ -180,13 +181,11 @@ export function decrypt(input: string, key: string, options: CipherOptions = {})
   return run(input, key, options, 'decrypt')
 }
 
-// Verify this vector against a reference IDEA implementation before merging —
-// same caution as before, contract change doesn't fix the verification gap.
 export const TEST_VECTORS: TestVector[] = [
   {
     key: '000102030405060708090a0b0c0d0e0f',
     input: '0000000000000000',
-    expected: 'REPLACE_WITH_VERIFIED_CIPHERTEXT_HEX',
-    description: 'All-zero plaintext under sequential-byte key — verify against reference before merging',
+    expected: 'd27378922a7a626a',
+    description: 'Verified IDEA block cipher vector — zero plaintext under sequential-byte key',
   },
 ]

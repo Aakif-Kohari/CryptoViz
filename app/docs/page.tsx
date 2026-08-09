@@ -1,12 +1,19 @@
-"use client";
+import type { Metadata } from "next";
+import DocsLandingContent from "../../components/docs/DocsLandingContent";
+import DocsThemeLayout from "../../components/docs/DocsThemeLayout";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import Breadcrumbs from '../../components/layout/Breadcrumbs'
+
 import Link from "next/link";
 import {
   docCategories,
   DocCategory,
   CipherDocCategory,
   GeneralDocCategory,
+  getDocSlug,
+  getDocsForTrack,
+  type LearningTrack,
 } from "./data";
 import { DocumentationSection } from "./components/DocumentationSection";
 import { MathBlock } from "./components/MathBlock";
@@ -17,6 +24,11 @@ import { ReferenceList } from "./components/ReferenceList";
 import { DocumentationProgressActions } from "./components/DocumentationProgressActions";
 import { LearningProgressPanel } from "./components/LearningProgressPanel";
 import { useDocumentationProgress } from "./components/useDocumentationProgress";
+import { LearningTrackSelector } from "./components/LearningTrackSelector";
+import { RecommendedNextLinks } from "./components/RecommendedNextLinks";
+import { DifficultyBadge } from "./components/DifficultyBadge";
+import { ReadingTime } from "./components/ReadingTime";
+import { Prerequisites } from "./components/Prerequisites";
 import { getTitleScore, getDescriptionScore } from "../../lib/utils/fuzzySearch";
 import GlossaryTextRenderer from "../../components/glossary/GlossaryTextRenderer";
 
@@ -27,18 +39,12 @@ interface SearchItem {
   score?: number;
 }
 
-const getDocSlug = (title: string) =>
-  title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-
 export default function DocumentationPage() {
   const [activeSection, setActiveSection] = useState<DocCategory>(
     docCategories[0],
   );
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [activeTrack, setActiveTrack] = useState<LearningTrack | null>(null);
 
   // Search and highlighting states
   const [searchOpen, setSearchOpen] = useState(false);
@@ -50,8 +56,20 @@ export default function DocumentationPage() {
   // Table of Contents tracking
   const [activeHeadingId, setActiveHeadingId] = useState("overview");
 
-  const generalDocs = docCategories.filter((c) => c.type === "general");
-  const cipherDocs = docCategories.filter((c) => c.type === "cipher");
+  // Filter docs based on active learning track
+  const filteredDocs = useMemo(() => {
+    if (!activeTrack) return docCategories;
+    return getDocsForTrack(activeTrack);
+  }, [activeTrack]);
+
+  const filteredGeneralDocs = useMemo(
+    () => filteredDocs.filter((c) => c.type === "general"),
+    [filteredDocs],
+  );
+  const filteredCipherDocs = useMemo(
+    () => filteredDocs.filter((c) => c.type === "cipher"),
+    [filteredDocs],
+  );
 
   const docSlugs = useMemo(
     () => docCategories.map((category) => getDocSlug(category.title)),
@@ -66,6 +84,20 @@ export default function DocumentationPage() {
     clear,
     percent,
   } = useDocumentationProgress(docSlugs);
+
+  // Calculate progress for filtered docs
+  const filteredProgress = useMemo(() => {
+    const completedInFiltered = filteredDocs.filter((doc) =>
+      progress.completed.includes(getDocSlug(doc.title)),
+    ).length;
+    return {
+      completed: completedInFiltered,
+      total: filteredDocs.length,
+      percent: filteredDocs.length > 0
+        ? Math.round((completedInFiltered / filteredDocs.length) * 100)
+        : 0,
+    };
+  }, [filteredDocs, progress.completed]);
 
   const activeSlug = getDocSlug(activeSection.title);
   const isBookmarked = progress.bookmarks.includes(activeSlug);
@@ -105,13 +137,13 @@ export default function DocumentationPage() {
   }, [activeSlug, isCompleted, hasLoaded, toggleCompleted]);
 
   // Next / Previous Navigation items
-  const currentIndex = docCategories.findIndex(
+  const currentIndex = filteredDocs.findIndex(
     (c) => c.title === activeSection.title,
   );
-  const prevSection = currentIndex > 0 ? docCategories[currentIndex - 1] : null;
+  const prevSection = currentIndex > 0 ? filteredDocs[currentIndex - 1] : null;
   const nextSection =
-    currentIndex < docCategories.length - 1
-      ? docCategories[currentIndex + 1]
+    currentIndex < filteredDocs.length - 1
+      ? filteredDocs[currentIndex + 1]
       : null;
 
   // Generate dynamic TOC elements
@@ -218,18 +250,18 @@ export default function DocumentationPage() {
         if (isCode) {
           node = (
             <code
-              key={idx}
+              key={`code-${idx}-${part}`}
               className="bg-zinc-200/60 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-1.5 py-0.5 rounded font-mono text-xs text-rose-600 dark:text-rose-455"
             >
               {node}
             </code>
           );
         } else if (typeof part === "string") {
-          node = <GlossaryTextRenderer key={idx} content={part} />;
+          node = <GlossaryTextRenderer key={`text-${idx}-${part}`} content={part} />;
           if (isBold) {
             node = (
               <strong
-                key={idx}
+                key={`bold-${idx}-${part}`}
                 className="font-semibold text-zinc-900 dark:text-white"
               >
                 {node}
@@ -239,7 +271,7 @@ export default function DocumentationPage() {
         } else if (isBold) {
           node = (
             <strong
-              key={idx}
+              key={`bold-obj-${idx}`}
               className="font-semibold text-zinc-900 dark:text-white"
             >
               {node}
@@ -250,7 +282,7 @@ export default function DocumentationPage() {
         if (isHighlight) {
           node = (
             <mark
-              key={`hl-${idx}`}
+              key={`hl-${idx}-${typeof node === 'string' ? node.slice(0, 10) : 'object'}`}
               className="bg-yellow-200/80 dark:bg-yellow-500/35 text-zinc-950 dark:text-yellow-100 px-0.5 rounded shadow-xs font-semibold"
             >
               {node}
@@ -302,7 +334,7 @@ export default function DocumentationPage() {
     const q = searchQuery.toLowerCase().trim();
     const results: SearchItem[] = [];
 
-    docCategories.forEach((cat) => {
+    filteredDocs.forEach((cat) => {
       // Check title with fuzzy scoring
       const titleScore = getTitleScore(q, cat.title);
       if (titleScore > 0) {
@@ -404,7 +436,7 @@ export default function DocumentationPage() {
     results.sort((a, b) => (b.score || 0) - (a.score || 0));
 
     return results.slice(0, 8);
-  }, [searchQuery]);
+  }, [searchQuery, filteredDocs]);
 
   // Navigate Search results with Keyboard (Arrow keys & Enter)
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -488,7 +520,7 @@ export default function DocumentationPage() {
             if (paragraph.startsWith("•")) {
               return (
                 <div
-                  key={idx}
+                  key={`bullet-${idx}-${paragraph.slice(0, 20)}`}
                   className="flex items-center gap-3 pl-2 py-1 text-zinc-650 dark:text-zinc-300 font-sans"
                 >
                   <span className="h-1.5 w-1.5 rounded-full bg-teal-500 flex-shrink-0" />
@@ -509,7 +541,7 @@ export default function DocumentationPage() {
             ) {
               return (
                 <div
-                  key={idx}
+                  key={`command-${idx}-${paragraph.slice(0, 20)}`}
                   className="bg-zinc-50 dark:bg-zinc-950 rounded-lg p-4 border border-zinc-200 dark:border-zinc-800 font-mono text-xs text-teal-600 dark:text-teal-400 flex justify-between items-center group shadow-sm dark:shadow-inner my-4 transition-colors"
                 >
                   <code className="break-all select-text">{paragraph}</code>
@@ -562,7 +594,7 @@ export default function DocumentationPage() {
             }
 
             return (
-              <p key={idx} className="whitespace-pre-line">
+              <p key={`paragraph-${idx}-${paragraph.slice(0, 20)}`} className="whitespace-pre-line">
                 {renderFormattedText(paragraph, activeQuery)}
               </p>
             );
@@ -590,14 +622,17 @@ export default function DocumentationPage() {
           <p className="text-zinc-500 dark:text-zinc-400 mb-2">
             Encryption Formula:
           </p>
-          <MathBlock formula={cipher.mathematics.encryptionFormula} />
+          <MathBlock
+  formula={cipher.mathematics.encryptionFormula}
+  explanations={cipher.mathematics.explanations}
+/>
           <p className="text-zinc-500 dark:text-zinc-400 mt-6 mb-2">
             Decryption Formula:
           </p>
           <MathBlock formula={cipher.mathematics.decryptionFormula} />
           <ul className="list-disc list-inside space-y-2 mt-4 text-zinc-500 dark:text-zinc-400">
             {cipher.mathematics.explanation.map((exp, idx) => (
-              <li key={idx} className="pl-1">
+              <li key={`math-exp-${idx}-${exp.slice(0, 20)}`} className="pl-1">
                 {renderFormattedText(exp, activeQuery)}
               </li>
             ))}
@@ -629,7 +664,7 @@ export default function DocumentationPage() {
               </h4>
               <ul className="space-y-2">
                 {cipher.securityAnalysis.advantages.map((adv, idx) => (
-                  <li key={idx} className="flex gap-2 items-start">
+                  <li key={`adv-${idx}-${adv.slice(0, 20)}`} className="flex gap-2 items-start">
                     <span className="text-teal-500 select-none">✓</span>
                     <span className="text-zinc-600 dark:text-zinc-400 text-xs">
                       {renderFormattedText(adv, activeQuery)}
@@ -644,7 +679,7 @@ export default function DocumentationPage() {
               </h4>
               <ul className="space-y-2">
                 {cipher.securityAnalysis.weaknesses.map((weak, idx) => (
-                  <li key={idx} className="flex gap-2 items-start">
+                  <li key={`weak-${idx}-${weak.slice(0, 20)}`} className="flex gap-2 items-start">
                     <span className="text-red-500 select-none">✗</span>
                     <span className="text-zinc-600 dark:text-zinc-400 text-xs">
                       {renderFormattedText(weak, activeQuery)}
@@ -659,7 +694,7 @@ export default function DocumentationPage() {
         <DocumentationSection title="Real-world Applications">
           <ul className="list-disc list-inside space-y-2 text-zinc-550 dark:text-zinc-400">
             {cipher.realWorldApplications.map((app, idx) => (
-              <li key={idx} className="pl-1">
+              <li key={`app-${idx}-${app.slice(0, 20)}`} className="pl-1">
                 {renderFormattedText(app, activeQuery)}
               </li>
             ))}
@@ -743,7 +778,7 @@ export default function DocumentationPage() {
                     const isFocused = idx === activeIndex;
                     return (
                       <button
-                        key={idx}
+                        key={`${item.category.title}-${item.field}-${item.snippet.slice(0, 20)}`}
                         id={`search-option-${idx}`}
                         role="option"
                         aria-selected={isFocused}
@@ -1013,111 +1048,21 @@ export default function DocumentationPage() {
           <p className="text-sm font-sans text-zinc-550 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800 pb-6 mb-6 leading-relaxed select-text">
             {renderFormattedText(activeSection.description, activeQuery)}
           </p>
+export const metadata: Metadata = {
+  title: "Documentation | CryptoViz",
+  description:
+    "CryptoViz documentation styled with the same design system as the main website, including responsive navigation and themed docs cards.",
+};
 
-          {hasLoaded && (
-            <div className="mb-6">
-              <DocumentationProgressActions
-                title={activeSection.title}
-                isBookmarked={isBookmarked}
-                isCompleted={isCompleted}
-                onToggleBookmark={() => toggleBookmark(activeSlug)}
-                onToggleCompleted={() => toggleCompleted(activeSlug)}
-              />
-            </div>
-          )}
 
-          {activeSection.type === "cipher"
-            ? renderCipherContent()
-            : renderGeneralContent()}
-
-          {/* Previous / Next Navigation block */}
-          <div className="mt-12 pt-6 border-t border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-stretch gap-4">
-            {prevSection ? (
-              <button
-                onClick={() => {
-                  setActiveSection(prevSection);
-                  setActiveQuery(""); // Reset highlights
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                className="flex-1 group flex flex-col items-start p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:border-teal-500/50 dark:hover:border-teal-500/50 hover:bg-zinc-100/30 dark:hover:bg-zinc-900/20 transition-all text-left cursor-pointer active:scale-[0.99]"
-              >
-                <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 group-hover:text-teal-650 dark:group-hover:text-teal-400 transition-colors">
-                  Previous Guide
-                </span>
-                <span className="text-sm font-mono font-semibold text-zinc-800 dark:text-zinc-200 mt-1">
-                  ← {prevSection.title}
-                </span>
-              </button>
-            ) : (
-              <div className="flex-1 hidden sm:block" />
-            )}
-
-            {nextSection ? (
-              <button
-                onClick={() => {
-                  setActiveSection(nextSection);
-                  setActiveQuery(""); // Reset highlights
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                className="flex-1 group flex flex-col items-end p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:border-teal-500/50 dark:hover:border-teal-500/50 hover:bg-zinc-100/30 dark:hover:bg-zinc-900/20 transition-all text-right cursor-pointer active:scale-[0.99]"
-              >
-                <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 group-hover:text-teal-650 dark:group-hover:text-teal-400 transition-colors">
-                  Next Guide
-                </span>
-                <span className="text-sm font-mono font-semibold text-zinc-800 dark:text-zinc-200 mt-1">
-                  {nextSection.title} →
-                </span>
-              </button>
-            ) : (
-              <div className="flex-1 hidden sm:block" />
-            )}
-          </div>
-
-          {/* Unit tests footer warning banner */}
-          <section
-            id="unit-tests"
-            className="mt-10 p-4 bg-zinc-100 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 rounded-lg flex gap-3 items-start transition-colors scroll-mt-20"
-          >
-            <span className="text-teal-650 dark:text-teal-400 font-mono text-xs font-bold mt-0.5">
-              [!]
-            </span>
-            <p className="text-xs text-zinc-550 dark:text-zinc-400 font-sans leading-relaxed">
-              Ensure you review corresponding module logic criteria contained
-              inside your local project workspace repository within the{" "}
-              <code className="text-zinc-800 dark:text-zinc-200 font-mono bg-white dark:bg-zinc-950 px-1 py-0.5 rounded border border-zinc-200 dark:border-zinc-800">
-                tests/unit/
-              </code>{" "}
-              directory.
-            </p>
-          </section>
-        </main>
-
-        {/* Dynamic Table of Contents Sidebar */}
-        <aside className="hidden xl:block w-56 p-6 sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto select-none border-l border-zinc-150/40 dark:border-zinc-850/40">
-          <h4 className="text-[10px] font-mono font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">
-            On This Page
-          </h4>
-          <ul className="space-y-2 text-xs font-mono">
-            {tocItems.map((item) => {
-              const isActive = activeHeadingId === item.id;
-              return (
-                <li key={item.id}>
-                  <button
-                    onClick={() => handleTocClick(item.id)}
-                    className={`text-left w-full hover:text-zinc-900 dark:hover:text-zinc-250 transition-colors cursor-pointer block py-0.5 border-l-2 pl-3 ${
-                      isActive
-                        ? "text-teal-650 dark:text-teal-400 font-bold border-teal-500"
-                        : "text-zinc-400 dark:text-zinc-500 border-zinc-200 dark:border-zinc-800"
-                    }`}
-                  >
-                    {item.title}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </aside>
-      </div>
-    </div>
+export default function DocsPage() {
+  return (
+    <DocsThemeLayout
+      pathname="/docs"
+      title="CryptoViz Documentation"
+      description="Explore implementation guides, visualizer notes, cipher references, and maintainer resources in a unified interface that matches the rest of CryptoViz."
+    >
+      <DocsLandingContent />
+    </DocsThemeLayout>
   );
 }

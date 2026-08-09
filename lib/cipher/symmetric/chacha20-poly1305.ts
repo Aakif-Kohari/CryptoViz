@@ -16,6 +16,7 @@
 import { encrypt as chacha20Encrypt } from './chacha20'
 import { encrypt as poly1305Encrypt } from '../hash/poly1305'
 import { CipherError } from '../../utils/errors'
+import { constantTimeHexEqual } from '../../utils/constantTime'
 import type { CipherResult, CipherStep, CipherMetadata, CipherOptions, TestVector } from '../types'
 
 const METADATA: CipherMetadata = {
@@ -34,6 +35,9 @@ function parseHexBytes(str: string, label: string): Uint8Array {
   const bytes = new Uint8Array(clean.length / 2)
   for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16)
   return bytes
+}
+function ciphertextHexToBytes(hex: string): Uint8Array {
+  return hex === '' ? new Uint8Array(0) : parseHexBytes(hex, 'ciphertext')
 }
 function bytesToHex(b: Uint8Array): string {
   return Array.from(b).map((x) => x.toString(16).padStart(2, '0')).join('')
@@ -61,15 +65,10 @@ function concat(chunks: Uint8Array[]): Uint8Array {
   return out
 }
 
+import { formatAeadMacInput } from '../aead-utils'
+
 function buildMacInput(aad: Uint8Array, ciphertext: Uint8Array): Uint8Array {
-  return concat([
-    aad,
-    pad16(aad.length),
-    ciphertext,
-    pad16(ciphertext.length),
-    le64(aad.length),
-    le64(ciphertext.length),
-  ])
+  return formatAeadMacInput(aad, ciphertext)
 }
 
 function aeadCore(input: string, key: string, decrypt: boolean, instrument: boolean): CipherResult {
@@ -102,10 +101,9 @@ function aeadCore(input: string, key: string, decrypt: boolean, instrument: bool
   }
 
   if (!decrypt) {
-    const plaintextBytes = parseHexBytes(input, 'ChaCha20-Poly1305 plaintext')
     // Encrypt starting at counter=1.
-    const ctResult = chacha20Encrypt(bytesToHex(plaintextBytes), `${keyHex}|${nonceHex}:1`, { encoding: 'hex' })
-    const ciphertext = parseHexBytes(ctResult.output, 'ciphertext')
+    const ctResult = input === '' ? { output: '', outputEncoding: 'hex' as const, steps: [], metadata: METADATA, durationMs: 0 } : chacha20Encrypt(input, `${keyHex}|${nonceHex}:1`, { encoding: 'hex' })
+    const ciphertext = ciphertextHexToBytes(ctResult.output)
 
     const macInput = buildMacInput(aad, ciphertext)
     const tagResult = poly1305Encrypt(bytesToHex(macInput), polyKeyHex, { encoding: 'hex' })
@@ -138,16 +136,21 @@ function aeadCore(input: string, key: string, decrypt: boolean, instrument: bool
       durationMs: performance.now() - start,
     }
   } else {
-    const [ciphertextHex, receivedTag] = input.split('|')
-    if (!ciphertextHex || !receivedTag) {
+    const pipeIndex = input.indexOf('|')
+    if (pipeIndex === -1) {
       throw new CipherError('INVALID_INPUT', 'Expected "ciphertextHex|tagHex".')
     }
-    const ciphertext = parseHexBytes(ciphertextHex, 'ciphertext')
+    const ciphertextHex = input.slice(0, pipeIndex)
+    const receivedTag = input.slice(pipeIndex + 1)
+    if (!receivedTag) {
+      throw new CipherError('INVALID_INPUT', 'Expected "ciphertextHex|tagHex".')
+    }
+    const ciphertext = ciphertextHexToBytes(ciphertextHex)
     const macInput = buildMacInput(aad, ciphertext)
 
     // Verify the tag BEFORE decrypting/returning any plaintext.
     const tagResult = poly1305Encrypt(bytesToHex(macInput), polyKeyHex, { encoding: 'hex' })
-    const valid = tagResult.output === receivedTag
+    const valid = constantTimeHexEqual(tagResult.output, receivedTag)
 
     if (instrument) {
       steps.push({
@@ -163,7 +166,7 @@ function aeadCore(input: string, key: string, decrypt: boolean, instrument: bool
       throw new CipherError('INVALID_INPUT', 'ChaCha20-Poly1305 tag verification failed — ciphertext, AAD, or key/nonce does not match.')
     }
 
-    const ptResult = chacha20Encrypt(ciphertextHex, `${keyHex}|${nonceHex}:1`, { encoding: 'hex' }) // ChaCha20 is symmetric: same op decrypts
+    const ptResult = ciphertextHex === '' ? { output: '', outputEncoding: 'hex' as const, steps: [], metadata: METADATA, durationMs: 0 } : chacha20Encrypt(ciphertextHex, `${keyHex}|${nonceHex}:1`, { encoding: 'hex' })
     if (instrument) {
       steps.push({
         index: 2,
@@ -196,7 +199,7 @@ export const TEST_VECTORS: TestVector[] = [
   {
     input: '4c616469657320616e642047656e746c656d656e206f662074686520636c617373206f66202739393a204966204920636f756c64206f6666657220796f75206f6e6c79206f6e652074697020666f7220746865206675747572652c2073756e73637265656e20776f756c642062652069742e',
     key: '808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f|070000004041424344454647|50515253c0c1c2c3c4c5c6c7',
-    expected: 'd31a8d34648e60db7b86afbc53ef7ec2a4aded51296e08fea9e2b5a736ee62d63dbea45e8ca9671282fafb69da92728b1a71de0a9e060b2905d6a5b67ecd3b3692ddbd7f2d778b8c9803ae332c3d246771302d060f9d2281|1ae10b594f09e26a7e902ecbd0600691',
+    expected: 'd31a8d34648e60db7b86afbc53ef7ec2a4aded51296e08fea9e2b5a736ee62d63dbea45e8ca9671282fafb69da92728b1a71de0a9e060b2905d6a5b67ecd3b3692ddbd7f2d778b8c9803aee328091b58fab324e4fad675945585808b4831d7bc3ff4def08e4b7a9de576d26586cec64b6116|1ae10b594f09e26a7e902ecbd0600691',
     description: 'RFC 8439 Section 2.8.2 AEAD Test Vector',
   }
 ]
