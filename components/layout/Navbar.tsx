@@ -102,6 +102,7 @@ export default function Navbar() {
         { name: t('nav.matrix') || 'Matrix', href: '/matrix' },
         { name: t('nav.benchmark') || 'Benchmark', href: '/benchmark' },
         { name: t('nav.avalanche') || 'Avalanche', href: '/avalanche' },
+        { name: t('nav.certificateValidation') || 'Certificate Validation', href: '/certificate-validation' },
       ],
     },
     {
@@ -137,6 +138,7 @@ export default function Navbar() {
     { name: 'Glossary', href: '/glossary' },
     { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
     { name: 'Cipher Graph', href: '/timeline' },
+    { name: 'Certificate Validation', href: '/certificate-validation' },
     { name: 'Case Studies', href: '/case-studies' },
     { name: 'Myth Busters', href: '/myth-busters' },
     { name: 'Encoding Errors', href: '/encoding-errors' },
@@ -146,9 +148,9 @@ export default function Navbar() {
 
   const developerOnlyLinks = [
     { name: 'Benchmark History', href: '/benchmarks/history' },
-    { name: 'Integration Tests', href: '/tests/integration' },
-    { name: 'Snapshot Tests', href: '/tests/snapshots' },
     { name: 'Worker Tests', href: '/tests/worker' },
+    { name: 'Certificate Validation', href: '/certificate-validation' },
+    { name: 'Certificate Validation', href: '/certificate-validation' },
   ];
 
   const developerLinks = [
@@ -156,6 +158,7 @@ export default function Navbar() {
     { name: 'Snapshot Tests', href: '/tests/snapshots' },
     { name: 'Worker Tests', href: '/tests/worker' },
     { name: 'Benchmark History', href: '/benchmarks/history' },
+   
   ];
 
   const isDevelopment = process.env.NODE_ENV === 'development';
