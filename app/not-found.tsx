@@ -139,13 +139,10 @@ function MatrixRain() {
 export default function NotFound() {
     const router = useRouter()
     const [countdown, setCountdown] = useState(COUNTDOWN_START)
-    const [cancelled, setCancelled] = useState(false)
     const redirectRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     const tickRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
     useEffect(() => {
-        if (cancelled) return
-
         tickRef.current = setInterval(() => {
             setCountdown((n) => {
                 if (n <= 1) {
@@ -164,13 +161,9 @@ export default function NotFound() {
             clearInterval(tickRef.current!)
             clearTimeout(redirectRef.current!)
         }
-    }, [cancelled])
+    })
 
     const handleReturn = () => {
-        // Intentionally not calling setCancelled here: doing so unmounts the
-        // countdown block immediately, and since navigation isn't instant,
-        // that caused a visible flash of the card shrinking before the
-        // browser actually left the page.
         clearInterval(tickRef.current!)
         clearTimeout(redirectRef.current!)
         // router.push (client-side nav) instead of window.location.href:
@@ -242,8 +235,7 @@ export default function NotFound() {
                             </div>
 
                             {/* Countdown ring + text */}
-                            {!cancelled && (
-                                <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-950/50">
+                                    <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-950/50">
                                     <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true" className="-rotate-90">
                                         <circle
                                             cx="24" cy="24" r="20"
