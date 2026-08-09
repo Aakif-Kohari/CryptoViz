@@ -1,7 +1,7 @@
 import { CipherError } from '../../utils/errors'
 import { toByteArray, fromByteArray } from '../../utils/encoding'
 import type { CipherResult, CipherStep, CipherMetadata, CipherOptions, TestVector } from '../types'
-
+import { isPrime } from '../../asymmetric/rsaKeyGenerationWizard'
 // ---------------------------------------------------------------------------
 // Real mode: genuine RSA-OAEP (SHA-256) via the WebCrypto API (crypto.subtle).
 //
@@ -309,12 +309,26 @@ try {
     'Invalid RSA key format. Key values must be valid numbers.'
   )
 }
+if (p <= 1n || q <= 1n) {
+  throw new CipherError('INVALID_KEY', 'p and q must both be greater than 1.')
+}
 
-  if (p <= 1n || q <= 1n) {
-    throw new CipherError('INVALID_KEY', 'p and q must both be greater than 1.')
-  }
+if (!isPrime(Number(p))) {
+  throw new CipherError(
+    'INVALID_KEY',
+    `RSA requires p to be prime. The value ${p} is not prime.`
+  )
+}
 
-  const n = p * q
+if (!isPrime(Number(q))) {
+  throw new CipherError(
+    'INVALID_KEY',
+    `RSA requires q to be prime. The value ${q} is not prime.`
+  )
+}
+
+const n = p * q
+  
   const lambda = lcm(p - 1n, q - 1n)
 
   if (isPrivateKey) {
