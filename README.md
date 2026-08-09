@@ -29,20 +29,20 @@ Visit the production site at [Live Demo](https://crypto-viz-liart.vercel.app). E
 ---
 ## Table of Contents
 
-- Features
-- Architecture
-- Tech Stack
-- Browser Compatibility
-- Getting Started
-- Commands
-- Troubleshooting
-- Contributing
-- Frequently Asked Questions (FAQ)
-- License
+- [Features](#features)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Browser Compatibility](#browser-compatibility)
+- [Getting Started](#getting-started)
+- [Commands](#commands-reference)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
+- [License](#license)
 
 ---
 
-## ✨ Features
+## ✨Features
 
 ### 1. Cipher Visualizer
 CryptoViz supports step-by-step state animations, dynamic parameters, and off-thread execution inside Web Workers. Below is the list of supported ciphers:
@@ -80,7 +80,7 @@ CryptoViz supports step-by-step state animations, dynamic parameters, and off-th
 
 ---
 
-## 🏛️ Architecture
+## Architecture
 
 ### High-Level Architecture Diagram
 
@@ -203,7 +203,7 @@ The SaaS layer (Phase 9) integrates seamlessly as an additive option without alt
 
 ---
 
-## 💻 Tech Stack
+## Tech Stack
 
 | Category | Technology | Version | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -230,7 +230,7 @@ The SaaS layer (Phase 9) integrates seamlessly as an additive option without alt
 
 ---
 
-## 🌐 Browser Compatibility
+## Browser Compatibility
 
 CryptoViz is a client-side cryptography visualization platform that runs entirely inside the browser. It requires a modern browser with support for JavaScript, Web Workers, and the WebCrypto API.
 
@@ -277,7 +277,7 @@ Users should update their browser to the latest available version to ensure prop
 
 ---
 
-## ⚡ Getting Started
+## ⚡Getting Started
 
 ### Prerequisites
 
@@ -317,7 +317,7 @@ Open `http://localhost:3000` in your web browser. You should see the CryptoViz l
 
 ---
 
-## 🛠️ Commands Reference
+## Commands Reference
 
 | Command | Description | When to use |
 | :--- | :--- | :--- |
@@ -328,7 +328,7 @@ Open `http://localhost:3000` in your web browser. You should see the CryptoViz l
 
 ---
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 If you encounter issues while setting up or developing CryptoViz, try the solutions below before opening an issue.
 
@@ -447,7 +447,7 @@ npm install
 
 ---
 
-## 🤝 Contributing
+## 🤝Contributing
 
 We welcome contributions to CryptoViz. Please read [CONTRIBUTING.md](./CONTRIBUTING.md) and [GUIDELINES.md](./GUIDELINES.md) to understand local development protocols, code structure, and pull request rules.
 
@@ -458,7 +458,7 @@ We welcome contributions to CryptoViz. Please read [CONTRIBUTING.md](./CONTRIBUT
 
 ---
 
-## ❓ Frequently Asked Questions (FAQ)
+## ❓Frequently Asked Questions (FAQ)
 
 ### Which Node.js version is recommended?
 
@@ -543,13 +543,13 @@ Please open a GitHub Issue describing the bug or feature request. Include clear 
 
 ---
 
-## 📄 License
+## 📄License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details. CryptoViz is built primarily for cybersecurity education and interactive learning purposes.
 
 ---
 
-## 💖 Acknowledgements
+## 💖Acknowledgements
 
 - **@noble libraries**: Paulmillr's highly optimized, audited cryptographic libraries.
 - **Radix UI**: Accessible primitives enabling clean Tailwind components.
