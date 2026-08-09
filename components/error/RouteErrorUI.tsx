@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react'
 import Link from 'next/link'
+import { logger } from '@/lib/utils/logger'
 
 interface RouteErrorUIProps {
     error: Error & { digest?: string }
@@ -12,7 +13,7 @@ interface RouteErrorUIProps {
 
 export default function RouteErrorUI({ error, reset, title, message }: RouteErrorUIProps) {
     useEffect(() => {
-        console.error(error)
+        logger.error(error)
     }, [error])
 
     return (

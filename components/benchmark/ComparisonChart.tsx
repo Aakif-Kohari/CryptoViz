@@ -2,6 +2,7 @@
 
 import React, { useMemo, useCallback, useState, useEffect, useRef } from 'react'
 import { BenchmarkResult } from '@/types/benchmark'
+import { logger } from '@/lib/utils/logger'
 import {
   BarChart,
   Bar,
@@ -266,13 +267,13 @@ export default React.memo(function ComparisonChart({
             downloadLink.click()
             document.body.removeChild(downloadLink)
           } catch (err) {
-            console.error('Error generating PNG:', err)
+            logger.error('Error generating PNG:', err)
           }
         }
         URL.revokeObjectURL(svgUrl)
       }
       image.onerror = (e) => {
-        console.error('Image load error for PNG:', e)
+        logger.error('Image load error for PNG:', e)
         URL.revokeObjectURL(svgUrl)
       }
       image.src = svgUrl
