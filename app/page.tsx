@@ -2,7 +2,6 @@
 import HeroIllustration from "@/components/HeroIllustration";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Analytics } from "@vercel/analytics/next";
 import Navbar from "../components/layout/Navbar";
 import SkeletonCard from "../components/ui/SkeletonCard";
 import { Zap, ShieldCheck, BookOpen, ArrowRight } from "lucide-react";
