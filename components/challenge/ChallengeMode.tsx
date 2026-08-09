@@ -6,6 +6,7 @@ import { generateChallengeData, type ChallengeData, type ChallengeDifficulty } f
 import { getWrongAnswerExplanation } from '../../lib/challenge/explain'
 import { CIPHER_REGISTRY } from '../../lib/cipher/registry'
 import LearningProgressionFooter from '../learning/LearningProgressionFooter'
+import { logger } from '@/lib/utils/logger'
 
 import {
   safeGetItem,
@@ -217,7 +218,7 @@ export default function ChallengeMode() {
       const result = await runCipher('encrypt', currentChallenge.cipherId, currentChallenge.plaintext, currentChallenge.key)
       setExpectedCiphertext(result.output)
     } catch (e) {
-      console.error('Worker failed to generate expected ciphertext:', e)
+      logger.error('Worker failed to generate expected ciphertext:', e)
       // `useCipherWorker` already sets `error`; UI will offer retry.
     }
   }, [currentChallenge, runCipher])

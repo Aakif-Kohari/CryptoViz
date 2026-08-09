@@ -6,6 +6,7 @@ import { generateDailyQuiz, getDailyQuizState, saveDailyQuizState, calculateNewS
 import { getWrongAnswerExplanation } from '../../lib/challenge/explain';
 import { CIPHER_REGISTRY } from '../../lib/cipher/registry';
 import SkeletonCard from '../ui/SkeletonCard';
+import { logger } from '@/lib/utils/logger';
 
 function getLocalDateString(): string {
   const d = new Date();
@@ -47,7 +48,7 @@ export default function DailyQuiz() {
     
     runCipher('encrypt', dailyData.cipherId, dailyData.plaintext, dailyData.key)
       .then(res => setExpectedCiphertext(res.output))
-      .catch(e => console.error('Failed to encrypt daily quiz', e));
+      .catch(e => logger.error('Failed to encrypt daily quiz', e));
   }, [dailyData, runCipher]);
 
   // Focus feedback when state changes
