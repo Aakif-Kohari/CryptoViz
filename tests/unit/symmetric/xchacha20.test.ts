@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { encrypt, decrypt } from '@/lib/cipher/symmetric/xchacha20'
 
 describe('XChaCha20', () => {
-  const key = '808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e'
-  const nonce = '404142434445464748494a4b4c4d4e4f5051525354555657'.slice(0, 48)
+  const key = '808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f'
+  const nonce = '404142434445464748494a4b4c4d4e4f5051525354555657'
   const keyStr = `${key}|${nonce}`
 
   it('round-trips: decrypt(encrypt(x)) === x', () => {
@@ -26,6 +26,6 @@ describe('XChaCha20', () => {
   })
 
   it('rejects a key that is not 256 bits', () => {
-    expect(() => encrypt('00112233', `00|${nonce}`)).toThrow(/256-bit key/)
+    expect(() => encrypt('00112233', `0011223344556677|${nonce}`)).toThrow(/256-bit key/)
   })
 })

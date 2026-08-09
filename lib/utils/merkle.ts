@@ -3,6 +3,7 @@ import { sha512 } from '@noble/hashes/sha2.js'
 import { md5 } from '@noble/hashes/legacy.js'
 import { sha3_256 } from '@noble/hashes/sha3.js'
 import { toByteArray, fromByteArray } from './encoding'
+import { constantTimeStringEqual } from './constantTime'
 
 export type HashType = 'sha256' | 'sha512' | 'md5' | 'sha3'
 export type OddStrategy = 'duplicate' | 'promote'
@@ -236,7 +237,7 @@ export function verifyMerkleProof(
   }
 
   return {
-    verified: currentHash === rootHash,
+    verified: constantTimeStringEqual(currentHash, rootHash),
     computedHashes,
   }
 }

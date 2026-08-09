@@ -50,7 +50,7 @@ function computeTag(message: Uint8Array, key: Uint8Array, steps: CipherStep[] | 
 
 function run(input: string, key: string, options: CipherOptions): CipherResult {
   const start = performance.now()
-  const useHex = (options as any).hexInput ?? true
+  const useHex = options.hexInput !== undefined ? options.hexInput : true
   const message = useHex ? hexToBytes(input) : utf8ToBytes(input)
   if (message.length === 0) throw new CipherError('INPUT_REQUIRED', 'Input cannot be empty')
   if (message.length > 4096) throw new CipherError('INPUT_TOO_LONG', 'Input exceeds 4096 byte limit')
@@ -77,7 +77,7 @@ export const TEST_VECTORS: TestVector[] = [
   {
     key: '85d6be7857556d337f4452fe42d506a80103808afb0db2fd4abff6af4149f51b',
     input: '43727970746f6772617068696320466f72756d2052657365617263682047726f7570',
-    expected: 'a8061dc1305136c6c22b8baf0c0127a',
+    expected: 'a8061dc1305136c6c22b8baf0c0127a9',
     description: 'RFC 8439 section 2.5.2 canonical test vector',
   },
 ]

@@ -4,13 +4,9 @@ import { useState } from "react";
 import type { SessionDelta } from "@/lib/utils/sessionComparison";
 import { Lightbulb, Cpu, Activity, ShieldCheck, Zap, ChevronDown, ChevronUp } from "lucide-react";
 
-interface EducationalSessionInsightsProps {
-  delta: SessionDelta;
-}
+interface EducationalSessionInsightsProps {}
 
-export default function EducationalSessionInsights({
-  delta,
-}: EducationalSessionInsightsProps) {
+export default function EducationalSessionInsights({}: EducationalSessionInsightsProps = {}) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 
   const insights = [
@@ -91,7 +87,7 @@ export default function EducationalSessionInsights({
 
           return (
             <div
-              key={idx}
+              key={item.title} // static list, title is unique
               className={`rounded-xl border transition-all ${
                 isExpanded
                   ? "border-teal-300 bg-white shadow-md dark:border-teal-800 dark:bg-zinc-900"

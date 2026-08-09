@@ -1374,7 +1374,35 @@ function startPlayback(store: AnimatorStore) {
   requestAnimationFrame(frame)
 }
 ```
+### Shared Validation Utilities
+
+Cipher implementations should reuse the shared validation helpers from
+`lib/utils/errors.ts` instead of duplicating validation logic.
+
+Available helpers include:
+
+- `validateInput()` – validates required input and maximum size.
+- `validateKey()` – validates required encryption keys.
+- `validateHexString()` – validates hexadecimal strings.
+- `validateMaxInputBytes()` – validates maximum byte length.
+
+Using these helpers keeps validation behavior consistent across all cipher implementations.
 
 ---
 
-*Last updated: 2026-04-29 — extend when new ciphers are added. All S-boxes and permutation tables must be verified against published FIPS/RFC standards before merging.*
+## FrodoKEM (Post-Quantum Key Encapsulation)
+
+### Mathematical Foundation
+
+FrodoKEM operates on the unstructured **Learning With Errors (LWE)** problem over standard matrices modulo $q$:
+- **Key Generation**:
+  $$B = A \cdot S + E \pmod q$$
+  Where $A \in \mathbb{Z}_q^{n \times n}$ generated from seed, $S \in \mathbb{Z}_q^{n \times \bar{n}}$ sampled from noise distribution, $E \in \mathbb{Z}_q^{n \times \bar{n}}$ sampled from noise distribution.
+- **Encapsulation**:
+  $$B' = S' \cdot A + E' \pmod q, \quad V = S' \cdot B + E'' + \text{Encode}(\mu) \pmod q$$
+- **Decapsulation**:
+  $$M' = V - S^T \cdot B' \pmod q = \text{Encode}(\mu) + \text{residual noise}$$
+
+---
+
+*Last updated: 2026-08-07 — FrodoKEM specification added. All S-boxes and permutation tables must be verified against published FIPS/RFC standards before merging.*

@@ -1,0 +1,219 @@
+export interface WorkerCacheEntry<TValue> {
+  key: string;
+  value: TValue;
+  createdAt: number;
+  lastAccessedAt: number;
+  accessCount: number;
+  expiresAt: number | null;
+  size: number;
+}
+
+export interface WorkerCacheOptions {
+  maxEntries?: number;
+  ttlMs?: number;
+  maxApproxBytes?: number;
+  now?: () => number;
+}
+
+export interface WorkerCacheStats {
+  entries: number;
+  hits: number;
+  misses: number;
+  evictions: number;
+  expirations: number;
+  approxBytes: number;
+  maxEntries: number;
+  maxApproxBytes: number;
+  ttlMs: number;
+}
+
+const DEFAULT_MAX_ENTRIES = 75;
+const DEFAULT_TTL_MS = 5 * 60 * 1000;
+const DEFAULT_MAX_APPROX_BYTES = 512 * 1024;
+
+function approximateSize(value: unknown): number {
+  if (typeof value === "string") return value.length * 2;
+  if (value instanceof ArrayBuffer) return value.byteLength;
+  if (ArrayBuffer.isView(value)) return value.byteLength;
+  if (value === null || value === undefined) return 0;
+
+  try {
+    return JSON.stringify(value).length * 2;
+  } catch {
+    return 256;
+  }
+}
+
+function stableStringify(value: unknown): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(stableStringify).join(",")}]`;
+
+  const record = value as Record<string, unknown>;
+  return `{${Object.keys(record)
+    .sort()
+    .map((key) => `${JSON.stringify(key)}:${stableStringify(record[key])}`)
+    .join(",")}}`;
+}
+
+export function createWorkerCacheKey(parts: unknown[]): string {
+  return parts.map((part) => stableStringify(part)).join("|");
+}
+
+export class WorkerCache<TValue> {
+  private entries = new Map<string, WorkerCacheEntry<TValue>>();
+  private hits = 0;
+  private misses = 0;
+  private evictions = 0;
+  private expirations = 0;
+  private approxBytes = 0;
+  private readonly maxEntries: number;
+  private readonly ttlMs: number;
+  private readonly maxApproxBytes: number;
+  private readonly now: () => number;
+
+  constructor(options: WorkerCacheOptions = {}) {
+    this.maxEntries = Math.max(1, options.maxEntries ?? DEFAULT_MAX_ENTRIES);
+    this.ttlMs = Math.max(0, options.ttlMs ?? DEFAULT_TTL_MS);
+    this.maxApproxBytes = Math.max(
+      1,
+      options.maxApproxBytes ?? DEFAULT_MAX_APPROX_BYTES,
+    );
+    this.now = options.now ?? Date.now;
+  }
+
+  get(key: string): TValue | undefined {
+    const entry = this.entries.get(key);
+
+    if (!entry) {
+      this.misses += 1;
+      return undefined;
+    }
+
+    if (this.isExpired(entry)) {
+      this.deleteEntry(key, "expiration");
+      this.misses += 1;
+      return undefined;
+    }
+
+    entry.lastAccessedAt = this.now();
+    entry.accessCount += 1;
+    this.entries.delete(key);
+    this.entries.set(key, entry);
+    this.hits += 1;
+    return entry.value;
+  }
+
+  set(key: string, value: TValue, ttlMs = this.ttlMs): TValue {
+    if (this.entries.has(key)) this.deleteEntry(key, "replacement");
+
+    const currentTime = this.now();
+    const size = approximateSize(value);
+    const entry: WorkerCacheEntry<TValue> = {
+      key,
+      value,
+      createdAt: currentTime,
+      lastAccessedAt: currentTime,
+      accessCount: 0,
+      expiresAt: ttlMs > 0 ? currentTime + ttlMs : null,
+      size,
+    };
+
+    this.entries.set(key, entry);
+    this.approxBytes += size;
+    this.enforceLimits();
+    return value;
+  }
+
+  getOrCreate(key: string, factory: () => TValue, ttlMs = this.ttlMs): TValue {
+    const cached = this.get(key);
+    if (cached !== undefined) return cached;
+    return this.set(key, factory(), ttlMs);
+  }
+
+  has(key: string): boolean {
+    return this.get(key) !== undefined;
+  }
+
+  delete(key: string): boolean {
+    return this.deleteEntry(key, "manual");
+  }
+
+  clear(): void {
+    this.entries.clear();
+    this.approxBytes = 0;
+  }
+
+  pruneExpired(): number {
+    let removed = 0;
+    for (const [key, entry] of this.entries.entries()) {
+      if (this.isExpired(entry)) {
+        this.deleteEntry(key, "expiration");
+        removed += 1;
+      }
+    }
+    return removed;
+  }
+
+  snapshot(): WorkerCacheEntry<TValue>[] {
+    return Array.from(this.entries.values()).map((entry) => ({ ...entry }));
+  }
+
+  stats(): WorkerCacheStats {
+    return {
+      entries: this.entries.size,
+      hits: this.hits,
+      misses: this.misses,
+      evictions: this.evictions,
+      expirations: this.expirations,
+      approxBytes: this.approxBytes,
+      maxEntries: this.maxEntries,
+      maxApproxBytes: this.maxApproxBytes,
+      ttlMs: this.ttlMs,
+    };
+  }
+
+  private isExpired(entry: WorkerCacheEntry<TValue>): boolean {
+    return entry.expiresAt !== null && entry.expiresAt <= this.now();
+  }
+
+  private deleteEntry(
+    key: string,
+    reason: "manual" | "replacement" | "eviction" | "expiration",
+  ): boolean {
+    const entry = this.entries.get(key);
+    if (!entry) return false;
+
+    this.entries.delete(key);
+    this.approxBytes = Math.max(0, this.approxBytes - entry.size);
+    if (reason === "eviction") this.evictions += 1;
+    if (reason === "expiration") this.expirations += 1;
+    return true;
+  }
+
+  private enforceLimits(): void {
+    this.pruneExpired();
+
+    while (this.entries.size > this.maxEntries) {
+      const oldestKey = this.entries.keys().next().value as string | undefined;
+      if (!oldestKey) break;
+      this.deleteEntry(oldestKey, "eviction");
+    }
+
+    while (this.approxBytes > this.maxApproxBytes && this.entries.size > 0) {
+      const oldestKey = this.entries.keys().next().value as string | undefined;
+      if (!oldestKey) break;
+      this.deleteEntry(oldestKey, "eviction");
+    }
+  }
+}
+
+export const sharedWorkerCache = new WorkerCache<unknown>();
+
+export function clearSharedWorkerCache(): void {
+  sharedWorkerCache.clear();
+}
+
+export function getSharedWorkerCacheStats(): WorkerCacheStats {
+  sharedWorkerCache.pruneExpired();
+  return sharedWorkerCache.stats();
+}

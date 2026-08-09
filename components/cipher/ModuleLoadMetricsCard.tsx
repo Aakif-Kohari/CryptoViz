@@ -2,7 +2,7 @@
 
 import type { ModuleLoadMetrics } from "@/lib/utils/dynamicCipherLoader";
 import { formatBytes } from "@/lib/utils/benchmarkHistory";
-import { Cpu, HardDrive, Clock, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { Cpu, HardDrive, Clock, CheckCircle2, Loader2 } from "lucide-react";
 
 interface ModuleLoadMetricsCardProps {
   metrics: ModuleLoadMetrics;
@@ -13,7 +13,7 @@ export default function ModuleLoadMetricsCard({
 }: ModuleLoadMetricsCardProps) {
   const isReady = metrics.status === "ready";
   const isLoading = metrics.status === "loading";
-  const isError = metrics.status === "error";
+  const _isError = metrics.status === "error";
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-900">

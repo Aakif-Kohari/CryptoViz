@@ -1,8 +1,8 @@
-export type TaskCallback = (error: Error | null, result?: any) => void;
-export type ProgressCallback = (payload: any) => void;
+export type TaskCallback = (error: Error | null, result?: unknown) => void;
+export type ProgressCallback = (payload: unknown) => void;
 
 export interface PoolTask {
-  message: any;
+  message: unknown;
   transfer?: Transferable[];
   callback: TaskCallback;
   onProgress?: ProgressCallback;
@@ -19,7 +19,7 @@ export class WorkerPool {
     private poolSize: number = typeof navigator !== 'undefined' ? (navigator.hardwareConcurrency || 4) : 4
   ) {}
 
-  public execute(message: any, transfer?: Transferable[], onProgress?: ProgressCallback): Promise<any> {
+  public execute(message: unknown, transfer?: Transferable[], onProgress?: ProgressCallback): Promise<unknown> {
     return new Promise((resolve, reject) => {
       const task: PoolTask = {
         message,
@@ -53,11 +53,11 @@ export class WorkerPool {
         if (type === 'progress' && task.onProgress) {
           task.onProgress(payload);
         } else if (type === 'done') {
-          task.callback(null, payload);
+          task.callback(null, payload?.result || payload);
           this.activeTasks.delete(worker);
           this.makeWorkerIdle(worker);
         } else if (type === 'error') {
-          task.callback(new Error(payload?.message || 'Worker error'));
+          task.callback(new Error(payload?.message || payload?.error || 'Worker error'));
           this.activeTasks.delete(worker);
           this.makeWorkerIdle(worker);
         } else if (type === undefined) {

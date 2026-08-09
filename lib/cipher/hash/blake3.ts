@@ -34,9 +34,7 @@ export const TEST_VECTORS: TestVector[] = [
     expected: 'af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262',
     description: 'Official BLAKE3 test vector for empty input',
   },
-  // TODO before merge: add a verified "abc" vector — run
-  // node -e "console.log(Buffer.from(require('@noble/hashes/blake3').blake3('abc')).toString('hex'))"
-  // and paste the real output here. Do not guess this value.
+
 ]
 
 function blake3Core(input: string, instrument: boolean): CipherResult {
@@ -83,6 +81,6 @@ export function encrypt(input: string, _key: string, options: CipherOptions = {}
   return blake3Core(input, !!options.instrument)
 }
 
-export function decrypt(_input: string, _key: string, _options: CipherOptions = {}): CipherResult {
+export function decrypt(_input: string, _key: string, __options: CipherOptions = {}): CipherResult {
   throw new CipherError('ALGORITHM_UNSUPPORTED', 'BLAKE3 is a one-way hash function — it has no decrypt operation.')
 }

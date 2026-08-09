@@ -11,11 +11,12 @@ interface SidebarCipher {
   description?: string
   defaultKey?: string
   defaultInput?: string
-  securityStatus?: 'secure' | 'deprecated' | 'broken'
+  securityStatus?: 'secure' | 'legacy' | 'deprecated' | 'broken' | 'recommended' | 'experimental'
 }
 
 interface SidebarProps {
   ciphers: SidebarCipher[]
+  activeCipherId?: string
 }
 
 const CATEGORY_LABELS = {
@@ -25,7 +26,7 @@ const CATEGORY_LABELS = {
   asymmetric: 'Asymmetric Ciphers',
 }
 
-export default function Sidebar({ ciphers }: SidebarProps) {
+export default function Sidebar({ ciphers, activeCipherId }: SidebarProps) {
   const pathname = usePathname()
 
   const grouped = ciphers.reduce(
@@ -64,7 +65,7 @@ export default function Sidebar({ ciphers }: SidebarProps) {
             <ul className="space-y-1" aria-labelledby={`sidebar-heading-${category}`}>
               {grouped[category].map((cipher) => {
                 const href = `/visualizer/${cipher.id}/`
-                const isActive = pathname.startsWith(href)
+                const isActive = activeCipherId === cipher.id || pathname.startsWith(href)
 
                 return (
                   <li key={cipher.id} className="flex items-center gap-1">

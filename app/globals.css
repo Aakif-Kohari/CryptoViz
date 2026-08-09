@@ -36,6 +36,11 @@
   }
 }
 
+@keyframes gridMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
 .animate-hero-float {
   animation: heroFloat 8s ease-in-out infinite;
 }
