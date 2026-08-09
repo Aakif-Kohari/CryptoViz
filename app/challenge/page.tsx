@@ -1,51 +1,145 @@
-import Navbar from "../../components/layout/Navbar";
+"use client";
+
+import Breadcrumbs from '../../components/layout/Breadcrumbs'
+import WorkspaceLayout from "../../components/layout/WorkspaceLayout";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import ChallengeMode from "../../components/challenge/ChallengeMode";
 import DailyQuiz from "../../components/challenge/DailyQuiz";
+import QuestionBankQuiz from "../../components/challenge/QuestionBankQuiz";
 
-export default function ChallengePage() {
+function ChallengeContent() {
+  const searchParams = useSearchParams();
+  const urlCipher = searchParams.get('cipher');
+  const [activeTab, setActiveTab] = useState<'daily' | 'bank' | 'decryption'>('daily');
+  const [showOnboarding, setShowOnboarding] = useState(true);
+
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 font-sans transition-colors duration-300">
-      <Navbar />
-      <main className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
-        {/* Faint Grid Background */}
+    <WorkspaceLayout activeCipherId={urlCipher || undefined}>
+      <main className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
+        <Breadcrumbs items={[{ label: "Practice" }, { label: "Guided Challenge & Question Bank" }]} />
+        
+        {/* Background accent */}
         <div className="pointer-events-none absolute inset-0 -z-20 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)]" />
 
-        {/* Subtle background accent — matches homepage radial glow */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[480px] overflow-hidden">
-          <div className="absolute left-1/2 top-0 h-[400px] w-[800px] -translate-x-1/2 rounded-full bg-teal-500/[0.04] blur-3xl dark:bg-teal-500/[0.06]" />
-        </div>
-
-        {/* Hero heading */}
-        <div className="mb-12 text-center flex flex-col items-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-teal-500/20 bg-teal-50/50 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-teal-700 dark:border-teal-500/20 dark:bg-teal-500/10 dark:text-teal-400">
-            Cryptography Lab
+        {/* Hero & Guided Onboarding Header */}
+        <div className="text-center flex flex-col items-center mb-8">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-50/80 px-3.5 py-1 text-xs font-bold uppercase tracking-widest text-teal-800 dark:border-teal-500/30 dark:bg-teal-500/20 dark:text-teal-300">
+            ★ Recommended Learning Path
           </div>
-          <h1 className="flex items-center justify-center gap-3 text-3xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-4xl">
-            <svg className="h-8 w-8 text-teal-600 dark:text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            Cryptography Challenge
+          <h1 className="flex items-center justify-center gap-3 text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-4xl">
+            Guided Practice & Challenge Hub
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-            Decrypt ciphertext against the clock. Test your knowledge of classical ciphers in a timed challenge session.
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+            Master cryptography through structured daily micro-quizzes, comprehensive topic question banks, or timed interactive cipher decryption.
           </p>
         </div>
 
-        <div className="mb-16">
-          <DailyQuiz />
+        {/* Onboarding Guide Box */}
+        {showOnboarding && (
+          <div className="mb-8 rounded-2xl border border-teal-500/30 bg-teal-50/40 p-6 backdrop-blur-sm dark:border-teal-500/20 dark:bg-teal-950/30">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500/20 text-teal-600 dark:text-teal-400 font-bold text-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-zinc-900 dark:text-white">How Guided Practice Works</h2>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400">Follow our 3-step practice flow to build steady cryptography skills.</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowOnboarding(false)}
+                className="text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white"
+              >
+                Dismiss Guide ✕
+              </button>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              <div className={`rounded-xl border p-4 transition-all ${activeTab === 'daily' ? 'border-teal-500 bg-white shadow-md dark:bg-zinc-900' : 'border-zinc-200 bg-white/50 dark:border-zinc-800 dark:bg-zinc-900/40'}`}>
+                <span className="text-xs font-bold text-teal-600 dark:text-teal-400">Step 1 • Daily Recommended</span>
+                <h3 className="mt-1 text-sm font-bold text-zinc-900 dark:text-white">Daily Micro-Quiz</h3>
+                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">5 fast daily questions to maintain streak and gain base XP.</p>
+              </div>
+
+              <div className={`rounded-xl border p-4 transition-all ${activeTab === 'bank' ? 'border-teal-500 bg-white shadow-md dark:bg-zinc-900' : 'border-zinc-200 bg-white/50 dark:border-zinc-800 dark:bg-zinc-900/40'}`}>
+                <span className="text-xs font-bold text-teal-600 dark:text-teal-400">Step 2 • Guided Mastery</span>
+                <h3 className="mt-1 text-sm font-bold text-zinc-900 dark:text-white">Topic Question Bank</h3>
+                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Explore 300+ categorized questions across symmetric, asymmetric, and hash primitives.</p>
+              </div>
+
+              <div className={`rounded-xl border p-4 transition-all ${activeTab === 'decryption' ? 'border-teal-500 bg-white shadow-md dark:bg-zinc-900' : 'border-zinc-200 bg-white/50 dark:border-zinc-800 dark:bg-zinc-900/40'}`}>
+                <span className="text-xs font-bold text-teal-600 dark:text-teal-400">Step 3 • Advanced Lab</span>
+                <h3 className="mt-1 text-sm font-bold text-zinc-900 dark:text-white">Interactive Decryption</h3>
+                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Test live decryption against the clock with dynamic hint reveals.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Guided Navigation Tabs */}
+        <div className="mb-8 flex flex-wrap items-center justify-center gap-3 border-b border-zinc-200 pb-4 dark:border-zinc-800">
+          <button
+            onClick={() => setActiveTab('daily')}
+            className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all ${
+              activeTab === 'daily'
+                ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/25'
+                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800'
+            }`}
+          >
+            🎯 Recommended: Daily Quiz
+          </button>
+          <button
+            onClick={() => setActiveTab('bank')}
+            className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all ${
+              activeTab === 'bank'
+                ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/25'
+                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800'
+            }`}
+          >
+            📚 Question Bank (300+ Qs)
+          </button>
+          <button
+            onClick={() => setActiveTab('decryption')}
+            className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all ${
+              activeTab === 'decryption'
+                ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/25'
+                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800'
+            }`}
+          >
+            ⚡ Advanced: Timed Decryption
+          </button>
         </div>
 
-        <div className="relative mb-16">
-          <div className="absolute inset-0 flex items-center" aria-hidden="true">
-            <div className="w-full border-t border-zinc-200 dark:border-zinc-800" />
+        {/* Active Flow Content */}
+        {activeTab === 'daily' && (
+          <div>
+            <DailyQuiz />
           </div>
-          <div className="relative flex justify-center">
-            <span className="bg-zinc-50 px-4 text-sm text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">Or practice infinitely</span>
-          </div>
-        </div>
+        )}
 
-        <ChallengeMode />
+        {activeTab === 'bank' && (
+          <div>
+            <QuestionBankQuiz />
+          </div>
+        )}
+
+        {activeTab === 'decryption' && (
+          <div>
+            <ChallengeMode />
+          </div>
+        )}
       </main>
-    </div>
+    </WorkspaceLayout>
   );
+}
+
+
+export default function ChallengePage() {
+  return (
+    <Suspense fallback={<div className="p-8">Loading challenge workspace...</div>}>
+      <ChallengeContent />
+    </Suspense>
+  )
 }

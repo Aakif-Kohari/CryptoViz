@@ -3,7 +3,7 @@
 
 Interact with Cryptography, Visualised in Real-Time.
 
-![CI Status](https://img.shields.io/github/actions/workflow/status/csxark/CryptoViz/pr.yml?branch=main&label=CI)
+![CI Status](https://img.shields.io/github/actions/workflow/status/csxark/CryptoViz/ci.yml?branch=main&label=CI)
 ![License](https://img.shields.io/github/license/csxark/CryptoViz?color=blue&label=License)
 ![Coverage](https://img.shields.io/badge/coverage-%E2%89%A580%25-success)
 ![Lighthouse Performance](https://img.shields.io/badge/lighthouse--performance-%E2%89%A590-emerald)
@@ -29,17 +29,20 @@ Visit the production site at [Live Demo](https://crypto-viz-liart.vercel.app). E
 ---
 ## Table of Contents
 
-- Features
-- Architecture
-- Tech Stack
-- Getting Started
-- Commands
-- Contributing
-- License
+- [Features](#features)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Browser Compatibility](#browser-compatibility)
+- [Getting Started](#getting-started)
+- [Commands](#commands-reference)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
+- [License](#license)
 
 ---
 
-## ✨ Features
+## ✨Features
 
 ### 1. Cipher Visualizer
 CryptoViz supports step-by-step state animations, dynamic parameters, and off-thread execution inside Web Workers. Below is the list of supported ciphers:
@@ -77,7 +80,7 @@ CryptoViz supports step-by-step state animations, dynamic parameters, and off-th
 
 ---
 
-## 🏛️ Architecture
+## Architecture
 
 ### High-Level Architecture Diagram
 
@@ -200,7 +203,7 @@ The SaaS layer (Phase 9) integrates seamlessly as an additive option without alt
 
 ---
 
-## 💻 Tech Stack
+## Tech Stack
 
 | Category | Technology | Version | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -227,7 +230,54 @@ The SaaS layer (Phase 9) integrates seamlessly as an additive option without alt
 
 ---
 
-## ⚡ Getting Started
+## Browser Compatibility
+
+CryptoViz is a client-side cryptography visualization platform that runs entirely inside the browser. It requires a modern browser with support for JavaScript, Web Workers, and the WebCrypto API.
+
+### Supported Desktop Browsers
+
+| Browser | Support |
+| :--- | :--- |
+| Google Chrome | ✅ Supported |
+| Microsoft Edge | ✅ Supported |
+| Mozilla Firefox | ✅ Supported |
+| Safari | ✅ Supported |
+
+### Supported Mobile Browsers
+
+| Browser | Support |
+| :--- | :--- |
+| Chrome Mobile (Android) | ✅ Supported |
+| Safari Mobile (iOS) | ✅ Supported |
+| Firefox Mobile | ✅ Supported |
+
+### Required Browser Features
+
+CryptoViz requires the following browser capabilities:
+
+- **JavaScript enabled** for application functionality.
+- **Web Workers** for running cryptographic calculations in background threads.
+- **WebCrypto API** support for browser-based cryptographic operations.
+- **ES6+ JavaScript support** for modern application features.
+
+### Recommended Browser Versions
+
+For the best performance, security, and compatibility, use the latest stable version of:
+
+- Google Chrome
+- Microsoft Edge
+- Mozilla Firefox
+- Safari
+
+### Unsupported or Partially Supported Browsers
+
+Older browsers that do not support modern JavaScript features, Web Workers, or WebCrypto API may not function correctly.
+
+Users should update their browser to the latest available version to ensure proper performance and security.
+
+---
+
+## ⚡Getting Started
 
 ### Prerequisites
 
@@ -267,7 +317,7 @@ Open `http://localhost:3000` in your web browser. You should see the CryptoViz l
 
 ---
 
-## 🛠️ Commands Reference
+## Commands Reference
 
 | Command | Description | When to use |
 | :--- | :--- | :--- |
@@ -278,8 +328,126 @@ Open `http://localhost:3000` in your web browser. You should see the CryptoViz l
 
 ---
 
+## Troubleshooting
 
-## 🤝 Contributing
+If you encounter issues while setting up or developing CryptoViz, try the solutions below before opening an issue.
+
+### 1. `npm install` fails
+
+**Problem**
+
+Dependencies fail to install or installation stops with errors.
+
+**Solution**
+
+- Ensure you are using **Node.js 22.x LTS** and **npm 10.x+**.
+- Remove the existing dependencies and reinstall:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+On Windows PowerShell:
+
+```powershell
+Remove-Item -Recurse -Force node_modules
+Remove-Item package-lock.json
+npm install
+```
+
+---
+
+### 2. `npm run build` fails
+
+**Problem**
+
+The production build exits with compilation or type errors.
+
+**Solution**
+
+- Verify all dependencies are installed.
+- Fix any TypeScript or ESLint errors shown in the terminal.
+- Run:
+
+```bash
+npm run lint
+npm run build
+```
+
+again after resolving the reported issues.
+
+---
+
+### 3. Development server does not start
+
+**Problem**
+
+Running `npm run dev` does not launch the local development server.
+
+**Solution**
+
+- Confirm that dependencies are installed.
+- Check whether port **3000** is already in use.
+- Restart the terminal and run:
+
+```bash
+npm run dev
+```
+
+---
+
+### 4. Missing `.env.local` configuration
+
+**Problem**
+
+The application cannot access required environment variables.
+
+**Solution**
+
+Create a `.env.local` file in the project root and add the required variables, for example:
+
+```env
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+Restart the development server after saving the file.
+
+---
+
+### 5. Node.js version mismatch
+
+**Problem**
+
+Commands fail because an unsupported Node.js version is installed.
+
+**Solution**
+
+Check your installed version:
+
+```bash
+node -v
+```
+
+If needed, upgrade to **Node.js 22.x LTS**, then reinstall dependencies using:
+
+```bash
+npm install
+```
+
+---
+
+### General Debugging Tips
+
+- Pull the latest changes from the `main` branch before starting work.
+- Run `npm install` after updating dependencies.
+- Restart the development server after modifying environment variables.
+- Read terminal error messages carefully to identify the root cause.
+- Run `npm run lint` before creating a pull request.
+
+---
+
+## 🤝Contributing
 
 We welcome contributions to CryptoViz. Please read [CONTRIBUTING.md](./CONTRIBUTING.md) and [GUIDELINES.md](./GUIDELINES.md) to understand local development protocols, code structure, and pull request rules.
 
@@ -287,17 +455,113 @@ We welcome contributions to CryptoViz. Please read [CONTRIBUTING.md](./CONTRIBUT
 - **To add a new doc**: Add a `.mdx` file to the content path with the required Zod frontmatter fields.
 - **To add a resource**: Update the static resource array database with verified HTTPS URLs.
 
+
 ---
 
-## 📄 License
+## ❓Frequently Asked Questions (FAQ)
+
+### Which Node.js version is recommended?
+
+CryptoViz recommends using **Node.js 22.x LTS** along with **npm 10.x or later**. You can verify your installation using:
+
+```bash
+node -v
+npm -v
+```
+
+For more details, see the **Getting Started** section.
+
+---
+
+### Does CryptoViz require a backend server?
+
+No. CryptoViz is a fully static **Next.js 15** application that runs entirely in the browser using **Web Workers**. A backend server is not required for the core visualization features.
+
+---
+
+### Which browsers are officially supported?
+
+CryptoViz supports the latest stable versions of:
+
+- Google Chrome
+- Microsoft Edge
+- Mozilla Firefox
+- Safari
+
+It also supports modern mobile browsers that provide JavaScript, Web Workers, and WebCrypto API support.
+
+See the **Browser Compatibility** section for more information.
+
+---
+
+### Where are the cipher implementations located?
+
+Cipher implementations are located in:
+
+```text
+lib/cipher/
+```
+
+The Web Worker responsible for executing cipher operations is located in:
+
+```text
+lib/workers/
+```
+
+---
+
+### How do I add a new cipher?
+
+To add a new cipher:
+
+1. Create a new implementation inside `lib/cipher/`.
+2. Register it in the Web Worker router.
+3. Add the required unit tests.
+4. Update the visualizer UI if necessary.
+
+See the **Contributing** section for additional guidance.
+
+---
+
+### How do I run tests before submitting a pull request?
+
+Before opening a pull request, run:
+
+```bash
+npm run lint
+npm run build
+```
+
+These commands help ensure that the project builds successfully and follows the project's code quality checks before review.
+
+
+---
+
+### Where can I report bugs or request new features?
+
+Please open a GitHub Issue describing the bug or feature request. Include clear reproduction steps or implementation details whenever possible.
+
+---
+
+## 📄License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details. CryptoViz is built primarily for cybersecurity education and interactive learning purposes.
 
 ---
 
-## 💖 Acknowledgements
+## 💖Acknowledgements
 
 - **@noble libraries**: Paulmillr's highly optimized, audited cryptographic libraries.
 - **Radix UI**: Accessible primitives enabling clean Tailwind components.
 - **Pagefind**: Fast, static indexing engine running inside WASM.
 - **NIST & IETF**: FIPS and RFC committees for publishing test vectors.
+## Continuous Integration
+
+GitHub Actions automatically validates every pull request targeting the `main` branch by running:
+
+- ESLint
+- TypeScript type checking
+- Unit tests
+- Production build
+
+Repository maintainers can optionally enable GitHub Branch Protection Rules to require these checks before merging.

@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Breadcrumbs from '../../components/layout/Breadcrumbs'
+
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/footer';
 import CipherLifecycleBadge, { BADGE_CONFIG, SecurityStatus } from '@/components/cipher/CipherLifecycleBadge';
-import { CIPHER_REGISTRY, CipherDefinition } from '@/lib/cipher/registry';
+import { CIPHER_REGISTRY } from '@/lib/cipher/registry';
 import Link from 'next/link';
-import { Search, ShieldAlert, CheckCircle2, ArrowRight, Info, AlertTriangle, Sparkles } from 'lucide-react';
+import { Search, ShieldAlert, ArrowRight, Sparkles } from 'lucide-react';
 
 export default function CipherLifecyclePage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,6 +50,7 @@ export default function CipherLifecyclePage() {
       <Navbar />
 
       <main id="main-content" className="flex-1 mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-12">
+        <Breadcrumbs items={[{ label: "Learn" }, { label: "Cipher Lifecycle" }]} />
         {/* Hero Header */}
         <section aria-labelledby="lifecycle-hero-title" className="relative overflow-hidden rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-br from-teal-500/10 via-emerald-500/5 to-transparent p-8 sm:p-12 backdrop-blur-2xl">
           <div className="max-w-3xl space-y-4">

@@ -16,21 +16,26 @@ const METADATA = {
   standardBody: 'eSTREAM portfolio',
 }
 
-/** Key format: "<64-char hex key>|<16-char hex nonce>" */
-function parseKeyAndNonce(key: string): { keyBytes: Uint8Array; nonce: Uint8Array } {
+/** Key format: "<64-char hex key>|<16-char hex nonce>" or "<64-char hex key>|<16-char hex nonce>:<counter>" */
+function parseKeyAndNonce(key: string): { keyBytes: Uint8Array; nonce: Uint8Array; counterValue: number } {
   validateKey(key)
   const parts = key.split('|')
   if (parts.length !== 2) {
     throw new CipherError('INVALID_KEY', 'Salsa20 key must be formatted as "<64-char hex key>|<16-char hex nonce>".')
   }
-  const [keyHex, nonceHex] = parts
+  const [keyHex, nonceCounterPart] = parts
   if (!/^[0-9a-fA-F]{64}$/.test(keyHex)) {
     throw new CipherError('INVALID_KEY_LENGTH', `Salsa20 key must be 32 bytes (64 hex chars), got ${keyHex.length}.`)
   }
+  const [nonceHex, counterStr] = nonceCounterPart.split(':')
   if (!/^[0-9a-fA-F]{16}$/.test(nonceHex)) {
     throw new CipherError('INVALID_IV', `Salsa20 nonce must be 8 bytes (16 hex chars), got ${nonceHex.length}.`)
   }
-  return { keyBytes: toByteArray(keyHex, 'hex'), nonce: toByteArray(nonceHex, 'hex') }
+  const counterValue = counterStr ? parseInt(counterStr, 10) : 0
+  if (isNaN(counterValue) || counterValue < 0) {
+    throw new CipherError('INVALID_KEY', 'Salsa20 block counter must be a non-negative integer.')
+  }
+  return { keyBytes: toByteArray(keyHex, 'hex'), nonce: toByteArray(nonceHex, 'hex'), counterValue }
 }
 
 function rotl(x: number, n: number): number {
@@ -91,13 +96,18 @@ function salsa20Block(key: Uint8Array, nonce: Uint8Array, counter: Uint8Array): 
   return out
 }
 
-function salsaCore(input: string, key: string, decrypt: boolean, instrument: boolean): CipherResult {
+function salsaCore(input: string, key: string, decrypt: boolean, instrument: boolean, options: CipherOptions = {}): CipherResult {
   const start = performance.now()
-  const { keyBytes, nonce } = parseKeyAndNonce(key)
-  const inputBytes = decrypt ? toByteArray(input, 'hex') : toByteArray(input, 'utf8')
+  const { keyBytes, nonce, counterValue } = parseKeyAndNonce(key)
+  const inputBytes = decrypt ? toByteArray(input, 'hex') : toByteArray(input, options.encoding || 'utf8')
 
   const outputBytes = new Uint8Array(inputBytes.length)
   const counter = new Uint8Array(8)
+  let c = counterValue
+  for (let k = 0; k < 8; k++) {
+    counter[k] = c & 0xff
+    c = Math.floor(c / 256)
+  }
   
   for (let i = 0; i < inputBytes.length; i += 64) {
     const keystream = salsa20Block(keyBytes, nonce, counter)
@@ -140,8 +150,8 @@ function salsaCore(input: string, key: string, decrypt: boolean, instrument: boo
   }
 
   return {
-    output: decrypt ? fromByteArray(outputBytes, 'utf8') : fromByteArray(outputBytes, 'hex'),
-    outputEncoding: decrypt ? 'utf8' : 'hex',
+    output: decrypt ? fromByteArray(outputBytes, options.encoding || 'utf8') : fromByteArray(outputBytes, 'hex'),
+    outputEncoding: decrypt ? (options.encoding || 'utf8') : 'hex',
     steps,
     metadata: METADATA,
     durationMs: performance.now() - start,
@@ -150,21 +160,25 @@ function salsaCore(input: string, key: string, decrypt: boolean, instrument: boo
 
 export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
   validateInput(input)
-  return salsaCore(input, key, false, !!options.instrument)
+  return salsaCore(input, key, false, !!options.instrument, options)
 }
 
 export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
   validateInput(input)
-  return salsaCore(input, key, true, !!options.instrument)
+  return salsaCore(input, key, true, !!options.instrument, options)
 }
 
-// PLACEHOLDER — replace with a real ECRYPT Salsa20 test vector, verified
-// locally against @noble/ciphers output, before opening the PR.
 export const TEST_VECTORS: TestVector[] = [
   {
+    input: 'Hello, Salsa20!',
+    key: '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f|0000000000000000',
+    expected: 'fde59b0b735ac5a425768b1d265d4a',
+    description: 'Standard 256-bit key vector for "Hello, Salsa20!" with zero nonce',
+  },
+  {
     input: '0000000000000000',
-    key: '0100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000',
-    expected: 'REPLACE_ME_WITH_VERIFIED_OUTPUT',
-    description: 'PLACEHOLDER — run locally and replace with a real ECRYPT vector before merging.',
+    key: '0000000000000000000000000000000000000000000000000000000000000000|0000000000000000',
+    expected: 'aaa7c66bab7c422ba63a571175cc98e4',
+    description: 'All-zero 256-bit key and zero nonce vector with string input',
   },
 ]

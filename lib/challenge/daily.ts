@@ -97,30 +97,27 @@ export interface DailyQuizState {
   bestStreak: number;
 }
 
+import { safeGetItemJson, safeSetItemJson } from '../utils/storage';
+
 const STORAGE_KEY = 'cryptoviz_daily_quiz_state';
 
+const DEFAULT_QUIZ_STATE: DailyQuizState = {
+  lastCompletedDate: '',
+  currentStreak: 0,
+  bestStreak: 0,
+};
+
 export function getDailyQuizState(): DailyQuizState {
-  if (typeof window === 'undefined') {
-    return { lastCompletedDate: '', currentStreak: 0, bestStreak: 0 };
-  }
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (data) {
-      return JSON.parse(data);
-    }
-  } catch {
-    // Ignore storage errors
-  }
-  return { lastCompletedDate: '', currentStreak: 0, bestStreak: 0 };
+  return safeGetItemJson<DailyQuizState>(
+    STORAGE_KEY,
+    DEFAULT_QUIZ_STATE,
+    (val): val is DailyQuizState =>
+      typeof val === 'object' && val !== null && !Array.isArray(val),
+  );
 }
 
 export function saveDailyQuizState(state: DailyQuizState) {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    // Ignore storage errors
-  }
+  safeSetItemJson(STORAGE_KEY, state);
 }
 
 export function calculateNewStreak(todayString: string, state: DailyQuizState): DailyQuizState {

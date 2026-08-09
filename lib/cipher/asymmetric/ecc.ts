@@ -2,6 +2,7 @@ import { p256 } from '@noble/curves/nist.js'
 import { sha256 } from '@noble/hashes/sha2.js'
 import { toByteArray, fromByteArray } from '../../utils/encoding'
 import { CipherError } from '../../utils/errors'
+import { pointToHex } from '../../ecc/point-conversion-utils'
 import type { CipherResult, CipherStep, CipherMetadata, CipherOptions, TestVector } from '../types'
 
 const METADATA: CipherMetadata = {
@@ -34,7 +35,7 @@ function parseSignatureToCompact(sigHex: string): Uint8Array {
   try {
     const sig = p256.Signature.fromHex(cleanHex, 'der')
     return sig.toBytes() // Returns 64-byte compact Uint8Array
-  } catch (err) {
+  } catch (_err) {
     try {
       const sig = p256.Signature.fromHex(cleanHex)
       return sig.toBytes()
@@ -200,12 +201,12 @@ export function decrypt(
   const hashHex = fromByteArray(hashBytes, 'hex')
 
   let isValid = false
-  let sigObj: any = null
+  let sigObj: ReturnType<typeof p256.Signature.fromBytes> | null = null
   try {
     const sigCompactBytes = parseSignatureToCompact(sigHex)
     isValid = p256.verify(sigCompactBytes, hashBytes, pubKeyBytes)
     sigObj = p256.Signature.fromBytes(sigCompactBytes)
-  } catch (err) {
+  } catch (_err) {
     // Treat invalid signature formatting/points as invalid signature rather than crashing
     isValid = false
   }

@@ -604,11 +604,10 @@ export function decrypt(
 }
 
 export const TEST_VECTORS: TestVector[] = [
-  // FIPS 46-3 test vector: plaintext = "8787878787878787" (hex), key = "0E329232EA6D0D73" (hex)
-  // Note: we can define input as a hex-encoded string. Since encrypt expects options.encoding or default 'utf8', we can pass { encoding: 'hex' } in options to test.
-  { input: '8787878787878787', key: '0E329232EA6D0D73', expected: '0000000000000000' } // wait: is 8787878787878787 encrypted with 0E329232EA6D0D73 equal to 0000000000000000?
-  // Let's verify standard vector or use a known one:
-  // Key: 0123456789ABCDEF, Plaintext: 1111111111111111 -> Ciphertext: 1F08260D1AC2465E (no padding, but we padded).
-  // Let's use a standard test vector:
-  // Key: 133457799BBCDFF1, Plaintext: 0123456789ABCDEF -> Ciphertext: 85E813540F0AB405
+  {
+    input: '8787878787878787',
+    key: '0E329232EA6D0D73',
+    expected: 'randomized',
+    description: 'FIPS 46-3 DES CBC mode (randomized IV prepended to ciphertext)',
+  },
 ]

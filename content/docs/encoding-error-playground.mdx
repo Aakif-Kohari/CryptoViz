@@ -1,0 +1,16 @@
+---
+title: "Encoding Error Playground"
+description: "Documentation guide for detecting, corrupting, debugging, and repairing text encoding errors and Mojibake."
+---
+
+# Encoding Error Playground
+
+The **Encoding Error Playground** in CryptoViz (`/encoding-errors`) provides an interactive environment to inspect how decoders handle invalid sequences, byte-level truncation, Base64 padding corruption, and Mojibake character set mismatches.
+
+## Features
+
+- **Multi-Encoding Support**: Supports Base64, Hex, UTF-8, ASCII, and URL-encoding formats.
+- **Byte-by-Byte Inspector**: Visual timeline displaying byte hex values, character representations, and red offset pills highlighting invalid byte locations.
+- **Fault Injection Engine**: Inject real-world encoding faults (non-hex characters, truncated UTF-8 sequences, corrupted Base64 padding `=`).
+- **Mojibake Simulator**: Demonstrate character set misinterpretation between UTF-8 and ISO-8859-1 / Windows-1252.
+- **Auto-Repair Engine**: Automatically repair padding errors, drop illegal characters, or re-encode malformed strings.

@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "generate:sw": "node scripts/generate-sw-precache.mjs",
+    "prebuild": "npm run generate:sw",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -13,8 +15,10 @@
     "test:security": "vitest run tests/security"
   },
   "dependencies": {
+    "@exodus/bytes": "^1.15.1",
     "@noble/curves": "^2.2.0",
     "@noble/hashes": "^2.2.0",
+    "@noble/post-quantum": "^0.6.1",
     "@vercel/analytics": "^2.0.1",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",

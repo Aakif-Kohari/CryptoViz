@@ -22,11 +22,11 @@ async function deriveKeyViaWorker(
     requestId: crypto.randomUUID(),
     payload: { cipherId: 'pbkdf2', input: password, key: '', options: params },
   }
-  const response = await sharedCipherPool.execute(message)
+  const response = await sharedCipherPool.execute(message) as { success: boolean; payload: { result?: { derivedKeyHex: string; saltHex: string }; error?: string } }
   if (response.success === false) {
     throw new Error(response.payload.error ?? 'KDF derivation failed.')
   }
-  return response.payload.result as unknown as { derivedKeyHex: string; saltHex: string }
+  return response.payload.result as { derivedKeyHex: string; saltHex: string }
 }
 
 export default function Pbkdf2Visualizer() {
@@ -131,7 +131,7 @@ export default function Pbkdf2Visualizer() {
           <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-white">Derivation trace</h2>
           <ol className="space-y-3">
             {stages.map((step, i) => (
-              <li key={i} className="border-l-2 border-teal-500 pl-3">
+              <li key={`step-${i}-${step.label}`} className="border-l-2 border-teal-500 pl-3">
                 <p className="text-sm font-medium text-zinc-900 dark:text-white">{step.label}</p>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400">{step.detail}</p>
               </li>
