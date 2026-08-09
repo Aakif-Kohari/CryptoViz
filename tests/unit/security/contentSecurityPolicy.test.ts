@@ -76,6 +76,44 @@ describe("content security policy hardening", () => {
     expect(first).not.toContain("=");
   });
 
+  it("does not use Math.random for nonce generation", () => {
+    const mathRandomSpy = vi.spyOn(Math, "random");
+    createCspNonce();
+    expect(mathRandomSpy).not.toHaveBeenCalled();
+    mathRandomSpy.mockRestore();
+  });
+
+  it("throws an explicit error when no CSPRNG is available", () => {
+    const originalCrypto = globalThis.crypto;
+    
+    // Remove browser crypto
+    Object.defineProperty(globalThis, "crypto", {
+      value: { getRandomValues: undefined },
+      configurable: true,
+    });
+
+    let nodeCrypto;
+    let spy;
+    try {
+      nodeCrypto = require("crypto");
+      spy = vi.spyOn(nodeCrypto, "randomBytes").mockImplementation(() => {
+        throw new Error("mock error");
+      });
+    } catch (e) {
+      // ignore
+    }
+
+    try {
+      expect(() => createCspNonce()).toThrow("CSPRNG not available");
+    } finally {
+      if (spy) spy.mockRestore();
+      Object.defineProperty(globalThis, "crypto", {
+        value: originalCrypto,
+        configurable: true,
+      });
+    }
+  });
+
   it("builds companion security headers", () => {
     const headers = buildSecurityHeaders({ nonce: "header-nonce" });
 

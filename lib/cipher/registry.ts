@@ -568,6 +568,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'square',
+    name: 'Square',
+    category: 'symmetric',
+    description: 'Direct historical predecessor to Rijndael (AES) by Daemen & Rijmen (1997). Structurally defined the AES template but uses a distinct S-box and matrix. Status: BROKEN by the "Square attack" (integral cryptanalysis).',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'broken',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'feal',
     name: 'FEAL-8',
     category: 'symmetric',
@@ -576,6 +586,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '0000000000000000',
     securityStatus: 'broken',
     keyPlaceholder: '64-bit key as 16 hex chars',
+  },
+  {
+    id: 'safer-plus',
+    name: 'SAFER+',
+    category: 'symmetric',
+    description: 'AES candidate (1998) and original Bluetooth pairing cipher. Byte-oriented SPN using modular exponentiation (45^x mod 257) for non-linearity and an Armenian Pseudo-Hadamard Transform network for diffusion.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
     id: 'aria',
@@ -900,6 +920,19 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '',
     securityStatus: 'secure',
   },
+  {
+    id: 'haval',
+    name: 'HAVAL',
+    category: 'hash',
+    description: 'Configurable hash (1992). Unique in offering independent control over round count (3/4/5 passes) and output length (128-256 bits). Status: legacy (weaker at 3-pass/128-bit, stronger at 5-pass/256-bit).',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy',
+    options: [
+      { name: 'Passes (Rounds)', id: 'passes', type: 'select', default: 5, choices: [{label: '3', value: 3}, {label: '4', value: 4}, {label: '5', value: 5}] },
+      { name: 'Output Length (bits)', id: 'outputBits', type: 'select', default: 256, choices: [{label: '128', value: 128}, {label: '160', value: 160}, {label: '192', value: 192}, {label: '224', value: 224}, {label: '256', value: 256}] }
+    ]
+  },
   // Asymmetric
   {
     id: "rsa",
@@ -1086,7 +1119,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
   },
-    {
+  {
+    id: 'gost-r34-10',
+    name: 'GOST R 34.10-2012',
+    category: 'asymmetric',
+    description: 'Russian national elliptic-curve signature standard (RFC 7091). Uses Streebog-256 and an addition-based signing equation with a unique e=0 -> e=1 edge case. Completes the GOST/Kuznyechik/Streebog Russian suite.',
+    defaultKey: '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+    defaultInput: 'message',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Private key (sign) or Public key (verify)',
+  },
+  {
     id: 'mceliece',
     name: 'Classic McEliece',
     category: 'asymmetric',
@@ -1095,5 +1138,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '01',
     securityStatus: 'secure',
     keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
+  {
+    id: 'sm2',
+    name: 'SM2',
+    category: 'asymmetric',
+    description: 'Chinese national elliptic-curve signature standard (GB/T 32918). Uses a distinct ZA hash prefix incorporating the signer ID and curve parameters before hashing the message. Completes the SM2+SM3+SM4 Chinese suite.',
+    defaultKey: '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+    defaultInput: 'message',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Private key (sign) or Public key (verify)',
   },
 ];
