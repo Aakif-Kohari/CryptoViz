@@ -3,7 +3,7 @@
 
 Interact with Cryptography, Visualised in Real-Time.
 
-![CI Status](https://img.shields.io/github/actions/workflow/status/csxark/CryptoViz/pr.yml?branch=main&label=CI)
+![CI Status](https://img.shields.io/github/actions/workflow/status/csxark/CryptoViz/ci.yml?branch=main&label=CI)
 ![License](https://img.shields.io/github/license/csxark/CryptoViz?color=blue&label=License)
 ![Coverage](https://img.shields.io/badge/coverage-%E2%89%A580%25-success)
 ![Lighthouse Performance](https://img.shields.io/badge/lighthouse--performance-%E2%89%A590-emerald)
