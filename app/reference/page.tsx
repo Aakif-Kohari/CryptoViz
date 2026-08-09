@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
-
+import GlobalSearch from "@/components/search/GlobalSearch";
 const sections = [
   {
     title: "Documentation",
@@ -28,7 +28,7 @@ const sections = [
     ],
   },
   {
-    title: "Resources",
+    title: "Learning Resources",
     href: "/resources",
     badge: "LIBRARY",
     description:
@@ -85,14 +85,17 @@ export default function ReferenceHubPage() {
           </span>
 
           <h1 className="mt-5 text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-            Reference Hub
+            Knowledge Hub
           </h1>
 
           <p className="mt-4 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-[#B3B3B8]">
-            Access all CryptoViz learning material from one place. Browse
-            documentation, glossary terms, resources, standards, case studies
-            and videos while keeping the existing learning routes intact.
+        Access all CryptoViz learning material from one place. Explore
+documentation, glossary terms, standards, videos, case studies,
+and curated learning resources with cross-linked content.
           </p>
+          <div className="mt-6">
+  <GlobalSearch />
+</div>
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">

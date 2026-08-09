@@ -22,6 +22,20 @@ type Protocol = {
 
 const protocols: Protocol[] = [
   {
+    id: 'openpgp',
+    name: 'OpenPGP (Pretty Good Privacy)',
+    purpose: 'End-to-end email, file, and message encryption & digital signing standard (RFC 4880 / RFC 9580).',
+    actors: ['Alice (Sender)', 'Bob (Recipient)'],
+    concepts: ['Sign-Compress-Encrypt', 'Packet Hierarchy (Tags)', 'Radix-64 ASCII Armor', 'SEIPD & MDC'],
+    differences: 'Combines asymmetric signing, DEFLATE payload compression, and symmetric session key encryption in a canonical multi-stage pipeline.',
+    steps: [
+      { title: 'Digital Signature (Sign)', description: 'Alice hashes the plaintext payload and computes a digital signature using her private key.', sender: 'Alice', receiver: 'Alice', message: 'Signature Packet (Tag 2)' },
+      { title: 'Payload Compression (Compress)', description: 'Plaintext and signature packets are bundled and compressed with DEFLATE/ZIP to remove statistical redundancy.', sender: 'Alice', receiver: 'Alice', message: 'Compressed Data (Tag 8)' },
+      { title: 'Symmetric & Asymmetric Encryption (Encrypt)', description: 'A random symmetric session key is generated to encrypt compressed data (SEIPD Tag 18). The session key is encrypted with Bob\'s Public Key (PKESK Tag 1).', sender: 'Alice', receiver: 'Bob', message: 'PKESK + SEIPD Ciphertext' },
+      { title: 'Decryption & Verification (Decrypt)', description: 'Bob decrypts the session key using his private key, decrypts and decompresses the payload, and authenticates Alice\'s signature.', sender: 'Bob', receiver: 'Bob', message: 'MDC Verified & Valid Signature' }
+    ]
+  },
+  {
     id: 'tls',
     name: 'TLS (Transport Layer Security)',
     purpose: 'Secure communication over a computer network, widely used for web traffic (HTTPS).',

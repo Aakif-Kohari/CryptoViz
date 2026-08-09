@@ -1,8 +1,9 @@
 import React from "react";
 import Navbar from "@/components/layout/Navbar";
 import { WorkerCommunicationDashboard } from "@/components/workers/WorkerCommunicationDashboard";
-
+import { requireDevelopment } from "@/lib/devOnly";
 export default function WorkerTestPage() {
+  requireDevelopment();
   return (
     <div className="min-h-screen bg-zinc-50 font-sans transition-colors duration-300 dark:bg-zinc-950">
       <Navbar />
