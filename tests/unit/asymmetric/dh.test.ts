@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { encrypt, decrypt, TEST_VECTORS } from '../../../lib/cipher/asymmetric/dh'
+import { encrypt, decrypt, checkPrimitiveRoot, getGeneratorOrder, TEST_VECTORS } from '../../../lib/cipher/asymmetric/dh'
 
 describe('Diffie-Hellman Key Exchange Unit Tests', () => {
   it('passes standard test vectors (agreement)', () => {
@@ -7,6 +7,30 @@ describe('Diffie-Hellman Key Exchange Unit Tests', () => {
     const vector = TEST_VECTORS[0]
     const result = encrypt(vector.input, vector.key)
     expect(result.output).toBe(vector.expected)
+  })
+
+  it('correctly identifies primitive roots and computes generator orders', () => {
+    // For p = 23: 5 is a primitive root (order 22)
+    const check5 = checkPrimitiveRoot(5n, 23n)
+    expect(check5.isPrimitive).toBe(true)
+    expect(check5.order).toBe(22n)
+
+    // For p = 23: 2 is NOT a primitive root (order 11)
+    const check2 = checkPrimitiveRoot(2n, 23n)
+    expect(check2.isPrimitive).toBe(false)
+    expect(check2.order).toBe(11n)
+  })
+
+  it('displays primitive root validation in instrumented mode step 0', () => {
+    // g=5, p=23 (primitive root)
+    const resPrim = encrypt('6,15', '23,5', { instrument: true })
+    expect(resPrim.steps[0].note).toMatch(/valid primitive root/i)
+    expect(resPrim.steps[0].table?.find((r) => r.key === 'Primitive Root Status')?.value).toContain('Primitive root')
+
+    // g=2, p=23 (non-primitive root)
+    const resNonPrim = encrypt('6,15', '23,2', { instrument: true })
+    expect(resNonPrim.steps[0].note).toMatch(/NOT a primitive root/i)
+    expect(resNonPrim.steps[0].table?.find((r) => r.key === 'Primitive Root Status')?.value).toContain('Non-primitive root')
   })
 
   it('passes standard test vectors (alice public key computation)', () => {
