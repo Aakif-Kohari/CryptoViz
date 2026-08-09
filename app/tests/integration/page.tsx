@@ -1,6 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import { CipherIntegrationDashboard } from "@/components/tests/CipherIntegrationDashboard";
-
+import { requireDevelopment } from "@/lib/devOnly";
 export default function IntegrationTestsPage() {
   return (
     <div className="min-h-screen bg-zinc-50 font-sans transition-colors duration-300 dark:bg-zinc-950">
