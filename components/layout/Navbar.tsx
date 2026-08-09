@@ -4,6 +4,23 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+const navLinks = [
+  { name: 'Playground', href: '/visualizer/caesar/' },
+  { name: 'Advisor', href: '/advisor' },
+  { name: 'Modes', href: '/modes' },
+  { name: 'Compare', href: '/compare' },
+  { name: 'Matrix', href: '/matrix' },
+  { name: 'Benchmark', href: '/benchmark' },
+  { name: 'Avalanche', href: '/avalanche' },
+  { name: 'Merkle Tree', href: '/merkle' },
+  { name: 'Padding', href: '/padding' },
+  { name: 'Challenge', href: '/challenge' },
+  { name: 'Docs', href: '/docs' },
+  { name: 'Glossary', href: '/glossary' },
+  { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+  { name: 'Myth Busters', href: '/myth-busters' },
+  { name: 'Resources', href: '/resources' },
+]
 
 export default function Navbar() {
   const pathname = usePathname()
