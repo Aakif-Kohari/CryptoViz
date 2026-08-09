@@ -189,11 +189,18 @@ function gcd(a: bigint, b: bigint): bigint {
   return a
 }
 
+// Note on RSA Exponent Derivation:
+// Modern RSA standards (PKCS#1 v2.2 / RFC 8017) compute the private exponent d
+// modulo Carmichael's lambda λ(n) = lcm(p-1, q-1). Pedagogical presentations
+// (such as our RSA Key Generation Wizard) often use Euler's totient φ(n) = (p-1)(q-1)
+// following the original 1978 RSA paper. Both are valid because λ(n) | φ(n);
+// λ(n) yields the unique smallest equivalent decryption exponent.
 function lcm(a: bigint, b: bigint): bigint {
   return (a / gcd(a, b)) * b
 }
 
 export function modInverse(e: bigint, lambda: bigint): bigint {
+
   const { gcd, x } = extendedGCD(e, lambda)
   if (gcd !== 1n) {
     throw new CipherError('INVALID_KEY', 'e and lambda(n) are not coprime')
