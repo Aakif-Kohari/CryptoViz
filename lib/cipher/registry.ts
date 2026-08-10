@@ -933,6 +933,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
       { name: 'Output Length (bits)', id: 'outputBits', type: 'select', default: 256, choices: [{label: '128', value: 128}, {label: '160', value: 160}, {label: '192', value: 192}, {label: '224', value: 224}, {label: '256', value: 256}] }
     ]
   },
+  {
+    id: 'gost-r34-11-94',
+    name: 'GOST R 34.11-94',
+    category: 'hash',
+    description: 'Original Russian national hash standard (1994-2013). Uses GOST 28147-89 block cipher internally with a distinctive P-transformation key-mixing step. Superseded by Streebog. Status: legacy.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy',
+  },
   // Asymmetric
   {
     id: "rsa",
