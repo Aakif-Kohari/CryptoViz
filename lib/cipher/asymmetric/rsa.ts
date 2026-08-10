@@ -91,6 +91,18 @@ async function rsaRealEncrypt(
   if (options.instrument) {
     steps.push({
       index: 0,
+      label: '⚠️ Static Demo Key Warning',
+      inputState: '',
+      outputState: '',
+      note:
+        '⚠️ This demo uses a static RSA key pair embedded in the source code. ' +
+        'This key provides ZERO security — anyone with access to the repository ' +
+        'can decrypt messages encrypted with this key. ' +
+        'Do NOT use this for any real or sensitive data.',
+      isMilestone: true,
+    })
+    steps.push({
+      index: 1,
       label: 'RSA-OAEP 2048-bit Encryption (WebCrypto)',
       inputState: fromByteArray(inputBytes, 'hex'),
       outputState: output,
@@ -137,6 +149,18 @@ async function rsaRealDecrypt(
   if (options.instrument) {
     steps.push({
       index: 0,
+      label: '⚠️ Static Demo Key Warning',
+      inputState: '',
+      outputState: '',
+      note:
+        '⚠️ This demo uses a static RSA key pair embedded in the source code. ' +
+        'This key provides ZERO security — anyone with access to the repository ' +
+        'can decrypt messages encrypted with this key. ' +
+        'Do NOT use this for any real or sensitive data.',
+      isMilestone: true,
+    })
+    steps.push({
+      index: 1,
       label: 'RSA-OAEP 2048-bit Decryption (WebCrypto)',
       inputState: input,
       outputState: outputString,
@@ -159,6 +183,10 @@ const METADATA: CipherMetadata = {
   securityStatus: 'secure', // Real mode is secure, demo mode is legacy/broken
   yearDesigned: 1977,
   standardBody: 'PKCS #1 / ANSI X9.31',
+  securityWarning:
+    '⚠️ This demo uses a static RSA key pair embedded in the source code. ' +
+    'This key provides ZERO security — anyone with access to the repository ' +
+    'can decrypt messages encrypted with this key.',
 }
 
 export const TEST_VECTORS: TestVector[] = [
