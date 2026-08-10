@@ -135,7 +135,6 @@ export function validateStrictContentSecurityPolicy(
 
   const hasScriptNonce =
     /(?:^|;)\s*script-src\s+[^;]*'nonce-[^']+'(?=\s|;|$)[^;]*(?:;|$)/.test(
-    /(?:^|;)\s*script-src\s+[^;]*'nonce-[^']+'(?=\s|;|$)[^;]*(?:;|$)/.test(
       headerValue,
     );
 
