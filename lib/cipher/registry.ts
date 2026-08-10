@@ -618,6 +618,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: '3way',
+    name: '3-Way',
+    category: 'symmetric',
+    description: 'Joan Daemen\'s first cipher (1994). 96-bit block/key, 11 rounds. Defines three-fold cyclic symmetry where every sub-transform commutes with word rotation. Direct predecessor to Square and AES. Status: BROKEN.',
+    defaultKey: '000000000000000000000000',
+    defaultInput: '000000000000000000000000',
+    securityStatus: 'broken',
+    keyPlaceholder: '96-bit key as 24 hex chars',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
