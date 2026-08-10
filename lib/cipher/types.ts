@@ -160,6 +160,7 @@ export type CipherName =
   | 'ntru'
   | 'gost-r34-10'
   | 'mceliece'
+  | 'cramer-shoup'
   | 'sm2'
   | 'kcdsa'
   | 'ed25519'
