@@ -190,6 +190,7 @@ export type CipherName =
   | 'tiger'
   | 'grostl'
   | 'jh'
+  | 'ripemd128'
   | 'haval'
   | 'gost-r34-11-94'
   | 'poly1305'
