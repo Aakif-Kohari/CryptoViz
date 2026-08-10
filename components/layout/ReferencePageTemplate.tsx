@@ -9,6 +9,7 @@ interface ReferencePageTemplateProps {
   breadcrumbs?: BreadcrumbItem[];
   children: ReactNode;
   className?: string;
+  hideHeader?: boolean;
 }
 
 export default function ReferencePageTemplate({
@@ -18,6 +19,7 @@ export default function ReferencePageTemplate({
   breadcrumbs = [],
   children,
   className = "",
+  hideHeader = false,
 }: ReferencePageTemplateProps) {
   return (
     <PageTemplate
@@ -27,6 +29,7 @@ export default function ReferencePageTemplate({
       eyebrow={eyebrow}
       breadcrumbs={breadcrumbs}
       className={className}
+      hideHeader={hideHeader}
     >
       {children}
     </PageTemplate>

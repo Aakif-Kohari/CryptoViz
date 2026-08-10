@@ -9,6 +9,7 @@ interface LearnPageTemplateProps {
   breadcrumbs?: BreadcrumbItem[];
   children: ReactNode;
   className?: string;
+  hideHeader?: boolean;
 }
 
 export default function LearnPageTemplate({
@@ -18,6 +19,7 @@ export default function LearnPageTemplate({
   breadcrumbs = [],
   children,
   className = "",
+  hideHeader = false,
 }: LearnPageTemplateProps) {
   return (
     <PageTemplate
@@ -27,6 +29,7 @@ export default function LearnPageTemplate({
       eyebrow={eyebrow}
       breadcrumbs={breadcrumbs}
       className={className}
+      hideHeader={hideHeader}
     >
       {children}
     </PageTemplate>

@@ -17,7 +17,7 @@ export default function ModesPage() {
       description="Compare AES modes of operation side by side — ECB, CBC, CTR, CFB, and OFB — and watch how a single one-byte plaintext change propagates through each, plus the classic ECB penguin."
       eyebrow="Interactive learning lab"
       breadcrumbs={[
-        { label: "Learn" },
+        { label: "reference" },
         { label: "Block Cipher Modes" },
       ]}
     >

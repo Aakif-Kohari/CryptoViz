@@ -42,6 +42,7 @@ export default function MythBustersPage() {
           { label: "Learn" },
           { label: "Myth Busters" },
         ]}
+        hideHeader
       >
         {/* Hero Section */}
         <section aria-labelledby="myth-hero-title" className="relative overflow-hidden rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-br from-red-500/10 via-amber-500/5 to-transparent p-8 sm:p-12 backdrop-blur-2xl">

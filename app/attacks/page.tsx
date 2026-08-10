@@ -101,6 +101,7 @@ export default function AttackCollectionPage() {
             { label: "Practice" },
             { label: "Attack Simulators" },
           ]}
+          hideHeader
         >
 
         {/* Hero Section */}

@@ -12,6 +12,7 @@ interface PageTemplateProps {
   children: ReactNode;
   className?: string;
   contentClassName?: string;
+  hideHeader?: boolean;
 }
 
 const categoryStyles: Record<
@@ -44,6 +45,7 @@ export default function PageTemplate({
   children,
   className = "",
   contentClassName = "",
+  hideHeader = false,
 }: PageTemplateProps) {
   const styles = categoryStyles[category];
 
@@ -53,6 +55,7 @@ export default function PageTemplate({
     >
       {breadcrumbs.length > 0 && <Breadcrumbs items={breadcrumbs} />}
 
+{!hideHeader && (
       <header className={`max-w-3xl ${contentClassName}`.trim()}>
         {eyebrow && (
           <p
@@ -72,6 +75,7 @@ export default function PageTemplate({
           </p>
         )}
       </header>
+)}
 
       {children}
     </main>

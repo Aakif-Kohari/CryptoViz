@@ -9,6 +9,7 @@ interface PracticePageTemplateProps {
   breadcrumbs?: BreadcrumbItem[];
   children: ReactNode;
   className?: string;
+  hideHeader?: boolean;
 }
 
 export default function PracticePageTemplate({
@@ -18,6 +19,7 @@ export default function PracticePageTemplate({
   breadcrumbs = [],
   children,
   className = "",
+  hideHeader = false,
 }: PracticePageTemplateProps) {
   return (
     <PageTemplate
@@ -27,6 +29,7 @@ export default function PracticePageTemplate({
       eyebrow={eyebrow}
       breadcrumbs={breadcrumbs}
       className={className}
+      hideHeader={hideHeader}
     >
       {children}
     </PageTemplate>

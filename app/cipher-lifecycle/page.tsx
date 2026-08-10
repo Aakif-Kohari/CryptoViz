@@ -58,6 +58,7 @@ export default function CipherLifecyclePage() {
           { label: "Learn" },
           { label: "Cipher Lifecycle" },
         ]}
+        hideHeader
       >
 
         {/* Hero Header */}

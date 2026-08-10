@@ -18,6 +18,7 @@ export default function PipelinePage() {
         description="Chain operations like Encode → Encrypt → Hash → Sign → Verify to build, execute, and visualize custom multi-stage cryptographic workflows."
         eyebrow="Cryptographic Workflow Builder"
         breadcrumbs={[{ label: "Practice" }, { label: "Cipher Pipeline" }]}
+        hideHeader
       >
         <CipherPipelineBuilder />
       </PracticePageTemplate>
