@@ -129,7 +129,7 @@ export function validateStrictContentSecurityPolicy(headerValue: string): string
   }
 
   const hasScriptNonce =
-    /(?:^|;)\s*script-src\s+[^;]*'nonce-[^']+'(?:;|$)/.test(
+    /(?:^|;)\s*script-src\s+[^;]*'nonce-[^']+'(?=\s|;|$)[^;]*(?:;|$)/.test(
       headerValue,
     );
 
