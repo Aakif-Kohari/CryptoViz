@@ -43,14 +43,11 @@ function unique(values: string[]): string[] {
 function createFallbackNonce(): string {
   const randomValues = new Uint8Array(16);
 
-  if (globalThis.crypto?.getRandomValues) {
-    globalThis.crypto.getRandomValues(randomValues);
-  } else {
-    for (let index = 0; index < randomValues.length; index += 1) {
-      randomValues[index] = Math.floor(Math.random() * 256);
-    }
-  }
+  if (!globalThis.crypto?.getRandomValues) {
+      throw new Error("CSPRNG not available");
+  } 
 
+     globalThis.crypto.getRandomValues(randomValues);
   return btoa(String.fromCharCode(...randomValues))
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
@@ -115,7 +112,7 @@ export function serializeContentSecurityPolicy(directives: Record<string, string
 }
 
 export function cspContainsUnsafeInline(headerValue: string): boolean {
-  return /(^|\\s)'unsafe-inline'(\\s|;|$)/.test(headerValue);
+  return /(^|\s)'unsafe-inline'(\s|;|$)/.test(headerValue);
 }
 
 export function validateStrictContentSecurityPolicy(headerValue: string): string[] {
