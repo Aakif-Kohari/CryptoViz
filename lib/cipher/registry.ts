@@ -1149,4 +1149,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'Private key (sign) or Public key (verify)',
   },
+  {
+    id: 'kcdsa',
+    name: 'KCDSA',
+    category: 'asymmetric',
+    description: 'Korean national digital signature standard. DSA-family but hashes Message || w (commitment) instead of just Message. Note: Uses LSH-256 as a modernized substitute for the original HAS-160 pairing. Completes the Korean national suite.',
+    defaultKey: '1234567890abcdef',
+    defaultInput: '616263',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Private key (sign) or Public key (verify)',
+  },
 ];
