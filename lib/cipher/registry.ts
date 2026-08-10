@@ -1140,6 +1140,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
   },
   {
+    id: 'cramer-shoup',
+    name: 'Cramer-Shoup',
+    category: 'asymmetric',
+    description: 'First practical IND-CCA2-secure public-key scheme in the standard model (1998). Extends ElGamal with 5 secret exponents and a hash-based integrity check that rejects tampered ciphertexts.',
+    defaultKey: 'mock_keys',
+    defaultInput: '0000000000000001',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
+  {
     id: 'sm2',
     name: 'SM2',
     category: 'asymmetric',
