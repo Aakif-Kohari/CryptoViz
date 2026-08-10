@@ -921,6 +921,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
   },
   {
+    id: 'ripemd128',
+    name: 'RIPEMD-128',
+    category: 'hash',
+    description: '128-bit output sibling of RIPEMD-160. Dual-parallel-line MD4-family design with distinct tables from its 160-bit counterpart. Status: legacy (128-bit output too short for modern collision resistance).',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy',
+  },
+  {
     id: 'haval',
     name: 'HAVAL',
     category: 'hash',

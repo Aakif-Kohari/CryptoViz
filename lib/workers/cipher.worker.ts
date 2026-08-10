@@ -70,7 +70,6 @@ import { encrypt as threefishEncrypt, decrypt as threefishDecrypt } from '../cip
 import { encrypt as xchacha20Encrypt, decrypt as xchacha20Decrypt } from '../cipher/symmetric/xchacha20';
 import { encrypt as gostEncrypt, decrypt as gostDecrypt } from '../cipher/symmetric/gost';
 import { encrypt as enigmaEncrypt, decrypt as enigmaDecrypt } from '../cipher/symmetric/enigma';
-import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20'
 import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20';
 import { encrypt as teaEncrypt, decrypt as teaDecrypt } from '../cipher/symmetric/tea';
 import { encrypt as chacha20Encrypt, decrypt as chacha20Decrypt } from "../cipher/symmetric/chacha20";
@@ -551,6 +550,10 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
     }
     case "jh": {
       const mod = await import("../cipher/hash/jh");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
+    case "ripemd128": {
+      const mod = await import("../cipher/hash/ripemd128");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
     case "haval": {
