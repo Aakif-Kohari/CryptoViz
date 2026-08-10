@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { OfflineCacheStatus } from './types';
 import { safeGetItemJson, safeSetItemJson, safeRemoveItem } from '../utils/storage';
 
+import { PRECACHE_ROUTES } from './precacheRoutes';
+
 const CACHE_NAME = 'cryptoviz-offline-v1';
 
 export function useOfflinePackManager() {
@@ -104,15 +106,7 @@ export function useOfflinePackManager() {
     try {
       if ('caches' in window) {
         const cache = await caches.open(CACHE_NAME);
-        await cache.addAll([
-          '/',
-          '/offline',
-          '/docs',
-          '/resources',
-          '/visualizer/caesar/',
-          '/icon.svg',
-          '/globals.css',
-        ]);
+        await cache.addAll(PRECACHE_ROUTES);
       }
 
       // Simulate step progress for user feedback

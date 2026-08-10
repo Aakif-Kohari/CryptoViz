@@ -1,7 +1,7 @@
 'use client'
 
-import Navbar from '../../components/layout/Navbar'
-import SBoxExplorer from '../../components/sbox/SBoxExplorer'
+import Navbar from '@/components/layout/Navbar'
+import SBoxExplorer from '@/components/sbox/SBoxExplorer'
 
 export default function SBoxPage() {
   return (

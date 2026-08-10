@@ -43,9 +43,31 @@ function unique(values: string[]): string[] {
 function createFallbackNonce(): string {
   const randomValues = new Uint8Array(16);
 
-  if (!globalThis.crypto?.getRandomValues) {
+  if (globalThis.crypto?.getRandomValues) {
+    globalThis.crypto.getRandomValues(randomValues);
+  } else {
+    let nodeCrypto;
+    try {
+      if (typeof require !== "undefined") {
+        nodeCrypto = require("crypto");
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    if (nodeCrypto?.randomBytes) {
+      try {
+        const bytes = nodeCrypto.randomBytes(16);
+        randomValues.set(bytes);
+      } catch (e) {
+        throw new Error("CSPRNG not available");
+      }
+    } else {
       throw new Error("CSPRNG not available");
-  } 
+    for (let index = 0; index < randomValues.length; index += 1) {
+      randomValues[index] = Math.floor(Math.random() * 256);
+    }
+  }
 
      globalThis.crypto.getRandomValues(randomValues);
   return btoa(String.fromCharCode(...randomValues))
@@ -113,6 +135,7 @@ export function serializeContentSecurityPolicy(directives: Record<string, string
 
 export function cspContainsUnsafeInline(headerValue: string): boolean {
   return /(^|\s)'unsafe-inline'(\s|;|$)/.test(headerValue);
+  return /(^|\\s)'unsafe-inline'(\\s|;|$)/.test(headerValue);
 }
 
 export function validateStrictContentSecurityPolicy(headerValue: string): string[] {

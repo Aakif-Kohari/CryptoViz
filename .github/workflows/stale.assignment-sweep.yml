@@ -1,17 +1,32 @@
 name: Stale Assignment Sweep
 
 # ==========================================================================
-# Daily sweep: if an issue has been assigned to a contributor for 3+ days
-# and no Pull Request referencing that issue has ever been opened, the
-# contributor is automatically unassigned and the "Available for contribution" label is
-# added so the issue becomes visible to other contributors again.
+# Daily sweep with a two-stage stale check:
 #
-# If a PR referencing the issue DOES exist (open, merged, or closed — any
-# state), the assignee is left alone even past the 3-day mark, since they
-# clearly did the work; narrow the STILL_COUNTS_PR_STATES check below if
-# you want closed-and-unmerged PRs to not count as "in progress".
+#   Day 0        Issue assigned to a contributor.
+#   Day 2 (48h)  If no PR has ever referenced the issue, a WARNING comment
+#                is posted on the issue, tagging the assignee(s) and
+#                telling them the issue will be unassigned tomorrow.
+#   Day 3 (72h)  If STILL no PR references the issue, the contributor is
+#                unassigned and the "Available for contribution" label is
+#                added so the issue becomes visible to other contributors
+#                again.
 #
-# No comment is posted — this runs silently (unassign + label only).
+# If a PR referencing the issue exists at ANY point (open, merged, or
+# closed — any state), the assignee is left alone permanently, past both
+# the warning and the unassign mark, since they clearly did the work.
+# Narrow the hasLinkedPR check below if you want closed-and-unmerged PRs
+# to not count as "in progress".
+#
+# The warning is only ever posted once per assignment cycle: it looks
+# back through the issue timeline for a comment (after the most recent
+# "assigned" event) containing a hidden marker, and skips re-posting if
+# one is already there. If the issue is unassigned and later reassigned,
+# the marker check naturally resets because it's scoped to events after
+# the newest "assigned" timestamp.
+#
+# The final unassign step still runs silently (unassign + label only,
+# no extra comment) — same as before.
 # ==========================================================================
 
 on:
@@ -29,29 +44,37 @@ permissions:
 
 jobs:
   sweep-stale-assignments:
-    name: Unassign stale issues
+    name: Warn / unassign stale issues
     runs-on: ubuntu-latest
 
     # ------------------------------------------------------------------
     # CONFIG BLOCK — tweak these without touching the script below.
     # ------------------------------------------------------------------
     env:
+      WARN_AFTER_DAYS: "2"
       STALE_AFTER_DAYS: "3"
       STALE_LABEL: "Available for contribution"
 
     steps:
-      - name: Unassign stale issues without a linked PR
+      - name: Warn, then unassign stale issues without a linked PR
         uses: actions/github-script@v9
         env:
+          WARN_AFTER_DAYS: ${{ env.WARN_AFTER_DAYS }}
           STALE_AFTER_DAYS: ${{ env.STALE_AFTER_DAYS }}
           STALE_LABEL: ${{ env.STALE_LABEL }}
         with:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
+            const warnAfterMs =
+              Number(process.env.WARN_AFTER_DAYS) * 24 * 60 * 60 * 1000;
             const staleAfterMs =
               Number(process.env.STALE_AFTER_DAYS) * 24 * 60 * 60 * 1000;
             const staleLabel = process.env.STALE_LABEL;
+
+            // Hidden marker so we can recognize our own warning comment
+            // later and avoid posting it more than once per assignment.
+            const WARNING_MARKER = "<!-- stale-assignment-warning -->";
 
             // Every open issue in the repo. listForRepo() also returns PRs
             // (GitHub models a PR as an issue under the hood), so those
@@ -73,7 +96,8 @@ jobs:
 
               // Find the most recent "assigned" timestamp for each
               // currently-assigned user. Using the LATEST such event per
-              // user means a re-assignment resets their 3-day clock.
+              // user means a re-assignment resets their clock (and, as a
+              // side effect, resets eligibility for a fresh warning).
               const currentLogins = issue.assignees.map((a) => a.login);
               let mostRecentAssignedAt = null;
 
@@ -100,14 +124,11 @@ jobs:
                 continue;
               }
 
-              const elapsed = Date.now() - mostRecentAssignedAt;
-              if (elapsed < staleAfterMs) {
-                continue;
-              }
-
               // Does any PR reference this issue? A "cross-referenced"
               // timeline event fires when a PR's title/body/commits
               // mention this issue (e.g. "Fixes #123" or a plain "#123").
+              // Checked once, up front, since it gates BOTH the warning
+              // and the unassign step below.
               const hasLinkedPR = timeline.some(
                 (event) =>
                   event.event === "cross-referenced" &&
@@ -120,21 +141,61 @@ jobs:
                 continue;
               }
 
-              await github.rest.issues.removeAssignees({
-                owner,
-                repo,
-                issue_number: issue.number,
-                assignees: currentLogins,
-              });
+              const elapsed = Date.now() - mostRecentAssignedAt;
 
-              await github.rest.issues.addLabels({
-                owner,
-                repo,
-                issue_number: issue.number,
-                labels: [staleLabel],
-              });
+              // ---- Day 3+: unassign and label -----------------------
+              if (elapsed >= staleAfterMs) {
+                await github.rest.issues.removeAssignees({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  assignees: currentLogins,
+                });
 
-              console.log(
-                `Unassigned ${currentLogins.join(", ")} from #${issue.number} (stale, no linked PR).`
-              );
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  labels: [staleLabel],
+                });
+
+                console.log(
+                  `Unassigned ${currentLogins.join(", ")} from #${issue.number} (stale, no linked PR).`
+                );
+                continue;
+              }
+
+              // ---- Day 2+: warn once, if not already warned ---------
+              if (elapsed >= warnAfterMs) {
+                const alreadyWarned = timeline.some(
+                  (event) =>
+                    event.event === "commented" &&
+                    event.body &&
+                    event.body.includes(WARNING_MARKER) &&
+                    new Date(event.created_at).getTime() >= mostRecentAssignedAt
+                );
+
+                if (alreadyWarned) {
+                  continue;
+                }
+
+                const mentions = currentLogins.map((l) => `@${l}`).join(", ");
+                const commentBody =
+                  `${WARNING_MARKER}\n` +
+                  `⚠️ ${mentions}, this issue hasn't had a linked pull request in 2 days. ` +
+                  `If no PR referencing this issue is opened, it will be automatically ` +
+                  `unassigned tomorrow and reopened for other contributors. ` +
+                  `Open a PR referencing this issue (e.g. "Fixes #${issue.number}") to keep it assigned to you.`;
+
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  body: commentBody,
+                });
+
+                console.log(
+                  `Warned ${currentLogins.join(", ")} on #${issue.number} (unassignment in ~24h if no PR).`
+                );
+              }
             }

@@ -16,6 +16,13 @@ const METADATA = {
   securityStatus: 'secure' as const,
   breakingComplexity: 'Mathematically unbreakable (information-theoretic security)',
   yearDesigned: 1882,
+  reuseWarning: 'Key must never be reused (reusing an OTP key completely voids perfect secrecy)',
+}
+
+const usedKeyHashes = new Set<string>()
+
+export function clearOtpKeyHistory(): void {
+  usedKeyHashes.clear()
 }
 
 function toBinary8(n: number): string {
@@ -43,20 +50,27 @@ function calculateEntropy(bytes: Uint8Array): number {
 function otpInstrumented(
   inputBytes: Uint8Array,
   keyBytes: Uint8Array,
-  _isDecrypt: boolean
+  _isDecrypt: boolean,
+  isReused: boolean = false
 ): CipherStep[] {
   const steps: CipherStep[] = []
   const entropy = calculateEntropy(keyBytes)
   const maxEntropy = Math.log2(Math.min(keyBytes.length, 256)) || 8
   const randomnessRating = entropy > 0.9 * maxEntropy ? 'Excellent (High Entropy)' : 'Poor (Low Entropy/Non-random)'
 
-  // Step 0: Entropy & Randomness analysis
+  // Step 0: Entropy & Randomness & Key Reuse analysis
   steps.push({
     index: 0,
-    label: 'Key Randomness Analysis',
+    label: 'Key Randomness & Uniqueness Analysis',
     inputState: `KEY LENGTH: ${keyBytes.length} bytes`,
     outputState: `ENTROPY: ${entropy.toFixed(4)} / ${maxEntropy.toFixed(4)} bits`,
-    note: `One-Time Pad requires a truly random key. Calculated Shannon entropy is ${entropy.toFixed(4)} bits per byte. Rating: ${randomnessRating}. Warning: If this key is reused or generated using a predictable PRNG, the security guarantees of the One-Time Pad are completely void.`,
+    table: [
+      { key: 'Key Entropy', value: `${entropy.toFixed(4)} / ${maxEntropy.toFixed(4)} bits` },
+      { key: 'Randomness Rating', value: randomnessRating },
+      { key: 'Key Reuse Check', value: isReused ? '⚠️ WARNING: Key reused!' : '✓ Unique key (first use in session)' },
+      { key: 'Reuse Constraint', value: 'A one-time pad key must NEVER be reused across multiple messages.' },
+    ],
+    note: `One-Time Pad requires a truly random key used exactly once. Calculated Shannon entropy is ${entropy.toFixed(4)} bits per byte. Rating: ${randomnessRating}.${isReused ? ' ⚠️ WARNING: KEY REUSE DETECTED! Reusing an OTP key (two-time pad) allows C1 ⊕ C2 = P1 ⊕ P2, exposing plaintext patterns and completely destroying perfect secrecy (e.g. VENONA project).' : ' Warning: If this key is reused or generated using a predictable PRNG, security guarantees are void.'}`,
     isMilestone: true,
   })
 
@@ -87,7 +101,7 @@ function otpInstrumented(
     label: 'Perfect Secrecy',
     inputState: '',
     outputState: '',
-    note: 'Because the key is as long as the message and completely random, the ciphertext contains absolutely zero information about the plaintext. Given any ciphertext, all plaintexts of that length are equally likely. This is called perfect secrecy.',
+    note: 'Because the key is as long as the message and completely random, the ciphertext contains absolutely zero information about the plaintext. Given any ciphertext, all plaintexts of that length are equally likely. This is called perfect secrecy. MANDATORY SECURITY CONDITION: This guarantee holds ONLY if the key is used EXACTLY ONCE. Reusing a key completely destroys perfect secrecy.',
     isMilestone: true,
   })
 
@@ -122,13 +136,17 @@ export function encrypt(
     )
   }
 
+  const keyHex = fromByteArray(keyBytes, 'hex')
+  const isReused = usedKeyHashes.has(keyHex)
+  usedKeyHashes.add(keyHex)
+
   const outputBytes = new Uint8Array(inputBytes.length)
   for (let i = 0; i < inputBytes.length; i++) {
     outputBytes[i] = inputBytes[i] ^ keyBytes[i]
   }
 
   const steps = options.instrument
-    ? otpInstrumented(inputBytes, keyBytes, false)
+    ? otpInstrumented(inputBytes, keyBytes, false, isReused)
     : []
 
   return {
@@ -167,13 +185,16 @@ export function decrypt(
     )
   }
 
+  const keyHex = fromByteArray(keyBytes, 'hex')
+  const isReused = usedKeyHashes.has(keyHex)
+
   const outputBytes = new Uint8Array(inputBytes.length)
   for (let i = 0; i < inputBytes.length; i++) {
     outputBytes[i] = inputBytes[i] ^ keyBytes[i]
   }
 
   const steps = options.instrument
-    ? otpInstrumented(inputBytes, keyBytes, true)
+    ? otpInstrumented(inputBytes, keyBytes, true, isReused)
     : []
 
   return {
@@ -188,3 +209,4 @@ export function decrypt(
 export const TEST_VECTORS: TestVector[] = [
   { input: 'hello', key: '030015070a', expected: '6b65796b65' },
 ]
+
