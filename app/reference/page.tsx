@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
+import ReferencePageTemplate from "@/components/layout/ReferencePageTemplate";
 
 const sections = [
   {
@@ -78,23 +79,15 @@ export default function ReferenceHubPage() {
     <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-[#081419] dark:via-[#09090B] dark:to-[#120d1d]">
       <Navbar />
 
-      <main className="mx-auto max-w-7xl px-6 py-12">
-        <div className="mb-12 border-b border-zinc-200 dark:border-[#2A2A31] pb-10">
-          <span className="inline-flex rounded-full border border-teal-200 dark:border-[#0C3634] bg-teal-50 dark:bg-[#0C3634]/40 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-[#00C2AE]">
-            Unified Knowledge Hub
-          </span>
-
-          <h1 className="mt-5 text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-            Reference Hub
-          </h1>
-
-          <p className="mt-4 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-[#B3B3B8]">
-            Access all CryptoViz learning material from one place. Browse
-            documentation, glossary terms, resources, standards, case studies
-            and videos while keeping the existing learning routes intact.
-          </p>
-        </div>
-
+        <ReferencePageTemplate
+        title="Reference Hub"
+        description="Access all CryptoViz learning material from one place. Browse documentation, glossary terms, resources, standards, case studies and videos while keeping the existing learning routes intact."
+        eyebrow="Unified Knowledge Hub"
+        breadcrumbs={[
+          { label: "Reference" },
+          { label: "Reference Hub" },
+        ]}
+      >
         <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
           {sections.map((section) => (
             <div
@@ -140,7 +133,7 @@ export default function ReferenceHubPage() {
             </div>
           ))}
         </div>
-      </main>
+      </ReferencePageTemplate>
     </div>
   );
 }

@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import Breadcrumbs from '../../components/layout/Breadcrumbs'
 
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/footer';
+import LearnPageTemplate from "@/components/layout/LearnPageTemplate";
 import EncodingErrorPlayground from '@/components/encoding/EncodingErrorPlayground';
 import { Bug } from 'lucide-react';
 
@@ -13,8 +13,15 @@ export default function EncodingErrorPage() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-[#060816] text-zinc-900 dark:text-white transition-colors duration-300">
       <Navbar />
 
-      <main id="main-content" className="flex-1 mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-12">
-        <Breadcrumbs items={[{ label: "Learn" }, { label: "Encoding Errors" }]} />
+      <LearnPageTemplate
+        title="Encoding Error & Mojibake Playground"
+        description="Explore how decoders handle invalid sequences, byte-level truncation, Base64 padding corruption, and Mojibake character set mismatches."
+        eyebrow="ENCODING ERROR PLAYGROUND #506"
+        breadcrumbs={[
+          { label: "Learn" },
+          { label: "Encoding Errors" },
+        ]}
+      >
         {/* Hero Header */}
         <section aria-labelledby="encoding-error-hero-title" className="relative overflow-hidden rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-br from-amber-500/10 via-teal-500/5 to-transparent p-8 sm:p-12 backdrop-blur-2xl">
           <div className="max-w-3xl space-y-4">
@@ -73,7 +80,7 @@ export default function EncodingErrorPage() {
             </div>
           </div>
         </section>
-      </main>
+      </LearnPageTemplate>
 
       <Footer />
     </div>

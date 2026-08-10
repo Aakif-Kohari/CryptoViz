@@ -3,7 +3,7 @@
 import React from 'react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/footer'
-import Breadcrumbs from '@/components/layout/Breadcrumbs'
+import PracticePageTemplate from "@/components/layout/LearnPageTemplate";
 import CipherSandbox from '@/components/cipher-sandbox/CipherSandbox'
 import { Sparkles, Sliders, ShieldCheck, Cpu } from 'lucide-react'
 
@@ -12,9 +12,20 @@ export default function CipherSandboxPage() {
     <div className="min-h-screen flex flex-col bg-white text-zinc-900 dark:bg-[#060816] dark:text-white transition-colors duration-300">
       <Navbar />
 
-      <main id="main-content" className="flex-1 mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-12">
-        <Breadcrumbs items={[{ label: 'Practice', href: '/visualizer/caesar/' }, { label: 'Cipher Sandbox' }]} />
-
+        <PracticePageTemplate
+        title="Build Your Own Cipher Sandbox"
+        description="Design, test, and analyze custom ciphers by chaining substitution (confusion) and permutation (diffusion) layers. Observe state evolutions step-by-step, verify invertibility, and calculate avalanche metrics in real-time."
+        eyebrow="INTERACTIVE CRYPTOGRAPHY LABORATORY"
+        breadcrumbs={[
+          {
+            label: "Practice",
+            href: "/visualizer/caesar/",
+          },
+          {
+            label: "Cipher Sandbox",
+          },
+        ]}
+      >
         {/* Hero Header */}
         <section aria-labelledby="sandbox-hero-title" className="relative overflow-hidden rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-br from-teal-500/10 via-emerald-500/5 to-transparent p-8 sm:p-12 backdrop-blur-2xl">
           <div className="max-w-3xl space-y-4">
@@ -83,8 +94,7 @@ export default function CipherSandboxPage() {
             </div>
           </div>
         </section>
-      </main>
-
+      </PracticePageTemplate>
       <Footer />
     </div>
   )

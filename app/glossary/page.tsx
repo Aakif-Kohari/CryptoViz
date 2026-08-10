@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import Breadcrumbs from '../../components/layout/Breadcrumbs'
 
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/footer';
+import ReferencePageTemplate from "@/components/layout/ReferencePageTemplate";
 import GlossaryModal from '@/components/glossary/GlossaryModal';
 import { searchGlossaryTerms } from '@/lib/glossary/glossaryData';
 import { GlossaryTerm, TermCategory } from '@/lib/glossary/types';
@@ -45,14 +45,20 @@ export default function GlossaryPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-[#060816] text-zinc-900 dark:text-white transition-colors duration-300">
       <Navbar />
-
-      <main id="main-content" className="flex-1 mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-10">
-        <Breadcrumbs items={[{ label: "Reference" }, { label: "Glossary" }]} />
-        {/* Hero Section */}
-        <section aria-labelledby="glossary-hero-title" className="relative overflow-hidden rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-br from-teal-500/10 via-cyan-500/5 to-transparent p-8 sm:p-12 backdrop-blur-2xl">
-          <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/10 px-3.5 py-1 text-xs font-bold text-teal-600 dark:text-teal-400">
-              <Sparkles className="h-3.5 w-3.5" />
+        <ReferencePageTemplate
+          title="Glossary"
+          description="Explore essential concepts, mathematical formulas, and definitions. All CryptoViz documentation articles automatically cross-link terminology to this explorer."
+          eyebrow="INTERACTIVE TERMINOLOGY & GLOSSARY #509"
+          breadcrumbs={[
+            { label: "Reference" },
+            { label: "Glossary" },
+          ]}
+        >
+          {/* Hero Section */}
+          <section aria-labelledby="glossary-hero-title" className="relative overflow-hidden rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-br from-teal-500/10 via-cyan-500/5 to-transparent p-8 sm:p-12 backdrop-blur-2xl">
+            <div className="max-w-3xl space-y-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/10 px-3.5 py-1 text-xs font-bold text-teal-600 dark:text-teal-400">
+                <Sparkles className="h-3.5 w-3.5" />
               INTERACTIVE TERMINOLOGY & GLOSSARY #509
             </div>
             <h1 id="glossary-hero-title" className="text-3xl sm:text-5xl font-black tracking-tight text-zinc-900 dark:text-white">
@@ -204,7 +210,7 @@ export default function GlossaryPage() {
             </div>
           )}
         </section>
-      </main>
+      </ReferencePageTemplate>
 
       <GlossaryModal
         term={selectedTerm}

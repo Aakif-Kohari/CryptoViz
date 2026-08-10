@@ -1,7 +1,7 @@
 'use client'
 
 import { Suspense, useMemo, useState } from 'react'
-import Breadcrumbs from '../../components/layout/Breadcrumbs'
+import PracticePageTemplate from "@/components/layout/PracticePageTemplate";
 import { useSearchParams } from 'next/navigation'
 import WorkspaceLayout from '../../components/layout/WorkspaceLayout'
 import CipherComparisonPanel from '../../components/compare/CipherComparisonPanel'
@@ -53,21 +53,15 @@ function CompareContent() {
 
   return (
     <WorkspaceLayout activeCipherId={leftCipherId}>
-
-      <main className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
-        <Breadcrumbs items={[{ label: "Practice" }, { label: "Compare Ciphers" }]} />
-        <header className="max-w-3xl">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">
-            Comparison workspace
-          </p>
-          <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
-            Compare two ciphers side by side
-          </h1>
-          <p className="mt-4 text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Run the same input through two algorithms while keeping separate
-            keys, directions, options, results, loading states, and errors.
-          </p>
-        </header>
+<PracticePageTemplate
+    title="Compare two ciphers side by side"
+    description="Run the same input through two algorithms while keeping separate keys, directions, options, results, loading states, and errors."
+    eyebrow="Comparison workspace"
+    breadcrumbs={[
+      { label: "Practice" },
+      { label: "Compare Ciphers" },
+    ]}
+  >
 
         <ComparisonControls
           ciphers={CIPHER_REGISTRY}
@@ -100,7 +94,7 @@ function CompareContent() {
             resetToken={resetToken}
           />
         </section>
-      </main>
+      </PracticePageTemplate>
     </WorkspaceLayout>
   )
 }
