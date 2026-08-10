@@ -118,9 +118,8 @@ export function serializeContentSecurityPolicy(directives: Record<string, string
 }
 
 export function cspContainsUnsafeInline(headerValue: string): boolean {
-  return /(^|\s)'unsafe-inline'(\s|;|$)/.test(headerValue);
-}
-
+  return /(^|\s)'unsafe-inline'(\s|[;,]|$)/i.test(headerValue);
+} 
 export function validateStrictContentSecurityPolicy(headerValue: string): string[] {
   const findings: string[] = [];
 
