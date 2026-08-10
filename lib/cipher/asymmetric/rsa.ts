@@ -1,7 +1,7 @@
 import { CipherError } from '../../utils/errors'
 import { toByteArray, fromByteArray } from '../../utils/encoding'
 import type { CipherResult, CipherStep, CipherMetadata, CipherOptions, TestVector } from '../types'
-
+import { isPrime } from '../../asymmetric/rsaKeyGenerationWizard'
 // ---------------------------------------------------------------------------
 // Real mode: genuine RSA-OAEP (SHA-256) via the WebCrypto API (crypto.subtle).
 //
@@ -189,11 +189,18 @@ function gcd(a: bigint, b: bigint): bigint {
   return a
 }
 
+// Note on RSA Exponent Derivation:
+// Modern RSA standards (PKCS#1 v2.2 / RFC 8017) compute the private exponent d
+// modulo Carmichael's lambda λ(n) = lcm(p-1, q-1). Pedagogical presentations
+// (such as our RSA Key Generation Wizard) often use Euler's totient φ(n) = (p-1)(q-1)
+// following the original 1978 RSA paper. Both are valid because λ(n) | φ(n);
+// λ(n) yields the unique smallest equivalent decryption exponent.
 function lcm(a: bigint, b: bigint): bigint {
   return (a / gcd(a, b)) * b
 }
 
 export function modInverse(e: bigint, lambda: bigint): bigint {
+
   const { gcd, x } = extendedGCD(e, lambda)
   if (gcd !== 1n) {
     throw new CipherError('INVALID_KEY', 'e and lambda(n) are not coprime')
@@ -309,12 +316,26 @@ try {
     'Invalid RSA key format. Key values must be valid numbers.'
   )
 }
+if (p <= 1n || q <= 1n) {
+  throw new CipherError('INVALID_KEY', 'p and q must both be greater than 1.')
+}
 
-  if (p <= 1n || q <= 1n) {
-    throw new CipherError('INVALID_KEY', 'p and q must both be greater than 1.')
-  }
+if (!isPrime(Number(p))) {
+  throw new CipherError(
+    'INVALID_KEY',
+    `RSA requires p to be prime. The value ${p} is not prime.`
+  )
+}
 
-  const n = p * q
+if (!isPrime(Number(q))) {
+  throw new CipherError(
+    'INVALID_KEY',
+    `RSA requires q to be prime. The value ${q} is not prime.`
+  )
+}
+
+const n = p * q
+  
   const lambda = lcm(p - 1n, q - 1n)
 
   if (isPrivateKey) {

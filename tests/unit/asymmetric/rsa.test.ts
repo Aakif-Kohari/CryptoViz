@@ -74,6 +74,30 @@ describe('RSA Asymmetric Cipher Unit Tests', () => {
     expect(() => decrypt('2790', '3233')).toThrow(/Invalid RSA key format/)
   })
   it('derives n, d from p,q,e for encrypt/decrypt (3-value key format)', async () => {
+    it('rejects composite p in the 3-value demo key format', () => {
+  expect(() => encrypt('65', '15,53,17')).toThrow(
+    /RSA requires p to be prime.*15 is not prime/i
+  )
+})
+
+it('rejects composite q in the 3-value demo key format', () => {
+  expect(() => encrypt('65', '61,21,17')).toThrow(
+    /RSA requires q to be prime.*21 is not prime/i
+  )
+})
+
+it('continues to accept valid prime p and q values', async () => {
+  const result = await encrypt('65', '61,53,17')
+  expect(result.output).toBe('2790')
+})
+
+it('does not apply demo primality validation to real mode', async () => {
+  const result = await encrypt('Hello', '15,53,17', {
+    mode: 'real',
+  })
+
+  expect(result.output).toMatch(/^[0-9a-f]{512}$/)
+})
     const encResult = await encrypt('65', '61,53,17')
     expect(encResult.output).toBe('2790')
     const decResult = await decrypt('2790', '61,53,17')

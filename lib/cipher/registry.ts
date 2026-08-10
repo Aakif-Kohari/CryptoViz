@@ -9,6 +9,8 @@ export interface CipherDefinition {
   defaultInput: string;
   securityStatus: "recommended" | "secure" | "legacy" | "deprecated" | "broken" | "experimental";
   keyPlaceholder?: string;
+  keySize?: string;
+  practicalUseCases?: string[];
   /** Cipher IDs the learner should be comfortable with before tackling this one */
   prerequisites?: string[];
   /** Cipher IDs that make natural next steps after exploring this one */
@@ -132,6 +134,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "0123456789ABCDEF",
     securityStatus: "broken",
     keyPlaceholder: "16-character hex key",
+    keySize: "56 bits",
+    practicalUseCases: ["Legacy systems interoperability", "Educational purposes (understanding classical block ciphers)"],
     prerequisites: ["xor"],
     recommendedNext: ["3des", "aes"],
     options: [
@@ -184,6 +188,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: "00112233445566778899aabbccddeeff",
     securityStatus: "recommended",
     keyPlaceholder: "32/48/64-character hex key",
+    keySize: "128, 192, or 256 bits",
+    practicalUseCases: ["Secure web traffic (HTTPS)", "File encryption", "VPNs", "Disk encryption"],
     prerequisites: ["des"],
     recommendedNext: ["chacha20-poly1305", "sha256", "hmac"],
     options: [
@@ -562,6 +568,36 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'square',
+    name: 'Square',
+    category: 'symmetric',
+    description: 'Direct historical predecessor to Rijndael (AES) by Daemen & Rijmen (1997). Structurally defined the AES template but uses a distinct S-box and matrix. Status: BROKEN by the "Square attack" (integral cryptanalysis).',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'broken',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
+    id: 'feal',
+    name: 'FEAL-8',
+    category: 'symmetric',
+    description: 'Japanese Feistel cipher (1987). Pure arithmetic design (no S-boxes). Status: BROKEN. Canonical target for differential cryptanalysis development. Included to demonstrate why differential characteristics are traceable in weak designs.',
+    defaultKey: '0000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'broken',
+    keyPlaceholder: '64-bit key as 16 hex chars',
+  },
+  {
+    id: 'safer-plus',
+    name: 'SAFER+',
+    category: 'symmetric',
+    description: 'AES candidate (1998) and original Bluetooth pairing cipher. Byte-oriented SPN using modular exponentiation (45^x mod 257) for non-linearity and an Armenian Pseudo-Hadamard Transform network for diffusion.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'aria',
     name: 'ARIA',
     category: 'symmetric',
@@ -572,6 +608,26 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
   },
   {
+    id: 'kasumi',
+    name: 'KASUMI',
+    category: 'symmetric',
+    description: '3GPP TS 35.202 (GSM A5/3, UMTS f8/f9). MISTY1-derived hardware-optimized cipher. Status: BROKEN (2010 related-key attack). Included for educational value as a once-deployed mobile standard.',
+    defaultKey: '9900aabbccddeeff1122334455667788',
+    defaultInput: 'fedcba0987654321',
+    securityStatus: 'broken',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
+    id: '3way',
+    name: '3-Way',
+    category: 'symmetric',
+    description: 'Joan Daemen\'s first cipher (1994). 96-bit block/key, 11 rounds. Defines three-fold cyclic symmetry where every sub-transform commutes with word rotation. Direct predecessor to Square and AES. Status: BROKEN.',
+    defaultKey: '000000000000000000000000',
+    defaultInput: '000000000000000000000000',
+    securityStatus: 'broken',
+    keyPlaceholder: '96-bit key as 24 hex chars',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
@@ -580,6 +636,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultKey: "",
     defaultInput: "abc",
     securityStatus: "recommended",
+    keySize: "None (hash function)",
+    practicalUseCases: ["Data integrity verification", "Digital signatures", "Blockchain proof-of-work", "Password hashing (via HMAC/PBKDF2)"],
     recommendedNext: ["hmac", "sha512", "bcrypt"],
   },
   {
@@ -863,6 +921,46 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '',
     securityStatus: 'secure',
   },
+  {
+    id: 'jh',
+    name: 'JH-256',
+    category: 'hash',
+    description: 'SHA-3 finalist (2008). Fixed 1024-bit permutation with generalized AES-like rounds using 4-bit S-boxes and bit-level grouping permutation. Double message XOR injection. Completes the five-of-five SHA-3 finalist set.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+  },
+  {
+    id: 'ripemd128',
+    name: 'RIPEMD-128',
+    category: 'hash',
+    description: '128-bit output sibling of RIPEMD-160. Dual-parallel-line MD4-family design with distinct tables from its 160-bit counterpart. Status: legacy (128-bit output too short for modern collision resistance).',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy',
+  },
+  {
+    id: 'haval',
+    name: 'HAVAL',
+    category: 'hash',
+    description: 'Configurable hash (1992). Unique in offering independent control over round count (3/4/5 passes) and output length (128-256 bits). Status: legacy (weaker at 3-pass/128-bit, stronger at 5-pass/256-bit).',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy',
+    options: [
+      { name: 'Passes (Rounds)', id: 'passes', type: 'select', default: 5, choices: [{label: '3', value: 3}, {label: '4', value: 4}, {label: '5', value: 5}] },
+      { name: 'Output Length (bits)', id: 'outputBits', type: 'select', default: 256, choices: [{label: '128', value: 128}, {label: '160', value: 160}, {label: '192', value: 192}, {label: '224', value: 224}, {label: '256', value: 256}] }
+    ]
+  },
+  {
+    id: 'gost-r34-11-94',
+    name: 'GOST R 34.11-94',
+    category: 'hash',
+    description: 'Original Russian national hash standard (1994-2013). Uses GOST 28147-89 block cipher internally with a distinctive P-transformation key-mixing step. Superseded by Streebog. Status: legacy.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy',
+  },
   // Asymmetric
   {
     id: "rsa",
@@ -875,6 +973,8 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: "secure",
     keyPlaceholder:
       "Enter: 3 values (p,q,e) or 2 values (n,e / n,d) if you already have n",
+    keySize: "Typically 2048 to 4096 bits",
+    practicalUseCases: ["Secure key exchange", "Digital signatures", "Secure email (PGP/S/MIME)", "SSL/TLS certificates"],
     prerequisites: ["hmac"],
     recommendedNext: ["ecc", "dh", "ml-kem"],
     options: [
@@ -993,7 +1093,19 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'recipient public key (encapsulate) or private key (decapsulate)',
     prerequisites: ["ecc", "dh"],
-    recommendedNext: ["ml-dsa", "ecies"],
+    recommendedNext: ["frodokem", "ml-dsa", "ecies"],
+  },
+  {
+    id: 'frodokem',
+    name: 'FrodoKEM-640',
+    category: 'asymmetric',
+    description: 'Post-quantum key encapsulation mechanism (KEM) based on unstructured Learning With Errors (LWE) on standard matrices, offering conservative security without algebraic ring assumptions.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+    keyPlaceholder: 'recipient public key JSON (encapsulate) or private key JSON (decapsulate)',
+    prerequisites: ["ml-kem", "ecc"],
+    recommendedNext: ["ml-dsa", "ntru"],
   },
   {
     id: 'ed448',
@@ -1016,6 +1128,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'totalShares,threshold (split) — leave blank for combine',
   },
   {
+    id: 'sidh',
+    name: 'SIDH',
+    category: 'asymmetric',
+    description: 'Isogeny-based key exchange (SIKE). Status: FULLY BROKEN (2022). Included as an educational case study demonstrating how a promising NIST PQC candidate was completely broken via classical mathematics exploiting auxiliary torsion-point data.',
+    defaultKey: 'pub,priv',
+    defaultInput: '01',
+    securityStatus: 'broken',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
+  {
     id: 'ntru',
     name: 'NTRU',
     category: 'asymmetric',
@@ -1024,5 +1146,55 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '01',
     securityStatus: 'secure',
     keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
+  {
+    id: 'gost-r34-10',
+    name: 'GOST R 34.10-2012',
+    category: 'asymmetric',
+    description: 'Russian national elliptic-curve signature standard (RFC 7091). Uses Streebog-256 and an addition-based signing equation with a unique e=0 -> e=1 edge case. Completes the GOST/Kuznyechik/Streebog Russian suite.',
+    defaultKey: '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+    defaultInput: 'message',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Private key (sign) or Public key (verify)',
+  },
+  {
+    id: 'mceliece',
+    name: 'Classic McEliece',
+    category: 'asymmetric',
+    description: 'Code-based Post-Quantum KEM (NIST PQC Finalist, 1978). Security rests on decoding random linear codes. WARNING: Visualizer uses small pedagogical parameters (n=15) for teaching; NOT secure at this size. Real McEliece has an exceptionally long unbroken track record.',
+    defaultKey: 'pub,priv',
+    defaultInput: '01',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
+  {
+    id: 'cramer-shoup',
+    name: 'Cramer-Shoup',
+    category: 'asymmetric',
+    description: 'First practical IND-CCA2-secure public-key scheme in the standard model (1998). Extends ElGamal with 5 secret exponents and a hash-based integrity check that rejects tampered ciphertexts.',
+    defaultKey: 'mock_keys',
+    defaultInput: '0000000000000001',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
+  {
+    id: 'sm2',
+    name: 'SM2',
+    category: 'asymmetric',
+    description: 'Chinese national elliptic-curve signature standard (GB/T 32918). Uses a distinct ZA hash prefix incorporating the signer ID and curve parameters before hashing the message. Completes the SM2+SM3+SM4 Chinese suite.',
+    defaultKey: '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+    defaultInput: 'message',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Private key (sign) or Public key (verify)',
+  },
+  {
+    id: 'kcdsa',
+    name: 'KCDSA',
+    category: 'asymmetric',
+    description: 'Korean national digital signature standard. DSA-family but hashes Message || w (commitment) instead of just Message. Note: Uses LSH-256 as a modernized substitute for the original HAS-160 pairing. Completes the Korean national suite.',
+    defaultKey: '1234567890abcdef',
+    defaultInput: '616263',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Private key (sign) or Public key (verify)',
   },
 ];

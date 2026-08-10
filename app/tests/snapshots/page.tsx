@@ -1,4 +1,4 @@
-"use client";
+import { requireDevelopment } from "@/lib/devOnly";
 
 import Navbar from "@/components/layout/Navbar";
 import SnapshotTestRunner from "@/components/tests/SnapshotTestRunner";

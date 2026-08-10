@@ -2,7 +2,6 @@
 import HeroIllustration from "@/components/HeroIllustration";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Analytics } from "@vercel/analytics/next";
 import Navbar from "../components/layout/Navbar";
 import SkeletonCard from "../components/ui/SkeletonCard";
 import { Zap, ShieldCheck, BookOpen, ArrowRight } from "lucide-react";
@@ -98,6 +97,21 @@ export default function Home() {
         </svg>
       ),
       link: "/merkle/",
+      glowClass: "hover:border-[#00C2AE]/50 hover:shadow-[0_0_30px_rgba(0,194,174,0.1)]"
+    },
+    {
+      title: "OpenPGP Workflow Explorer",
+      difficulty: "Advanced",
+      time: "25 min",
+      popular: true,
+      description:
+        "Visualize the canonical Sign → Compress → Encrypt pipeline (RFC 4880/9580). Inspect OpenPGP packet trees, entropy shifts, and tamper integrity checks.",
+      icon: (
+        <svg className="h-6 w-6 text-[#00C2AE]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+      ),
+      link: "/openpgp",
       glowClass: "hover:border-[#00C2AE]/50 hover:shadow-[0_0_30px_rgba(0,194,174,0.1)]"
     },
     {
@@ -239,10 +253,10 @@ export default function Home() {
  
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             {isLoading
-              ? Array.from({ length: 5 }).map((_, idx) => <SkeletonCard key={idx} />)
-              : categories.map((cat, idx) => (
+              ? Array.from({ length: 5 }).map((_, idx) => <SkeletonCard key={`skeleton-${idx}`} />) // static skeleton count, index key is safe
+              : categories.map((cat) => (
                 <div
-                  key={idx}
+                  key={cat.title}
                   className={`group relative flex flex-col justify-between rounded-xl border border-zinc-200 dark:border-[#2A2A31] bg-white dark:bg-[#16161A] p-6 shadow-sm transition-all duration-250 hover:-translate-y-1 hover:bg-zinc-50 dark:hover:bg-[#1A1A1F] ${cat.glowClass}`}
                 >
                   <div>

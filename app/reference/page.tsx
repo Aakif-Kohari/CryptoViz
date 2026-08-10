@@ -4,6 +4,7 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import ReferencePageTemplate from "@/components/layout/ReferencePageTemplate";
 
+import GlobalSearch from "@/components/search/GlobalSearch";
 const sections = [
   {
     title: "Documentation",
@@ -29,7 +30,7 @@ const sections = [
     ],
   },
   {
-    title: "Resources",
+    title: "Learning Resources",
     href: "/resources",
     badge: "LIBRARY",
     description:
