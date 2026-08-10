@@ -161,6 +161,7 @@ export type CipherName =
   | 'gost-r34-10'
   | 'mceliece'
   | 'sm2'
+  | 'kcdsa'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
