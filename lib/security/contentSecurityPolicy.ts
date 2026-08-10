@@ -9,7 +9,9 @@ export interface ContentSecurityPolicyOptions {
 }
 
 export interface ContentSecurityPolicyResult {
-  headerName: "Content-Security-Policy" | "Content-Security-Policy-Report-Only";
+  headerName:
+    | "Content-Security-Policy"
+    | "Content-Security-Policy-Report-Only";
   headerValue: string;
   nonce: string | null;
   directives: Record<string, string[]>;
@@ -43,31 +45,15 @@ function unique(values: string[]): string[] {
 function createFallbackNonce(): string {
   const randomValues = new Uint8Array(16);
 
-  if (globalThis.crypto?.getRandomValues) {
-    globalThis.crypto.getRandomValues(randomValues);
-  } else {
-    let nodeCrypto;
-    try {
-      if (typeof require !== "undefined") {
-        nodeCrypto = require("crypto");
-      }
-    } catch (e) {
-      // ignore
-    }
-
-    if (nodeCrypto?.randomBytes) {
-      try {
-        const bytes = nodeCrypto.randomBytes(16);
-        randomValues.set(bytes);
-      } catch (e) {
-        throw new Error("CSPRNG not available");
-      }
-    } else {
-      throw new Error("CSPRNG not available");
-    }
+  if (
+    typeof globalThis.crypto === "undefined" ||
+    typeof globalThis.crypto.getRandomValues !== "function"
+  ) {
+    throw new Error("CSPRNG not available");
   }
 
-     globalThis.crypto.getRandomValues(randomValues);
+  globalThis.crypto.getRandomValues(randomValues);
+
   return btoa(String.fromCharCode(...randomValues))
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
@@ -142,23 +128,37 @@ export function validateStrictContentSecurityPolicy(headerValue: string): string
     findings.push("CSP must not contain 'unsafe-inline'.");
   }
 
-  if (!/script-src[^;]*'nonce-[^']+'/.test(headerValue)) {
+  const hasScriptNonce =
+    /(?:^|;)\s*script-src\s+[^;]*'nonce-[^']+'(?:;|$)/.test(
+      headerValue,
+    );
+
+  if (!hasScriptNonce) {
     findings.push("script-src should include a nonce.");
   }
 
-  if (!/style-src[^;]*'nonce-[^']+'/.test(headerValue)) {
+  const hasStyleNonce =
+    /(?:^|;)\s*style-src\s+[^;]*'nonce-[^']+'(?:;|$)/.test(
+      headerValue,
+    );
+
+  if (!hasStyleNonce) {
     findings.push("style-src should include a nonce.");
   }
 
-  if (!/object-src 'none'/.test(headerValue)) {
+  if (!/(?:^|;)\s*object-src\s+'none'(?:;|$)/.test(headerValue)) {
     findings.push("object-src should be locked down to 'none'.");
   }
 
-  if (!/frame-ancestors 'none'/.test(headerValue)) {
-    findings.push("frame-ancestors should be locked down to 'none'.");
+  if (
+    !/(?:^|;)\s*frame-ancestors\s+'none'(?:;|$)/.test(headerValue)
+  ) {
+    findings.push(
+      "frame-ancestors should be locked down to 'none'.",
+    );
   }
 
-  if (!/base-uri 'self'/.test(headerValue)) {
+  if (!/(?:^|;)\s*base-uri\s+'self'(?:;|$)/.test(headerValue)) {
     findings.push("base-uri should be locked down to 'self'.");
   }
 
