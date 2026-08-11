@@ -194,6 +194,7 @@ export type CipherName =
   | 'ripemd128'
   | 'haval'
   | 'gost-r34-11-94'
+  | 'snefru'
   | 'poly1305'
   | 'hmac'
   | 'cmac'
