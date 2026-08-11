@@ -48,6 +48,7 @@ export interface CipherMetadata {
   breakingComplexity?: string
   yearDesigned?: number
   standardBody?: string
+  securityWarning?: string
 }
 
 export interface CipherOptions {
@@ -124,7 +125,14 @@ export type CipherName =
   | 'hc128'
   | 'anubis'
   | 'mars'
+  | 'clefia'
   | 'misty1'
+  | 'square'
+  | 'feal'
+  | 'safer-plus'
+  | 'aria'
+  | 'kasumi'
+  | '3way'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
@@ -146,8 +154,16 @@ export type CipherName =
   | 'ml-dsa'
   | 'ecies'
   | 'ml-kem'
+  | 'frodokem'
   | 'ed448'
   | 'shamir-secret-sharing'
+  | 'sidh'
+  | 'ntru'
+  | 'gost-r34-10'
+  | 'mceliece'
+  | 'cramer-shoup'
+  | 'sm2'
+  | 'kcdsa'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
@@ -171,7 +187,13 @@ export type CipherName =
   | 'md4'
   | 'argon2'
   | 'skein'
+  | 'lsh256'
   | 'tiger'
+  | 'grostl'
+  | 'jh'
+  | 'ripemd128'
+  | 'haval'
+  | 'gost-r34-11-94'
   | 'poly1305'
   | 'hmac'
   | 'cmac'

@@ -12,6 +12,8 @@ import {
   type CipherDefinition,
 } from '../../lib/cipher/registry'
 
+
+
 export interface SpecializedVisualizer {
   id: string
   name: string
@@ -53,6 +55,16 @@ export const SPECIALIZED_VISUALIZERS: SpecializedVisualizer[] = [
     securityStatus: 'broken',
     docsLink: '/docs',
   },
+  {
+  id: "tls13-handshake",
+  name: "TLS 1.3 Handshake Visualizer",
+  category: "specialized",
+  description:
+    "Interactive visualization of the TLS 1.3 handshake covering ClientHello, ServerHello, ECDHE key exchange, certificate authentication, Finished messages, and encrypted application data.",
+  route: "/visualizer/tls13-handshake/",
+  securityStatus: "recommended",
+  docsLink: "/docs",
+},
   {
     id: 'ecb-pattern',
     name: 'ECB Mode Pattern Leakage Visualizer',
@@ -113,6 +125,16 @@ export const SPECIALIZED_VISUALIZERS: SpecializedVisualizer[] = [
     securityStatus: 'legacy',
     docsLink: '/docs',
   },
+  {
+  id: "secret-recovery",
+  name: "Interactive Secret Recovery Simulator",
+  category: "specialized",
+  description:
+    "Interactive visualization of Shamir's Secret Sharing showing threshold-based secret reconstruction using polynomial interpolation.",
+  route: "/visualizer/secret-recovery/",
+  securityStatus: "recommended",
+  docsLink: "/docs/secret-recovery",
+},
   {
     id: 'idea',
     name: 'IDEA Cipher Structure Visualizer',
@@ -267,6 +289,7 @@ export default function CipherVisualizerHub() {
     setSelectedSecurity('all')
     setSortBy('name')
   }
+  
 
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-100">
