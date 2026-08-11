@@ -628,6 +628,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '96-bit key as 24 hex chars',
   },
   {
+    id: 'lucifer',
+    name: 'Lucifer',
+    category: 'symmetric',
+    description: 'Horst Feistel\'s original cipher (~1971) and the namesake of the Feistel network. Direct predecessor to DES. Uniquely uses a key-controlled bit to select which of two S-boxes applies per byte. Status: BROKEN.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'broken',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",

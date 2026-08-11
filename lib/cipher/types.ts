@@ -133,6 +133,7 @@ export type CipherName =
   | 'aria'
   | 'kasumi'
   | '3way'
+  | 'lucifer'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
