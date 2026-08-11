@@ -182,7 +182,9 @@ export default function FiniteFieldPage() {
               AES uses bytes as elements of the finite field GF(2<sup>8</sup>). Each byte (b<sub>7</sub> b<sub>6</sub> b<sub>5</sub> b<sub>4</sub> b<sub>3</sub> b<sub>2</sub> b<sub>1</sub> b<sub>0</sub>) is interpreted as a polynomial:
             </p>
             <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 font-mono text-sm">
-              <p dangerouslySetInnerHTML={{ __html: `A(x) = b_7x^7 + b_6x^6 + b_5x^5 + b_4x^4 + b_3x^3 + b_2x^2 + b_1x + b_0` }} />
+              <p>
+                A(x) = b<sub>7</sub>x<sup>7</sup> + b<sub>6</sub>x<sup>6</sup> + b<sub>5</sub>x<sup>5</sup> + b<sub>4</sub>x<sup>4</sup> + b<sub>3</sub>x<sup>3</sup> + b<sub>2</sub>x<sup>2</sup> + b<sub>1</sub>x + b<sub>0</sub>
+              </p>
             </div>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
               Operations in this field ensure that all mixing steps in AES are fully reversible, maintaining cryptographic diffusion and confusion securely.
