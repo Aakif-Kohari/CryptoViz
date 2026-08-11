@@ -90,6 +90,24 @@ async function rsaRealEncrypt(
   const steps: CipherStep[] = []
   if (options.instrument) {
     steps.push({
+
+  index: 0,
+  label: '⚠️ Demo Key Warning',
+  inputState: '',
+  outputState: '',
+  note: 'RSA real mode uses a publicly embedded demo key pair for teaching and visualization. The private key is included in the application source code, so anything encrypted with this key can be decrypted by anyone who can read the source. Never use this key to protect real secrets or sensitive data.',
+  isMilestone: true,
+})
+
+steps.push({
+  index: 1,
+  label: 'RSA-OAEP 2048-bit Encryption (WebCrypto)',
+  inputState: fromByteArray(inputBytes, 'hex'),
+  outputState: output,
+  note: 'Real mode: the plaintext is encrypted with genuine RSA-OAEP (SHA-256) using crypto.subtle over a 2048-bit key. OAEP adds randomised padding, so the 256-byte ciphertext changes on every run while still decrypting back to the same plaintext.',
+  isMilestone: true,
+})
+
       index: 0,
       label: '⚠️ Static Demo Key Warning',
       inputState: '',
@@ -109,6 +127,7 @@ async function rsaRealEncrypt(
       note: 'Real mode: the plaintext is encrypted with genuine RSA-OAEP (SHA-256) using crypto.subtle over a 2048-bit key. OAEP adds randomised padding, so the 256-byte ciphertext changes on every run while still decrypting back to the same plaintext.',
       isMilestone: true,
     })
+
   }
 
   return {
