@@ -1197,4 +1197,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'Private key (sign) or Public key (verify)',
   },
+  {
+    id: 'goldwasser-micali',
+    name: 'Goldwasser-Micali',
+    category: 'asymmetric',
+    description: 'First semantically-secure (IND-CPA) public-key scheme (1982). Based on Quadratic Residuosity. Deliberately probabilistic: encrypts bit-by-bit with massive ciphertext expansion to achieve semantic security.',
+    defaultKey: 'mock',
+    defaultInput: '01',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
 ];
