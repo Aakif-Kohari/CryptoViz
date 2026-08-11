@@ -166,6 +166,7 @@ export type CipherName =
   | 'cramer-shoup'
   | 'sm2'
   | 'kcdsa'
+  | 'goldwasser-micali'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
