@@ -136,9 +136,11 @@ function decryptFast(input: string, key: string): string {
     }
   }
 
-  // Strip trailing PAD_CHAR
-  let result = parts.join('')
-  while (result.endsWith(PAD_CHAR)) result = result.slice(0, -1)
+// Strip trailing PAD_CHAR padding. Because 'X' is also a valid plaintext
+// character, legitimate trailing X characters are indistinguishable from
+// padding and may be lost during decryption.
+let result = parts.join('')
+while (result.endsWith(PAD_CHAR)) result = result.slice(0, -1)
   return result
 }
 
@@ -287,7 +289,7 @@ function decryptInstrumented(input: string, key: string): CipherStep[] {
     label: 'Plaintext output',
     inputState: parts.join(''),
     outputState: result,
-    note: `Read rows left-to-right. Trailing '${PAD_CHAR}' padding characters stripped.`,
+    note: `Read rows left-to-right. Trailing '${PAD_CHAR}' padding characters stripped. Note: trailing '${PAD_CHAR}' characters in the original plaintext are indistinguishable from padding and may be lost.`,
     isMilestone: true,
   })
 
@@ -334,23 +336,34 @@ export function decrypt(
 
 // ─── Test Vectors ─────────────────────────────────────────────────────────────
 
+/**
+ * Test vectors for Columnar Transposition.
+ *
+ * Ranking Convention:
+ * - Columns are ordered alphabetically by key characters (case-insensitive).
+ * - Ties (duplicate key letters) are resolved stably in left-to-right order.
+ * - Ranks are 0-indexed: rank 0 corresponds to the alphabetically first key character.
+ * - Plaintext is padded with 'X' characters to fill incomplete grid rows.
+ * - Columns are read off and concatenated in ascending rank order (0, 1, 2, ...).
+ */
 export const TEST_VECTORS = [
   {
     input: 'WEAREDISCOVEREDFLEEAATONCE',
     key: 'ZEBRAS',
-    expected: 'EVLNXACDTXROFOXDEECXWIREEESEAX',
+    expected: 'EVLOXACDAXESEAEROFTXDEENXWIREC',
     description: 'Classic ZEBRAS example',
   },
   {
     input: 'HELLO',
     key: 'KEY',
-    expected: 'EOHLLLX',
+    expected: 'EOHLLX',
     description: 'Short input with padding',
   },
   {
     input: 'ATTACK',
     key: 'CAT',
-    expected: 'TCAKTA',
+    expected: 'TCAATK',
     description: 'Even-length input, no padding',
   },
 ] as const
+
