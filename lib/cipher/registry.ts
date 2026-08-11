@@ -981,6 +981,19 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '',
     securityStatus: 'legacy',
   },
+  {
+    id: 'snefru',
+    name: 'Snefru',
+    category: 'hash',
+    description: 'Merkle\'s 1990 hash design. Uses 4 large 256x32-bit S-boxes. Configurable passes (2/4) and output (128/256). Status: legacy (2-pass is weak, 4-pass is stronger). Complements Merkle-Hellman in the repo.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy',
+    options: [
+      { name: 'Passes', id: 'passes', type: 'select', default: 2, choices: [{label: '2', value: 2}, {label: '4', value: 4}] },
+      { name: 'Output Length (bits)', id: 'outputBits', type: 'select', default: 128, choices: [{label: '128', value: 128}, {label: '256', value: 256}] }
+    ]
+  },
   // Asymmetric
   {
     id: "rsa",
