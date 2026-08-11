@@ -618,6 +618,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'grain128',
+    name: 'Grain-128',
+    category: 'symmetric',
+    description: 'eSTREAM hardware-profile finalist (2006). Uses a coupled 128-bit LFSR and NLFSR. Distinctive initialization feeds output back into both registers for 256 rounds. Completes the eSTREAM hardware pairing alongside Trivium.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: '3way',
     name: '3-Way',
     category: 'symmetric',
