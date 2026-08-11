@@ -193,6 +193,7 @@ export type CipherName =
   | 'jh'
   | 'ripemd128'
   | 'haval'
+  | 'md2'
   | 'gost-r34-11-94'
   | 'poly1305'
   | 'hmac'

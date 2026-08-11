@@ -953,6 +953,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     ]
   },
   {
+    id: 'md2',
+    name: 'MD2',
+    category: 'hash',
+    description: 'Earliest MD-family hash (RFC 1319, 1989). Byte-oriented with a distinctive 16-byte checksum block appended before compression. Status: BROKEN (severe weaknesses). Completes the MD2->MD4->MD5 lineage.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'broken',
+  },
+  {
     id: 'gost-r34-11-94',
     name: 'GOST R 34.11-94',
     category: 'hash',
