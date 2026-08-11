@@ -117,13 +117,16 @@ export function serializeContentSecurityPolicy(directives: Record<string, string
     .join("; ");
 }
 
+
 export function cspContainsUnsafeInline(
   headerValue: string,
 ): boolean {
-  return /(^|\s)'unsafe-inline'(\s|[;,]|$)/i.test(headerValue);
+  return /(^|[\s;,])'unsafe-inline'(?=[\s;,]|$)/i.test(headerValue);
 }
 
-export function validateStrictContentSecurityPolicy(headerValue: string): string[] {
+export function validateStrictContentSecurityPolicy(
+  headerValue: string,
+): string[] {
   const findings: string[] = [];
 
   if (cspContainsUnsafeInline(headerValue)) {
@@ -131,7 +134,7 @@ export function validateStrictContentSecurityPolicy(headerValue: string): string
   }
 
   const hasScriptNonce =
-        /(?:^|;)\s*script-src\s+[^;]*'nonce-[^']+'(?=\s|;|$)[^;]*(?:;|$)/.test(
+    /(?:^|;)\s*script-src\s+[^;]*'nonce-[^']+'(?=\s|;|$)[^;]*(?:;|$)/.test(
       headerValue,
     );
 
@@ -140,7 +143,7 @@ export function validateStrictContentSecurityPolicy(headerValue: string): string
   }
 
   const hasStyleNonce =
-    /(?:^|;)\s*style-src\s+[^;]*'nonce-[^']+'(?:;|$)/.test(
+    /(?:^|;)\s*style-src\s+[^;]*'nonce-[^']+'(?=\s|;|$)[^;]*(?:;|$)/.test(
       headerValue,
     );
 
@@ -148,19 +151,29 @@ export function validateStrictContentSecurityPolicy(headerValue: string): string
     findings.push("style-src should include a nonce.");
   }
 
-  if (!/(?:^|;)\s*object-src\s+'none'(?:;|$)/.test(headerValue)) {
+  if (
+    !/(?:^|;)\s*object-src\s+'none'\s*(?:;|$)/.test(
+      headerValue,
+    )
+  ) {
     findings.push("object-src should be locked down to 'none'.");
   }
 
   if (
-    !/(?:^|;)\s*frame-ancestors\s+'none'(?:;|$)/.test(headerValue)
+    !/(?:^|;)\s*frame-ancestors\s+'none'\s*(?:;|$)/.test(
+      headerValue,
+    )
   ) {
     findings.push(
       "frame-ancestors should be locked down to 'none'.",
     );
   }
 
-  if (!/(?:^|;)\s*base-uri\s+'self'(?:;|$)/.test(headerValue)) {
+  if (
+    !/(?:^|;)\s*base-uri\s+'self'\s*(?:;|$)/.test(
+      headerValue,
+    )
+  ) {
     findings.push("base-uri should be locked down to 'self'.");
   }
 

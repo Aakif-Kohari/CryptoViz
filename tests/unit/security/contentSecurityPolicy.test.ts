@@ -66,14 +66,6 @@ describe("content security policy hardening", () => {
     expect(development.headerValue).not.toContain("'unsafe-inline'");
   });
 
-  it("validates weak CSP strings", () => {
-    expect(
-      validateStrictContentSecurityPolicy(
-        "default-src 'self'; script-src 'unsafe-inline'",
-      ),
-    ).toContain("CSP must not contain 'unsafe-inline'.");
-  });
-
   describe("cspContainsUnsafeInline", () => {
     it("detects lowercase unsafe-inline", () => {
       expect(
@@ -109,10 +101,26 @@ describe("content security policy hardening", () => {
       ).toBe(true);
     });
 
-    it("detects comma-delimited unsafe-inline without whitespace", () => {
+    it("detects unsafe-inline after an unspaced comma", () => {
       expect(
         cspContainsUnsafeInline(
-          "script-src 'unsafe-inline',style-src 'self'",
+          "script-src 'self','unsafe-inline'",
+        ),
+      ).toBe(true);
+    });
+
+    it("detects unsafe-inline before an unspaced comma", () => {
+      expect(
+        cspContainsUnsafeInline(
+          "script-src 'unsafe-inline','self'",
+        ),
+      ).toBe(true);
+    });
+
+    it("detects unsafe-inline with surrounding whitespace", () => {
+      expect(
+        cspContainsUnsafeInline(
+          "script-src   'unsafe-inline'   ",
         ),
       ).toBe(true);
     });
@@ -131,6 +139,12 @@ describe("content security policy hardening", () => {
       ).toBe(false);
     });
 
+    it("does not match unquoted unsafe-inline", () => {
+      expect(
+        cspContainsUnsafeInline("script-src unsafe-inline"),
+      ).toBe(false);
+    });
+
     it("does not match unsafe-inline as part of another token", () => {
       expect(
         cspContainsUnsafeInline(
@@ -143,12 +157,151 @@ describe("content security policy hardening", () => {
           "script-src 'not-unsafe-inline'",
         ),
       ).toBe(false);
+    });
+  });
 
-      expect(
-        cspContainsUnsafeInline(
-          "script-src unsafe-inline",
-        ),
-      ).toBe(false);
+  describe("validateStrictContentSecurityPolicy", () => {
+    it("rejects unsafe-inline", () => {
+      const findings = validateStrictContentSecurityPolicy(
+        "default-src 'self'; script-src 'unsafe-inline'",
+      );
+
+      expect(findings).toContain(
+        "CSP must not contain 'unsafe-inline'.",
+      );
+    });
+
+    it("rejects unsafe-inline after an unspaced comma", () => {
+      const findings = validateStrictContentSecurityPolicy(
+        "script-src 'nonce-script' 'self','unsafe-inline'; style-src 'nonce-style'",
+      );
+
+      expect(findings).toContain(
+        "CSP must not contain 'unsafe-inline'.",
+      );
+    });
+
+    it("rejects uppercase unsafe-inline", () => {
+      const findings = validateStrictContentSecurityPolicy(
+        "script-src 'nonce-script' 'UNSAFE-INLINE'; style-src 'nonce-style'",
+      );
+
+      expect(findings).toContain(
+        "CSP must not contain 'unsafe-inline'.",
+      );
+    });
+
+    it("accepts additional sources after a style nonce", () => {
+      const findings = validateStrictContentSecurityPolicy(
+        "script-src 'self' 'nonce-script'; style-src 'nonce-style' 'self'",
+      );
+
+      expect(findings).not.toContain(
+        "style-src should include a nonce.",
+      );
+    });
+
+    it("accepts additional sources before a style nonce", () => {
+      const findings = validateStrictContentSecurityPolicy(
+        "script-src 'self' 'nonce-script'; style-src 'self' 'nonce-style'",
+      );
+
+      expect(findings).not.toContain(
+        "style-src should include a nonce.",
+      );
+    });
+
+    it("accepts whitespace before directive separators", () => {
+      const findings = validateStrictContentSecurityPolicy(
+        "script-src 'self' 'nonce-script' ; " +
+          "style-src 'self' 'nonce-style' ; " +
+          "object-src 'none' ; " +
+          "frame-ancestors 'none' ; " +
+          "base-uri 'self' ;",
+      );
+
+      expect(findings).toEqual([]);
+    });
+
+    it("accepts a valid strict CSP with multiple sources", () => {
+      const findings = validateStrictContentSecurityPolicy(
+        "default-src 'self'; " +
+          "script-src 'self' 'nonce-script' 'strict-dynamic'; " +
+          "style-src 'self' 'nonce-style' https://example.com; " +
+          "object-src 'none'; " +
+          "frame-ancestors 'none'; " +
+          "base-uri 'self'",
+      );
+
+      expect(findings).toEqual([]);
+    });
+
+    it("reports missing script nonce", () => {
+      const findings = validateStrictContentSecurityPolicy(
+        "style-src 'self' 'nonce-style'; " +
+          "object-src 'none'; " +
+          "frame-ancestors 'none'; " +
+          "base-uri 'self'",
+      );
+
+      expect(findings).toContain(
+        "script-src should include a nonce.",
+      );
+    });
+
+    it("reports missing style nonce", () => {
+      const findings = validateStrictContentSecurityPolicy(
+        "script-src 'self' 'nonce-script'; " +
+          "object-src 'none'; " +
+          "frame-ancestors 'none'; " +
+          "base-uri 'self'",
+      );
+
+      expect(findings).toContain(
+        "style-src should include a nonce.",
+      );
+    });
+
+    it("reports an unlocked object source", () => {
+      const findings = validateStrictContentSecurityPolicy(
+        "script-src 'self' 'nonce-script'; " +
+          "style-src 'self' 'nonce-style'; " +
+          "object-src 'self'; " +
+          "frame-ancestors 'none'; " +
+          "base-uri 'self'",
+      );
+
+      expect(findings).toContain(
+        "object-src should be locked down to 'none'.",
+      );
+    });
+
+    it("reports an unlocked frame ancestors policy", () => {
+      const findings = validateStrictContentSecurityPolicy(
+        "script-src 'self' 'nonce-script'; " +
+          "style-src 'self' 'nonce-style'; " +
+          "object-src 'none'; " +
+          "frame-ancestors 'self'; " +
+          "base-uri 'self'",
+      );
+
+      expect(findings).toContain(
+        "frame-ancestors should be locked down to 'none'.",
+      );
+    });
+
+    it("reports an unlocked base URI policy", () => {
+      const findings = validateStrictContentSecurityPolicy(
+        "script-src 'self' 'nonce-script'; " +
+          "style-src 'self' 'nonce-style'; " +
+          "object-src 'none'; " +
+          "frame-ancestors 'none'; " +
+          "base-uri https://example.com",
+      );
+
+      expect(findings).toContain(
+        "base-uri should be locked down to 'self'.",
+      );
     });
   });
 
