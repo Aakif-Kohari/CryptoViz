@@ -340,6 +340,10 @@ async function getDispatcher(cipherId: string): Promise<CipherDispatcher> {
       const mod = await import("../cipher/symmetric/kasumi");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };
     }
+    case "grain128": {
+      const mod = await import("../cipher/symmetric/grain128");
+      return { encrypt: mod.encrypt, decrypt: mod.decrypt };
+    }
     case "3way": {
       const mod = await import("../cipher/symmetric/3way");
       return { encrypt: mod.encrypt, decrypt: mod.decrypt };

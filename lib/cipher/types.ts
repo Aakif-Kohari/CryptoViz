@@ -132,6 +132,7 @@ export type CipherName =
   | 'safer-plus'
   | 'aria'
   | 'kasumi'
+  | 'grain128'
   | '3way'
   | 'rc4'
   | 'salsa20'
