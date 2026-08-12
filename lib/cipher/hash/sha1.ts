@@ -227,10 +227,14 @@ export function encrypt(
 }
 
 // SHA-1 is a one-way hash — decryption is not defined.
-export function decrypt(): CipherResult {
+export function decrypt(
+  _input: string,
+  _key: string = '',
+  _options: { instrument?: boolean } = {},
+): CipherResult {
   throw new CipherError(
     'ALGORITHM_UNSUPPORTED',
-    'SHA-1 is a one-way cryptographic hash function. Decryption is not supported.',
+    'SHA-1 is a one-way hash function and cannot be decrypted.',
   )
 }
 

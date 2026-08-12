@@ -196,3 +196,44 @@ describe('SHA-1 — property-based (fast-check)', () => {
     )
   })
 })
+
+// ─── Decrypt (Issue #1029) ────────────────────────────────────────────────────
+
+describe('SHA-1 — decrypt() must always throw', () => {
+  it('throws CipherError with ALGORITHM_UNSUPPORTED', () => {
+    expect(() => decrypt('anything', '', {})).toThrow(CipherError)
+  })
+
+  it('error code is ALGORITHM_UNSUPPORTED', () => {
+    try {
+      decrypt('anything', '', {})
+    } catch (e) {
+      expect((e as CipherError).code).toBe('ALGORITHM_UNSUPPORTED')
+    }
+  })
+
+  it('error message matches the spec', () => {
+    try {
+      decrypt('anything', '', {})
+    } catch (e) {
+      expect((e as CipherError).message).toBe(
+        'SHA-1 is a one-way hash function and cannot be decrypted.',
+      )
+    }
+  })
+
+  it('never returns a success-shaped result', () => {
+    let threw = false
+    try {
+      decrypt('abc', '', {})
+    } catch {
+      threw = true
+    }
+    expect(threw).toBe(true)
+  })
+
+  it('encrypt() is unaffected — still hashes correctly', () => {
+    const result = encrypt('abc', '')
+    expect(result.output).toBe('a9993e364706816aba3e25717850c26c9cd0d89d')
+  })
+})

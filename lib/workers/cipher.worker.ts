@@ -305,7 +305,7 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         result = encryptMode ? poly1305Encrypt(input, key, options) : poly1305Decrypt();
         break;
       case "sha1":
-        result = encryptMode ? sha1Encrypt(input, key, options) : sha1Decrypt();
+        result = encryptMode ? sha1Encrypt(input, key, options) : sha1Decrypt(input, key, options);
         break;
       case "hkdf":
         result = encryptMode ? hkdfEncrypt(input, key, options) : hkdfDecrypt();
