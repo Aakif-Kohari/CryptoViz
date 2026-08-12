@@ -1,31 +1,6 @@
 import Link from "next/link";
 import { MessagesSquare } from "lucide-react";
 
-const learnLinks = [
-  { name: "Classical Ciphers", href: "/visualizer#classical-heading" },
-  { name: "Symmetric Cryptosystems", href: "/visualizer#symmetric-heading" },
-  { name: "Secure Hash Functions", href: "/visualizer#hash-heading" },
-  { name: "Asymmetric Cryptography", href: "/visualizer#asymmetric-heading" },
-];
-
-const projectLinks = [
-  { name: "Documentation", href: "/docs" },
-  { name: "Architecture", href: "/docs/architecture" },
-  { name: "Roadmap", href: "https://github.com/csxark/CryptoViz/issues" },
-];
-
-const resourceLinks = [
-  { name: "Resources", href: "/resources" },
-  { name: "Offline Learning Packs", href: "/offline" },
-  { name: "Glossary Explorer", href: "/glossary" },
-  { name: "Cipher Lifecycle Badges", href: "/cipher-lifecycle" },
-  { name: "Myth Busters", href: "/myth-busters" },
-  { name: "Encoding Error Playground", href: "/encoding-errors" },
-  { name: "GitHub Repository", href: "https://github.com/csxark/CryptoViz" },
-  { name: "Contribution Guide", href: "https://github.com/csxark/CryptoViz/blob/main/CONTRIBUTING.md" },
-  { name: "Discord Community", href: "https://github.com/csxark/CryptoViz/discussions" },
-];
-
 const documentationLinks = [
   { name: "Getting Started", href: "/docs" },
   { name: "Architecture", href: "/docs/architecture" },
