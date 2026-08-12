@@ -1,3 +1,5 @@
+import { constantTimeStringEqual } from '../utils/constantTime'
+
 export interface MerkleProofInput { leavesText: string; selectedLeafIndex: number }
 export interface MerkleLeaf { index: number; value: string; hash: string }
 export interface MerkleTreeNode { level: number; index: number; hash: string; leftHash: string | null; rightHash: string | null; duplicated: boolean }
@@ -45,7 +47,7 @@ export function verifyMerkleProof(leafHash: string, proof: MerkleProofStep[], ex
     const leftHash = step.siblingPosition === "left" ? step.siblingHash : currentHash
     const rightHash = step.siblingPosition === "left" ? currentHash : step.siblingHash
     currentHash = hashParent(leftHash, rightHash)
-    return { ...step, combined: `${leftHash}${rightHash}`, resultingHash: currentHash, note: currentHash === expectedRoot ? "This step reaches the expected Merkle root, so the proof verifies." : step.note }
+    return { ...step, combined: `${leftHash}${rightHash}`, resultingHash: currentHash, note: constantTimeStringEqual(currentHash, expectedRoot) ? "This step reaches the expected Merkle root, so the proof verifies." : step.note }
   })
 }
 
@@ -82,7 +84,7 @@ export function buildMerkleProofVisualization(rawInput: MerkleProofInput): Merkl
   }
   const root = levels.at(-1)?.[0].hash ?? ""
   const verificationSteps = verifyMerkleProof(leaves[input.selectedLeafIndex].hash, proof, root)
-  return { leaves, levels, root, selectedLeaf: leaves[input.selectedLeafIndex], proof, verificationSteps, verified: verificationSteps.at(-1)?.resultingHash === root }
+  return { leaves, levels, root, selectedLeaf: leaves[input.selectedLeafIndex], proof, verificationSteps, verified: constantTimeStringEqual(verificationSteps.at(-1)?.resultingHash ?? '', root) }
 }
 
 export function buildMerkleProofManualChecklist(): string[] {

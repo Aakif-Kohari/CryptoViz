@@ -13,7 +13,7 @@ const METADATA = {
   yearDesigned: -100, // Ancient Greek scytale / historical
 }
 
-function validateRailsKey(key: string, inputLength: number): number {
+function validateRailsKey(key: string, _inputLength: number): number {
   const rails = parseInt(key, 10)
   if (isNaN(rails) || rails < 2) {
     throw new CipherError('INVALID_KEY', 'Rail Fence key must be an integer >= 2.')
@@ -250,9 +250,32 @@ export function decrypt(
 }
 
 export const TEST_VECTORS: TestVector[] = [
+  // This example uses the 26-character input WEAREDISCOVEREDFLEEAATONCE.
+  // Some sources cite a 25-character variant (omitting the trailing E), which produces a different
+  // ciphertext. This vector uses the full 26-character form and has been verified against
+  // encryptFast. The encrypt->decrypt round-trip is confirmed correct.
   {
     input: 'WEAREDISCOVEREDFLEEAATONCE',
     key: '3',
     expected: 'WECRLACERDSOEEFEATNEAIVDEO',
+  },
+  // Unambiguous short vector - trivially verifiable by hand with 2 rails:
+  //   Rail 0 (positions 0,2,4,6,8):   H L O O L  ->  HLOOL
+  //   Rail 1 (positions 1,3,5,7,9):   E L W R D  ->  ELWRD
+  //   Ciphertext: HLOOLELWRD
+  {
+    input: 'HELLOWORLD',
+    key: '2',
+    expected: 'HLOOLELWRD',
+  },
+  // Unambiguous short vector - trivially verifiable by hand with 3 rails:
+  //   Rail 0 (positions 0,4,8):         A C D        ->  ACD
+  //   Rail 1 (positions 1,3,5,7,9,11):  T A K T A N  ->  TAKTAN
+  //   Rail 2 (positions 2,6,10):        T A W        ->  TAW
+  //   Ciphertext: ACDTAKTANTAW
+  {
+    input: 'ATTACKATDAWN',
+    key: '3',
+    expected: 'ACDTAKTANTAW',
   },
 ]

@@ -28,7 +28,7 @@ const METADATA: CipherMetadata = {
   standardBody: 'Wheeler & Needham, 1994 (Cambridge)',
 }
 
-const MASK = 0xffffffff
+const _MASK = 0xffffffff
 const DELTA = 0x9e3779b9
 const ROUNDS = 32
 

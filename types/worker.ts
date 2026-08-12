@@ -1,4 +1,4 @@
-import type { CipherResult } from '@/lib/cipher/types'
+import type { CipherResult, CipherOptions } from '@/lib/cipher/types'
 
 export type WorkerRequestType = 'encrypt' | 'decrypt'
 
@@ -6,7 +6,7 @@ export interface WorkerRequestPayload {
   cipherId: string
   input: string
   key: string
-  options?: any
+  options?: CipherOptions
 }
 
 export interface WorkerRequest {

@@ -1,0 +1,94 @@
+---
+title: "Localization Architecture for Static Web Applications"
+description: "How CryptoViz implements a client-side, zero-bundle-bloat internationalization (i18n) framework compatible with Next.js static HTML export."
+difficulty: beginner
+readingTime: 6
+tags: ["i18n", "localization", "accessibility", "react", "architecture"]
+prerequisites: []
+publishedAt: 2026-08-01
+updatedAt: 2026-08-01
+---
+
+Providing a multilingual interface makes cybersecurity and cryptography education accessible to students and professionals worldwide. 
+
+Because CryptoViz uses Next.js static HTML export (`output: 'export'`), server-side middleware and dynamic Node.js routing are not available. This article details the client-side internationalization (i18n) architecture designed for CryptoViz.
+
+---
+
+## Architecture Overview
+
+The CryptoViz localization framework operates entirely client-side using React Context and custom hooks:
+
+```
+                  ┌────────────────────────┐
+                  │    LanguageProvider    │
+                  └───────────┬────────────┘
+                              │
+             ┌────────────────┴────────────────┐
+             ▼                                 ▼
+   ┌───────────────────┐             ┌───────────────────┐
+   │    useLanguage    │             │   useTranslation  │
+   └─────────┬─────────┘             └─────────┬─────────┘
+             │                                 │
+             ▼                                 ▼
+   ┌───────────────────┐             ┌───────────────────┐
+   │  LanguageSelector │             │    UI Components  │
+   └───────────────────┘             └───────────────────┘
+```
+
+### Key Principles
+
+1. **Static Export Safety**: No server-side redirects or Node.js runtime dependencies.
+2. **Type Safety**: Strictly-typed `TranslationSchema` ensuring missing keys are caught during TypeScript compilation.
+3. **Graceful Fallback**: If a translation key is missing in a target language (e.g. Spanish or Hindi), the framework automatically falls back to English (`en`).
+4. **Parameter Interpolation**: Template placeholders like `{step}` and `{total}` are dynamically substituted at runtime.
+5. **Persistence**: Saves user language preference to `localStorage` (`cryptoviz_lang`) and respects browser language detection (`navigator.language`).
+
+---
+
+## Supported Locales
+
+CryptoViz supports six core languages out of the box:
+
+| Code | Language | Native Name | Flag |
+| :--- | :--- | :--- | :--- |
+| `en` | English | English | 🇺🇸 |
+| `es` | Spanish | Español | 🇪🇸 |
+| `fr` | French | Français | 🇫🇷 |
+| `de` | German | Deutsch | 🇩🇪 |
+| `hi` | Hindi | हिन्दी | 🇮🇳 |
+| `zh` | Chinese | 中文 | 🇨🇳 |
+
+---
+
+## How to Use `useTranslation()` in Components
+
+Import `useTranslation` from `@/lib/i18n/context`:
+
+```tsx
+import { useTranslation } from '@/lib/i18n/context'
+
+export function MyComponent() {
+  const { t, locale, setLocale } = useTranslation()
+
+  return (
+    <div>
+      <h1>{t('playground.title')}</h1>
+      <button onClick={() => setLocale('es')}>
+        {t('common.encrypt')}
+      </button>
+      <p>{t('common.stepOfTotal', { step: 3, total: 10 })}</p>
+    </div>
+  )
+}
+```
+
+---
+
+## Accessibility (WCAG 2.1 AA)
+
+The `LanguageSelector` dropdown component implements full WCAG accessibility:
+
+- **HTML Lang Attribute**: Dynamically updates `<html lang="es">` when language changes so screen readers switch pronunciation rules immediately.
+- **ARIA Attributes**: Uses `aria-label="Select language"`, `aria-haspopup="listbox"`, `aria-expanded={isOpen}`, and `aria-selected={isSelected}`.
+- **Keyboard Navigation**: Supports `Tab`, `Enter`, `Space`, and `Escape` key controls.

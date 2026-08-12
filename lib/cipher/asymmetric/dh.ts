@@ -45,6 +45,34 @@ export const TEST_VECTORS: TestVector[] = [
   },
 ]
 
+/**
+ * Computes the multiplicative order of generator g modulo prime p.
+ * Returns order d where g^d ≡ 1 (mod p).
+ */
+export function getGeneratorOrder(g: bigint, p: bigint): bigint {
+  if (p <= 1n || g <= 0n || g >= p) return 0n
+  let cur = g % p
+  let order = 1n
+  while (cur !== 1n && order < p) {
+    cur = (cur * g) % p
+    order++
+  }
+  return cur === 1n ? order : 0n
+}
+
+export function checkPrimitiveRoot(
+  g: bigint,
+  p: bigint
+): { isPrimitive: boolean; order: bigint; maxOrder: bigint } {
+  const maxOrder = p - 1n
+  const order = getGeneratorOrder(g, p)
+  return {
+    isPrimitive: order === maxOrder,
+    order,
+    maxOrder,
+  }
+}
+
 interface DhParams {
   p: bigint
   g: bigint
@@ -187,6 +215,8 @@ export function encrypt(
   const steps: CipherStep[] = []
   
   if (options.instrument) {
+    const { isPrimitive, order, maxOrder } = checkPrimitiveRoot(g, p)
+
     steps.push({
       index: 0,
       label: 'Agreement on Public Parameters',
@@ -195,8 +225,19 @@ export function encrypt(
       table: [
         { key: 'Modulus p (Prime)', value: p.toString() },
         { key: 'Generator g', value: g.toString() },
+        { key: 'Generator Order', value: `d = ${order} (max possible: ${maxOrder})` },
+        {
+          key: 'Primitive Root Status',
+          value: isPrimitive
+            ? '✓ Primitive root (generates full group ℤₚ*)'
+            : '⚠️ Non-primitive root (subgroup of order ' + order + ')',
+        },
       ],
-      note: `Alice and Bob agree openly on prime p = ${p} and generator g = ${g}.`,
+      note: `Alice and Bob agree openly on prime p = ${p} and generator g = ${g}. ${
+        isPrimitive
+          ? `Generator g = ${g} is a valid primitive root modulo ${p} (order d = ${order} = p - 1), generating the full group ℤₚ*.`
+          : `⚠️ WARNING: Generator g = ${g} is NOT a primitive root modulo ${p}! It generates a proper subgroup of size ${order} instead of ${maxOrder}, reducing effective security. In standard DH (RFC 7919), generators are chosen to span full or safe prime order groups.`
+      }`,
       isMilestone: true,
     })
 
@@ -323,8 +364,8 @@ export function encrypt(
 
 export function decrypt(
   input: string,
-  key: string = '',
-  options: CipherOptions = {}
+  _key: string = '',
+  _options: CipherOptions = {}
 ): CipherResult {
   throw new CipherError(
     'ALGORITHM_UNSUPPORTED',

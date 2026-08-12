@@ -4,7 +4,6 @@ import { useMemo, useState, useEffect } from "react";
 import type { BenchmarkSession } from "@/types/benchmark";
 import {
   computeSessionComparison,
-  DEFAULT_SESSION_PRESETS,
   type SessionPreset,
 } from "@/lib/utils/sessionComparison";
 import SessionDeltaCard from "./SessionDeltaCard";
@@ -23,7 +22,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { BarChart3, LineChart as LineChartIcon, Layers, Sliders, Zap, HelpCircle } from "lucide-react";
+import { BarChart3, Layers, Sliders, HelpCircle } from "lucide-react";
 
 interface SessionComparisonVisualizerProps {
   sessionA: BenchmarkSession;
@@ -136,8 +135,6 @@ export default function SessionComparisonVisualizer({
       {/* Top Cards: Delta Summary */}
       <SessionDeltaCard
         delta={delta}
-        sessionALabel={sessionALabel}
-        sessionBLabel={sessionBLabel}
       />
 
       {/* Export / Import Toolbar */}
@@ -260,7 +257,7 @@ export default function SessionComparisonVisualizer({
       )}
 
       {activeTab === "educational" && (
-        <EducationalSessionInsights delta={delta} />
+        <EducationalSessionInsights />
       )}
     </div>
   );

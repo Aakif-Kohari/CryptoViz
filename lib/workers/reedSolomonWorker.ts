@@ -20,13 +20,13 @@ interface DecodePayload {
 interface WorkerRequest {
   command: 'encode' | 'injectErrors' | 'decode';
   requestId: string;
-  payload: any;
+  payload: EncodePayload | InjectErrorsPayload | DecodePayload;
 }
 
 interface WorkerResponse {
   requestId: string;
   success: boolean;
-  payload: any;
+  payload: { encoded?: number[]; errorPositions?: number[]; decoded?: string; error?: string; corrupted?: number[] };
 }
 
 // Helper: simple XOR parity across data symbols
@@ -123,10 +123,9 @@ self.addEventListener('message', (event: MessageEvent) => {
       default:
         throw new Error(`Unsupported command ${command}`);
     }
-  } catch (e: any) {
-    response = { requestId, success: false, payload: { error: e?.message ?? 'unknown' } };
+  } catch (e: unknown) {
+    response = { requestId, success: false, payload: { error: e instanceof Error ? e.message : 'unknown' } };
   }
 
-  // @ts-ignore – worker postMessage
-  (self as any).postMessage(response);
+  (self as unknown as Worker).postMessage(response);
 });
