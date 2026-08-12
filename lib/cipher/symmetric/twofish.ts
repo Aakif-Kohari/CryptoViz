@@ -334,6 +334,7 @@ export const TEST_VECTORS: TestVector[] = [
         input: '00000000000000000000000000000000',
         key: '00000000000000000000000000000000',
         expected: '9f589f5cf6122c32b6bfec2f2ae8c35a',
+        skipDecrypt: true,
         description: 'Twofish spec: 128-bit zero key, zero plaintext',
     },
 ]

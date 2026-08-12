@@ -5,6 +5,7 @@ import {
   calculateAvalancheEffect,
   calculateFrequencyAnalysis,
   transformStage,
+  modInverse,
   CipherPipelineStage,
 } from '../../../lib/cipher/sandbox/cipherSandboxEngine'
 import { CIPHER_PRESETS } from '../../../lib/cipher/sandbox/presets'
@@ -205,6 +206,34 @@ describe('Cipher Sandbox Engine Unit Tests', () => {
       const val = validatePipelineInvertibility(stages)
       expect(val.isInvertible).toBe(false)
       expect(val.warnings.length).toBeGreaterThan(0)
+    })
+
+    it('throws CipherError in modInverse for all non-coprime multipliers mod 26', () => {
+      const nonCoprimes = [0, 2, 4, 6, 8, 10, 12, 13, 14, 16, 18, 20, 22, 24, 26]
+      for (const a of nonCoprimes) {
+        expect(() => modInverse(a, 26)).toThrow(/no modular inverse/i)
+      }
+    })
+
+    it('computes correct modInverse for valid coprime multipliers mod 26', () => {
+      const coprimes = [1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25]
+      for (const a of coprimes) {
+        const inv = modInverse(a, 26)
+        expect((a * inv) % 26).toBe(1)
+      }
+    })
+
+    it('surfaces error during Affine decryption when multiplier is not coprime to 26', () => {
+      const stage: CipherPipelineStage = {
+        id: '2',
+        name: 'Invalid Affine',
+        category: 'substitution',
+        subType: 'affine',
+        a: 2,
+        b: 5,
+        enabled: true,
+      }
+      expect(() => transformStage('CIPHER', stage, 'decrypt')).toThrow(/no modular inverse/i)
     })
 
     it('calculates avalanche effect score correctly', () => {

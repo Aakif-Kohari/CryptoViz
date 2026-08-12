@@ -3,9 +3,30 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import GlobalSearch from '../search/GlobalSearch'
+
+const navLinks = [
+  { name: 'Playground', href: '/visualizer/caesar/' },
+  { name: 'Advisor', href: '/advisor' },
+  { name: 'Modes', href: '/modes' },
+  { name: 'Compare', href: '/compare' },
+  { name: 'Matrix', href: '/matrix' },
+  { name: 'Benchmark', href: '/benchmark' },
+  { name: 'Avalanche', href: '/avalanche' },
+  { name: 'Merkle Tree', href: '/merkle' },
+  { name: 'Padding', href: '/padding' },
+  { name: 'Challenge', href: '/challenge' },
+  { name: 'Docs', href: '/docs' },
+  { name: 'Glossary', href: '/glossary' },
+  { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+  { name: 'Myth Busters', href: '/myth-busters' },
+  { name: 'Resources', href: '/resources' },
+]
+
 import LanguageSelector from '../i18n/LanguageSelector'
 import { useTranslation } from '@/lib/i18n/context'
 import { safeGetItem, safeSetItem } from '../../lib/utils/storage'
+import { isDevelopmentMode } from '@/lib/utils/env'
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -72,18 +93,26 @@ export default function Navbar() {
     {
       name: t('nav.learn') || 'Learn',
       items: [
+        { name: 'Learning Paths', href: '/learning-paths' },
         { name: t('nav.lifecycle') || 'Cipher Lifecycle', href: '/cipher-lifecycle' },
+        { name: 'Docs & Guides', href: '/docs' },
         { name: t('nav.mythBusters') || 'Myth Busters', href: '/myth-busters' },
         { name: t('nav.encodingErrors') || 'Encoding Errors', href: '/encoding-errors' },
         { name: t('nav.merkle') || 'Merkle Tree', href: '/merkle' },
         { name: t('nav.padding') || 'Padding', href: '/padding' },
+        { name: 'Case Studies', href: '/case-studies' },
+        { name: 'Timeline', href: '/timeline' },
       ],
     },
     {
       name: t('nav.practice') || 'Practice',
       items: [
+        { name: 'Interactive Visualizers', href: '/visualizer' },
         { name: t('nav.playground') || 'Playground', href: '/visualizer/caesar/' },
         { name: t('nav.cipherSandbox') || 'Cipher Sandbox', href: '/cipher-sandbox' },
+        { name: 'Attack Simulators', href: '/attacks' },
+        { name: 'Cipher Pipeline', href: '/pipeline' },
+        { name: 'OpenPGP Explorer', href: '/openpgp' },
         { name: t('nav.challenge') || 'Challenge', href: '/challenge' },
         { name: t('nav.advisor') || 'Advisor', href: '/advisor' },
         { name: 'Dashboard', href: '/dashboard' },
@@ -92,6 +121,7 @@ export default function Navbar() {
     {
       name: t('nav.reference') || 'Reference',
       items: [
+        { name: 'Reference Hub', href: '/reference' },
         { name: t('nav.glossary') || 'Glossary', href: '/glossary' },
         { name: t('nav.modes') || 'Modes', href: '/modes' },
         { name: t('nav.compare') || 'Compare', href: '/compare' },
@@ -99,21 +129,37 @@ export default function Navbar() {
         { name: t('nav.matrix') || 'Matrix', href: '/matrix' },
         { name: t('nav.benchmark') || 'Benchmark', href: '/benchmark' },
         { name: t('nav.avalanche') || 'Avalanche', href: '/avalanche' },
+        { name: t('nav.certificateValidation') || 'Certificate Validation', href: '/certificate-validation' },
+        { name: 'S-Box Explorer', href: '/sbox' },
+        { name: 'Rainbow Table', href: '/rainbow-table' },
       ],
     },
     {
       name: t('nav.more') || 'More',
       items: [
-        { name: t('nav.resources') || 'Resources', href: '/resources' },
+        { name: t('nav.reference') || 'Reference', href: '/reference' },
+        { name: 'Learning Notes', href: '/notes' },
         { name: t('nav.offline') || 'Offline', href: '/offline' },
       ],
     },
+      {
+  name: t('nav.tools') || 'Tools',
+  items: [
+    { name: 'Benchmark', href: '/benchmark' },
+    { name: 'Matrix', href: '/matrix' },
+    { name: 'Timeline', href: '/timeline' },
+    { name: t('nav.resources') || 'Resources', href: '/resources' },
+    { name: 'Learning Notes', href: '/notes' },
+    { name: t('nav.offline') || 'Offline', href: '/offline' },
+  ],
+},
   ];
 
   const allNavLinks = [
     { name: 'Visualizers', href: '/visualizer' },
     { name: 'Playground', href: '/visualizer/caesar/' },
     { name: 'Cipher Sandbox', href: '/cipher-sandbox' },
+    { name: 'OpenPGP Explorer', href: '/openpgp' },
     { name: 'Advisor', href: '/advisor' },
     { name: 'Modes', href: '/modes' },
     { name: 'Protocols', href: '/protocols' },
@@ -133,6 +179,7 @@ export default function Navbar() {
     { name: 'Glossary', href: '/glossary' },
     { name: 'Cipher Lifecycle', href: '/cipher-lifecycle' },
     { name: 'Cipher Graph', href: '/timeline' },
+    { name: 'Certificate Validation', href: '/certificate-validation' },
     { name: 'Case Studies', href: '/case-studies' },
     { name: 'Myth Busters', href: '/myth-busters' },
     { name: 'Encoding Errors', href: '/encoding-errors' },
@@ -142,16 +189,20 @@ export default function Navbar() {
 
   const developerOnlyLinks = [
     { name: 'Benchmark History', href: '/benchmarks/history' },
+    { name: 'Worker Tests', href: '/tests/worker' },
+    { name: 'Certificate Validation', href: '/certificate-validation' },
+    { name: 'Certificate Validation', href: '/certificate-validation' },
+  ];
+
+  const developerLinks = [
     { name: 'Integration Tests', href: '/tests/integration' },
     { name: 'Snapshot Tests', href: '/tests/snapshots' },
     { name: 'Worker Tests', href: '/tests/worker' },
+    { name: 'Benchmark History', href: '/benchmarks/history' },
+   
   ];
-
-  function isDevelopmentMode() { return process.env.NODE_ENV === "development" }
-
-  const navLinks = isDevelopmentMode()
-    ? [...allNavLinks, ...developerOnlyLinks]
-    : allNavLinks;
+const isDevelopment = process.env.NODE_ENV === 'development';
+  const visibleNavLinks = isDevelopment ? developerLinks : [];
 
   return (
     <nav
@@ -194,6 +245,25 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-10 xl:flex">
+          {/* {visibleNavLinks.map((link) => {
+            const isActive =
+              pathname.startsWith(link.href) &&
+              link.href !== '#'
+
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`text-[15px] font-semibold transition-all duration-300 ${
+                  isActive
+                    ? 'text-teal-500'
+                    : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
+                }`}
+              >
+                {link.name}
+              </Link>
+            )
+          })} */}
           {navCategories.map((category) => {
             const isCategoryActive = category.href
               ? pathname === category.href
@@ -297,6 +367,10 @@ export default function Navbar() {
 
         {/* Right Side */}
         <div className="flex items-center gap-2 sm:gap-4">
+          {/* Global Search */}
+          <GlobalSearch />
+
+          {/* Theme Toggle */}
           <LanguageSelector />
 
           <button
@@ -425,6 +499,26 @@ export default function Navbar() {
           "
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6">
+            {/* {visibleNavLinks.map((link) => {
+              const isActive =
+                pathname.startsWith(link.href) &&
+                link.href !== '#'
+
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`rounded-xl px-4 py-3 text-base font-semibold transition-all duration-300 ${
+                    isActive
+                      ? 'bg-teal-500 text-white'
+                      : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              )
+            })} */}
             {navCategories.map((category) => {
               if (category.href) {
                 const isActive = pathname === category.href

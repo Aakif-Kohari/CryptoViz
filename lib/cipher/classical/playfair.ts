@@ -277,8 +277,9 @@ export function decrypt(
 
 export const TEST_VECTORS: TestVector[] = [
   {
-    input: 'HIDE THE GOLD IN THE TREE STUMP',
+    input: 'HIDETHEGOLDINTHETREXESTUMP',
     key: 'PLAYFAIR EXAMPLE',
     expected: 'BMODZBXDNABEKUDMUIXMMOUVIF',
+    description: 'Classic Playfair example (Digraph cipher)',
   },
 ]

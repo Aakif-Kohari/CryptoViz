@@ -11,9 +11,9 @@ const mockQuestionNode: QuestionNode = {
   question: 'What is your primary requirement?',
   description: 'Select the option that best describes your project goals.',
   options: [
-    { id: 'opt_1', label: 'Speed & High Throughput', nextId: 'rec_speed' },
-    { id: 'opt_2', label: 'Strong Security Standards', nextId: 'rec_security' },
-    { id: 'opt_3', label: 'Lightweight & Hardware-friendly', nextId: 'rec_light' },
+    { id: 'opt_1', label: 'Speed & High Throughput', summary: 'Speed', nextId: 'rec_speed' },
+    { id: 'opt_2', label: 'Strong Security Standards', summary: 'Security', nextId: 'rec_security' },
+    { id: 'opt_3', label: 'Lightweight & Hardware-friendly', summary: 'Lightweight', nextId: 'rec_light' },
   ],
 }
 

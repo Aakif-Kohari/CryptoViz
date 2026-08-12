@@ -252,8 +252,8 @@ const StepAnimator = memo(function StepAnimator({
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                {step.table.map((row, idx) => (
-                  <tr key={idx} className="bg-white dark:bg-zinc-900/10">
+                {step.table.map((row) => (
+                  <tr key={row.key} className="bg-white dark:bg-zinc-900/10">
                     <td className="px-3 py-1.5 font-medium text-zinc-500 dark:text-zinc-400">
                       {row.key}
                     </td>
@@ -268,20 +268,30 @@ const StepAnimator = memo(function StepAnimator({
         )}
       </div>
 
-      {/* Progress Bar */}
+      
+            {/* Timeline */}
       <div className="mb-3">
         <div className="mb-1 flex items-center justify-between text-2xs text-zinc-400 dark:text-zinc-500">
-          <span>Progress</span>
-          <span>{Math.round(progressPercent)}%</span>
+          <span>Timeline</span>
+          <span>
+            Step {currentStep + 1} / {steps.length}
+          </span>
         </div>
-        <div
-          className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700"
-          role="progressbar"
-          aria-label="Step progress"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.round(progressPercent)}
-        >
+
+        <input
+          type="range"
+          min={0}
+          max={Math.max(steps.length - 1, 0)}
+          value={currentStep}
+          onChange={(event) => {
+            goToStep(Number(event.target.value));
+          }}
+          disabled={!hasMultipleSteps}
+          aria-label="Animation timeline"
+          className="h-2 w-full cursor-pointer accent-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
+        />
+
+        <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
           <div
             className={cn(
               "h-full rounded-full bg-teal-600 dark:bg-teal-400",
@@ -292,195 +302,105 @@ const StepAnimator = memo(function StepAnimator({
         </div>
       </div>
 
-      {/* Control bar */}
-      <div className="flex flex-col gap-3 border-t border-zinc-100 pt-3 dark:border-zinc-800 lg:flex-row lg:items-center">
-        {/* Playback Controls */}
+      {/* Playback Controls */}
+      <div className="flex flex-col gap-3 border-t border-zinc-100 pt-3 dark:border-zinc-800 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap items-center gap-1.5">
+          {/* Restart */}
           <button
+            type="button"
             onClick={restart}
             disabled={currentStep === 0 && !isPlaying}
-            aria-label="Restart"
-            className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            aria-label="Restart animation"
+            className="rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-300 dark:hover:bg-zinc-800"
             title="Restart (Home / R)"
           >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-              />
-            </svg>
+            ↺
           </button>
 
+          {/* Previous */}
           <button
+            type="button"
             onClick={() => goToStep(currentStep - 1)}
             disabled={currentStep === 0}
             aria-label="Previous step"
-            className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            className="rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-300 dark:hover:bg-zinc-800"
             title="Previous Step (←)"
           >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            ←
           </button>
 
-          <button
-            onClick={togglePlay}
-            disabled={!hasMultipleSteps}
-            aria-label={isPlaying ? "Pause" : "Play"}
-            aria-pressed={isPlaying}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 text-white hover:bg-teal-500 focus:outline-none disabled:opacity-30 dark:bg-teal-500 dark:hover:bg-teal-400"
-            title={isPlaying ? "Pause (Space)" : "Play (Space)"}
-          >
-            {isPlaying ? (
-              // Pause Icon
-              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                  fillRule="evenodd"
-                  d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            ) : (
-              // Play Icon
-              <svg
-                className="h-4 w-4 translate-x-[1px]"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            )}
-          </button>
-
-          <button
-            onClick={() => goToStep(currentStep + 1)}
-            disabled={currentStep === steps.length - 1}
-            aria-label="Next step"
-            className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
-            title="Next Step (→)"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
-
-          <button
-            onClick={() => goToStep(steps.length - 1)}
-            disabled={currentStep === steps.length - 1}
-            aria-label="Jump to end"
-            className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
-            title="Jump to End (End)"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M11.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 005 8v8a1 1 0 001.6.8l5.334-4z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.334-4z"
-              />
-            </svg>
-          </button>
-
-          {/* Playback Speed */}
-          <div
-            className="ml-1 flex items-center gap-0.5 rounded-md bg-zinc-100 p-0.5 dark:bg-zinc-800"
-            role="group"
-            aria-label="Playback speed"
-          >
-            {SPEED_OPTIONS.map((s) => (
-              <button
-                key={s}
-                onClick={() => setSpeed(s)}
-                aria-pressed={speed === s}
-                className={cn(
-                  "rounded px-1.5 py-0.5 text-2xs font-mono font-semibold transition-colors",
-                  speed === s
-                    ? "bg-white text-teal-700 shadow-sm dark:bg-zinc-900 dark:text-teal-400"
-                    : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200",
-                )}
-                title={`${s}x speed`}
-              >
-                {s}x
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Timeline Scrub Slider */}
-        <div className="min-w-0 flex flex-1 items-center gap-3">
-          <input
-            type="range"
-            min="0"
-            max={steps.length - 1}
-            value={currentStep}
-            onChange={(e) => goToStep(parseInt(e.target.value))}
-            aria-label="Scrub to step"
-            aria-valuemin={0}
-            aria-valuemax={steps.length - 1}
-            aria-valuenow={currentStep}
-            className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-zinc-200 dark:bg-zinc-700 accent-teal-600 dark:accent-teal-400"
-          />
-          <span className="shrink-0 font-mono text-xs text-zinc-400 dark:text-zinc-500">
-            {currentStep + 1} / {steps.length}
-          </span>
-        </div>
-      </div>
-
-      {onCopyStepLink && (
-        <div className="mt-3 flex justify-end border-t border-zinc-100 pt-3 dark:border-zinc-800">
+          {/* Play / Pause */}
           <button
             type="button"
-            onClick={() => void copyStepLink()}
-            className="rounded-md border border-zinc-200 px-2.5 py-1.5 text-xs font-semibold text-zinc-600 transition-colors hover:border-teal-400 hover:text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-teal-700 dark:hover:text-teal-400"
-            aria-label="Copy link to this visualization step"
+            onClick={togglePlay}
+            disabled={!hasMultipleSteps}
+            aria-label={isPlaying ? "Pause animation" : "Play animation"}
+            className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-teal-500 dark:hover:bg-teal-400"
           >
-            {linkCopied ? "Link copied!" : "Copy link to this step"}
+            {isPlaying ? "Pause" : "Play"}
+          </button>
+
+          {/* Next */}
+          <button
+            type="button"
+            onClick={() => goToStep(currentStep + 1)}
+            disabled={currentStep >= steps.length - 1}
+            aria-label="Next step"
+            className="rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            title="Next Step (→)"
+          >
+            →
+          </button>
+
+          {/* End */}
+          <button
+            type="button"
+            onClick={() => goToStep(steps.length - 1)}
+            disabled={currentStep >= steps.length - 1}
+            aria-label="Go to last step"
+            className="rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            title="Last Step (End)"
+          >
+            End
           </button>
         </div>
-      )}
 
-      <p className="mt-2 text-2xs text-zinc-400 dark:text-zinc-600">
-        Shortcuts: Space play/pause · ←/→ step · Home/R restart · End jump to
-        last step
-      </p>
+        {/* Speed */}
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="animation-speed"
+            className="text-xs font-medium text-zinc-500 dark:text-zinc-400"
+          >
+            Speed
+          </label>
+
+          <select
+            id="animation-speed"
+            value={speed}
+            onChange={(event) =>
+              setSpeed(Number(event.target.value) as AnimationSpeed)
+            }
+            className="rounded-lg border border-zinc-200 bg-white px-2.5 py-2 text-xs font-medium text-zinc-700 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
+            aria-label="Animation speed"
+          >
+            {SPEED_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}x
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {onCopyStepLink && (
+          <button
+            type="button"
+            onClick={copyStepLink}
+            className="rounded-lg border border-zinc-200 px-3 py-2 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          >
+            {linkCopied ? "Copied!" : "Copy Step Link"}
+          </button>
+        )}
+      </div>
     </div>
   );
 });

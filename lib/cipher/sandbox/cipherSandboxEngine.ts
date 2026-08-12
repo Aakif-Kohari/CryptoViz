@@ -1,4 +1,5 @@
 import { CipherStep } from '../types'
+import { CipherError } from '../../utils/errors'
 
 /**
  * Types of substitution operations supported by the sandbox.
@@ -131,13 +132,24 @@ function gcd(x: number, y: number): number {
   return a
 }
 
-function modInverse(a: number, m: number): number {
+export function modInverse(a: number, m: number): number {
   a = ((a % m) + m) % m
+  const g = gcd(a, m)
+  if (g !== 1) {
+    throw new CipherError(
+      'INVALID_KEY',
+      `Multiplier 'a' (${a}) has no modular inverse mod ${m}: gcd(${a}, ${m}) = ${g} ≠ 1.`
+    )
+  }
   for (let x = 1; x < m; x++) {
     if ((a * x) % m === 1) return x
   }
-  return 1
+  throw new CipherError(
+    'INVALID_KEY',
+    `Multiplier 'a' (${a}) has no modular inverse mod ${m}.`
+  )
 }
+
 
 // ---------------------------------------------------------------------------
 // Invertibility Check

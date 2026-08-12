@@ -48,6 +48,7 @@ export interface CipherMetadata {
   breakingComplexity?: string
   yearDesigned?: number
   standardBody?: string
+  securityWarning?: string
 }
 
 export interface CipherOptions {
@@ -114,10 +115,26 @@ export type CipherName =
   | 'noekeon'
   | 'lea'
   | 'gift'
+  | 'xxtea'
   | 'blowfish'
+  | 'streebog'
   | 'seed'
+  | 'kuznyechik'
   | 'simon'
+  | 'rabbit'
   | 'hc128'
+  | 'anubis'
+  | 'mars'
+  | 'clefia'
+  | 'misty1'
+  | 'square'
+  | 'feal'
+  | 'safer-plus'
+  | 'aria'
+  | 'kasumi'
+  | 'grain128'
+  | '3way'
+  | 'lucifer'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
@@ -139,8 +156,17 @@ export type CipherName =
   | 'ml-dsa'
   | 'ecies'
   | 'ml-kem'
+  | 'frodokem'
   | 'ed448'
   | 'shamir-secret-sharing'
+  | 'sidh'
+  | 'ntru'
+  | 'gost-r34-10'
+  | 'mceliece'
+  | 'cramer-shoup'
+  | 'sm2'
+  | 'kcdsa'
+  | 'goldwasser-micali'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
@@ -160,8 +186,19 @@ export type CipherName =
   | 'sha384'
   | 'shake128'
   | 'shake256'
+  | 'pbkdf2'
   | 'md4'
+  | 'argon2'
   | 'skein'
+  | 'lsh256'
+  | 'tiger'
+  | 'grostl'
+  | 'jh'
+  | 'ripemd128'
+  | 'haval'
+  | 'md2'
+  | 'gost-r34-11-94'
+  | 'snefru'
   | 'poly1305'
   | 'hmac'
   | 'cmac'
@@ -175,5 +212,13 @@ export interface TestVector {
   input: string
   key: string
   expected: string
+  /** Expected output for decrypt (if different from encrypt) */
+  expectedDecrypt?: string
   description?: string
+  /** Skip the encrypt direction in the KAT runner */
+  skipEncrypt?: boolean
+  /** Skip the decrypt direction in the KAT runner */
+  skipDecrypt?: boolean
+  /** Extra options forwarded to encrypt/decrypt (e.g. effectiveBits, length) */
+  options?: Record<string, unknown>
 }

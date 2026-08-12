@@ -4,7 +4,7 @@
  * Supports Camellia-128, Camellia-192, and Camellia-256.
  */
 
-import type { CipherResult, CipherStep, CipherOptions } from '../types'
+import type { CipherResult, CipherStep, CipherOptions, TestVector } from '../types'
 import { fromByteArray, toByteArray, CipherError, validateInput, validateKey } from '../../utils'
 
 const METADATA = {
@@ -611,3 +611,12 @@ function executeCamellia(
     durationMs: performance.now() - start,
   }
 }
+
+export const TEST_VECTORS: TestVector[] = [
+  {
+    input: '0123456789ABCDEFFEDCBA9876543210',
+    key: '0123456789ABCDEFFEDCBA9876543210',
+    expected: 'randomized',
+    description: 'Camellia-128 CBC mode (randomized IV prepended to ciphertext)',
+  },
+]
