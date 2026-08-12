@@ -1011,6 +1011,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'legacy',
   },
   {
+    id: 'n-hash',
+    name: 'N-Hash',
+    category: 'hash',
+    description: 'NTT Japan hash (1990). Uses FEAL-style addition-and-rotation nonlinearity in a Davies-Meyer construction. NO S-BOXES. Status: BROKEN (differential cryptanalysis, shared lineage with FEAL).',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'broken',
+  },
+  {
     id: 'snefru',
     name: 'Snefru',
     category: 'hash',
