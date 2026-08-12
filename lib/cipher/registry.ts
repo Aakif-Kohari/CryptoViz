@@ -1269,4 +1269,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
   },
+  {
+    id: 'bls',
+    name: 'BLS',
+    category: 'asymmetric',
+    description: 'Pairing-based digital signatures (2001). Defining feature: Signature Aggregation. Multiple signatures can be combined into one compact signature verifiable against all original public keys. Used in Ethereum validator layer. (Toy pairing model for visualizer).',
+    defaultKey: '1234567890abcdef',
+    defaultInput: 'message',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Private key (sign) or "pubkey,sig" (verify)',
+  },
 ];

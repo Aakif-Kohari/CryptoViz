@@ -169,6 +169,7 @@ export type CipherName =
   | 'sm2'
   | 'kcdsa'
   | 'goldwasser-micali'
+  | 'bls'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
