@@ -86,6 +86,7 @@ export default function Navbar() {
         { name: t('nav.cipherSandbox') || 'Cipher Sandbox', href: '/cipher-sandbox' },
         { name: t('nav.challenge') || 'Challenge', href: '/challenge' },
         { name: t('nav.advisor') || 'Advisor', href: '/advisor' },
+        { name: 'Dashboard', href: '/dashboard' },
       ],
     },
     {
@@ -145,6 +146,8 @@ export default function Navbar() {
     { name: 'Snapshot Tests', href: '/tests/snapshots' },
     { name: 'Worker Tests', href: '/tests/worker' },
   ];
+
+  function isDevelopmentMode() { return process.env.NODE_ENV === "development" }
 
   const navLinks = isDevelopmentMode()
     ? [...allNavLinks, ...developerOnlyLinks]
