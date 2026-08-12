@@ -648,6 +648,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'khufu',
+    name: 'Khufu',
+    category: 'symmetric',
+    description: 'Ralph Merkle\'s 1990 block cipher. 64-bit block, 512-bit key. Defining feature: the 1KB S-box is entirely derived from the key, meaning every key uses a different substitution table. Status: legacy (64-bit block too small for modern use).',
+    defaultKey: '00'.repeat(64),
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '512-bit key as 128 hex chars',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
