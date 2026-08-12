@@ -530,3 +530,11 @@
 [#962] (open) by @csxark: `components/cipher-sandbox/CipherSandbox.tsx` missing closing brace
 [#961] (open) by @csxark: `app/not-found.tsx` has unclosed JSX expression causing compilation failure
 [#960] (open) by @csxark: `app/docs/page.tsx` has stray `]` causing 27 cascading TypeScript errors
+
+=== Audited 2026-08-12 08:43 UTC (6 new) ===
+[#1008] (open) by @Aakif-Kohari: [FEATURE] Add N-Hash function (NTT Japan, FEAL-lineage design, completes FEAL-family hash/cipher pairing)
+[#1007] (open) by @Aakif-Kohari: [FEATURE] Add HAS-160 hash function (Korean national standard, completes KCDSA's originally-intended hash pairing)
+[#1006] (open) by @Aakif-Kohari: [FEATURE] Add BLS signatures (Boneh-Lynn-Shacham, pairing-based, aggregatable, novel bilinear-pairing mathematics, blockchain-relevant)
+[#1005] (open) by @Aakif-Kohari: [FEATURE] Add A5/1 stream cipher (GSM voice encryption, LFSR-based, historically broken, completes GSM generation story with KASUMI)
+[#1004] (open) by @Aakif-Kohari: [FEATURE] Add Khufu block cipher (Merkle, 1990, key-dependent S-boxes, byte-oriented Feistel, completes Merkle cryptographic-designs trilogy)
+[#988] (closed) by @Chigael: Fix `cspContainsUnsafeInline()` CSP Grammar Detection
