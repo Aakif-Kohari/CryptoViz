@@ -638,6 +638,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '96-bit key as 24 hex chars',
   },
   {
+    id: 'a5-1',
+    name: 'A5/1',
+    category: 'symmetric',
+    description: 'Original GSM voice encryption (1987). Uses 3 LFSRs with irregular majority-vote clocking. Status: BROKEN. Comprehensively broken in real-world scenarios via rainbow tables. Predecessor to KASUMI/A5-3.',
+    defaultKey: '0000000000000000',
+    defaultInput: '00',
+    securityStatus: 'broken',
+    keyPlaceholder: '64-bit key as 16 hex chars',
+  },
+  {
     id: 'lucifer',
     name: 'Lucifer',
     category: 'symmetric',
