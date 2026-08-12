@@ -75,22 +75,46 @@ describe('BenchmarkEngine Utility Unit Tests', () => {
   })
 
   describe('generateKey', () => {
-    it('generates random hex key strings with the expected length', () => {
+    it('generates random hex key strings with the expected length (2 chars per byte)', () => {
       const key = BenchmarkEngine.generateKey(8)
-      expect(key).toHaveLength(8)
+      // 8 bytes → 16 hex characters
+      expect(key).toHaveLength(16)
       expect(key).toMatch(/^[0-9a-f]+$/)
     })
 
-    it('handles boundary length of 1 correctly', () => {
+    it('32 bytes produces exactly 64 hex characters (Issue #1028)', () => {
+      const key = BenchmarkEngine.generateKey(32)
+      expect(key).toHaveLength(64)
+      expect(key).toMatch(/^[0-9a-f]{64}$/)
+    })
+
+    it('handles boundary length of 1 correctly (1 byte → 2 hex chars)', () => {
       const key = BenchmarkEngine.generateKey(1)
-      expect(key).toHaveLength(1)
+      // 1 byte must produce exactly 2 hex characters
+      expect(key).toHaveLength(2)
       expect(key).toMatch(/^[0-9a-f]+$/)
     })
 
     it('handles large lengths correctly', () => {
       const length = 1000
       const key = BenchmarkEngine.generateKey(length)
-      expect(key).toHaveLength(length)
+      // 1000 bytes → 2000 hex characters
+      expect(key).toHaveLength(2000)
+    })
+
+    it('each byte produces exactly 2 hex characters (high nibble + low nibble)', () => {
+      // Use a mocked crypto that returns known bytes so we can verify nibble extraction
+      const original = global.crypto.getRandomValues
+      global.crypto.getRandomValues = ((arr: Uint8Array) => {
+        // Fill with 0xAB so expected nibbles are 'a' and 'b'
+        arr.fill(0xab)
+        return arr
+      }) as typeof global.crypto.getRandomValues
+
+      const key = BenchmarkEngine.generateKey(4)
+      expect(key).toBe('abababab') // 4 bytes × 2 chars = 8 chars, each = 'ab'
+
+      global.crypto.getRandomValues = original
     })
 
     it('rejects length of 0 and negative lengths', () => {
