@@ -1,8 +1,62 @@
 import { CIPHER_REGISTRY } from '../cipher/registry'
+import {
+  safeGetItemJson,
+  safeSetItemJson,
+  safeRemoveItem,
+} from './storage'
 
 export const FAVORITE_CIPHERS_STORAGE_KEY = 'cryptoviz-favorite-ciphers'
 export const FAVORITE_CIPHERS_CHANGED_EVENT = 'cryptoviz:favorite-ciphers-changed'
 export const MAX_FAVORITE_CIPHERS = 20
+
+function isBrowser(): boolean {
+  return typeof window !== 'undefined'
+}
+
+function readStorage(): string[] {
+  if (!isBrowser()) return []
+
+  try {
+    const raw = window.localStorage.getItem(FAVORITE_CIPHERS_STORAGE_KEY)
+    return raw ? normalizeFavoriteCipherIds(JSON.parse(raw)) : []
+  } catch (error) {
+    console.warn(
+      '[CryptoViz LocalStorage Error] Failed to read favorite ciphers from storage:',
+      error,
+    )
+    return []
+  }
+}
+
+function writeStorage(ids: string[]): void {
+  if (!isBrowser()) return
+
+  try {
+    window.localStorage.setItem(
+      FAVORITE_CIPHERS_STORAGE_KEY,
+      JSON.stringify(ids),
+    )
+  } catch (error) {
+    console.warn(
+      '[CryptoViz LocalStorage Error] Failed to write favorite ciphers to storage:',
+      error,
+    )
+  }
+}
+
+
+function removeStorage(): void {
+  if (!isBrowser()) return
+
+  try {
+    window.localStorage.removeItem(FAVORITE_CIPHERS_STORAGE_KEY)
+  } catch (error) {
+    console.warn(
+      '[CryptoViz LocalStorage Error] Failed to remove favorite ciphers from storage:',
+      error,
+    )
+  }
+}
 
 export function getSupportedCipherIds(): ReadonlySet<string> {
   return new Set(CIPHER_REGISTRY.map((cipher) => cipher.id))
@@ -36,18 +90,11 @@ export function normalizeFavoriteCipherIds(
 }
 
 export function loadFavoriteCipherIds(): string[] {
-  if (typeof window === 'undefined') return []
-
-  try {
-    const raw = window.localStorage.getItem(FAVORITE_CIPHERS_STORAGE_KEY)
-    return raw ? normalizeFavoriteCipherIds(JSON.parse(raw)) : []
-  } catch {
-    return []
-  }
+  return readStorage()
 }
 
 function dispatchFavoriteChange(ids: string[]) {
-  if (typeof window === 'undefined') return
+  if (!isBrowser()) return
 
   window.dispatchEvent(
     new CustomEvent<string[]>(FAVORITE_CIPHERS_CHANGED_EVENT, {
@@ -74,6 +121,10 @@ export function saveFavoriteCipherIds(ids: string[]): string[] {
     if (saved) {
       dispatchFavoriteChange(normalized)
     }
+  writeStorage(normalized)
+
+  if (isBrowser()) {
+    dispatchFavoriteChange(normalized)
   }
 
   return normalized
@@ -100,13 +151,9 @@ export function toggleFavoriteCipher(
 }
 
 export function clearFavoriteCipherIds(): void {
-  if (typeof window === 'undefined') return
+  removeStorage()
 
-  try {
-    window.localStorage.removeItem(FAVORITE_CIPHERS_STORAGE_KEY)
-  } catch {
-    // Clearing favorites should remain a no-op when storage is unavailable.
+  if (isBrowser()) {
+    dispatchFavoriteChange([])
   }
-
-  dispatchFavoriteChange([])
 }

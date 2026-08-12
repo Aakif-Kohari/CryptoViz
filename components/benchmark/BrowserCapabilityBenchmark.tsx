@@ -10,6 +10,7 @@ import {
 } from "@/lib/utils/benchmark";
 import { BenchmarkResult } from "@/types/benchmark";
 import { CIPHER_REGISTRY } from "@/lib/cipher/registry";
+import { logger } from "@/lib/utils/logger";
 
 export const BrowserCapabilityBenchmark: React.FC = () => {
   const [selectedCipher, setSelectedCipher] = useState<string>("aes-gcm");
@@ -24,9 +25,9 @@ export const BrowserCapabilityBenchmark: React.FC = () => {
     setIsBenchmarking(true);
     const measurements: number[] = [];
 
-    // Simulate benchmark iterations with synthetic timing or worker execution
-    for (let i = 0; i < iterations; i++) {
-      const simulatedTimeMs = Math.random() * 2 + 0.1; // Execution sample
+    // Simulate benchmark iterations for visualization
+    for (let i = 0; i < 5; i++) {
+      const simulatedTimeMs = Math.random() * 2 + 0.1;
       measurements.push(simulatedTimeMs);
     }
 
@@ -40,7 +41,7 @@ export const BrowserCapabilityBenchmark: React.FC = () => {
 
       setResults((prev) => [...prev.filter((r) => r.cipherId !== selectedCipher), newResult]);
     } catch (error) {
-      console.error("Benchmark error:", error);
+      logger.error("Benchmark error:", error);
     } finally {
       setIsBenchmarking(false);
     }

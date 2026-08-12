@@ -3,12 +3,13 @@
 import React, { useState, useMemo } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/footer';
+import LearnPageTemplate from "@/components/layout/LearnPageTemplate";
 import MythCard from '@/components/myth-busters/MythCard';
 import MythQuiz from '@/components/myth-busters/MythQuiz';
 import MythDetailModal from '@/components/myth-busters/MythDetailModal';
-import { CRYPTO_MYTHS, searchMyths } from '@/lib/myth-busters/mythData';
+import { searchMyths } from '@/lib/myth-busters/mythData';
 import { MythItem, MythCategory } from '@/lib/myth-busters/types';
-import { Search, Flame, ShieldAlert, Sparkles, BookOpen } from 'lucide-react';
+import { Search, Flame, ShieldAlert } from 'lucide-react';
 
 export default function MythBustersPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,7 +34,16 @@ export default function MythBustersPage() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-[#060816] text-zinc-900 dark:text-white transition-colors duration-300">
       <Navbar />
 
-      <main id="main-content" className="flex-1 mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-12">
+         <LearnPageTemplate
+        title="Busting Cryptography Misconceptions"
+        description="Correcting widespread crypto security myths with rigorous mathematical analysis, technical realities, and Kerckhoffs's principle benchmarks."
+        eyebrow="CRYPTOGRAPHY MYTH BUSTERS #495"
+        breadcrumbs={[
+          { label: "Learn" },
+          { label: "Myth Busters" },
+        ]}
+        hideHeader
+      >
         {/* Hero Section */}
         <section aria-labelledby="myth-hero-title" className="relative overflow-hidden rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-br from-red-500/10 via-amber-500/5 to-transparent p-8 sm:p-12 backdrop-blur-2xl">
           <div className="max-w-3xl space-y-4">
@@ -129,7 +139,7 @@ export default function MythBustersPage() {
             </div>
           )}
         </section>
-      </main>
+      </LearnPageTemplate>
 
       {/* Myth Detail Modal */}
       <MythDetailModal

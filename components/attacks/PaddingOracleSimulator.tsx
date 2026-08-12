@@ -2,8 +2,6 @@
 
 import { useMemo, useRef, useState } from "react";
 import {
-  PaddingOracle,
-  recoverPlaintext,
   type AttackStep,
   type OracleMode,
   BLOCK_SIZE,
@@ -50,9 +48,9 @@ export default function PaddingOracleSimulator() {
 
   const cancelRef = useRef(false);
 
-  const allSteps = useMemo(() => [] as AttackStep[], []); // populated per-run below
+  const _allSteps = useMemo(() => [] as AttackStep[], []); // populated per-run below
 
-  const { recoverPlaintextConcurrently, cancel, loading } = useAttackWorker();
+  const { recoverPlaintextConcurrently, cancel, loading: _loading } = useAttackWorker();
 
   async function runAttack() {
     setError(null);
@@ -247,7 +245,7 @@ export default function PaddingOracleSimulator() {
 
           <div className="max-h-48 overflow-y-auto rounded bg-slate-950 p-2 font-mono text-[11px] leading-5 text-green-400">
             {visibleSteps.slice(-200).map((s, i) => (
-              <div key={i}>
+              <div key={`step-${i}-${s.blockIndex}-${s.byteIndexFromEnd}-${s.guess}`}>
                 [blk {s.blockIndex}][byte {17 - s.byteIndexFromEnd}] guess=0x
                 {s.guess.toString(16).padStart(2, "0")} →{" "}
                 {s.isValidPadding ? "VALID" : "invalid"}
