@@ -34,7 +34,7 @@ export class BaselineManager {
   /**
    * Load all baselines from storage
    */
-  static loadBaselines(): Map<string, PerformanceBaseline> {
+  static async loadBaselines(): Promise<Map<string, PerformanceBaseline>> {
     try {
       if (this.isBrowser()) {
         const data = safeGetItem(STORAGE_KEY)
@@ -51,13 +51,13 @@ export class BaselineManager {
         }
 
         return map
-      } else {
-        // Node.js environment
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const fs = require('fs')
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const path = require('path')
-        const filePath = path.join(process.cwd(), '.performance-baselines', 'baselines.json')
+      } 
+
+        const [fs, path] = await Promise.all([
+        import('node:fs'),
+        import('node:path'),
+      ])
+      const filePath = path.join(process.cwd(), '.performance-baselines', 'baselines.json')
 
         if (!fs.existsSync(filePath)) {
           return new Map()
@@ -75,7 +75,6 @@ export class BaselineManager {
         }
 
         return map
-      }
     } catch (error) {
       console.error('Failed to load baselines:', error)
       return new Map()
@@ -85,19 +84,23 @@ export class BaselineManager {
   /**
    * Save baselines to storage
    */
-  static saveBaselines(baselines: Map<string, PerformanceBaseline>): void {
+  static async saveBaselines(baselines: Map<string, PerformanceBaseline>): Promise<void> {
     try {
       const data = JSON.stringify(Array.from(baselines.values()), null, 2)
 
       if (this.isBrowser()) {
         safeSetItem(STORAGE_KEY, data)
-      } else {
+        return
+      }
         // Node.js environment
         // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const fs = require('fs')
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const path = require('path')
+        const [fs, path] = await Promise.all([
+          import('node:fs'),
+          import('node:path'),
+        ])
+
         const dir = path.join(process.cwd(), '.performance-baselines')
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
 
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir, { recursive: true })
@@ -105,7 +108,6 @@ export class BaselineManager {
 
         const filePath = path.join(dir, 'baselines.json')
         fs.writeFileSync(filePath, data, 'utf-8')
-      }
     } catch (error) {
       console.error('Failed to save baselines:', error)
     }
@@ -132,53 +134,55 @@ export class BaselineManager {
   /**
    * Save a baseline for a specific cipher
    */
-  static saveBaseline(
+  static async saveBaseline(
     profile: PerformanceProfile,
     version: string,
     commitHash: string,
-  ): void {
-    const baselines = this.loadBaselines()
+  ): Promise<void> {
+    const baselines = await this.loadBaselines()
     const baseline = this.createBaseline(profile, version, commitHash)
     baselines.set(profile.cipherId, baseline)
-    this.saveBaselines(baselines)
+    await this.saveBaselines(baselines)
   }
 
   /**
    * Get baseline for a specific cipher
    */
-  static getBaseline(cipherId: string): PerformanceBaseline | null {
-    const baselines = this.loadBaselines()
+  static async getBaseline(cipherId: string): Promise<PerformanceBaseline | null> {
+    const baselines = await this.loadBaselines()
     return baselines.get(cipherId) || null
   }
 
   /**
    * Remove baseline for a specific cipher
    */
-  static removeBaseline(cipherId: string): void {
-    const baselines = this.loadBaselines()
+  static async removeBaseline(cipherId: string): Promise<void> {
+    const baselines = await this.loadBaselines()
     baselines.delete(cipherId)
-    this.saveBaselines(baselines)
+    await this.saveBaselines(baselines)
   }
 
   /**
    * Clear all baselines
    */
-  static clearBaselines(): void {
+  static async clearBaselines(): Promise<void> {
     try {
       if (this.isBrowser()) {
         safeRemoveItem(STORAGE_KEY)
-      } else {
+        return
+      }
         // Node.js environment
         // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const fs = require('fs')
+        const [fs, path] = await Promise.all([
+          import('fs'),
+          import('path')
+        ])
         // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const path = require('path')
         const filePath = path.join(process.cwd(), '.performance-baselines', 'baselines.json')
         
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath)
         }
-      }
     } catch (error) {
       console.error('Failed to clear baselines:', error)
     }
@@ -344,14 +348,14 @@ export class BaselineManager {
   /**
    * Batch compare multiple profiles against their baselines
    */
-  static batchCompare(
+  static async batchCompare(
     profiles: PerformanceProfile[],
     thresholds: Partial<RegressionThresholds> = {},
-  ): PerformanceComparison[] {
+  ): Promise<PerformanceComparison[]> {
     const comparisons: PerformanceComparison[] = []
 
     for (const profile of profiles) {
-      const baseline = this.getBaseline(profile.cipherId)
+      const baseline = await this.getBaseline(profile.cipherId)
       if (baseline) {
         comparisons.push(this.compare(profile, baseline, thresholds))
       }
@@ -363,15 +367,15 @@ export class BaselineManager {
   /**
    * Export baselines to JSON string
    */
-  static exportBaselinesToString(): string {
-    const baselines = this.loadBaselines()
+  static async exportBaselinesToString(): Promise<string>{
+    const baselines =  await this.loadBaselines()
     return JSON.stringify(Array.from(baselines.values()), null, 2)
   }
 
   /**
    * Import baselines from JSON string
    */
-  static importBaselinesFromString(data: string): void {
+  static async importBaselinesFromString(data: string): Promise<void> {
     const baselines: PerformanceBaseline[] = JSON.parse(data, (key, value) => {
       if (key === 'timestamp') return new Date(value)
       return value
@@ -382,19 +386,19 @@ export class BaselineManager {
       map.set(baseline.cipherId, baseline)
     }
 
-    this.saveBaselines(map)
+    await this.saveBaselines(map)
   }
 
   /**
    * Get baseline summary statistics
    */
-  static getBaselineSummary(): {
+  static async getBaselineSummary(): Promise<{
     count: number
     ciphers: string[]
     versions: string[]
     dateRange: { oldest: Date; newest: Date } | null
-  } {
-    const baselines = this.loadBaselines()
+  }> {
+    const baselines = await this.loadBaselines()
     const cipherIds = Array.from(baselines.keys())
     const baselineArray = Array.from(baselines.values())
 
