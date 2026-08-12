@@ -115,6 +115,7 @@ export default function Navbar() {
         { name: 'OpenPGP Explorer', href: '/openpgp' },
         { name: t('nav.challenge') || 'Challenge', href: '/challenge' },
         { name: t('nav.advisor') || 'Advisor', href: '/advisor' },
+        { name: 'Dashboard', href: '/dashboard' },
       ],
     },
     {
@@ -200,8 +201,7 @@ export default function Navbar() {
     { name: 'Benchmark History', href: '/benchmarks/history' },
    
   ];
-
-  const isDevelopment = process.env.NODE_ENV === 'development';
+const isDevelopment = process.env.NODE_ENV === 'development';
   const visibleNavLinks = isDevelopment ? developerLinks : [];
 
   return (
