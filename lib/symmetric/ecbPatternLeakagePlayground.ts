@@ -26,7 +26,7 @@ export interface EcbPatternResult {
 }
 
 export const DEFAULT_ECB_PATTERN_INPUT: EcbPatternInput = {
-  plaintext: "BLOCK-01|BLOCK-01|BLOCK-01|UNIQUE!!|BLOCK-01|BLOCK-01|",
+  plaintext: "BLOCK001BLOCK001BLOCK001UNIQUE01BLOCK001BLOCK001",
   key: "demo-key",
   blockSize: 8,
   iv: "iv-demo1",

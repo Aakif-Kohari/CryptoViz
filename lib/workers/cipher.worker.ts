@@ -1,7 +1,8 @@
 /**
  * Cipher Web Worker.
- * Handles heavy cryptographic operations off the main thread.
- * @see CLAUDE.md
+ *
+ * Dispatch is registry-driven. Adding a conventional cipher module requires
+ * only its entry in CIPHER_REGISTRY; this worker does not contain cipher cases.
  */
 
 import { encrypt as atbashEncrypt, decrypt as atbashDecrypt } from "../cipher/classical/atbash";
@@ -88,25 +89,28 @@ import { deriveKey } from "../kdf/pbkdf2";
 import { deriveScryptKey } from "../kdf/scrypt";
 import { CipherError } from "../utils/errors";
 import type { WorkerRequest, WorkerResponse } from "../../types/worker";
+import type { CipherResult } from "../cipher/types";
+import { getDispatcher } from "./cipherDispatchRegistry";
 
 type WorkerRequestMessage = WorkerRequest | Uint8Array;
 
-const workerScope = self as unknown as Worker;
+const workerScope = self as unknown as Worker & typeof globalThis;
 
-workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequestMessage>) => {
-  const startTime = performance.now();
-  let requestData: WorkerRequestMessage = event.data;
+workerScope.addEventListener(
+  "message",
+  async (event: MessageEvent<WorkerRequestMessage>) => {
+    const startTime = performance.now();
+    let requestData: WorkerRequestMessage = event.data;
 
-  if (requestData instanceof Uint8Array) {
-    const decoder = new TextDecoder();
-    requestData = JSON.parse(decoder.decode(requestData)) as WorkerRequest;
-  }
-  const { type, requestId, payload } = requestData as WorkerRequest;
-  const { cipherId, input, key, options } = payload;
+    try {
+      if (requestData instanceof Uint8Array) {
+        requestData = JSON.parse(
+          new TextDecoder().decode(requestData),
+        ) as WorkerRequest;
+      }
 
-  try {
-    let result: unknown;
-    const encryptMode = type === "encrypt";
+      const { type, requestId, payload } = requestData as WorkerRequest;
+      const { cipherId, input, key, options } = payload;
 
     switch (cipherId) {
       case "caesar":
@@ -375,47 +379,42 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
       default:
         throw new Error(`Unsupported cipher ID: ${cipherId}`);
     }
+      const dispatcher = await getDispatcher(cipherId);
+      const handler = type === "encrypt" ? dispatcher.encrypt : dispatcher.decrypt;
+      const result = (await handler(input, key, options)) as CipherResult;
 
-    // Some cipher implementations (e.g. RSA real mode via WebCrypto) are async
-    // and return a Promise; awaiting a plain value is a no-op for the rest.
-    result = await result;
+      const response: WorkerResponse = {
+        requestId,
+        success: true,
+        payload: { result },
+        timings: { durationMs: performance.now() - startTime },
+      };
 
-    const durationMs = performance.now() - startTime;
-    const response: WorkerResponse = {
-      requestId,
-      success: true,
-      payload: { result: result as any },
-      timings: { durationMs },
-    };
-    workerScope.postMessage(response);
-  } catch (error: unknown) {
-    const durationMs = performance.now() - startTime;
+      workerScope.postMessage(response);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorCode =
+        error instanceof CipherError ? error.code : undefined;
 
-    // If cipher code throws CipherError, preserve its stable error code.
-    let errorCode: import("@/lib/utils/errors").CipherErrorCode | undefined;
-    let errorMessage: string;
+      const requestId =
+        typeof requestData === "object" &&
+        requestData !== null &&
+        "requestId" in requestData
+          ? (requestData as WorkerRequest).requestId
+          : "unknown";
 
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    } else {
-      errorMessage = String(error);
+      const response: WorkerResponse = {
+        requestId,
+        success: false,
+        payload: {
+          error: errorMessage,
+          errorCode,
+          errorMessage,
+        },
+        timings: { durationMs: performance.now() - startTime },
+      };
+
+      workerScope.postMessage(response);
     }
-
-    if (error instanceof CipherError) {
-      errorCode = error.code;
-      errorMessage = error.message;
-    }
-
-    const response: WorkerResponse = {
-      requestId,
-      success: false,
-      payload: {
-        error: errorMessage, // legacy
-        errorCode,
-        errorMessage,
-      },
-      timings: { durationMs },
-    };
-    workerScope.postMessage(response);
-  }
-});
+  },
+);

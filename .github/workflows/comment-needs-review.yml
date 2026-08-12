@@ -1,17 +1,23 @@
 name: Comment Needs Review
 
 # ==========================================================================
-# Whenever a contributor adds a follow-up comment on an ISSUE or a PR's
-# conversation tab, this adds the "needs review" label so it surfaces
-# back onto the maintainer's radar.
+# Keeps the "needs review" label pointed at things that actually need the
+# maintainer's attention:
+#
+#   - A new issue opened by someone other than the maintainer gets the
+#     label right away.
+#   - A follow-up comment on an issue or PR's conversation tab (from
+#     someone other than the maintainer) adds the label so it resurfaces.
 #
 # Skipped for:
-#   - Comments from the maintainer themselves (see the hardcoded username
-#     in the job's `if:` below — see note there for why it can't just
-#     read from the env: config block)
-#   - Comments from bots (type == "Bot", or a login ending in "[bot]" as
-#     a belt-and-suspenders check)
-#   - Comments on already-closed issues/merged PRs (nothing to review)
+#   - Anything done by the maintainer themselves (an issue they opened, or
+#     a comment they left) — see the hardcoded username in the job's `if:`
+#     below (used in both branches — see note there for why it can't just
+#     read from the env: config block).
+#   - Bots (type == "Bot", or a login ending in "[bot]" as a
+#     belt-and-suspenders check).
+#   - Comments/issues on already-closed issues or merged PRs (nothing to
+#     review).
 #
 # NOTE ON SCOPE: issue_comment fires for comments on the general
 # conversation tab of BOTH issues and PRs (GitHub treats a PR as an
@@ -19,31 +25,45 @@ name: Comment Needs Review
 # code-review comments (pull_request_review_comment) or a review body
 # submitted via "Review changes" (pull_request_review) — say if you
 # want those covered too and this can be extended.
+#
+# The `issues: opened` trigger only fires for actual issues, not PRs
+# (PR creation is a separate `pull_request` event) — so opening a PR
+# is untouched by this workflow, matching the original scope.
 # ==========================================================================
 
 on:
   issue_comment:
     types:
       - created
+  issues:
+    types:
+      - opened
 
 permissions:
   issues: write
 
 jobs:
   label-needs-review:
-    name: Label needs-review on contributor follow-up
+    name: Label needs-review on contributor issue/comment
     runs-on: ubuntu-latest
 
     # ------------------------------------------------------------------
     # NOTE: job-level `if:` conditions can't read this job's own `env:`
     # block (env isn't resolved yet at that point in the workflow), so
-    # the maintainer username is hardcoded here rather than pulled from
-    # the config block below. Update BOTH if your username ever changes.
+    # the maintainer username is hardcoded here — in BOTH branches below
+    # — rather than pulled from the config block further down. Update
+    # all three spots (both branches here, plus MAINTAINER_USERNAME
+    # below) if your username ever changes.
     # ------------------------------------------------------------------
     if: |
-      github.event.comment.user.login != 'csxark' &&
-      github.event.comment.user.type != 'Bot' &&
-      !endsWith(github.event.comment.user.login, '[bot]')
+      (github.event_name == 'issues' &&
+        github.event.issue.user.login != 'csxark' &&
+        github.event.issue.user.type != 'Bot' &&
+        !endsWith(github.event.issue.user.login, '[bot]')) ||
+      (github.event_name == 'issue_comment' &&
+        github.event.comment.user.login != 'csxark' &&
+        github.event.comment.user.type != 'Bot' &&
+        !endsWith(github.event.comment.user.login, '[bot]'))
 
     # ------------------------------------------------------------------
     # CONFIG BLOCK — edit these without touching the script below.
@@ -77,6 +97,15 @@ jobs:
               labels: [reviewLabel],
             });
 
+            const actor =
+              context.eventName === "issues"
+                ? issue.user.login
+                : context.payload.comment.user.login;
+            const trigger =
+              context.eventName === "issues"
+                ? "was opened by"
+                : "got a follow-up comment from";
+
             console.log(
-              `Added "${reviewLabel}" to #${issue.number} after a follow-up comment from ${context.payload.comment.user.login}.`
+              `Added "${reviewLabel}" to #${issue.number} — ${trigger} ${actor}.`
             );

@@ -1,5 +1,4 @@
 import type { BenchmarkResult, BenchmarkSession } from "@/types/benchmark";
-import { formatBytes } from "@/lib/utils/benchmarkHistory";
 
 export interface AlgorithmDiff {
   cipherId: string;

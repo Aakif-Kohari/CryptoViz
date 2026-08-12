@@ -168,7 +168,7 @@ export function generateRsaWizard(input: RsaWizardInput): RsaWizardResult {
       formula: `φ(n) = (p - 1)(q - 1) = ${primeP - 1} × ${primeQ - 1}`,
       result: `φ(n) = ${totient}`,
       explanation:
-        "Euler's totient counts how many values below n are coprime with n. It is used to connect the public and private exponents.",
+        "Euler's totient φ(n) counts how many values below n are coprime with n. It connects public and private exponents following the original 1978 RSA paper. Note: Modern standards (RFC 8017 / PKCS#1 v2.2) prefer Carmichael's lambda λ(n) = lcm(p - 1, q - 1). Because λ(n) divides φ(n), both produce valid exponents satisfy e·d ≡ 1 (mod λ(n)), with λ(n) yielding the minimal valid d.",
     },
     {
       id: "choose-exponent",
@@ -206,6 +206,7 @@ export function generateRsaWizard(input: RsaWizardInput): RsaWizardResult {
     steps,
     securityNotes: [
       "This wizard uses small primes for education only.",
+      "This wizard computes d mod φ(n) per the original 1978 RSA paper. Modern RFC 8017 / PKCS#1 v2.2 implementations use Carmichael's lambda λ(n) = lcm(p - 1, q - 1), yielding smaller but equivalent private exponents.",
       "Real RSA keys should be generated with audited cryptographic libraries.",
       "Production RSA commonly uses 2048-bit or larger moduli.",
       "Never reuse demo primes or private exponents for real security.",

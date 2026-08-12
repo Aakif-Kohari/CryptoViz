@@ -1,3 +1,8 @@
+import {
+  safeGetItemJson,
+  safeSetItemJson,
+} from './storage'
+
 export const STEP_ANNOTATIONS_STORAGE_KEY = 'cryptoviz-step-annotations'
 export const STEP_NOTE_MAX_LENGTH = 500
 export const STEP_ANNOTATIONS_VERSION = 1
@@ -112,32 +117,15 @@ export function normalizeStepAnnotationStore(
 }
 
 export function loadStepAnnotationStore(): StepAnnotationStore {
-  if (typeof window === 'undefined') return EMPTY_STORE
-
-  try {
-    const raw = window.localStorage.getItem(STEP_ANNOTATIONS_STORAGE_KEY)
-    return raw ? normalizeStepAnnotationStore(JSON.parse(raw)) : EMPTY_STORE
-  } catch {
-    return EMPTY_STORE
-  }
+  const parsed = safeGetItemJson<unknown>(STEP_ANNOTATIONS_STORAGE_KEY, null)
+  return parsed !== null ? normalizeStepAnnotationStore(parsed) : EMPTY_STORE
 }
 
 export function saveStepAnnotationStore(
   store: StepAnnotationStore,
 ): StepAnnotationStore {
   const normalized = normalizeStepAnnotationStore(store)
-
-  if (typeof window !== 'undefined') {
-    try {
-      window.localStorage.setItem(
-        STEP_ANNOTATIONS_STORAGE_KEY,
-        JSON.stringify(normalized),
-      )
-    } catch {
-      // Storage may be unavailable or full.
-    }
-  }
-
+  safeSetItemJson(STEP_ANNOTATIONS_STORAGE_KEY, normalized)
   return normalized
 }
 
