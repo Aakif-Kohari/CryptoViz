@@ -50,7 +50,7 @@ export class BenchmarkEngine {
     let result = ''
 
     for (let i = 0; i < lengthInBytes; i += 1) {
-      result += hex[randomValues[i] % hex.length]
+      result += hex[(randomValues[i] >> 4) & 0xf] + hex[randomValues[i] & 0xf]
     }
 
     return result
