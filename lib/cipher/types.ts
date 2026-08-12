@@ -135,6 +135,7 @@ export type CipherName =
   | 'grain128'
   | '3way'
   | 'lucifer'
+  | 'khufu'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
