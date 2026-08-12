@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { useCipherWorker } from '../../lib/hooks/useCipherWorker';
 import { generateDailyQuiz, getDailyQuizState, saveDailyQuizState, calculateNewStreak, type DailyQuizData, type DailyQuizState } from '../../lib/challenge/daily';
 import { getWrongAnswerExplanation } from '../../lib/challenge/explain';
@@ -19,9 +19,22 @@ function getLocalDateString(): string {
 export default function DailyQuiz() {
   const { runCipher, loading } = useCipherWorker();
   
-  const [isHydrated, setIsHydrated] = useState(false);
-  const [dailyData, setDailyData] = useState<DailyQuizData | null>(null);
-  const [quizState, setQuizState] = useState<DailyQuizState | null>(null);
+  const isHydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+
+  const [dailyData] = useState<DailyQuizData | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return generateDailyQuiz(getLocalDateString());
+  });
+
+  const [quizState, setQuizState] = useState<DailyQuizState | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return getDailyQuizState();
+  });
+  
   const [expectedCiphertext, setExpectedCiphertext] = useState('');
   
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -29,18 +42,6 @@ export default function DailyQuiz() {
   const [explanation, setExplanation] = useState<{ title: string; details: string[] } | null>(null);
 
   const feedbackRef = useRef<HTMLDivElement>(null);
-
-  // Initialize
-  useEffect(() => {
-    const today = getLocalDateString();
-    const data = generateDailyQuiz(today);
-    const state = getDailyQuizState();
-    
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setDailyData(data);
-    setQuizState(state);
-    setIsHydrated(true);
-  }, []);
 
   // Fetch ciphertext
   useEffect(() => {

@@ -28,13 +28,13 @@ export class PerformanceProfiler {
   /**
    * Get current environment information
    */
-  static getEnvironmentInfo(): EnvironmentInfo {
+  static async getEnvironmentInfo(): Promise<EnvironmentInfo> {
     const isNode = typeof process !== 'undefined' && process.versions?.node
 
     if (isNode) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const os = require('os')
+        const os = await import('node:os')
         return {
           nodeVersion: process.version,
           platform: process.platform,
@@ -328,7 +328,7 @@ export class PerformanceProfiler {
       // Ignore if gc is not available
     }
 
-    const environment = this.getEnvironmentInfo()
+    const environment = await this.getEnvironmentInfo()
 
     // Collect baseline memory
     const baselineMemory = this.getBaselineMemory()

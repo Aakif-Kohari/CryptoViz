@@ -226,17 +226,24 @@ export default function ChallengeMode() {
 
   // Load ciphertext when session advances
   useEffect(() => {
-    if (!started) return
-    if (!currentChallenge) return
+   if (!started || !currentChallenge) return
 
     // Reset retry state for the new question
-    setCipherRetryCount(0)
-    retryTimerRef.current && clearTimeout(retryTimerRef.current)
-    retryTimerRef.current = null
+   setCipherRetryCount(0)
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current)
+      retryTimerRef.current = null
+    }
 
-    loadExpectedCiphertextForCurrent()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentQuestionIndex, started])
+    void loadExpectedCiphertextForCurrent()
+
+    return () => {
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current)
+        retryTimerRef.current = null
+      }
+    }
+  }, [currentChallenge, started, loadExpectedCiphertextForCurrent])
 
 
   const advanceQuestion = useCallback(() => {
