@@ -538,3 +538,15 @@
 [#1005] (open) by @Aakif-Kohari: [FEATURE] Add A5/1 stream cipher (GSM voice encryption, LFSR-based, historically broken, completes GSM generation story with KASUMI)
 [#1004] (open) by @Aakif-Kohari: [FEATURE] Add Khufu block cipher (Merkle, 1990, key-dependent S-boxes, byte-oriented Feistel, completes Merkle cryptographic-designs trilogy)
 [#988] (closed) by @Chigael: Fix `cspContainsUnsafeInline()` CSP Grammar Detection
+
+=== Audited 2026-08-12 17:29 UTC (10 new) ===
+[#1031] (open) by @Ayush-0918: [BUG]: Use CipherError for unsupported cipher IDs in cipher worker
+[#1030] (open) by @Ayush-0918: [BUG]: Prevent favorite cipher change events after storage failure
+[#1029] (open) by @Ayush-0918: [BUG]: Make SHA-1 decrypt() correctly reject one-way hash decryption
+[#1028] (open) by @Ayush-0918: [BUG]: Fix generateKey() producing incorrect hex key length
+[#1027] (open) by @Ayush-0918: [BUG]: Fix XChaCha20 switch fallthrough and duplicate XSalsa20 import
+[#1026] (open) by @Aakif-Kohari: [FEATURE] Add Panama hash/stream design (Daemen & Clapp, 1998, dual-mode primitive, completes Daemen design trilogy with 3-Way and Square)
+[#1025] (open) by @Aakif-Kohari: [FEATURE] Add GGH lattice cryptosystem (Goldreich-Goldwasser-Halevi, 1997, broken lattice scheme, teaching complement to secure NTRU/ML-KEM)
+[#1024] (open) by @Aakif-Kohari: [FEATURE] Add Boneh-Franklin Identity-Based Encryption (pairing-based, public key = arbitrary identity string, novel category)
+[#1023] (open) by @Aakif-Kohari: [FEATURE] Add DEAL block cipher (AES candidate that uses DES as its own round function, direct reuse of existing des.ts)
+[#1022] (open) by @Aakif-Kohari: [FEATURE] Add ZUC stream cipher (Chinese national standard, GB/T 33133, used in 4G LTE encryption, completes SM2+SM3+SM4+ZUC national suite)
