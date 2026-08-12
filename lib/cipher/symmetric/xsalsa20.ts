@@ -21,7 +21,7 @@ const METADATA: CipherMetadata = {
   standardBody: 'NaCl / libsodium (extension of Bernstein\'s Salsa20)',
 }
 
-const MASK = 0xffffffff
+const _MASK = 0xffffffff
 function rotl(x: number, n: number): number {
   const ux = x >>> 0
   return ((ux << n) | (ux >>> (32 - n))) >>> 0
@@ -189,7 +189,7 @@ export const TEST_VECTORS: TestVector[] = [
   {
     input: '0000000000000000000000000000000000000000000000000000000000000000',
     key: '1b27556473e985d462cd51197a9a46c76009549eac6474f206c4ee0844f68389|69696ee955b62b73cd62bda875fc73d68219e0036b7a0b37',
-    expected: 'eead9d67890cbb22392336fea1851f38',
+    expected: 'eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880',
     description: 'XSalsa20 reference vector (derived from libsodium crypto_stream_xsalsa20 test suite)',
   },
 ]

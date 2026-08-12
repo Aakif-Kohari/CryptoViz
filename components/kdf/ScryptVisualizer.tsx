@@ -9,7 +9,7 @@ import {
   type ScryptStageStep
 } from '@/lib/kdf/scrypt'
 import type { WorkerRequest } from '@/types/worker'
-import { Info, HelpCircle, ShieldAlert, Cpu } from 'lucide-react'
+import { HelpCircle, ShieldAlert, Cpu } from 'lucide-react'
 
 function randomSaltHex(bytes = 16): string {
   const arr = crypto.getRandomValues(new Uint8Array(bytes))
@@ -30,11 +30,11 @@ async function deriveScryptKeyViaWorker(
       options: params
     },
   }
-  const response = await sharedCipherPool.execute(message)
+  const response = await sharedCipherPool.execute(message) as { success: boolean; payload: { result?: { derivedKeyHex: string; saltHex: string }; error?: string } }
   if (response.success === false) {
     throw new Error(response.payload.error ?? 'Scrypt derivation failed.')
   }
-  return response.payload.result as unknown as { derivedKeyHex: string; saltHex: string }
+  return response.payload.result as { derivedKeyHex: string; saltHex: string }
 }
 
 export default function ScryptVisualizer() {
@@ -239,7 +239,7 @@ export default function ScryptVisualizer() {
           </h2>
           <ol className="space-y-4">
             {stages.map((step, i) => (
-              <li key={i} className="flex gap-4 border-l-2 border-teal-500 pl-4 py-0.5">
+              <li key={`step-${i}-${step.label}`} className="flex gap-4 border-l-2 border-teal-500 pl-4 py-0.5">
                 <div className="flex-1">
                   <h4 className="text-sm font-bold text-zinc-900 dark:text-white">
                     {step.label}

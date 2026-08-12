@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import type { AlgorithmDiff } from "@/lib/utils/sessionComparison";
-import { Search, ArrowUpDown, Shield, Cpu, Activity } from "lucide-react";
+import { Search, ArrowUpDown } from "lucide-react";
 
 interface AlgorithmDiffTableProps {
   algorithmDiffs: AlgorithmDiff[];
@@ -183,7 +183,7 @@ export default function AlgorithmDiffTable({
               filteredAndSorted.map((diff) => {
                 const isFaster = diff.status === "faster";
                 const isSlower = diff.status === "slower";
-                const isSimilar = diff.status === "similar";
+                const _isSimilar = diff.status === "similar";
 
                 return (
                   <tr

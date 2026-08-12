@@ -59,12 +59,16 @@ describe("RSA key generation wizard utilities", () => {
     expect(getRecommendedPublicExponents(3120)).toEqual([17, 257]);
   });
 
-  it("builds manual testing checklist", () => {
-    const checklist = buildRsaWizardManualChecklist();
+  it("includes φ(n) vs Carmichael λ(n) explanation and RFC 8017 security note", () => {
+    const result = generateRsaWizard(DEFAULT_RSA_WIZARD_INPUT);
+    const totientStep = result.steps.find((s) => s.id === "compute-totient");
+    expect(totientStep?.explanation).toMatch(/Carmichael's lambda/i);
+    expect(totientStep?.explanation).toMatch(/RFC 8017/i);
 
-    expect(checklist[0]).toMatch(/open the rsa key generation wizard/i);
-    expect(checklist).toContain(
-      "Confirm the default p=61, q=53, e=17 example generates n=3233 and d=2753.",
+    const hasLambdaNote = result.securityNotes.some(
+      (note) => note.includes("Carmichael's lambda") && note.includes("RFC 8017")
     );
+    expect(hasLambdaNote).toBe(true);
   });
 });
+

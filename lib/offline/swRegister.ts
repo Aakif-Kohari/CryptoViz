@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { OfflineCacheStatus } from './types';
+import { safeGetItemJson, safeSetItemJson, safeRemoveItem } from '../utils/storage';
+
+import { PRECACHE_ROUTES } from './precacheRoutes';
 
 const CACHE_NAME = 'cryptoviz-offline-v1';
 
@@ -34,9 +37,13 @@ export function useOfflinePackManager() {
         const keys = await cache.keys();
         if (keys.length > 0) {
           // Look for cached pack indicators
-          const cachedJsonStr = localStorage.getItem('cryptoviz_cached_packs');
-          if (cachedJsonStr) {
-            cachedIds = JSON.parse(cachedJsonStr);
+          const storedPacks = safeGetItemJson<string[] | null>(
+            'cryptoviz_cached_packs',
+            null,
+            (val): val is string[] => Array.isArray(val),
+          );
+          if (storedPacks) {
+            cachedIds = storedPacks;
           } else {
             cachedIds = ['symmetric-classical'];
           }
@@ -53,7 +60,7 @@ export function useOfflinePackManager() {
         const estimate = await navigator.storage.estimate();
         if (estimate.usage) used = estimate.usage;
         if (estimate.quota) quota = estimate.quota;
-      } catch (e) {
+      } catch (_e) {
         // Fallback defaults
       }
     }
@@ -99,15 +106,7 @@ export function useOfflinePackManager() {
     try {
       if ('caches' in window) {
         const cache = await caches.open(CACHE_NAME);
-        await cache.addAll([
-          '/',
-          '/offline',
-          '/docs',
-          '/resources',
-          '/visualizer/caesar/',
-          '/icon.svg',
-          '/globals.css',
-        ]);
+        await cache.addAll(PRECACHE_ROUTES);
       }
 
       // Simulate step progress for user feedback
@@ -118,7 +117,7 @@ export function useOfflinePackManager() {
 
       const current = status.cachedPackIds;
       const updated = Array.from(new Set([...current, packId]));
-      localStorage.setItem('cryptoviz_cached_packs', JSON.stringify(updated));
+      safeSetItemJson('cryptoviz_cached_packs', updated);
 
       setStatus(prev => ({
         ...prev,
@@ -141,7 +140,7 @@ export function useOfflinePackManager() {
         console.error('Failed to delete cache:', e);
       }
     }
-    localStorage.removeItem('cryptoviz_cached_packs');
+    safeRemoveItem('cryptoviz_cached_packs');
     setStatus(prev => ({
       ...prev,
       cachedPackIds: [],

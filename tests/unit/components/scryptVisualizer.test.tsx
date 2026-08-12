@@ -17,7 +17,7 @@ if (typeof window !== 'undefined' && !window.crypto) {
 vi.mock('@/lib/workers/pool', () => {
   return {
     WorkerPool: class {
-      async execute(message: any) {
+      async execute(_message: any) {
         return {
           success: true,
           payload: {

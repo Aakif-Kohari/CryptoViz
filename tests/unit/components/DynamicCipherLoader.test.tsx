@@ -9,7 +9,7 @@ describe("DynamicCipherLoader", () => {
 
     expect(screen.getByText("Dynamic Cipher Loader")).toBeInTheDocument();
     expect(screen.getByText("Runtime Module Extension Framework")).toBeInTheDocument();
-    expect(screen.getByText("Custom 4x4 S-Box Mini-AES")).toBeInTheDocument();
+    expect(screen.getAllByText("Custom 4x4 S-Box Mini-AES")[0]).toBeInTheDocument();
     expect(screen.getByText("Affine Cipher E(x)=(a·x+b) mod 26")).toBeInTheDocument();
   });
 

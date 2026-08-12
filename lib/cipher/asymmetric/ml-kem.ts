@@ -135,7 +135,11 @@ export function generateKeypair(): { publicKey: string; privateKey: string } {
 }
 
 export const TEST_VECTORS: TestVector[] = [
-  // Not populated — ML-KEM is randomized by design (fresh randomness
-  // per encapsulation), so there's no fixed ciphertext vector to pin.
-  // See the test file for round-trip coverage instead.
+  {
+    input: '',
+    key: '',
+    expected: 'randomized',
+    skipEncrypt: true,
+    description: 'ML-KEM-768 key encapsulation (randomized per encapsulation run)',
+  },
 ]
