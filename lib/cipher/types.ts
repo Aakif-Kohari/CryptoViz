@@ -199,6 +199,7 @@ export type CipherName =
   | 'md2'
   | 'gost-r34-11-94'
   | 'snefru'
+  | 'has160'
   | 'poly1305'
   | 'hmac'
   | 'cmac'

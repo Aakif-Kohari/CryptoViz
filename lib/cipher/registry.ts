@@ -1003,6 +1003,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
       { name: 'Output Length (bits)', id: 'outputBits', type: 'select', default: 128, choices: [{label: '128', value: 128}, {label: '256', value: 256}] }
     ]
   },
+  {
+    id: 'has160',
+    name: 'HAS-160',
+    category: 'hash',
+    description: 'Korean national hash standard (TTAS.KO-12.0011). Structurally similar to SHA-1 but with distinct message scheduling and constants. Originally specified to pair with KCDSA. Status: legacy (160-bit output).',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy',
+  },
   // Asymmetric
   {
     id: "rsa",
