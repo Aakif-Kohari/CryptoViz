@@ -198,6 +198,7 @@ export type CipherName =
   | 'haval'
   | 'md2'
   | 'gost-r34-11-94'
+  | 'n-hash'
   | 'snefru'
   | 'poly1305'
   | 'hmac'
