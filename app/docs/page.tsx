@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
-import DocsLandingContent from "../../components/docs/DocsLandingContent";
-import DocsThemeLayout from "../../components/docs/DocsThemeLayout";
 
-]
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import Breadcrumbs from '../../components/layout/Breadcrumbs'
 
 import Link from "next/link";
 import {
@@ -22,14 +18,8 @@ import { CodeBlock } from "./components/CodeBlock";
 import { ExampleCard } from "./components/ExampleCard";
 import { PlaygroundCard } from "./components/PlaygroundCard";
 import { ReferenceList } from "./components/ReferenceList";
-import { DocumentationProgressActions } from "./components/DocumentationProgressActions";
 import { LearningProgressPanel } from "./components/LearningProgressPanel";
 import { useDocumentationProgress } from "./components/useDocumentationProgress";
-import { LearningTrackSelector } from "./components/LearningTrackSelector";
-import { RecommendedNextLinks } from "./components/RecommendedNextLinks";
-import { DifficultyBadge } from "./components/DifficultyBadge";
-import { ReadingTime } from "./components/ReadingTime";
-import { Prerequisites } from "./components/Prerequisites";
 import { getTitleScore, getDescriptionScore } from "../../lib/utils/fuzzySearch";
 import GlossaryTextRenderer from "../../components/glossary/GlossaryTextRenderer";
 
@@ -39,6 +29,12 @@ interface SearchItem {
   snippet: string;
   score?: number;
 }
+
+export const metadata: Metadata = {
+  title: "Documentation | CryptoViz",
+  description:
+    "CryptoViz documentation styled with the same design system as the main website, including responsive navigation and themed docs cards.",
+};
 
 export default function DocumentationPage() {
   const [activeSection, setActiveSection] = useState<DocCategory>(
@@ -71,6 +67,9 @@ export default function DocumentationPage() {
     () => filteredDocs.filter((c) => c.type === "cipher"),
     [filteredDocs],
   );
+
+  const generalDocs = filteredGeneralDocs;
+  const cipherDocs = filteredCipherDocs;
 
   const docSlugs = useMemo(
     () => docCategories.map((category) => getDocSlug(category.title)),
@@ -251,9 +250,6 @@ export default function DocumentationPage() {
         if (isCode) {
           node = (
             <code
-
-              key={idx}
-
               key={`code-${idx}-${part}`}
               className="bg-zinc-200/60 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-1.5 py-0.5 rounded font-mono text-xs text-rose-600 dark:text-rose-455"
             >
@@ -261,12 +257,6 @@ export default function DocumentationPage() {
             </code>
           );
         } else if (typeof part === "string") {
-
-          node = <GlossaryTextRenderer key={idx} content={part} />;
-          if (isBold) {
-            node = (
-              <strong
-                key={idx}
 
           node = <GlossaryTextRenderer key={`text-${idx}-${part}`} content={part} />;
           if (isBold) {
@@ -283,9 +273,6 @@ export default function DocumentationPage() {
         } else if (isBold) {
           node = (
             <strong
-
-              key={idx}
-
               key={`bold-obj-${idx}`}
 
               className="font-semibold text-zinc-900 dark:text-white"
@@ -298,9 +285,6 @@ export default function DocumentationPage() {
         if (isHighlight) {
           node = (
             <mark
-
-              key={`hl-${idx}`}
-
               key={`hl-${idx}-${typeof node === 'string' ? node.slice(0, 10) : 'object'}`}
 
               className="bg-yellow-200/80 dark:bg-yellow-500/35 text-zinc-950 dark:text-yellow-100 px-0.5 rounded shadow-xs font-semibold"
@@ -540,7 +524,6 @@ export default function DocumentationPage() {
             if (paragraph.startsWith("•")) {
               return (
                 <div
-                  key={idx}
                   key={`bullet-${idx}-${paragraph.slice(0, 20)}`}
                   className="flex items-center gap-3 pl-2 py-1 text-zinc-650 dark:text-zinc-300 font-sans"
                 >
@@ -562,8 +545,6 @@ export default function DocumentationPage() {
             ) {
               return (
                 <div
-                  key={idx}
-
                   key={`command-${idx}-${paragraph.slice(0, 20)}`}
 
                   className="bg-zinc-50 dark:bg-zinc-950 rounded-lg p-4 border border-zinc-200 dark:border-zinc-800 font-mono text-xs text-teal-600 dark:text-teal-400 flex justify-between items-center group shadow-sm dark:shadow-inner my-4 transition-colors"
@@ -618,9 +599,6 @@ export default function DocumentationPage() {
             }
 
             return (
-
-              <p key={idx} className="whitespace-pre-line">
-
               <p key={`paragraph-${idx}-${paragraph.slice(0, 20)}`} className="whitespace-pre-line">
 
                 {renderFormattedText(paragraph, activeQuery)}
@@ -650,12 +628,10 @@ export default function DocumentationPage() {
           <p className="text-zinc-500 dark:text-zinc-400 mb-2">
             Encryption Formula:
           </p>
-          <MathBlock formula={cipher.mathematics.encryptionFormula} />
-
           <MathBlock
-  formula={cipher.mathematics.encryptionFormula}
-  explanations={cipher.mathematics.explanations}
-/>
+            formula={cipher.mathematics.encryptionFormula}
+            explanation={cipher.mathematics.explanation}
+          />
 
           <p className="text-zinc-500 dark:text-zinc-400 mt-6 mb-2">
             Decryption Formula:
@@ -663,7 +639,6 @@ export default function DocumentationPage() {
           <MathBlock formula={cipher.mathematics.decryptionFormula} />
           <ul className="list-disc list-inside space-y-2 mt-4 text-zinc-500 dark:text-zinc-400">
             {cipher.mathematics.explanation.map((exp, idx) => (
-              <li key={idx} className="pl-1">
               <li key={`math-exp-${idx}-${exp.slice(0, 20)}`} className="pl-1">
                 {renderFormattedText(exp, activeQuery)}
               </li>
@@ -696,8 +671,6 @@ export default function DocumentationPage() {
               </h4>
               <ul className="space-y-2">
                 {cipher.securityAnalysis.advantages.map((adv, idx) => (
-                  <li key={idx} className="flex gap-2 items-start">
-
                   <li key={`adv-${idx}-${adv.slice(0, 20)}`} className="flex gap-2 items-start">
                     <span className="text-teal-500 select-none">✓</span>
                     <span className="text-zinc-600 dark:text-zinc-400 text-xs">
@@ -713,7 +686,6 @@ export default function DocumentationPage() {
               </h4>
               <ul className="space-y-2">
                 {cipher.securityAnalysis.weaknesses.map((weak, idx) => (
-                  <li key={idx} className="flex gap-2 items-start">
                   <li key={`weak-${idx}-${weak.slice(0, 20)}`} className="flex gap-2 items-start">
                     <span className="text-red-500 select-none">✗</span>
                     <span className="text-zinc-600 dark:text-zinc-400 text-xs">
@@ -814,17 +786,6 @@ export default function DocumentationPage() {
     </div>
   )}
 </DocumentationSection>
-
-        <DocumentationSection title="Real-world Applications">
-          <ul className="list-disc list-inside space-y-2 text-zinc-550 dark:text-zinc-400">
-            {cipher.realWorldApplications.map((app, idx) => (
-              <li key={`app-${idx}-${app.slice(0, 20)}`} className="pl-1">
-                {renderFormattedText(app, activeQuery)}
-              </li>
-            ))}
-          </ul>
-        </DocumentationSection>
-
 
         <DocumentationSection title="Implementation Snippets">
           <p className="text-zinc-500 dark:text-zinc-400 mb-2">Python:</p>
@@ -1175,21 +1136,13 @@ export default function DocumentationPage() {
             {renderFormattedText(activeSection.description, activeQuery)}
           </p>
 
-export const metadata: Metadata = {
-  title: "Documentation | CryptoViz",
-  description:
-    "CryptoViz documentation styled with the same design system as the main website, including responsive navigation and themed docs cards.",
-};
-
-
-export default function DocsPage() {
-  return (
-    <DocsThemeLayout
-      pathname="/docs"
-      title="CryptoViz Documentation"
-      description="Explore implementation guides, visualizer notes, cipher references, and maintainer resources in a unified interface that matches the rest of CryptoViz."
-    >
-      <DocsLandingContent />
-    </DocsThemeLayout>
+          {activeSection.type === "general"
+            ? renderGeneralContent()
+            : renderCipherContent()}
+        </main>
+      </div>
+    </div>
   );
+
 }
+
