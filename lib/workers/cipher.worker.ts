@@ -70,7 +70,7 @@ import { encrypt as threefishEncrypt, decrypt as threefishDecrypt } from '../cip
 import { encrypt as xchacha20Encrypt, decrypt as xchacha20Decrypt } from '../cipher/symmetric/xchacha20'
 import { encrypt as gostEncrypt, decrypt as gostDecrypt } from '../cipher/symmetric/gost';
 import { encrypt as enigmaEncrypt, decrypt as enigmaDecrypt } from '../cipher/symmetric/enigma';
-import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20';
+import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20'
 import { encrypt as teaEncrypt, decrypt as teaDecrypt } from '../cipher/symmetric/tea';
 import { encrypt as serpentEncrypt, decrypt as serpentDecrypt } from '../cipher/symmetric/serpent';
 import { encrypt as chacha20Encrypt, decrypt as chacha20Decrypt } from "../cipher/symmetric/chacha20";
@@ -205,6 +205,7 @@ workerScope.addEventListener(
         break
       case 'xchacha20':
         result = encryptMode ? xchacha20Encrypt(input, key, options) : xchacha20Decrypt(input, key, options)
+        break
       case 'xsalsa20':
         result = encryptMode ? xsalsa20Encrypt(input, key, options) : xsalsa20Decrypt(input, key, options)
         break
@@ -308,7 +309,7 @@ workerScope.addEventListener(
         result = encryptMode ? poly1305Encrypt(input, key, options) : poly1305Decrypt();
         break;
       case "sha1":
-        result = encryptMode ? sha1Encrypt(input, key, options) : sha1Decrypt(input, key, options);
+        result = encryptMode ? sha1Encrypt(input, key, options) : sha1Decrypt();
         break;
       case "hkdf":
         result = encryptMode ? hkdfEncrypt(input, key, options) : hkdfDecrypt();
@@ -376,10 +377,7 @@ workerScope.addEventListener(
         result = encryptMode ? ideaEncrypt(input, key, options) : ideaDecrypt(input, key, options);
         break;
       default:
-        throw new CipherError(
-          'ALGORITHM_UNSUPPORTED',
-          `Unsupported cipher ID: ${cipherId}`
-        );
+        throw new Error(`Unsupported cipher ID: ${cipherId}`);
     }
       const dispatcher = await getDispatcher(cipherId);
       const handler = type === "encrypt" ? dispatcher.encrypt : dispatcher.decrypt;
