@@ -69,7 +69,6 @@ import { encrypt as threefishEncrypt, decrypt as threefishDecrypt } from '../cip
 import { encrypt as xchacha20Encrypt, decrypt as xchacha20Decrypt } from '../cipher/symmetric/xchacha20'
 import { encrypt as gostEncrypt, decrypt as gostDecrypt } from '../cipher/symmetric/gost';
 import { encrypt as enigmaEncrypt, decrypt as enigmaDecrypt } from '../cipher/symmetric/enigma';
-import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20'
 import { encrypt as xsalsa20Encrypt, decrypt as xsalsa20Decrypt } from '../cipher/symmetric/xsalsa20';
 import { encrypt as teaEncrypt, decrypt as teaDecrypt } from '../cipher/symmetric/tea';
 import { encrypt as serpentEncrypt, decrypt as serpentDecrypt } from '../cipher/symmetric/serpent';
@@ -373,7 +372,10 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
         result = encryptMode ? ideaEncrypt(input, key, options) : ideaDecrypt(input, key, options);
         break;
       default:
-        throw new Error(`Unsupported cipher ID: ${cipherId}`);
+        throw new CipherError(
+          'ALGORITHM_UNSUPPORTED',
+          `Unsupported cipher ID: ${cipherId}`
+        );
     }
 
     // Some cipher implementations (e.g. RSA real mode via WebCrypto) are async
@@ -384,6 +386,7 @@ workerScope.addEventListener("message", async (event: MessageEvent<WorkerRequest
     const response: WorkerResponse = {
       requestId,
       success: true,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       payload: { result: result as any },
       timings: { durationMs },
     };
