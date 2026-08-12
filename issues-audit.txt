@@ -550,3 +550,21 @@
 [#1024] (open) by @Aakif-Kohari: [FEATURE] Add Boneh-Franklin Identity-Based Encryption (pairing-based, public key = arbitrary identity string, novel category)
 [#1023] (open) by @Aakif-Kohari: [FEATURE] Add DEAL block cipher (AES candidate that uses DES as its own round function, direct reuse of existing des.ts)
 [#1022] (open) by @Aakif-Kohari: [FEATURE] Add ZUC stream cipher (Chinese national standard, GB/T 33133, used in 4G LTE encryption, completes SM2+SM3+SM4+ZUC national suite)
+
+=== Audited 2026-08-12 21:56 UTC (16 new) ===
+[#1051] (open) by @csxark: Accessible Audio & Tactile Mathematical Representation for Cryptographic Visualizations
+[#1050] (open) by @csxark: Universal Cipher Plugin & Automated Test-Vector Verification Harness
+[#1049] (open) by @csxark: Information-Theoretic Security & Shannon Entropy Workbench
+[#1048] (open) by @csxark: Threshold Cryptography & Distributed Key Generation (DKG) Interactive Simulator
+[#1046] (open) by @csxark: Automated Cryptanalysis & Hill-Climbing Language Model Workbench
+[#1045] (open) by @csxark: Microarchitectural Power & Cache Timing Side-Channel Waveform Analyzer
+[#1044] (open) by @csxark: Real-World Cryptographic Code Misuse & Vulnerability Audit Sandbox
+[#1043] (open) by @csxark: Bilinear Pairing Mathematics & Identity-Based Encryption (IBE) Formalism Visualizer
+[#1042] (open) by @csxark: Universal Step-by-Step Algorithmic Debugger & State Matrix Inspector
+[#1041] (open) by @csxark: Visual Node-Based Cryptographic DAG Pipeline Canvas
+[#1040] (open) by @csxark: Interactive Provable Security & IND-CPA/IND-CCA Game Simulator
+[#1039] (open) by @csxark: Probabilistic Primality Testing & Prime Generation Laboratory (Miller-Rabin & Baillie-PSW)
+[#1038] (open) by @csxark: Geometric Lattice Cryptography & LWE/Ring-LWE Problem Visualizer
+[#1037] (open) by @csxark: CRT Decryption Acceleration & Bellcore Fault Attack Simulator
+[#1036] (open) by @Gunjan10-droid: [FEATURE]: Add Cryptographic Nonce & IV Lifecycle Lab
+[#1034] (open) by @csxark: Interactive Galois Field $GF(2^8)$ Polynomial Arithmetic & S-Box Derivation Laboratory
