@@ -134,6 +134,7 @@ export type CipherName =
   | 'kasumi'
   | 'grain128'
   | '3way'
+  | 'a5-1'
   | 'lucifer'
   | 'rc4'
   | 'salsa20'
