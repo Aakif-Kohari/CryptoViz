@@ -170,18 +170,6 @@ workerScope.addEventListener(
         payload: { result },
         timings: { durationMs: performance.now() - startTime },
       };
-
-    const durationMs = performance.now() - startTime;
-    const response: WorkerResponse = {
-      requestId,
-      success: true,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      payload: { result: result as any },
-      timings: { durationMs },
-    };
-    workerScope.postMessage(response);
-  } catch (error: unknown) {
-    const durationMs = performance.now() - startTime;
       workerScope.postMessage(response);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : String(error);

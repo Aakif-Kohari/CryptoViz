@@ -44,6 +44,7 @@ const RailFenceViz = dynamic(() => import('./RailFenceViz'), { ssr: false })
 const DHVisualizer = dynamic(() => import('./DHVisualizer'), { ssr: false })
 const HmacVisualizer = dynamic(() => import('./HmacVisualizer'), { ssr: false })
 const Sm3Visualizer = dynamic(() => import('./Sm3Visualizer'), { ssr: false })
+const UniversalCipherDebugger = dynamic(() => import('./UniversalCipherDebugger'), { ssr: false })
 
 interface CipherLayoutProps {
   cipher: CipherDefinition;
@@ -103,7 +104,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [animationSpeed, setAnimationSpeed] = useState<AnimationSpeed>(1);
-  const [activeTab, setActiveTab] = useState<"result" | "history">("result");
+  const [activeTab, setActiveTab] = useState<"result" | "history" | "debugger">("result");
   const [history, setHistory] = useState<ConversionHistoryEntry[]>([]);
   const [annotationStore, setAnnotationStore] = useState<StepAnnotationStore>(() => ({
     version: 1,
@@ -808,6 +809,18 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
             >
               History
             </button>
+            {['aes', 'des', '3des', 'twofish', 'serpent', 'camellia', 'aria'].includes(cipher.id) && (
+              <button
+                onClick={() => setActiveTab("debugger")}
+                className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${
+                  activeTab === "debugger"
+                    ? "bg-white text-zinc-950 shadow dark:bg-zinc-900 dark:text-white"
+                    : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+                }`}
+              >
+                Debugger
+              </button>
+            )}
           </div>
 
           {activeTab === "result" ? (
@@ -915,13 +928,21 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
                 </div>
               )}
             </>
-          ) : (
+          ) : activeTab === "history" ? (
             <ConversionHistory
               cipherId={cipher.id}
               history={history}
               onHistoryChange={setHistory}
             />
-          )}
+          ) : activeTab === "debugger" ? (
+            <UniversalCipherDebugger
+              cipherId={cipher.id}
+              action={action}
+              input={input}
+              key={key}
+              options={workspaceOptions}
+            />
+          ) : null}
         </div>
       </div>
       <WhereIsThisUsed cipherId={cipher.id} />
