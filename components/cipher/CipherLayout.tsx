@@ -545,6 +545,14 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           <span className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
             {cipher.category}
           </span>
+          {['aes', 'twofish'].includes(cipher.id) && (
+            <a 
+              href="/finite-field"
+              className="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700 hover:bg-teal-100 dark:border-teal-900 dark:bg-teal-950/50 dark:text-teal-300 dark:hover:bg-teal-900 transition-colors"
+            >
+              Learn the GF(2^8) Math
+            </a>
+          )}
         </div>
       </div>
 
