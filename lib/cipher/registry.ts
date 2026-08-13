@@ -668,6 +668,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '512-bit key as 128 hex chars',
   },
   {
+    id: 'zuc',
+    name: 'ZUC',
+    category: 'symmetric',
+    description: 'Chinese national stream cipher (GB/T 33133). Used in 4G LTE (128-EEA3). Uniquely uses a 16-stage LFSR over GF(2^31-1) with modular arithmetic, NOT simple XOR feedback. Completes the SM2/SM3/SM4/ZUC national suite.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
