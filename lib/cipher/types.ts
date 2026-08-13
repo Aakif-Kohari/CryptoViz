@@ -175,6 +175,7 @@ export type CipherName =
   | 'sm2'
   | 'kcdsa'
   | 'goldwasser-micali'
+  | 'ggh'
   | 'bls'
   | 'boneh-franklin-ibe'
   | 'ed25519'
