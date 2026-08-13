@@ -1,6 +1,6 @@
 /**
  * Auto-generated precache routes manifest.
- * Last Generated: 2026-08-10T18:05:59.213Z
+ * Last Generated: 2026-08-13T11:56:30.688Z
  */
 export const PRECACHE_ROUTES: string[] = [
   "/",
@@ -42,6 +42,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/cipher-sandbox/",
   "/collections/",
   "/compare/",
+  "/dashboard/",
   "/demo/reed-solomon/",
   "/docs/",
   "/docs/architecture/",
@@ -83,6 +84,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/padding/",
   "/pipeline/",
   "/protocols/",
+  "/protocols/webauthn/",
   "/protocols/zero-knowledge/",
   "/quality/reliability/",
   "/rainbow-table/",
