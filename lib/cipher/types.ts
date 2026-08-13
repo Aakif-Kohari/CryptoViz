@@ -70,6 +70,10 @@ export interface CipherOptions {
   dkLen?: number
   salt?: string
   iterations?: number
+  incrementalCache?: {
+    input: string
+    result: CipherResult
+  }
   [key: string]: unknown
 }
 
