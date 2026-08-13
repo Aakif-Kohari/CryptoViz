@@ -245,8 +245,8 @@ const isDevelopment = process.env.NODE_ENV === 'development';
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden items-center gap-10 xl:flex">
-          {/* {visibleNavLinks.map((link) => {
+        <div className="hidden min-w-0 items-center justify-center gap-6 lg:flex xl:gap-10">
+           {visibleNavLinks.map((link) => {
             const isActive =
               pathname.startsWith(link.href) &&
               link.href !== '#'
@@ -264,14 +264,14 @@ const isDevelopment = process.env.NODE_ENV === 'development';
                 {link.name}
               </Link>
             )
-          })} */}
+          })} 
           {navCategories.map((category) => {
             const isCategoryActive = category.href
               ? pathname === category.href
               : category.items?.some((item) => pathname?.startsWith(item.href) && item.href !== '#');
 
             return (
-              <div key={category.name} className="group relative">
+              <div key={category.name} className="group relative shrink-0">
                 {category.href ? (
                   <Link
                     href={category.href}
@@ -306,10 +306,11 @@ const isDevelopment = process.env.NODE_ENV === 'development';
                     />
                   </Link>
                 ) : (
-                  <div className="cursor-default py-6 -my-6 flex items-center">
+                  <div className="flex items-center cursor-default py-6 -my-6">
                     <span
                       className={`
                         relative
+                        whitespace-nowrap
                         text-[15px]
                         font-semibold
                         transition-all
@@ -340,7 +341,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
                     </span>
                     
                     <div className="absolute left-1/2 top-full mt-4 w-56 -translate-x-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                      <div className="rounded-xl border border-zinc-200/50 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-zinc-800/50 dark:bg-zinc-950/95 flex flex-col gap-1">
+                      <div className="flex flex-col gap-1 rounded-xl border border-zinc-200/50 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-zinc-800/50 dark:bg-zinc-950/95 ">
                         {category.items?.map((item) => {
                           const isItemActive = pathname?.startsWith(item.href) && item.href !== '#';
                           return (
@@ -367,7 +368,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
         </div>
 
         {/* Right Side */}
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
           {/* Global Search */}
           <GlobalSearch />
 
@@ -438,7 +439,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
             aria-controls="mobile-menu"
             className="
               flex
-              xl:hidden
+              lg:hidden
               h-10
               w-10
               sm:h-12
@@ -490,7 +491,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
         <div
           id="mobile-menu"
           className="
-            xl:hidden
+            lg:hidden
             border-t
             border-zinc-200
             bg-white/95
