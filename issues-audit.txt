@@ -568,3 +568,20 @@
 [#1037] (open) by @csxark: CRT Decryption Acceleration & Bellcore Fault Attack Simulator
 [#1036] (open) by @Gunjan10-droid: [FEATURE]: Add Cryptographic Nonce & IV Lifecycle Lab
 [#1034] (open) by @csxark: Interactive Galois Field $GF(2^8)$ Polynomial Arithmetic & S-Box Derivation Laboratory
+
+=== Audited 2026-08-13 19:04 UTC (15 new) ===
+[#1069] (open) by @csxark: Real-Time Algorithmic Audio Sonification Engine
+[#1068] (open) by @csxark: Interactive DAG Cryptography Prerequisite Knowledge Explorer
+[#1067] (open) by @csxark: Memory-Hard KDF Hardware Resource Trade-Off Simulator
+[#1066] (open) by @csxark: Multi-Dimensional Hardware Cryptography Radar Profiler
+[#1065] (open) by @csxark: Digital Steganography & Covert Channel Workbench
+[#1064] (open) by @csxark: Formal Security Protocol State Machine & BAN Logic Inspector
+[#1063] (closed) by @csxark: S-Box Difference Distribution (DDT) & LAT Cryptanalysis Workbench
+[#1062] (closed) by @csxark: Quantum Shor's & Grover's Circuit Visualizer
+[#1061] (closed) by @csxark: Key Exchange MitM Interception & Substitution Simulator
+[#1060] (open) by @csxark: Naor-Shamir Visual Cryptography & Optical Secret Sharing
+[#1059] (open) by @csxark: Ring-LWE & Module-LWE Polynomial Ring NTT Laboratory
+[#1058] (open) by @csxark: Physical Entropy Harvesting & Min-Entropy Conditioner Laboratory
+[#1057] (open) by @csxark: KZG Polynomial Commitment & Bilinear Pairing Visualizer
+[#1056] (closed) by @csxark: Homomorphic Encrypted Computation Workbench
+[#1055] (open) by @csxark: Interactive Group Theory & Discrete Logarithm Laboratory
