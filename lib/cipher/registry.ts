@@ -658,6 +658,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'deal',
+    name: 'DEAL',
+    category: 'symmetric',
+    description: 'AES candidate (1998). 128-bit block Feistel network that uses full DES as its round function. Demonstrates building a larger cipher from an existing trusted primitive. Status: legacy.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+  },
+  {
     id: 'khufu',
     name: 'Khufu',
     category: 'symmetric',
