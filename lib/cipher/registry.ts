@@ -1061,6 +1061,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '',
     securityStatus: 'legacy',
   },
+  {
+    id: 'panama',
+    name: 'Panama',
+    category: 'hash',
+    description: 'Daemen & Clapp (1998). Dual-mode primitive (Hash/Stream). This visualizer covers Hash mode only. Uses a massive 32-stage buffer + 17-word state. Daemen-lineage connection to 3-Way/Square. Status: legacy.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy',
+  },
   // Asymmetric
   {
     id: "rsa",
