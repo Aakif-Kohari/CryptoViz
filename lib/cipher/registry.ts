@@ -1288,6 +1288,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
   },
   {
+    id: 'ggh',
+    name: 'GGH',
+    category: 'asymmetric',
+    description: 'Early lattice cryptosystem (1997). Uses good/bad basis pairs. Status: BROKEN unconditionally. Nguyen (1999) showed the specific error-vector distribution leaked structural information, making CVP trivial. Educational complement to secure NTRU/ML-KEM.',
+    defaultKey: 'mock_keys',
+    defaultInput: '050a',
+    securityStatus: 'broken',
+    keyPlaceholder: 'Public (bad basis) or Private (good basis)',
+  },
+  {
     id: 'bls',
     name: 'BLS',
     category: 'asymmetric',
