@@ -136,6 +136,7 @@ export type CipherName =
   | '3way'
   | 'a5-1'
   | 'lucifer'
+  | 'deal'
   | 'khufu'
   | 'rc4'
   | 'salsa20'
