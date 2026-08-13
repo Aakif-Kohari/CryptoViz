@@ -208,6 +208,7 @@ export type CipherName =
   | 'n-hash'
   | 'snefru'
   | 'has160'
+  | 'panama'
   | 'poly1305'
   | 'hmac'
   | 'cmac'
