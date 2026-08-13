@@ -174,6 +174,7 @@ export type CipherName =
   | 'kcdsa'
   | 'goldwasser-micali'
   | 'bls'
+  | 'boneh-franklin-ibe'
   | 'ed25519'
   | 'rabin'
   | 'x25519'

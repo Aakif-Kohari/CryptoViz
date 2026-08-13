@@ -1297,4 +1297,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'Private key (sign) or "pubkey,sig" (verify)',
   },
+  {
+    id: 'boneh-franklin-ibe',
+    name: 'Boneh-Franklin IBE',
+    category: 'asymmetric',
+    description: 'Identity-Based Encryption (2001). The public key IS an arbitrary string (e.g., email). No PKI needed. A trusted Private Key Generator (PKG) derives private keys. Novel category: encrypt before recipient even exists.',
+    defaultKey: '5,alice@example.com',
+    defaultInput: '68656c6c6f',
+    securityStatus: 'secure',
+    keyPlaceholder: 'PKG_pub,identity (encrypt) or private_key (decrypt)',
+  },
 ];
