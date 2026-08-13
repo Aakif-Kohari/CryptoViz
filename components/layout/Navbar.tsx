@@ -111,6 +111,7 @@ export default function Navbar() {
         { name: t('nav.playground') || 'Playground', href: '/visualizer/caesar/' },
         { name: t('nav.cipherSandbox') || 'Cipher Sandbox', href: '/cipher-sandbox' },
         { name: 'Attack Simulators', href: '/attacks' },
+        { name: 'S-Box DDT & LAT Workbench', href: '/cryptanalysis/sbox' },
         { name: 'Cipher Pipeline', href: '/pipeline' },
         { name: 'OpenPGP Explorer', href: '/openpgp' },
         { name: t('nav.challenge') || 'Challenge', href: '/challenge' },

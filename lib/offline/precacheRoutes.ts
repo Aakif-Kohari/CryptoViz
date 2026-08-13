@@ -42,6 +42,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/cipher-sandbox/",
   "/collections/",
   "/compare/",
+  "/cryptanalysis/sbox/",
   "/demo/reed-solomon/",
   "/docs/",
   "/docs/architecture/",
