@@ -69,6 +69,16 @@ export const ATTACK_COLLECTION: AttackDemoItem[] = [
     educationalNote: 'Requires constant-time comparison implementations (`crypto.timingSafeEqual`) to prevent leaking key bytes byte-by-byte.',
     tags: ['Side-Channel', 'Execution Delay', 'Constant-Time'],
   },
+  {
+    id: 'dh-mitm',
+    slug: 'dh-mitm',
+    title: 'Diffie-Hellman Man-in-the-Middle Attack',
+    category: 'Protocol',
+    riskLevel: 'Critical',
+    summary: 'Eve intercepts and substitutes public keys in unauthenticated Diffie-Hellman, establishing dual shared secrets with Alice and Bob.',
+    educationalNote: 'Mitigated by authenticating public keys via digital signatures (Station-to-Station), PKI, or certificates so substitution attempts are detected.',
+    tags: ['Diffie-Hellman', 'Key Exchange', 'Key Substitution'],
+  },
 ];
 
 export default function AttackCollectionPage() {
