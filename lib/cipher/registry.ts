@@ -678,6 +678,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '512-bit key as 128 hex chars',
   },
   {
+    id: 'mickey',
+    name: 'MICKEY',
+    category: 'symmetric',
+    description: 'eSTREAM hardware-profile finalist (2005). Uses mutual clock control: two registers (R, S) where EACH register\'s clocking decision depends on the OTHER\'s state simultaneously. Completes the eSTREAM hardware trio alongside Trivium and Grain-128.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'zuc',
     name: 'ZUC',
     category: 'symmetric',
