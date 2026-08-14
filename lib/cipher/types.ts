@@ -143,6 +143,7 @@ export type CipherName =
   | 'deal'
   | 'khufu'
   | 'zuc'
+  | 'loki97'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
