@@ -141,6 +141,7 @@ export type CipherName =
   | 'a5-1'
   | 'lucifer'
   | 'deal'
+  | 'des-x'
   | 'khufu'
   | 'mickey'
   | 'zuc'
