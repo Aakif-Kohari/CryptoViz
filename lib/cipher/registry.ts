@@ -1070,6 +1070,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '',
     securityStatus: 'legacy',
   },
+  {
+    id: 'blake',
+    name: 'BLAKE',
+    category: 'hash',
+    description: 'The ORIGINAL 2008 SHA-3 finalist. Uses HAIFA construction (explicit counter/salt per block) and ChaCha-lineage ARX compression. Distinct from the later, independently-designed BLAKE2/BLAKE3 descendants.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+  },
   // Asymmetric
   {
     id: "rsa",
