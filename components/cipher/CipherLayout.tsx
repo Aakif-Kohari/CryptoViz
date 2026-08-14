@@ -28,6 +28,7 @@ import {
 } from '../../lib/utils/visualizerPermalink'
 import TraceTransferControls from './TraceTransferControls'
 import CipherLifecycleBadge from './CipherLifecycleBadge'
+import { SecurityStrengthCard } from './SecurityStrengthCard'
 import {
   loadConversionHistory,
   saveConversionHistory,
@@ -37,6 +38,7 @@ import {
   traceToCipherResult,
   type CipherTraceFile,
 } from '../../lib/utils/cipherTrace'
+import { calculateSecurityMetrics, parseKeySize } from '../../lib/utils/securityMetrics'
 import { diagnoseError, type Diagnostic } from '../../lib/utils/errors'
 import { CryptoDiagnosticBanner } from '../ui/CryptoDiagnosticBanner'
 
@@ -114,6 +116,9 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     scopes: {},
   }));
   const [stepNoteInput, setStepNoteInput] = useState("");
+  const [securityMetrics, setSecurityMetrics] = useState(() => 
+    calculateSecurityMetrics(cipher, { keySize: parseKeySize(cipher, cipher.defaultKey) })
+  );
 
   const KEYLESS_CIPHERS = ['atbash', 'rot13', 'sha256','sha512','md5','xxhash32','bloomfilter', 'bloom-filter']
 
@@ -154,6 +159,14 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     return () => clearTimeout(debounceId)
   }, [input, key, action, hexInput, rounds, demoMode, bobSecret, aesMode, padding, autoCompute, currentStep, cipher.id, router])
 
+  // Update security metrics when key changes for relevant ciphers
+  useEffect(() => {
+    const relevantCiphers = ['aes', 'rsa', 'ecc', 'dh', '3des', 'des']
+    if (relevantCiphers.includes(cipher.id)) {
+      setSecurityMetrics(calculateSecurityMetrics(cipher, { keySize: parseKeySize(cipher, key) }))
+    }
+  }, [key, cipher])
+
   // Reset inputs when cipher changes
   useEffect(() => {
     if (abortControllerRef.current) {
@@ -168,6 +181,9 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     setAnimationSpeed(1);
     setActiveTab("result");
     setHistory(loadConversionHistory(cipher.id));
+    
+    // Update security metrics when cipher changes
+    setSecurityMetrics(calculateSecurityMetrics(cipher, { keySize: parseKeySize(cipher, cipher.defaultKey) }));
 
     // Reset option defaults
     if (cipher.options) {
@@ -600,6 +616,12 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           )}
         </div>
       </div>
+
+      {/* Security Strength Card */}
+      <SecurityStrengthCard 
+        metrics={securityMetrics} 
+        className="mb-6"
+      />
 
       <div className="grid grid-cols-1 items-start gap-5 md:gap-6 lg:grid-cols-12 lg:gap-8">
         {/* Controls Column (Left) */}
