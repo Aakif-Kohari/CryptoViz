@@ -178,6 +178,7 @@ export type CipherName =
   | 'ggh'
   | 'bls'
   | 'boneh-franklin-ibe'
+  | 'regev-lwe'
   | 'ed25519'
   | 'rabin'
   | 'x25519'

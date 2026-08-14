@@ -1346,4 +1346,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'PKG_pub,identity (encrypt) or private_key (decrypt)',
   },
+  {
+    id: 'regev-lwe',
+    name: 'Regev-LWE',
+    category: 'asymmetric',
+    description: 'Foundational LWE encryption (2005). The NOT-broken textbook predecessor to ML-KEM. Encodes bits by adding a large offset (floor(q/2)) hidden by small LWE noise. Explicitly distinguished from broken predecessors like GGH/SIDH.',
+    defaultKey: 'mock_keys',
+    defaultInput: '01',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
 ];
