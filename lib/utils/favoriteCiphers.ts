@@ -106,26 +106,8 @@ function dispatchFavoriteChange(ids: string[]) {
 export function saveFavoriteCipherIds(ids: string[]): string[] {
   const normalized = normalizeFavoriteCipherIds(ids)
 
-  if (typeof window !== 'undefined') {
-    let saved = false
-    try {
-      window.localStorage.setItem(
-        FAVORITE_CIPHERS_STORAGE_KEY,
-        JSON.stringify(normalized),
-      )
-      saved = true
-    } catch {
-      // Storage may be unavailable in private mode or when quota is full.
-    }
-
-    if (saved) {
-      dispatchFavoriteChange(normalized)
-    }
   writeStorage(normalized)
-
-  if (isBrowser()) {
-    dispatchFavoriteChange(normalized)
-  }
+  dispatchFavoriteChange(normalized)
 
   return normalized
 }

@@ -658,6 +658,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'deal',
+    name: 'DEAL',
+    category: 'symmetric',
+    description: 'AES candidate (1998). 128-bit block Feistel network that uses full DES as its round function. Demonstrates building a larger cipher from an existing trusted primitive. Status: legacy.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+  },
+  {
     id: 'khufu',
     name: 'Khufu',
     category: 'symmetric',
@@ -666,6 +676,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '0000000000000000',
     securityStatus: 'legacy',
     keyPlaceholder: '512-bit key as 128 hex chars',
+  },
+  {
+    id: 'zuc',
+    name: 'ZUC',
+    category: 'symmetric',
+    description: 'Chinese national stream cipher (GB/T 33133). Used in 4G LTE (128-EEA3). Uniquely uses a 16-stage LFSR over GF(2^31-1) with modular arithmetic, NOT simple XOR feedback. Completes the SM2/SM3/SM4/ZUC national suite.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
     id: "sha256",
@@ -1041,6 +1061,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '',
     securityStatus: 'legacy',
   },
+  {
+    id: 'panama',
+    name: 'Panama',
+    category: 'hash',
+    description: 'Daemen & Clapp (1998). Dual-mode primitive (Hash/Stream). This visualizer covers Hash mode only. Uses a massive 32-stage buffer + 17-word state. Daemen-lineage connection to 3-Way/Square. Status: legacy.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy',
+  },
   // Asymmetric
   {
     id: "rsa",
@@ -1288,6 +1317,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
   },
   {
+    id: 'ggh',
+    name: 'GGH',
+    category: 'asymmetric',
+    description: 'Early lattice cryptosystem (1997). Uses good/bad basis pairs. Status: BROKEN unconditionally. Nguyen (1999) showed the specific error-vector distribution leaked structural information, making CVP trivial. Educational complement to secure NTRU/ML-KEM.',
+    defaultKey: 'mock_keys',
+    defaultInput: '050a',
+    securityStatus: 'broken',
+    keyPlaceholder: 'Public (bad basis) or Private (good basis)',
+  },
+  {
     id: 'bls',
     name: 'BLS',
     category: 'asymmetric',
@@ -1296,5 +1335,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: 'message',
     securityStatus: 'secure',
     keyPlaceholder: 'Private key (sign) or "pubkey,sig" (verify)',
+  },
+  {
+    id: 'boneh-franklin-ibe',
+    name: 'Boneh-Franklin IBE',
+    category: 'asymmetric',
+    description: 'Identity-Based Encryption (2001). The public key IS an arbitrary string (e.g., email). No PKI needed. A trusted Private Key Generator (PKG) derives private keys. Novel category: encrypt before recipient even exists.',
+    defaultKey: '5,alice@example.com',
+    defaultInput: '68656c6c6f',
+    securityStatus: 'secure',
+    keyPlaceholder: 'PKG_pub,identity (encrypt) or private_key (decrypt)',
   },
 ];

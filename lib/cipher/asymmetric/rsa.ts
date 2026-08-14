@@ -108,26 +108,6 @@ steps.push({
   isMilestone: true,
 })
 
-      index: 0,
-      label: '⚠️ Static Demo Key Warning',
-      inputState: '',
-      outputState: '',
-      note:
-        '⚠️ This demo uses a static RSA key pair embedded in the source code. ' +
-        'This key provides ZERO security — anyone with access to the repository ' +
-        'can decrypt messages encrypted with this key. ' +
-        'Do NOT use this for any real or sensitive data.',
-      isMilestone: true,
-    })
-    steps.push({
-      index: 1,
-      label: 'RSA-OAEP 2048-bit Encryption (WebCrypto)',
-      inputState: fromByteArray(inputBytes, 'hex'),
-      outputState: output,
-      note: 'Real mode: the plaintext is encrypted with genuine RSA-OAEP (SHA-256) using crypto.subtle over a 2048-bit key. OAEP adds randomised padding, so the 256-byte ciphertext changes on every run while still decrypting back to the same plaintext.',
-      isMilestone: true,
-    })
-
   }
 
   return {

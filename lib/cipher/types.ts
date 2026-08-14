@@ -70,6 +70,10 @@ export interface CipherOptions {
   dkLen?: number
   salt?: string
   iterations?: number
+  incrementalCache?: {
+    input: string
+    result: CipherResult
+  }
   [key: string]: unknown
 }
 
@@ -136,7 +140,9 @@ export type CipherName =
   | '3way'
   | 'a5-1'
   | 'lucifer'
+  | 'deal'
   | 'khufu'
+  | 'zuc'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
@@ -169,7 +175,9 @@ export type CipherName =
   | 'sm2'
   | 'kcdsa'
   | 'goldwasser-micali'
+  | 'ggh'
   | 'bls'
+  | 'boneh-franklin-ibe'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
@@ -204,6 +212,7 @@ export type CipherName =
   | 'n-hash'
   | 'snefru'
   | 'has160'
+  | 'panama'
   | 'poly1305'
   | 'hmac'
   | 'cmac'
