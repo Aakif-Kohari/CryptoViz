@@ -2,7 +2,6 @@
 import HeroIllustration from "@/components/HeroIllustration";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Analytics } from "@vercel/analytics/next";
 import Navbar from "../components/layout/Navbar";
 import SkeletonCard from "../components/ui/SkeletonCard";
 import { Zap, ShieldCheck, BookOpen, ArrowRight } from "lucide-react";
@@ -133,9 +132,8 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#09090B] text-zinc-900 dark:text-[#F5F5F5] font-sans antialiased">
+    <div className="min-h-screen bg-white dark:bg-[#09090B] text-zinc-900 dark:text-[#F5F5F7] selection:bg-teal-500/30 font-sans">
       <Navbar />
-      <Analytics />
       
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-white dark:bg-[#09090B]">
@@ -254,10 +252,10 @@ export default function Home() {
  
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             {isLoading
-              ? Array.from({ length: 5 }).map((_, idx) => <SkeletonCard key={idx} />)
-              : categories.map((cat, idx) => (
+              ? Array.from({ length: 5 }).map((_, idx) => <SkeletonCard key={`skeleton-${idx}`} />) // static skeleton count, index key is safe
+              : categories.map((cat) => (
                 <div
-                  key={idx}
+                  key={cat.title}
                   className={`group relative flex flex-col justify-between rounded-xl border border-zinc-200 dark:border-[#2A2A31] bg-white dark:bg-[#16161A] p-6 shadow-sm transition-all duration-250 hover:-translate-y-1 hover:bg-zinc-50 dark:hover:bg-[#1A1A1F] ${cat.glowClass}`}
                 >
                   <div>

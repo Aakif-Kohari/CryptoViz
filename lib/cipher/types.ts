@@ -48,6 +48,7 @@ export interface CipherMetadata {
   breakingComplexity?: string
   yearDesigned?: number
   standardBody?: string
+  securityWarning?: string
 }
 
 export interface CipherOptions {
@@ -69,6 +70,10 @@ export interface CipherOptions {
   dkLen?: number
   salt?: string
   iterations?: number
+  incrementalCache?: {
+    input: string
+    result: CipherResult
+  }
   [key: string]: unknown
 }
 
@@ -126,9 +131,18 @@ export type CipherName =
   | 'mars'
   | 'clefia'
   | 'misty1'
+  | 'square'
   | 'feal'
+  | 'safer-plus'
   | 'aria'
   | 'kasumi'
+  | 'grain128'
+  | '3way'
+  | 'a5-1'
+  | 'lucifer'
+  | 'deal'
+  | 'khufu'
+  | 'zuc'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
@@ -155,7 +169,15 @@ export type CipherName =
   | 'shamir-secret-sharing'
   | 'sidh'
   | 'ntru'
+  | 'gost-r34-10'
   | 'mceliece'
+  | 'cramer-shoup'
+  | 'sm2'
+  | 'kcdsa'
+  | 'goldwasser-micali'
+  | 'ggh'
+  | 'bls'
+  | 'boneh-franklin-ibe'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
@@ -183,6 +205,14 @@ export type CipherName =
   | 'tiger'
   | 'grostl'
   | 'jh'
+  | 'ripemd128'
+  | 'haval'
+  | 'md2'
+  | 'gost-r34-11-94'
+  | 'n-hash'
+  | 'snefru'
+  | 'has160'
+  | 'panama'
   | 'poly1305'
   | 'hmac'
   | 'cmac'

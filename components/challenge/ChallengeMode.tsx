@@ -6,6 +6,7 @@ import { generateChallengeData, type ChallengeData, type ChallengeDifficulty } f
 import { getWrongAnswerExplanation } from '../../lib/challenge/explain'
 import { CIPHER_REGISTRY } from '../../lib/cipher/registry'
 import LearningProgressionFooter from '../learning/LearningProgressionFooter'
+import { logger } from '@/lib/utils/logger'
 
 import {
   safeGetItem,
@@ -217,7 +218,7 @@ export default function ChallengeMode() {
       const result = await runCipher('encrypt', currentChallenge.cipherId, currentChallenge.plaintext, currentChallenge.key)
       setExpectedCiphertext(result.output)
     } catch (e) {
-      console.error('Worker failed to generate expected ciphertext:', e)
+      logger.error('Worker failed to generate expected ciphertext:', e)
       // `useCipherWorker` already sets `error`; UI will offer retry.
     }
   }, [currentChallenge, runCipher])
@@ -225,17 +226,24 @@ export default function ChallengeMode() {
 
   // Load ciphertext when session advances
   useEffect(() => {
-    if (!started) return
-    if (!currentChallenge) return
+   if (!started || !currentChallenge) return
 
     // Reset retry state for the new question
-    setCipherRetryCount(0)
-    retryTimerRef.current && clearTimeout(retryTimerRef.current)
-    retryTimerRef.current = null
+   setCipherRetryCount(0)
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current)
+      retryTimerRef.current = null
+    }
 
-    loadExpectedCiphertextForCurrent()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentQuestionIndex, started])
+    void loadExpectedCiphertextForCurrent()
+
+    return () => {
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current)
+        retryTimerRef.current = null
+      }
+    }
+  }, [currentChallenge, started, loadExpectedCiphertextForCurrent])
 
 
   const advanceQuestion = useCallback(() => {
@@ -1054,7 +1062,7 @@ export default function ChallengeMode() {
                     <div className="mt-2 text-sm font-semibold text-zinc-900 dark:text-white">{challengeExplanation.title}</div>
                     <ul className="mt-2 list-disc pl-5 text-sm text-zinc-700 dark:text-zinc-200">
                       {challengeExplanation.details.map((d, idx) => (
-                        <li key={idx} className="mt-1">{d}</li>
+                        <li key={`${idx}-${d}`} className="mt-1">{d}</li>
                       ))}
                     </ul>
                   </div>
@@ -1090,7 +1098,7 @@ export default function ChallengeMode() {
             <div className="mt-4 flex h-2 w-full gap-1">
               {Array.from({ length: questionCount }).map((_, i) => (
                 <div
-                  key={i}
+                  key={i} // static progress bar, index key is safe
                   className={`h-full flex-1 rounded-full transition-colors ${
                     i < currentQuestionIndex
                       ? 'bg-teal-500 dark:bg-teal-400'

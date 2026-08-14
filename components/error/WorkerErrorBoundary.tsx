@@ -1,6 +1,7 @@
 'use client'
 
 import React, { Component, ReactNode } from 'react'
+import { logger } from '@/lib/utils/logger'
 
 interface Props {
   children: ReactNode
@@ -23,8 +24,8 @@ export default class WorkerErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // You can also log the error to an error reporting service here
-    console.error('WorkerErrorBoundary caught an error:', error, errorInfo)
+    // Log the error via logger utility
+    logger.error('WorkerErrorBoundary caught an error:', error, errorInfo)
   }
 
   render() {

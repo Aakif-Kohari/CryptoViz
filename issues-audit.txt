@@ -449,3 +449,168 @@
 [#855] (open) by @Aakif-Kohari: [FEATURE] Add SAFER+ block cipher (Bluetooth pairing algorithm, AES candidate, byte-oriented SPN with Pseudo-Hadamard Transform diffusion)
 [#854] (open) by @Aakif-Kohari: [FEATURE] Add GOST R 34.10-2012 digital signature algorithm (Russian national standard, completes GOST+Kuznyechik+Streebog+GOST-R-34.10 suite)
 [#853] (open) by @Aakif-Kohari: [FEATURE] Add SM2 elliptic curve cryptography (Chinese national standard, GB/T 32918, completes SM2+SM3+SM4 national suite)
+
+=== Audited 2026-08-08 21:16 UTC (60 new) ===
+[#940] (open) by @Aakif-Kohari: [FEATURE] Add RIPEMD-128 hash function (distinct-output sibling of RIPEMD-160, dual-parallel-line MD4-family design)
+[#939] (open) by @Aakif-Kohari: [FEATURE] Add Cramer-Shoup cryptosystem (first practical IND-CCA2-secure public-key scheme without random oracles, major theoretical milestone)
+[#938] (open) by @Aakif-Kohari: [FEATURE] Add GOST R 34.11-94 hash function (older Russian standard, predecessor to Streebog, completes old-vs-new Russian hash comparison)
+[#937] (open) by @Aakif-Kohari: [FEATURE] Add KCDSA digital signature algorithm (Korean national standard, completes SEED+LEA+ARIA+LSH-256+KCDSA national crypto suite)
+[#936] (open) by @Aakif-Kohari: [FEATURE] Add 3-Way block cipher (Daemen, 1994, three-fold cyclic symmetry, 96-bit block, direct predecessor to Square/Rijndael lineage)
+[#920] (open) by @csxark: README Table of Contents Not Linked
+[#919] (open) by @csxark: README CI Badge Points to Non-Existent Workflow
+[#918] (open) by @csxark: Vercel Analytics Dependency for Static Site
+[#917] (open) by @csxark: Missing `loading.tsx` for Route Segments
+[#916] (open) by @csxark: Service Worker Precache List May Be Stale
+[#915] (open) by @csxark: ESLint Rule Suppressions in Production Code
+[#914] (open) by @csxark: Console Logging in Production Components
+[#913] (open) by @csxark: Permissions-Policy Discrepancy Between Middleware and vercel.json
+[#912] (open) by @csxark: `test-suite.yml` Lacks `persist-credentials: false`
+[#911] (open) by @csxark: Duplicate CI Workflows for Testing
+[#910] (closed) by @csxark: 404 Page Lacks Footer and Has Inconsistent Styling
+[#909] (open) by @csxark: Footer Contains Unused Link Arrays
+[#908] (open) by @csxark: Inconsistent Dual Hook Locations
+[#907] (open) by @csxark: Navbar Re-creates Navigation Arrays on Every Render
+[#906] (open) by @csxark: Unused State Setter `_setCancelled` in not-found.tsx
+[#905] (open) by @csxark: Missing `router` in `useEffect` Dependency Array
+[#904] (open) by @csxark: Missing `HSTS` Header in `vercel.json`
+[#903] (open) by @csxark: Security Test Suite Contains Only Header Tests
+[#902] (open) by @csxark: Single Integration Test Covering All Ciphers
+[#901] (open) by @csxark: Desktop Navigation Only Visible at `xl` Breakpoint
+[#900] (open) by @csxark: Cipher Sandbox Missing ARIA Labels on Interactive Controls
+[#899] (open) by @csxark: Missing `id="main-content"` Target for Skip Link
+[#895] (open) by @csxark: 828-Line God Component — CipherSandbox
+[#894] (open) by @csxark: Committed Build Artifacts in VCS
+[#893] (open) by @csxark: Home Page Is a Client Component Rendering Analytics
+[#891] (closed) by @csxark: Array Index Used as React Key in 48+ Locations
+[#890] (closed) by @csxark: Untyped `CipherHandler` Uses `any` Input and Output
+[#889] (open) by @csxark: `@ts-ignore` Suppression Without Proper Resolution
+[#888] (open) by @csxark: Permalink State Embeds User Input in URLs Without Sanitization
+[#887] (open) by @csxark: SECURITY.md Contains Only GitHub Template Placeholder
+[#886] (closed) by @csxark: `Math.random()` Fallback in CSP Nonce Generation
+[#885] (open) by @csxark: `dangerouslySetInnerHTML` Usage Without Sanitization
+[#884] (open) by @csxark: 675-Line Monolithic Worker File
+[#883] (open) by @csxark: Artificial 1.5s Loading Delay on Home Page
+[#882] (open) by @csxark: No E2E Tests, No Visual Regression Tests
+[#881] (closed) by @csxark: No Error Boundaries on Feature Pages
+[#880] (open) by @csxark: Duplicate Navigation Link Definitions
+[#879] (open) by @csxark: Widespread `as any` Type Assertions in Production Code
+[#878] (open) by @csxark: `vercel.json` CSP Allows `unsafe-inline` for Scripts
+[#877] (open) by @csxark: Cipher Worker Eagerly Imports All 100+ Cipher Modules
+[#876] (open) by @csxark: Middleware CSP Is Dead Code Under Static Export
+[#874] (open) by @Diwakar-odds: Security: Harden the Cipher Engine against Prototype Pollution and XSS
+[#873] (open) by @Diwakar-odds: Performance: Implement Memoization and Substring Caching for Cipher Streams
+[#872] (open) by @Diwakar-odds: Architecture: Implement Web Worker Offloading for Intensive Cryptographic Operations
+[#868] (open) by @csxark: Add security documentation for RSA real-mode embedded static private key
+[#867] (open) by @csxark: Document Rail Fence test vector convention and verify against standard references
+[#866] (open) by @csxark: Document Columnar Transposition trailing-X padding ambiguity
+[#865] (open) by @csxark: Add optional primality validation for RSA demo mode user-supplied primes
+[#864] (open) by @csxark: Document ElGamal `Math.random()` limitation for ephemeral key generation
+[#863] (open) by @csxark: Add Diffie-Hellman generator validation note and primitive root educational content
+[#862] (closed) by @csxark: Improve AES MixColumns educational step description for GF(2⁸) polynomial multiplication
+[#861] (open) by @csxark: Add One-Time Pad key reuse detection and educational warning
+[#860] (open) by @csxark: Fix Affine cipher modular inverse silent fallback when multiplier is not coprime to 26
+[#859] (open) by @csxark: Clarify RSA φ(n) vs λ(n) mathematical inconsistency between Key Wizard and Cipher Engine
+[#858] (open) by @csxark: Fix incorrect Columnar Transposition ZEBRAS test vector
+
+=== Audited 2026-08-10 09:50 UTC (17 new) ===
+[#986] (open) by @Aakif-Kohari: [FEATURE] Add MD2 hash function (RFC 1319, 1989, earliest MD-family member, byte-oriented Fibonacci-derived S-box)
+[#985] (open) by @Aakif-Kohari: [FEATURE] Add Snefru hash function (Merkle, 1990, S-box-based compression, direct historical link before the Tiger/MD lineage)
+[#984] (open) by @Aakif-Kohari: [FEATURE] Add Goldwasser-Micali probabilistic encryption (1982, first semantically-secure public-key scheme, origin of IND-CPA security)
+[#983] (open) by @Aakif-Kohari: [FEATURE] Add Grain-128 stream cipher (eSTREAM hardware profile finalist, NLFSR+LFSR combination, completes eSTREAM hardware coverage)
+[#982] (open) by @Aakif-Kohari: [FEATURE] Add Lucifer block cipher (Horst Feistel, IBM, direct predecessor to DES, the original Feistel network)
+[#971] (open) by @csxark: CSP module unreachable code and duplicate return
+[#970] (open) by @csxark: Permissions-Policy discrepancy between middleware and vercel.json
+[#969] (open) by @csxark: SECURITY.md is GitHub template placeholder
+[#968] (open) by @csxark: Skipjack implementation fails published official NSA sample vector and key size error check
+[#967] (open) by @csxark: `dangerouslySetInnerHTML` used in finite-field page
+[#966] (open) by @csxark: Middleware CSP is dead code under static export
+[#965] (open) by @csxark: Embedded RSA 2048-bit private key in source code
+[#964] (open) by @csxark: `vercel.json` CSP allows `unsafe-inline` for scripts
+[#963] (open) by @csxark: `lib/security/contentSecurityPolicy.ts` has syntax error rendering CSP module inoperable
+[#962] (open) by @csxark: `components/cipher-sandbox/CipherSandbox.tsx` missing closing brace
+[#961] (open) by @csxark: `app/not-found.tsx` has unclosed JSX expression causing compilation failure
+[#960] (open) by @csxark: `app/docs/page.tsx` has stray `]` causing 27 cascading TypeScript errors
+
+=== Audited 2026-08-12 08:43 UTC (6 new) ===
+[#1008] (open) by @Aakif-Kohari: [FEATURE] Add N-Hash function (NTT Japan, FEAL-lineage design, completes FEAL-family hash/cipher pairing)
+[#1007] (open) by @Aakif-Kohari: [FEATURE] Add HAS-160 hash function (Korean national standard, completes KCDSA's originally-intended hash pairing)
+[#1006] (open) by @Aakif-Kohari: [FEATURE] Add BLS signatures (Boneh-Lynn-Shacham, pairing-based, aggregatable, novel bilinear-pairing mathematics, blockchain-relevant)
+[#1005] (open) by @Aakif-Kohari: [FEATURE] Add A5/1 stream cipher (GSM voice encryption, LFSR-based, historically broken, completes GSM generation story with KASUMI)
+[#1004] (open) by @Aakif-Kohari: [FEATURE] Add Khufu block cipher (Merkle, 1990, key-dependent S-boxes, byte-oriented Feistel, completes Merkle cryptographic-designs trilogy)
+[#988] (closed) by @Chigael: Fix `cspContainsUnsafeInline()` CSP Grammar Detection
+
+=== Audited 2026-08-12 17:29 UTC (10 new) ===
+[#1031] (open) by @Ayush-0918: [BUG]: Use CipherError for unsupported cipher IDs in cipher worker
+[#1030] (open) by @Ayush-0918: [BUG]: Prevent favorite cipher change events after storage failure
+[#1029] (open) by @Ayush-0918: [BUG]: Make SHA-1 decrypt() correctly reject one-way hash decryption
+[#1028] (open) by @Ayush-0918: [BUG]: Fix generateKey() producing incorrect hex key length
+[#1027] (open) by @Ayush-0918: [BUG]: Fix XChaCha20 switch fallthrough and duplicate XSalsa20 import
+[#1026] (open) by @Aakif-Kohari: [FEATURE] Add Panama hash/stream design (Daemen & Clapp, 1998, dual-mode primitive, completes Daemen design trilogy with 3-Way and Square)
+[#1025] (open) by @Aakif-Kohari: [FEATURE] Add GGH lattice cryptosystem (Goldreich-Goldwasser-Halevi, 1997, broken lattice scheme, teaching complement to secure NTRU/ML-KEM)
+[#1024] (open) by @Aakif-Kohari: [FEATURE] Add Boneh-Franklin Identity-Based Encryption (pairing-based, public key = arbitrary identity string, novel category)
+[#1023] (open) by @Aakif-Kohari: [FEATURE] Add DEAL block cipher (AES candidate that uses DES as its own round function, direct reuse of existing des.ts)
+[#1022] (open) by @Aakif-Kohari: [FEATURE] Add ZUC stream cipher (Chinese national standard, GB/T 33133, used in 4G LTE encryption, completes SM2+SM3+SM4+ZUC national suite)
+
+=== Audited 2026-08-12 21:56 UTC (16 new) ===
+[#1051] (open) by @csxark: Accessible Audio & Tactile Mathematical Representation for Cryptographic Visualizations
+[#1050] (open) by @csxark: Universal Cipher Plugin & Automated Test-Vector Verification Harness
+[#1049] (open) by @csxark: Information-Theoretic Security & Shannon Entropy Workbench
+[#1048] (open) by @csxark: Threshold Cryptography & Distributed Key Generation (DKG) Interactive Simulator
+[#1046] (open) by @csxark: Automated Cryptanalysis & Hill-Climbing Language Model Workbench
+[#1045] (open) by @csxark: Microarchitectural Power & Cache Timing Side-Channel Waveform Analyzer
+[#1044] (open) by @csxark: Real-World Cryptographic Code Misuse & Vulnerability Audit Sandbox
+[#1043] (open) by @csxark: Bilinear Pairing Mathematics & Identity-Based Encryption (IBE) Formalism Visualizer
+[#1042] (open) by @csxark: Universal Step-by-Step Algorithmic Debugger & State Matrix Inspector
+[#1041] (open) by @csxark: Visual Node-Based Cryptographic DAG Pipeline Canvas
+[#1040] (open) by @csxark: Interactive Provable Security & IND-CPA/IND-CCA Game Simulator
+[#1039] (open) by @csxark: Probabilistic Primality Testing & Prime Generation Laboratory (Miller-Rabin & Baillie-PSW)
+[#1038] (open) by @csxark: Geometric Lattice Cryptography & LWE/Ring-LWE Problem Visualizer
+[#1037] (open) by @csxark: CRT Decryption Acceleration & Bellcore Fault Attack Simulator
+[#1036] (open) by @Gunjan10-droid: [FEATURE]: Add Cryptographic Nonce & IV Lifecycle Lab
+[#1034] (open) by @csxark: Interactive Galois Field $GF(2^8)$ Polynomial Arithmetic & S-Box Derivation Laboratory
+
+=== Audited 2026-08-13 19:04 UTC (15 new) ===
+[#1069] (open) by @csxark: Real-Time Algorithmic Audio Sonification Engine
+[#1068] (open) by @csxark: Interactive DAG Cryptography Prerequisite Knowledge Explorer
+[#1067] (open) by @csxark: Memory-Hard KDF Hardware Resource Trade-Off Simulator
+[#1066] (open) by @csxark: Multi-Dimensional Hardware Cryptography Radar Profiler
+[#1065] (open) by @csxark: Digital Steganography & Covert Channel Workbench
+[#1064] (open) by @csxark: Formal Security Protocol State Machine & BAN Logic Inspector
+[#1063] (closed) by @csxark: S-Box Difference Distribution (DDT) & LAT Cryptanalysis Workbench
+[#1062] (closed) by @csxark: Quantum Shor's & Grover's Circuit Visualizer
+[#1061] (closed) by @csxark: Key Exchange MitM Interception & Substitution Simulator
+[#1060] (open) by @csxark: Naor-Shamir Visual Cryptography & Optical Secret Sharing
+[#1059] (open) by @csxark: Ring-LWE & Module-LWE Polynomial Ring NTT Laboratory
+[#1058] (open) by @csxark: Physical Entropy Harvesting & Min-Entropy Conditioner Laboratory
+[#1057] (open) by @csxark: KZG Polynomial Commitment & Bilinear Pairing Visualizer
+[#1056] (closed) by @csxark: Homomorphic Encrypted Computation Workbench
+[#1055] (open) by @csxark: Interactive Group Theory & Discrete Logarithm Laboratory
+
+=== Audited 2026-08-13 22:20 UTC (27 new) ===
+[#1121] (open) by @csxark: Academic LaTeX & Markdown Mathematical Derivation Exporter for Cipher States
+[#1120] (open) by @csxark: Live Cryptographic Weak-Parameter & Known-Weak-Key Detection Engine in Playground
+[#1119] (open) by @csxark: Standardized Visualizer Component Contract Test Harness (`testVisualizerContract`)
+[#1118] (open) by @csxark: Resizable Split-Pane Workspaces, Presentation/Zen Mode, and Configurable Panel Layouts
+[#1117] (open) by @csxark: Custom Cryptographic Challenge Creator & Sharable Classroom Quiz Suite
+[#1116] (open) by @csxark: Interactive Inline S-Box Inspector & Algebraic Property Tooltip within Block Cipher Round Steps
+[#1115] (open) by @csxark: Centralized Cryptographic Diagnostic & Remediation Engine with Interactive Mathematical Hints
+[#1114] (open) by @csxark: LRU Bounded Cache with WeakRef Memory Eviction & Step State Virtualization for High-Step Traces
+[#1113] (open) by @csxark: Unified Property-Based Fuzzing Suite using fast-check for All Symmetric & Classical Ciphers
+[#1112] (open) by @csxark: StepAnimator ARIA Live-Region & Semantic Slider Focus Management System
+[#1111] (open) by @csxark: Self-Contained Interactive Cryptographic Lesson / Annotated Trace Package (`.cryptoviz`) with Playback & Verification
+[#1110] (open) by @csxark: Contextual Security Strength & Quantum Resistance Card with Dynamic Cost-to-Break Calculator
+[#1109] (open) by @csxark: Interactive Oracle Query Inspector & Step-by-Step Attack Stepper for Cryptanalysis Simulators
+[#1108] (open) by @csxark: Unified Web Worker Priority Queue with Chunked Progress Streaming
+[#1107] (open) by @csxark: Multi-Payload Scaling Benchmark Curve & Algorithmic Complexity Estimator
+[#1106] (open) by @csxark: Full Registry Integration and Type-Safe Execution Engine in Cipher Pipeline Builder
+[#1105] (open) by @csxark: Interactive Bit-Level Diff Heatmap & Hamming Distance Analyzer in Cipher Comparison Panel
+[#1104] (open) by @csxark: Dynamic Parameter & Domain Key Validation Assistant for Asymmetric & Post-Quantum Schemes
+[#1103] (open) by @csxark: Hash & MAC Sponge Construction Interactive Visualizer (SHA-3/Keccak, Ascon, Skein)
+[#1102] (open) by @csxark: Bi-Directional Multi-Format Input/Output Inspector with Endianness & Bit Breakdown
+[#1101] (open) by @csxark: Stream Cipher State Evolution & Shift-Register Pipeline Visualizer
+[#1100] (open) by @csxark: Interactive Polyalphabetic Tableau & Transposition Matrix Visualizers in Visualizer Workspace
+[#1099] (open) by @Aakif-Kohari: [FEATURE] Add DES-X (Rivest's key-whitening extension of DES, reuses existing des.ts, demonstrates the whitening technique)
+[#1098] (open) by @Aakif-Kohari: [FEATURE] Add original BLAKE hash function (2008 SHA-3 finalist, HAIFA/ChaCha-based, distinct from the already-present BLAKE2/BLAKE3 derivatives)
+[#1097] (open) by @Aakif-Kohari: [FEATURE] Add Regev's LWE encryption scheme (2005, foundational textbook lattice cryptosystem, predecessor teaching-version to ML-KEM)
+[#1096] (open) by @Aakif-Kohari: [FEATURE] Add MICKEY-128 stream cipher (eSTREAM hardware profile finalist, dual clock-controlled registers, completes eSTREAM hardware trio)
+[#1095] (open) by @Aakif-Kohari: [FEATURE] Add LOKI97 block cipher (Australian AES candidate, GF(2^64) exponentiation-based nonlinearity, complex dual-branch F-function)

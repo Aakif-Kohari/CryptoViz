@@ -7,6 +7,7 @@ import {
   clearFavoriteCipherIds,
   FAVORITE_CIPHERS_STORAGE_KEY,
   MAX_FAVORITE_CIPHERS,
+  FAVORITE_CIPHERS_CHANGED_EVENT,
 } from "@/lib/utils/favoriteCiphers";
 
 describe("favorite cipher utilities", () => {
@@ -69,7 +70,8 @@ describe("favorite cipher utilities", () => {
   });
 
   describe("saveFavoriteCipherIds", () => {
-    it("normalizes and saves favorites", () => {
+    it("normalizes and saves favorites and dispatches event", () => {
+      const dispatchSpy = vi.spyOn(window, "dispatchEvent");
       const result = saveFavoriteCipherIds([
         "aes",
         "aes",
@@ -85,17 +87,29 @@ describe("favorite cipher utilities", () => {
           )!,
         ),
       ).toEqual(["aes"]);
+
+      expect(dispatchSpy).toHaveBeenCalledTimes(1);
+      const event = dispatchSpy.mock.calls[0][0] as CustomEvent;
+      expect(event.type).toBe(FAVORITE_CIPHERS_CHANGED_EVENT);
+      expect(event.detail).toEqual(["aes"]);
     });
 
-    it("handles unavailable localStorage", () => {
+    it("handles unavailable localStorage and does not dispatch event", () => {
+      const dispatchSpy = vi.spyOn(window, "dispatchEvent");
       vi.spyOn(Storage.prototype, "setItem")
         .mockImplementation(() => {
           throw new Error("Storage unavailable");
         });
 
-      expect(() =>
-        saveFavoriteCipherIds(["aes"]),
-      ).not.toThrow();
+      let result: string[] = [];
+      expect(() => {
+        result = saveFavoriteCipherIds(["aes"]);
+      }).not.toThrow();
+
+      // normalized IDs are still returned
+      expect(result).toEqual(["aes"]);
+      // no change event is dispatched when storage fails
+      expect(dispatchSpy).not.toHaveBeenCalled();
     });
   });
 

@@ -1,9 +1,13 @@
-import { describe, it, expect } from 'vitest'
-import { encrypt, decrypt, TEST_VECTORS } from '../../../lib/cipher/symmetric/otp'
+import { describe, it, expect, beforeEach } from 'vitest'
+import { encrypt, decrypt, clearOtpKeyHistory, TEST_VECTORS } from '../../../lib/cipher/symmetric/otp'
 import { CipherError } from '../../../lib/utils/errors'
 import fc from 'fast-check'
 
 describe('OTP Cipher Unit Tests', () => {
+  beforeEach(() => {
+    clearOtpKeyHistory()
+  })
+
   it('passes standard test vectors (encrypt/decrypt)', () => {
     for (const vector of TEST_VECTORS) {
       const encResult = encrypt(vector.input, vector.key)
@@ -12,6 +16,26 @@ describe('OTP Cipher Unit Tests', () => {
       const decResult = decrypt(vector.expected, vector.key)
       expect(decResult.output).toBe(vector.input)
     }
+  })
+
+  it('detects key reuse and warns in instrumented steps', () => {
+    const input1 = 'HELLO'
+    const input2 = 'WORLD'
+    const key = 'ABCDE'
+
+    const enc1 = encrypt(input1, key, { instrument: true })
+    const reuseCheck1 = enc1.steps[0].table?.find((row) => row.key === 'Key Reuse Check')
+    expect(reuseCheck1?.value).toContain('Unique key')
+
+    const enc2 = encrypt(input2, key, { instrument: true })
+    const reuseCheck2 = enc2.steps[0].table?.find((row) => row.key === 'Key Reuse Check')
+    expect(reuseCheck2?.value).toContain('WARNING: Key reused')
+    expect(enc2.steps[0].note).toContain('KEY REUSE DETECTED')
+  })
+
+  it('includes reuseWarning in metadata', () => {
+    const result = encrypt('HELLO', 'ABCDE')
+    expect(result.metadata.reuseWarning).toMatch(/key must never be reused/i)
   })
 
   it('generates correct step count in instrumented mode', () => {

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { encrypt, decrypt, TEST_VECTORS } from '../../../lib/cipher/asymmetric/dh'
+import { encrypt, decrypt, checkPrimitiveRoot, getGeneratorOrder, TEST_VECTORS } from '../../../lib/cipher/asymmetric/dh'
+import { modPow } from '../../../lib/cipher/asymmetric/rsa'
 
 describe('Diffie-Hellman Key Exchange Unit Tests', () => {
   it('passes standard test vectors (agreement)', () => {
@@ -7,6 +8,67 @@ describe('Diffie-Hellman Key Exchange Unit Tests', () => {
     const vector = TEST_VECTORS[0]
     const result = encrypt(vector.input, vector.key)
     expect(result.output).toBe(vector.expected)
+  })
+
+  it('demonstrates the man-in-the-middle key substitution (dual shared secrets)', () => {
+    // p=23, g=5; a=6, b=15, Eve's e=9
+    const P = 23n
+    const G = 5n
+    const a = 6n
+    const b = 15n
+    const e = 9n
+
+    // Public keys
+    const A = modPow(G, a, P) // Alice's key g^a = 8
+    const B = modPow(G, b, P) // Bob's key g^b = 19
+    const E1 = modPow(G, e, P) // Eve's key sent to Bob
+    const E2 = modPow(G, e, P) // Eve's key sent to Alice
+
+    // Honest shared secret (no MitM)
+    const KAB = modPow(B, a, P) // = 2
+
+    // MitM: Alice & Eve share a secret; Bob & Eve share another
+    const KAE = modPow(E2, a, P) // Alice's key with Eve
+    const KEA = modPow(A, e, P) // Eve's key with Alice
+    const KBE = modPow(E1, b, P) // Bob's key with Eve
+    const KEB = modPow(B, e, P) // Eve's key with Bob
+
+    expect(A).toBe(8n)
+    expect(B).toBe(19n)
+    expect(KAB).toBe(2n)
+
+    // Dual secrets match on each side...
+    expect(KAE).toBe(KEA)
+    expect(KBE).toBe(KEB)
+    // ...but neither equals the honest shared secret
+    expect(KAE).not.toBe(KAB)
+    expect(KBE).not.toBe(KAB)
+    // And Alice/Bob end up with different keys (no common secret)
+    expect(KAE).not.toBe(KBE)
+  })
+
+  it('correctly identifies primitive roots and computes generator orders', () => {
+    // For p = 23: 5 is a primitive root (order 22)
+    const check5 = checkPrimitiveRoot(5n, 23n)
+    expect(check5.isPrimitive).toBe(true)
+    expect(check5.order).toBe(22n)
+
+    // For p = 23: 2 is NOT a primitive root (order 11)
+    const check2 = checkPrimitiveRoot(2n, 23n)
+    expect(check2.isPrimitive).toBe(false)
+    expect(check2.order).toBe(11n)
+  })
+
+  it('displays primitive root validation in instrumented mode step 0', () => {
+    // g=5, p=23 (primitive root)
+    const resPrim = encrypt('6,15', '23,5', { instrument: true })
+    expect(resPrim.steps[0].note).toMatch(/valid primitive root/i)
+    expect(resPrim.steps[0].table?.find((r) => r.key === 'Primitive Root Status')?.value).toContain('Primitive root')
+
+    // g=2, p=23 (non-primitive root)
+    const resNonPrim = encrypt('6,15', '23,2', { instrument: true })
+    expect(resNonPrim.steps[0].note).toMatch(/NOT a primitive root/i)
+    expect(resNonPrim.steps[0].table?.find((r) => r.key === 'Primitive Root Status')?.value).toContain('Non-primitive root')
   })
 
   it('passes standard test vectors (alice public key computation)', () => {

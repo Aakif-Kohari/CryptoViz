@@ -15,12 +15,12 @@ export class PerformanceReporter {
   /**
    * Generate a comprehensive performance report
    */
-  static generateReport(
+  static async generateReport(
     profiles: PerformanceProfile[],
     comparisons: PerformanceComparison[],
-  ): PerformanceReport {
+  ): Promise<PerformanceReport> {
     const summary = this.generateSummary(profiles, comparisons)
-    const environment = profiles.length > 0 ? profiles[0].environment : this.getFallbackEnvironment()
+    const environment = profiles.length > 0 ? profiles[0].environment : await this.getFallbackEnvironment()
 
     return {
       generatedAt: new Date(),
@@ -74,13 +74,13 @@ export class PerformanceReporter {
   /**
    * Get fallback environment info when no profiles are available
    */
-  private static getFallbackEnvironment(): EnvironmentInfo {
+  private static async getFallbackEnvironment(): Promise<EnvironmentInfo> {
     const isNode = typeof process !== 'undefined' && process.versions?.node
 
     if (isNode) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const os = require('os')
+        const os = await import('node:os')
         return {
           nodeVersion: process.version,
           platform: process.platform,
@@ -405,15 +405,18 @@ export class PerformanceReporter {
   /**
    * Export report to file (Node.js only)
    */
-  static exportReportToFile(report: PerformanceReport, filePath: string, format: 'text' | 'json' | 'markdown' = 'text'): void {
+  static async exportReportToFile(
+    report: PerformanceReport, 
+    filePath: string, 
+    format: 'text' | 'json' | 'markdown' = 'text'): Promise<void> {
     if (typeof process === 'undefined') {
       throw new Error('File export is only available in Node.js environment')
     }
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const fs = require('fs')
+    const fs = await import('node:fs')
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const path = require('path')
+    const path = await import('node:path')
 
     const content = format === 'json' 
       ? this.formatJsonReport(report)

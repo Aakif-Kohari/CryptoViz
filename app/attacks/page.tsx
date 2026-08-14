@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/footer';
-import Breadcrumbs from '@/components/layout/Breadcrumbs';
+import PracticePageTemplate from "@/components/layout/PracticePageTemplate";
 import { Search, ShieldAlert, Zap, ArrowRight, Lock, Key, Clock, ShieldCheck, Bug } from 'lucide-react';
 import Link from 'next/link';
 
@@ -69,6 +69,16 @@ export const ATTACK_COLLECTION: AttackDemoItem[] = [
     educationalNote: 'Requires constant-time comparison implementations (`crypto.timingSafeEqual`) to prevent leaking key bytes byte-by-byte.',
     tags: ['Side-Channel', 'Execution Delay', 'Constant-Time'],
   },
+  {
+    id: 'dh-mitm',
+    slug: 'dh-mitm',
+    title: 'Diffie-Hellman Man-in-the-Middle Attack',
+    category: 'Protocol',
+    riskLevel: 'Critical',
+    summary: 'Eve intercepts and substitutes public keys in unauthenticated Diffie-Hellman, establishing dual shared secrets with Alice and Bob.',
+    educationalNote: 'Mitigated by authenticating public keys via digital signatures (Station-to-Station), PKI, or certificates so substitution attempts are detected.',
+    tags: ['Diffie-Hellman', 'Key Exchange', 'Key Substitution'],
+  },
 ];
 
 export default function AttackCollectionPage() {
@@ -93,9 +103,16 @@ export default function AttackCollectionPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-[#060816] text-zinc-900 dark:text-white transition-colors duration-300">
       <Navbar />
-
-      <main id="main-content" className="flex-1 mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-10">
-        <Breadcrumbs items={[{ label: 'Practice' }, { label: 'Attack Simulators' }]} />
+        <PracticePageTemplate
+          title="Attack Simulator Collection"
+          description="Explore interactive, safe simulations of real-world cryptographic attacks (Brute-Force, Dictionary, ECB Pattern Leakage, Replay Attacks, and Timing Attacks). Understand vulnerabilities and learn industry-standard mitigations."
+          eyebrow="SAFE EDUCATIONAL SIMULATORS"
+          breadcrumbs={[
+            { label: "Practice" },
+            { label: "Attack Simulators" },
+          ]}
+          hideHeader
+        >
 
         {/* Hero Section */}
         <section aria-labelledby="attack-hero-title" className="relative overflow-hidden rounded-3xl border border-red-500/30 bg-gradient-to-br from-red-500/10 via-rose-500/5 to-transparent p-8 sm:p-12 backdrop-blur-2xl">
@@ -201,7 +218,7 @@ export default function AttackCollectionPage() {
             </div>
           ))}
         </div>
-      </main>
+      </PracticePageTemplate>
 
       <Footer />
     </div>
