@@ -39,6 +39,8 @@ import {
   type CipherTraceFile,
 } from '../../lib/utils/cipherTrace'
 import { calculateSecurityMetrics, parseKeySize } from '../../lib/utils/securityMetrics'
+import { diagnoseError, type Diagnostic } from '../../lib/utils/errors'
+import { CryptoDiagnosticBanner } from '../ui/CryptoDiagnosticBanner'
 
 const StepAnimator = dynamic(() => import('./StepAnimator'), { ssr: false })
 const PlayfairGrid = dynamic(() => import('./PlayfairGrid'), { ssr: false })
@@ -104,6 +106,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const [padding, setPadding] = useState(true);
   const [result, setResult] = useState<CipherResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [diagnostic, setDiagnostic] = useState<Diagnostic | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [animationSpeed, setAnimationSpeed] = useState<AnimationSpeed>(1);
   const [activeTab, setActiveTab] = useState<"result" | "history" | "debugger">("result");
@@ -320,8 +323,21 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       if (err instanceof Error && err.name === "AbortError") {
         return;
       }
-      setError(err instanceof Error ? err.message : "An error occurred during calculation.");
+      const errorMessage = err instanceof Error ? err.message : "An error occurred during calculation.";
+      setError(errorMessage);
       setResult(null);
+      
+      // Try to generate diagnostic for the error
+      if (err && typeof err === 'object' && 'code' in err) {
+        const diagnosticResult = diagnoseError(err as any, {
+          cipherId: cipher.id,
+          fieldName: 'key',
+          fieldValue: key,
+        });
+        setDiagnostic(diagnosticResult);
+      } else {
+        setDiagnostic(null);
+      }
     } finally {
       if (abortControllerRef.current === controller) {
         abortControllerRef.current = null;
@@ -510,6 +526,34 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       removeStepNote(annotationStore, annotationScope, activeStepId),
     )
   }
+
+  const handleDiagnosticRemediation = (value: string | number) => {
+    // Apply the remediation to the relevant input
+    if (typeof value === 'string') {
+      if (value === 'remove_last') {
+        // Special case for odd hex length - remove last character
+        setInput(prev => prev.slice(0, -1));
+      } else if (value === 'generator' || value === '') {
+        // Special case for ECC - use default point
+        setKey('');
+      } else {
+        // General case - set the key/input directly
+        setKey(value);
+      }
+    } else {
+      // Numeric value - convert to string for key/input
+      setKey(String(value));
+    }
+    
+    // Clear the error and diagnostic after applying remediation
+    setError(null);
+    setDiagnostic(null);
+    
+    // Re-run the cipher with the new value if auto-compute is enabled
+    if (autoCompute) {
+      // The effect will trigger automatically
+    }
+  };
 
   const handleClearStepAnnotations = async () => {
     if (
@@ -792,7 +836,14 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
             onLoad={handlePresetLoad}
           />
 
-          {(error || workerError) && (
+          {diagnostic && (
+            <CryptoDiagnosticBanner
+              diagnostic={diagnostic}
+              onRemediation={handleDiagnosticRemediation}
+            />
+          )}
+
+          {(error || workerError) && !diagnostic && (
             <div className="rounded-xl border border-red-100 bg-red-50 p-4 dark:border-red-950/40 dark:bg-red-950/10">
               <div className="flex gap-2.5">
                 <div className="flex flex-col gap-0.5">
