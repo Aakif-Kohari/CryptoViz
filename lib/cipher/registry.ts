@@ -668,6 +668,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
   },
   {
+    id: 'des-x',
+    name: 'DES-X',
+    category: 'symmetric',
+    description: 'Rivest\'s key-whitening extension of DES (1984). C = k2 XOR DES(k1, k0 XOR P). Demonstrates pure input/output whitening without modifying DES internals. Status: legacy (Kilian-Rogaway bound is weaker than naive 184-bit addition).',
+    defaultKey: '00'.repeat(24),
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '192-bit key as 48 hex chars (k0 + k1 + k2)',
+  },
+  {
     id: 'khufu',
     name: 'Khufu',
     category: 'symmetric',
