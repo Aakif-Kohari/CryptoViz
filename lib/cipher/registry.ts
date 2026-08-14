@@ -688,6 +688,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'loki97',
+    name: 'LOKI97',
+    category: 'symmetric',
+    description: 'Australian AES candidate (1998). Uniquely uses exponentiation in GF(2^64) to generate its S-box non-linearity, a fundamentally different algebraic source than the GF(2^8) tables used by AES/SM4/ARIA. Status: legacy.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
