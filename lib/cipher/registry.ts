@@ -698,6 +698,19 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'kalyna',
+    name: 'Kalyna',
+    category: 'symmetric',
+    description: 'Ukrainian national block cipher (DSTU 7624:2014). AES-family SPN supporting 128/256/512-bit blocks. Uses 4 distinct S-boxes applied in a round-dependent pattern. Begins Ukrainian national-suite representation.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Key (equal or double block size)',
+    options: [
+      { name: 'Block Size', id: 'blockSize', type: 'select', default: 128, choices: [{label: '128', value: 128}, {label: '256', value: 256}, {label: '512', value: 512}] }
+    ]
+  },
+  {
     id: 'zuc',
     name: 'ZUC',
     category: 'symmetric',
