@@ -668,6 +668,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
   },
   {
+    id: 'des-x',
+    name: 'DES-X',
+    category: 'symmetric',
+    description: 'Rivest\'s key-whitening extension of DES (1984). C = k2 XOR DES(k1, k0 XOR P). Demonstrates pure input/output whitening without modifying DES internals. Status: legacy (Kilian-Rogaway bound is weaker than naive 184-bit addition).',
+    defaultKey: '00'.repeat(24),
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '192-bit key as 48 hex chars (k0 + k1 + k2)',
+  },
+  {
     id: 'khufu',
     name: 'Khufu',
     category: 'symmetric',
@@ -678,6 +688,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '512-bit key as 128 hex chars',
   },
   {
+    id: 'mickey',
+    name: 'MICKEY',
+    category: 'symmetric',
+    description: 'eSTREAM hardware-profile finalist (2005). Uses mutual clock control: two registers (R, S) where EACH register\'s clocking decision depends on the OTHER\'s state simultaneously. Completes the eSTREAM hardware trio alongside Trivium and Grain-128.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00',
+    securityStatus: 'secure',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: 'zuc',
     name: 'ZUC',
     category: 'symmetric',
@@ -686,6 +706,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '00000000',
     securityStatus: 'secure',
     keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
+    id: 'loki97',
+    name: 'LOKI97',
+    category: 'symmetric',
+    description: 'Australian AES candidate (1998). Uniquely uses exponentiation in GF(2^64) to generate its S-box non-linearity, a fundamentally different algebraic source than the GF(2^8) tables used by AES/SM4/ARIA. Status: legacy.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
   },
   {
     id: "sha256",
@@ -1070,6 +1100,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '',
     securityStatus: 'legacy',
   },
+  {
+    id: 'blake',
+    name: 'BLAKE',
+    category: 'hash',
+    description: 'The ORIGINAL 2008 SHA-3 finalist. Uses HAIFA construction (explicit counter/salt per block) and ChaCha-lineage ARX compression. Distinct from the later, independently-designed BLAKE2/BLAKE3 descendants.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+  },
   // Asymmetric
   {
     id: "rsa",
@@ -1345,5 +1384,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '68656c6c6f',
     securityStatus: 'secure',
     keyPlaceholder: 'PKG_pub,identity (encrypt) or private_key (decrypt)',
+  },
+  {
+    id: 'regev-lwe',
+    name: 'Regev-LWE',
+    category: 'asymmetric',
+    description: 'Foundational LWE encryption (2005). The NOT-broken textbook predecessor to ML-KEM. Encodes bits by adding a large offset (floor(q/2)) hidden by small LWE noise. Explicitly distinguished from broken predecessors like GGH/SIDH.',
+    defaultKey: 'mock_keys',
+    defaultInput: '01',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
   },
 ];
