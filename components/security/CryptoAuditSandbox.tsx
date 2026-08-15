@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 
 import {
   AUDIT_SCENARIOS,
@@ -8,9 +8,7 @@ import {
   type AuditScenarioId,
 } from '@/lib/security/auditScenarios'
 
-import {
-  constantTimeStringEqual,
-} from '@/lib/utils/constantTime'
+import { constantTimeStringEqual } from '@/lib/utils/constantTime'
 
 type ResultState = {
   passed: boolean
@@ -100,10 +98,7 @@ function HighlightedCode({
 }: {
   code: string
 }) {
-  const tokens = useMemo(
-    () => tokenizeCode(code),
-    [code],
-  )
+  const tokens = useMemo(() => tokenizeCode(code), [code])
 
   return (
     <code className="font-mono text-[13px] leading-6">
@@ -157,9 +152,7 @@ function SeverityBadge({
 
 export default function CryptoAuditSandbox() {
   const [selectedId, setSelectedId] =
-    useState<AuditScenarioId>(
-      DEFAULT_AUDIT_SCENARIO_ID,
-    )
+    useState<AuditScenarioId>(DEFAULT_AUDIT_SCENARIO_ID)
 
   const [code, setCode] = useState(
     AUDIT_SCENARIOS[0].vulnerableCode,
@@ -169,6 +162,21 @@ export default function CryptoAuditSandbox() {
     useState<ResultState>(null)
 
   const [showHint, setShowHint] = useState(false)
+
+  /*
+   * Editor references.
+   *
+   * The textarea is the only interactive layer.
+   * The highlighted code and line numbers are visual mirrors.
+   */
+  const editorRef =
+    useRef<HTMLTextAreaElement | null>(null)
+
+  const highlightedCodeRef =
+    useRef<HTMLPreElement | null>(null)
+
+  const lineNumbersRef =
+    useRef<HTMLDivElement | null>(null)
 
   const scenario = useMemo(
     () =>
@@ -196,18 +204,108 @@ export default function CryptoAuditSandbox() {
     setCode(nextScenario.vulnerableCode)
     setResult(null)
     setShowHint(false)
+
+    /*
+     * Reset the editor scroll position after switching scenarios.
+     * requestAnimationFrame ensures the textarea has received the
+     * new scenario value before attempting to scroll.
+     */
+    requestAnimationFrame(() => {
+      const editor = editorRef.current
+
+      if (!editor) {
+        return
+      }
+
+      editor.scrollTop = 0
+      editor.scrollLeft = 0
+
+      if (highlightedCodeRef.current) {
+        highlightedCodeRef.current.style.transform =
+          'translate3d(0, 0, 0)'
+      }
+
+      if (lineNumbersRef.current) {
+        lineNumbersRef.current.scrollTop = 0
+      }
+    })
   }
 
   const resetScenario = () => {
     setCode(scenario.vulnerableCode)
     setResult(null)
     setShowHint(false)
+
+    requestAnimationFrame(() => {
+      const editor = editorRef.current
+
+      if (!editor) {
+        return
+      }
+
+      editor.scrollTop = 0
+      editor.scrollLeft = 0
+
+      if (highlightedCodeRef.current) {
+        highlightedCodeRef.current.style.transform =
+          'translate3d(0, 0, 0)'
+      }
+
+      if (lineNumbersRef.current) {
+        lineNumbersRef.current.scrollTop = 0
+      }
+    })
   }
 
   const loadSecureSolution = () => {
     setCode(scenario.secureCode)
     setResult(null)
     setShowHint(false)
+
+    requestAnimationFrame(() => {
+      const editor = editorRef.current
+
+      if (!editor) {
+        return
+      }
+
+      editor.scrollTop = 0
+      editor.scrollLeft = 0
+
+      if (highlightedCodeRef.current) {
+        highlightedCodeRef.current.style.transform =
+          'translate3d(0, 0, 0)'
+      }
+
+      if (lineNumbersRef.current) {
+        lineNumbersRef.current.scrollTop = 0
+      }
+    })
+  }
+
+  const handleEditorScroll = () => {
+    const editor = editorRef.current
+
+    if (!editor) {
+      return
+    }
+
+    const { scrollTop, scrollLeft } = editor
+
+    /*
+     * Keep syntax highlighting exactly underneath the transparent
+  
+     */
+    if (highlightedCodeRef.current) {
+      highlightedCodeRef.current.style.transform = `translate3d(${-scrollLeft}px, ${-scrollTop}px, 0)`
+    }
+
+    /*
+     * Keep line numbers vertically synchronized with the editor.
+     */
+    if (lineNumbersRef.current) {
+      lineNumbersRef.current.scrollTop = scrollTop
+    }
   }
 
   const runExploit = () => {
@@ -220,7 +318,7 @@ export default function CryptoAuditSandbox() {
     code !== scenario.vulnerableCode
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <section className="mx-auto w-full max-w-7xl py-8">
       {/* Scenario selector */}
       <div className="mb-6 overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/80 shadow-sm backdrop-blur-xl dark:border-zinc-800/70 dark:bg-zinc-950/80">
         <div className="border-b border-zinc-200/70 p-5 dark:border-zinc-800/70">
@@ -259,7 +357,7 @@ export default function CryptoAuditSandbox() {
                 className={`group rounded-xl border p-3 text-left transition-all duration-200 ${
                   active
                     ? 'border-teal-500 bg-teal-500/5 shadow-sm'
-                    : 'border-transparent hover:border-zinc-200 hover:bg-zinc-50 dark:hover:border-zinc-800 dark:hover:bg-zinc-900/60'
+                    : 'border-zinc-200 hover:border-zinc-200 hover:bg-zinc-50 dark:hover:border-zinc-800 dark:hover:bg-zinc-900/60'
                 }`}
                 aria-pressed={active}
               >
@@ -314,18 +412,23 @@ export default function CryptoAuditSandbox() {
       {/* IDE + exploit panel */}
       <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.6fr)]">
         {/* Code editor */}
-        <div className="min-w-0 overflow-hidden rounded-2xl border border-zinc-200/70 bg-white shadow-sm dark:border-zinc-800/70 dark:bg-zinc-950">
-          <div className="flex items-center justify-between border-b border-zinc-200/70 px-4 py-3 dark:border-zinc-800/70">
-            <div>
+        <section
+          aria-label="Cryptographic code editor"
+          className="min-w-0 overflow-hidden rounded-2xl border border-zinc-200/70 bg-white shadow-sm dark:border-zinc-800/70 dark:bg-zinc-950"
+        >
+          {/* Editor header */}
+          <div className="flex min-w-0 items-center justify-between gap-3 border-b border-zinc-200/70 px-4 py-3 dark:border-zinc-800/70">
+            <div className="min-w-0">
               <p className="text-sm font-bold text-zinc-900 dark:text-white">
                 Code Audit
               </p>
+
               <p className="text-xs text-zinc-500 dark:text-zinc-500">
                 Edit the implementation
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2">
               {hasModifiedCode && (
                 <span className="rounded-full bg-yellow-500/10 px-2.5 py-1 text-[11px] font-semibold text-yellow-600 dark:text-yellow-400">
                   Modified
@@ -342,49 +445,152 @@ export default function CryptoAuditSandbox() {
             </div>
           </div>
 
-          <div className="relative flex min-h-[440px] overflow-hidden bg-zinc-50 dark:bg-zinc-950">
-            {/* Line numbers */}
+          {/* Fixed, responsive editor viewport */}
+          <div
+            className="
+              relative
+              h-[clamp(280px,70vh,440px)]
+              min-h-0
+              w-full
+              max-w-full
+              overflow-hidden
+              bg-zinc-50
+              dark:bg-zinc-950
+            "
+          >
+            {/* Line number gutter */}
             <div
+              ref={lineNumbersRef}
               aria-hidden="true"
-              className="select-none border-r border-zinc-200 bg-zinc-100/80 px-3 py-4 text-right font-mono text-[12px] leading-6 text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-600"
+              className="
+                absolute
+                inset-y-0
+                left-0
+                z-30
+                w-12
+                overflow-hidden
+                border-r
+                border-zinc-200
+                bg-zinc-100/90
+                dark:border-zinc-800
+                dark:bg-zinc-900/80
+              "
             >
-              {lineNumbers.map((line) => (
-                <div key={line}>{line}</div>
-              ))}
+              <div className="px-2 py-4 text-right font-mono text-[12px] leading-6 text-zinc-400 dark:text-zinc-600">
+                {lineNumbers.map((line) => (
+                  <div
+                    key={line}
+                    className="h-6 select-none whitespace-nowrap"
+                  >
+                    {line}
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="relative min-w-0 flex-1 overflow-auto">
+            {/* Code viewport */}
+            <div
+              className="
+                absolute
+                inset-y-0
+                left-12
+                right-0
+                min-w-0
+                overflow-hidden
+              "
+            >
               {/* Syntax-highlighted layer */}
               <pre
+                ref={highlightedCodeRef}
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-0 m-0 whitespace-pre p-4"
+                className="
+                  pointer-events-none
+                  absolute
+                  left-0
+                  top-0
+                  z-0
+                  m-0
+                  min-w-max
+                  whitespace-pre
+                  p-4
+                  font-mono
+                  text-[13px]
+                  leading-6
+                  will-change-transform
+                "
               >
                 <HighlightedCode code={code} />
               </pre>
 
               {/* Editable layer */}
               <textarea
+                ref={editorRef}
                 value={code}
                 onChange={(event) => {
                   setCode(event.target.value)
                   setResult(null)
                 }}
+                onScroll={handleEditorScroll}
                 spellCheck={false}
+                wrap="off"
                 aria-label={`Code editor for ${scenario.title}`}
-                className="relative z-10 block min-h-[440px] w-full resize-none overflow-auto whitespace-pre bg-transparent p-4 font-mono text-[13px] leading-6 text-transparent caret-teal-500 outline-none selection:bg-teal-500/20"
+                className="
+                  absolute
+                  inset-0
+                  z-20
+                  block
+                  box-border
+                  h-full
+                  min-h-0
+                  max-h-full
+                  w-full
+                  max-w-full
+                  resize-none
+                  overflow-x-auto
+                  overflow-y-auto
+                  whitespace-pre
+                  border-0
+                  bg-transparent
+                  p-4
+                  font-mono
+                  text-[13px]
+                  leading-6
+                  text-transparent
+                  caret-teal-500
+                  outline-none
+                  ring-0
+                  focus:border-0
+                  focus:outline-none
+                  focus:ring-0
+                  selection:bg-teal-500/20
+                "
               />
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Exploit panel */}
-        <aside className="min-w-0 rounded-2xl border border-zinc-200/70 bg-white shadow-sm dark:border-zinc-800/70 dark:bg-zinc-950">
+        <aside
+          aria-label="Attacker exploit panel"
+          className="
+            min-w-0
+            overflow-hidden
+            rounded-2xl
+            border
+            border-zinc-200/70
+            bg-white
+            shadow-sm
+            dark:border-zinc-800/70
+            dark:bg-zinc-950
+          "
+        >
+          {/* Panel header */}
           <div className="border-b border-zinc-200/70 p-5 dark:border-zinc-800/70">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-red-500">
               Attacker Panel
             </p>
 
-            <h2 className="mt-1 text-lg font-bold text-zinc-900 dark:text-white">
+            <h2 className="mt-1 break-words text-lg font-bold text-zinc-900 dark:text-white">
               {scenario.exploitLabel}
             </h2>
 
@@ -393,34 +599,73 @@ export default function CryptoAuditSandbox() {
             </p>
           </div>
 
+          {/* Panel content */}
           <div className="space-y-4 p-5">
             <button
               type="button"
               onClick={runExploit}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-600 hover:shadow-lg hover:shadow-teal-500/20 active:translate-y-0"
+              className="
+                flex
+                w-full
+                items-center
+                justify-center
+                gap-2
+                rounded-xl
+                bg-teal-500
+                px-4
+                py-3
+                text-sm
+                font-bold
+                text-white
+                shadow-sm
+                transition-all
+                duration-200
+                hover:-translate-y-0.5
+                hover:bg-teal-600
+                hover:shadow-lg
+                hover:shadow-teal-500/20
+                active:translate-y-0
+              "
             >
-              <span>▶</span>
+              <span aria-hidden="true">▶</span>
               Run Exploit Test
             </button>
 
             <button
               type="button"
               onClick={loadSecureSolution}
-              className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm font-semibold text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900"
+              className="
+                w-full
+                rounded-xl
+                border
+                border-zinc-200
+                px-4
+                py-3
+                text-sm
+                font-semibold
+                text-zinc-700
+                transition-colors
+                hover:bg-zinc-50
+                dark:border-zinc-800
+                dark:text-zinc-300
+                dark:hover:bg-zinc-900
+              "
             >
               Load Secure Solution
             </button>
 
+            {/* Exploit result */}
             {result && (
               <div
                 role="status"
+                aria-live="polite"
                 className={`rounded-xl border p-4 ${
                   result.passed
                     ? 'border-emerald-500/30 bg-emerald-500/5'
                     : 'border-red-500/30 bg-red-500/5'
                 }`}
               >
-                <div className="flex items-start gap-3">
+                <div className="flex min-w-0 items-start gap-3">
                   <div
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
                       result.passed
@@ -444,11 +689,11 @@ export default function CryptoAuditSandbox() {
                         : 'Exploit succeeded'}
                     </p>
 
-                    <p className="mt-1 text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+                    <p className="mt-1 break-words text-sm font-semibold text-zinc-800 dark:text-zinc-200">
                       {result.title}
                     </p>
 
-                    <p className="mt-1 text-xs leading-5 text-zinc-600 dark:text-zinc-400">
+                    <p className="mt-1 break-words text-xs leading-5 text-zinc-600 dark:text-zinc-400">
                       {result.message}
                     </p>
                   </div>
@@ -456,6 +701,7 @@ export default function CryptoAuditSandbox() {
               </div>
             )}
 
+            {/* Hint */}
             <div className="rounded-xl border border-zinc-200/70 bg-zinc-50 p-4 dark:border-zinc-800/70 dark:bg-zinc-900/50">
               <p className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                 Hint
@@ -464,6 +710,7 @@ export default function CryptoAuditSandbox() {
               <button
                 type="button"
                 onClick={() => setShowHint((value) => !value)}
+                aria-expanded={showHint}
                 className="mt-2 text-sm font-semibold text-teal-600 hover:underline dark:text-teal-400"
               >
                 {showHint ? 'Hide hint' : 'Show hint'}
@@ -474,7 +721,7 @@ export default function CryptoAuditSandbox() {
                   {scenario.hints.map((hint) => (
                     <li
                       key={hint}
-                      className="text-xs leading-5 text-zinc-600 dark:text-zinc-400"
+                      className="break-words text-xs leading-5 text-zinc-600 dark:text-zinc-400"
                     >
                       • {hint}
                     </li>
@@ -551,7 +798,9 @@ export default function CryptoAuditSandbox() {
 
       {/* Keep the existing utility available to this security feature. */}
       <span className="sr-only">
-        {constantTimeStringEqual('', '') ? 'constant-time utility available' : ''}
+        {constantTimeStringEqual('', '')
+          ? 'constant-time utility available'
+          : ''}
       </span>
     </section>
   )
