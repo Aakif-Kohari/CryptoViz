@@ -157,6 +157,7 @@ export type CipherName =
   | 'mickey'
   | 'zuc'
   | 'loki97'
+  | 'shark'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
