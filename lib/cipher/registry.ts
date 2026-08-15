@@ -718,6 +718,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
   },
   {
+    id: 'shark',
+    name: 'SHARK',
+    category: 'symmetric',
+    description: 'Earliest predecessor in the SHARK->Square->AES lineage (1996). 64-bit block, full 8x8 MDS diffusion every round. Status: broken (vulnerable to same integral attacks as Square).',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'broken',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
