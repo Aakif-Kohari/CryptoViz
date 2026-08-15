@@ -1415,4 +1415,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
   },
+  {
+    id: 'sqisign',
+    name: 'SQIsign',
+    category: 'asymmetric',
+    description: 'Isogeny-based signature scheme (2020). NIST PQC candidate. Proves knowledge of an isogeny WITHOUT publishing torsion-point images, specifically avoiding the Castryck-Decru attack that broke SIDH. Shows isogeny cryptography survived where SIDH did not.',
+    defaultKey: '1234',
+    defaultInput: '68656c6c6f',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Secret isogeny (sign) or Public curve EA (verify)',
+  },
 ];
