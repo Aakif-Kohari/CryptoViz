@@ -1,7 +1,6 @@
 /**
  * Auto-generated precache routes manifest.
- * Last Generated: 2026-08-14T17:52:19.063Z
- * Last Generated: 2026-08-14T17:03:17.427Z
+ * Last Generated: 2026-08-15T13:50:11.397Z
  */
 export const PRECACHE_ROUTES: string[] = [
   "/",
@@ -57,6 +56,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/emv/",
   "/encoding-errors/",
   "/encoding/",
+  "/entropy-harvesting/",
   "/finite-field/",
   "/globals.css",
   "/glossary/",
@@ -89,7 +89,6 @@ export const PRECACHE_ROUTES: string[] = [
   "/pipeline/",
   "/pqc-lattices/",
   "/protocols/",
-  "/protocols/webauthn/",
   "/protocols/zero-knowledge/",
   "/quality/reliability/",
   "/quantum-cryptanalysis/",
@@ -104,6 +103,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/sbox/",
   "/security-recommendation/",
   "/signal-lab/",
+  "/steganography/",
   "/test-vectors/",
   "/tests/integration/",
   "/tests/snapshots/",

@@ -68,7 +68,7 @@ export default function KZGVisualizer() {
 
           <div className="p-5 bg-neutral-50 dark:bg-neutral-950 rounded-2xl border border-neutral-200 dark:border-neutral-800 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-              <Layers className="w-4 h-4 text-amber-500" /> Quotient Polynomial $Q(X) = \frac{P(X) - y}{X - z}$
+              <Layers className="w-4 h-4 text-amber-500" /> Quotient Polynomial $Q(X) = \frac{'{'}P(X) - y{'}'}{'{'}X - z{'}'}$
             </h3>
             <div className="p-3 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 font-mono text-xs">
               <div>$P(z) = {y}$</div>

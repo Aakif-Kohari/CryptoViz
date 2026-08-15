@@ -75,7 +75,8 @@ export default function DDTLATWorkbench() {
   const [mode, setMode] = useState<MatrixMode>('ddt')
   const [builtinId, setBuiltinId] = useState<string>('present')
   const [customRaw, setCustomRaw] = useState('')
-  const [selected, setSelected] = useState<{ dx: number; dy: number } | null>(null)
+  const [selectedDdt, setSelectedDdt] = useState<{ dx: number; dy: number } | null>(null)
+  const [selectedLat, setSelectedLat] = useState<{ a: number; b: number } | null>(null)
 
   const builtin = BUILTIN_SBOXES.find((b) => b.id === builtinId) ?? BUILTIN_SBOXES[0]
 
@@ -104,9 +105,9 @@ export default function DDTLATWorkbench() {
   const strongestBias = analysis?.maxBiasCells[0]?.bias ?? 0
 
   const selectedCell: DdtCell | null =
-    analysis && mode === 'ddt' && selected ? analysis.ddt[selected.dx][selected.dy] : null
-  const selectedLat: LatCell | null =
-    analysis && mode === 'lat' && selected ? analysis.lat[selected.dx][selected.dy] : null
+    analysis && mode === 'ddt' && selectedDdt ? analysis.ddt[selectedDdt.dx][selectedDdt.dy] : null
+  const selectedLatCell: LatCell | null =
+    analysis && mode === 'lat' && selectedLat ? analysis.lat[selectedLat.a][selectedLat.b] : null
 
   return (
     <div className="space-y-8">
@@ -124,7 +125,8 @@ export default function DDTLATWorkbench() {
                   onClick={() => {
                     setBuiltinId(box.id)
                     setCustomRaw('')
-                    setSelected(null)
+                    setSelectedDdt(null)
+                    setSelectedLat(null)
                   }}
                   aria-pressed={active}
                   className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ${
@@ -152,7 +154,8 @@ export default function DDTLATWorkbench() {
             value={customRaw}
             onChange={(event) => {
               setCustomRaw(event.target.value)
-              setSelected(null)
+              setSelectedDdt(null)
+              setSelectedLat(null)
             }}
             placeholder="e.g. c 5 6 b 9 0 a d 3 e f 8 4 7 1 2"
             className="rounded-lg border border-zinc-200 bg-zinc-50 p-2.5 font-mono text-sm font-normal text-zinc-900 outline-none focus:border-teal-500 dark:border-zinc-700 dark:bg-zinc-950/50 dark:text-white"
@@ -247,24 +250,24 @@ export default function DDTLATWorkbench() {
               <DdtGrid
                 analysis={analysis}
                 ddtMax={ddtMax}
-                selected={selected}
-                onSelect={(dx, dy) => setSelected({ dx, dy })}
+                selected={selectedDdt}
+                onSelect={(dx, dy) => setSelectedDdt({ dx, dy })}
               />
             ) : (
               <LatGrid
                 analysis={analysis}
                 latMax={latMax}
-                selected={selected}
-                onSelect={(a, b) => setSelected({ a, b })}
+                selected={selectedLat}
+                onSelect={(a, b) => setSelectedLat({ a, b })}
               />
             )}
 
             {/* --- Selected cell breakdown --- */}
             <div aria-live="polite" className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950/40">
-              {mode === 'ddt' && selectedCell ? (
+              {mode === 'ddt' && selectedDdt && selectedCell ? (
                 <div>
                   <p className="text-sm font-semibold text-zinc-950 dark:text-white">
-                    Δx = {hex(selected.dx)} → Δy = {hex(selected.dy)} — {selectedCell.count} input pair
+                    Δx = {hex(selectedDdt.dx)} → Δy = {hex(selectedDdt.dy)} — {selectedCell.count} input pair
                     {selectedCell.count === 1 ? '' : 's'}
                     {selectedCell.count > 0 &&
                       ` (probability ${(selectedCell.count / (1 << analysis.bits)).toFixed(2)})`}
@@ -283,12 +286,12 @@ export default function DDTLATWorkbench() {
                     </p>
                   )}
                 </div>
-              ) : mode === 'lat' && selectedLat ? (
+              ) : mode === 'lat' && selectedLat && selectedLatCell ? (
                 <div>
                   <p className="text-sm font-semibold text-zinc-950 dark:text-white">
-                    Mask a = {hex(selected.dx)} → b = {hex(selected.dy)} — bias{' '}
-                    {selectedLat.value >= 0 ? '+' : '−'}
-                    {Math.abs(selectedLat.value)}/{1 << analysis.bits} ({formatBias(selectedLat.bias)})
+                    Mask a = {hex(selectedLat.a)} → b = {hex(selectedLat.b)} — bias{' '}
+                    {selectedLatCell.value >= 0 ? '+' : '−'}
+                    {Math.abs(selectedLatCell.value)}/{1 << analysis.bits} ({formatBias(selectedLatCell.bias)})
                   </p>
                   <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                     LAT[a][b] = #{'{'}x : a·x = b·S(x){'}'} − 2^(n−1). The strongest bias is highlighted in the grid.
@@ -343,6 +346,8 @@ function formatBias(bias: number): string {
 
 // --- DDT grid ------------------------------------------------------------------
 
+import { useRef, useCallback, type KeyboardEvent } from 'react'
+
 function DdtGrid({
   analysis,
   ddtMax,
@@ -356,6 +361,64 @@ function DdtGrid({
 }) {
   const size = 1 << analysis.bits
   const maxCellKeys = new Set(analysis.maxDifferentialCells.map((c) => `${c.dx},${c.dy}`))
+
+  const [focusedCell, setFocusedCell] = useState<{ row: number; col: number }>({
+    row: selected?.dx ?? 0,
+    col: selected?.dy ?? 0,
+  })
+
+  const cellRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map())
+
+  const effectiveRow = selected !== null ? selected.dx : Math.min(focusedCell.row, size - 1)
+  const effectiveCol = selected !== null ? selected.dy : Math.min(focusedCell.col, size - 1)
+
+  const focusCell = useCallback(
+    (row: number, col: number) => {
+      const clampedRow = Math.max(0, Math.min(size - 1, row))
+      const clampedCol = Math.max(0, Math.min(size - 1, col))
+      setFocusedCell({ row: clampedRow, col: clampedCol })
+
+      const key = `${clampedRow}-${clampedCol}`
+      cellRefs.current.get(key)?.focus()
+    },
+    [size],
+  )
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLButtonElement>, rIdx: number, cIdx: number) => {
+      let nextRow = rIdx
+      let nextCol = cIdx
+
+      switch (event.key) {
+        case 'ArrowRight':
+          nextCol = Math.min(cIdx + 1, size - 1)
+          break
+        case 'ArrowLeft':
+          nextCol = Math.max(cIdx - 1, 0)
+          break
+        case 'ArrowDown':
+          nextRow = Math.min(rIdx + 1, size - 1)
+          break
+        case 'ArrowUp':
+          nextRow = Math.max(rIdx - 1, 0)
+          break
+        case 'Home':
+          nextRow = 0
+          nextCol = 0
+          break
+        case 'End':
+          nextRow = size - 1
+          nextCol = size - 1
+          break
+        default:
+          return
+      }
+
+      event.preventDefault()
+      focusCell(nextRow, nextCol)
+    },
+    [size, focusCell],
+  )
 
   return (
     <MatrixGrid
@@ -381,13 +444,21 @@ function DdtGrid({
           {analysis.ddt[dx].map((cell, dy) => {
             const isMax = maxCellKeys.has(`${dx},${dy}`)
             const isSel = selected?.dx === dx && selected?.dy === dy
+            const isTabbable = dx === effectiveRow && dy === effectiveCol
             return (
               <td key={dy} role="gridcell" className={`border-b border-zinc-100 p-0 dark:border-zinc-800/60 ${isMax ? 'ring-2 ring-inset ring-amber-400' : ''}`}>
                 <button
+                  ref={(el) => {
+                    cellRefs.current.set(`${dx}-${dy}`, el)
+                  }}
                   type="button"
+                  tabIndex={isTabbable ? 0 : -1}
                   onClick={() => onSelect(dx, dy)}
+                  onKeyDown={(event) => handleKeyDown(event, dx, dy)}
+                  onFocus={() => setFocusedCell({ row: dx, col: dy })}
                   aria-label={`Δx ${hex(dx)}, Δy ${hex(dy)}: ${cell.count} pair${cell.count === 1 ? '' : 's'}`}
                   aria-pressed={isSel}
+                  aria-selected={isSel}
                   className={`h-7 w-7 rounded-sm font-mono text-[10px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-teal-500 dark:focus-visible:ring-offset-zinc-950 sm:h-8 sm:w-8 ${ddtTone(cell.count, ddtMax)} ${isSel ? 'ring-2 ring-teal-500' : ''}`}
                 >
                   {cell.count}
@@ -417,6 +488,64 @@ function LatGrid({
   const size = 1 << analysis.bits
   const maxCellKeys = new Set(analysis.maxBiasCells.map((c) => `${c.a},${c.b}`))
 
+  const [focusedCell, setFocusedCell] = useState<{ row: number; col: number }>({
+    row: selected?.a ?? 0,
+    col: selected?.b ?? 0,
+  })
+
+  const cellRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map())
+
+  const effectiveRow = selected !== null ? selected.a : Math.min(focusedCell.row, size - 1)
+  const effectiveCol = selected !== null ? selected.b : Math.min(focusedCell.col, size - 1)
+
+  const focusCell = useCallback(
+    (row: number, col: number) => {
+      const clampedRow = Math.max(0, Math.min(size - 1, row))
+      const clampedCol = Math.max(0, Math.min(size - 1, col))
+      setFocusedCell({ row: clampedRow, col: clampedCol })
+
+      const key = `${clampedRow}-${clampedCol}`
+      cellRefs.current.get(key)?.focus()
+    },
+    [size],
+  )
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLButtonElement>, rIdx: number, cIdx: number) => {
+      let nextRow = rIdx
+      let nextCol = cIdx
+
+      switch (event.key) {
+        case 'ArrowRight':
+          nextCol = Math.min(cIdx + 1, size - 1)
+          break
+        case 'ArrowLeft':
+          nextCol = Math.max(cIdx - 1, 0)
+          break
+        case 'ArrowDown':
+          nextRow = Math.min(rIdx + 1, size - 1)
+          break
+        case 'ArrowUp':
+          nextRow = Math.max(rIdx - 1, 0)
+          break
+        case 'Home':
+          nextRow = 0
+          nextCol = 0
+          break
+        case 'End':
+          nextRow = size - 1
+          nextCol = size - 1
+          break
+        default:
+          return
+      }
+
+      event.preventDefault()
+      focusCell(nextRow, nextCol)
+    },
+    [size, focusCell],
+  )
+
   return (
     <MatrixGrid
       rows={size}
@@ -441,13 +570,21 @@ function LatGrid({
           {analysis.lat[a].map((cell, b) => {
             const isMax = maxCellKeys.has(`${a},${b}`)
             const isSel = selected?.a === a && selected?.b === b
+            const isTabbable = a === effectiveRow && b === effectiveCol
             return (
               <td key={b} role="gridcell" className={`border-b border-zinc-100 p-0 dark:border-zinc-800/60 ${isMax ? 'ring-2 ring-inset ring-amber-400' : ''}`}>
                 <button
+                  ref={(el) => {
+                    cellRefs.current.set(`${a}-${b}`, el)
+                  }}
                   type="button"
+                  tabIndex={isTabbable ? 0 : -1}
                   onClick={() => onSelect(a, b)}
+                  onKeyDown={(event) => handleKeyDown(event, a, b)}
+                  onFocus={() => setFocusedCell({ row: a, col: b })}
                   aria-label={`Mask a ${hex(a)}, b ${hex(b)}: bias ${cell.value}`}
                   aria-pressed={isSel}
+                  aria-selected={isSel}
                   className={`h-7 w-7 rounded-sm font-mono text-[10px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-teal-500 dark:focus-visible:ring-offset-zinc-950 sm:h-8 sm:w-8 ${latTone(cell.bias, latMax)} ${isSel ? 'ring-2 ring-teal-500' : ''}`}
                 >
                   {cell.value > 0 ? `+${cell.value}` : cell.value}

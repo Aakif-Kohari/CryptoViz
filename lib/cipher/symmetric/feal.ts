@@ -41,7 +41,8 @@ function f(a: Uint8Array, k: Uint8Array): Uint8Array {
     const f2 = S0(f1, a[2] ^ k[2])
     const f3 = S1(f2, a[3] ^ k[3])
 
-    const out = new Uint8Array(4)
+    const buf = new ArrayBuffer(4)
+    const out = new Uint8Array(buf)
     out[0] = f2
     out[1] = u8(f1 ^ f2)
     out[2] = u8(f2 ^ f3)
@@ -64,18 +65,25 @@ function toHex(b: Uint8Array): string {
 // FEAL Key Schedule: Expands 64-bit key into 16x16-bit subkeys using FEAL's own f-function
 function keySchedule(keyBytes: Uint8Array): Uint8Array[] {
     const subkeys: Uint8Array[] = []
-    let A = keyBytes.slice(0, 4)
-    let B = keyBytes.slice(4, 8)
-    let D = new Uint8Array(4)
+    const bufA = new ArrayBuffer(4)
+    const A = new Uint8Array(bufA)
+    A.set(keyBytes.slice(0, 4))
+
+    const bufB = new ArrayBuffer(4)
+    const B = new Uint8Array(bufB)
+    B.set(keyBytes.slice(4, 8))
+
+    const bufD = new ArrayBuffer(4)
+    const D = new Uint8Array(bufD)
 
     for (let i = 0; i < 16; i++) {
         const temp = new Uint8Array(4)
         for (let j = 0; j < 4; j++) temp[j] = A[j] ^ B[j] ^ D[j]
         const f_out = f(temp, new Uint8Array([i, i, i, i])) // Simplified key schedule step
 
-        D = A
-        A = B
-        B = f_out
+        D.set(A)
+        A.set(B)
+        B.set(f_out)
         subkeys.push(new Uint8Array(f_out))
     }
     return subkeys

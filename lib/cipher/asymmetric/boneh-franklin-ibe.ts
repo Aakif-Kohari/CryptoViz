@@ -27,12 +27,12 @@ const P = 0xFFFFFFFFFFFFFFC5n
 const Q = P - 1n
 const G_GEN = 2n
 
-function mod(n: bigint, m: bigint): bigint { return ((n % m) + m) % m }
-function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
-    let res = 1n, b = mod(base, mod), e = exp
+function modBigInt(n: bigint, m: bigint): bigint { return ((n % m) + m) % m }
+function modPow(base: bigint, exp: bigint, modVal: bigint): bigint {
+    let res = 1n, b = modBigInt(base, modVal), e = exp
     while (e > 0n) {
-        if (e % 2n === 1n) res = (res * b) % mod
-        b = (b * b) % mod
+        if (e % 2n === 1n) res = (res * b) % modVal
+        b = (b * b) % modVal
         e /= 2n
     }
     return res
@@ -40,14 +40,14 @@ function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
 
 // Toy Bilinear Pairing
 function pairing(P: bigint, Q: bigint): bigint {
-    return modPow(G_GEN, mod(P * Q, Q), P)
+    return modPow(G_GEN, modBigInt(P * Q, Q), P)
 }
 
 // Toy Hash-to-Curve
 function hashToCurve(id: string): bigint {
     let hash = 0n
     for (let i = 0; i < id.length; i++) {
-        hash = mod(hash * 31n + BigInt(id.charCodeAt(i)), Q)
+        hash = modBigInt(hash * 31n + BigInt(id.charCodeAt(i)), Q)
     }
     return hash === 0n ? 1n : hash
 }
@@ -97,7 +97,7 @@ function ibeCore(input: string, key: string, doDecrypt: boolean, instrument: boo
         const Q_ID = hashToCurve(identity)
         const r = 123456789n // Toy random
 
-        const U = mod(r, Q) // r * P (where P=1)
+        const U = modBigInt(r, Q) // r * P (where P=1)
 
         // sharedValue = e(Q_ID, P_pub)^r
         const sharedValue = modPow(pairing(Q_ID, P_pub), r, P)

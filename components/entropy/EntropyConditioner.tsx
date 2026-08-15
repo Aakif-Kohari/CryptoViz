@@ -9,7 +9,7 @@ export default function EntropyConditioner() {
   const [targetBias, setTargetBias] = useState<number>(0.65); // Default 65% ones
   const [isHarvesting, setIsHarvesting] = useState<boolean>(false);
   const lastMouseTime = useRef<number>(performance.now());
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasRef = useRef<HTMLDivElement | null>(null);
 
   // Mouse Jitter Entropy Harvester
   useEffect(() => {

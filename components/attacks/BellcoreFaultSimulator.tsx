@@ -1,8 +1,54 @@
 'use client';
 
 import React, { useState } from 'react';
-import { generateRsaCrtKeys, rsaSignCrt, executeBellcoreAttack, RsaCrtKey } from '@/lib/cipher/asymmetric/rsa';
+import { executeBellcoreAttack, computeCrtParameters, decryptCrt, modInverse } from '@/lib/cipher/asymmetric/rsa';
 import { Sparkles, ShieldAlert, Cpu, CheckCircle2, RefreshCw } from 'lucide-react';
+
+interface RsaCrtKey {
+  p: bigint;
+  q: bigint;
+  n: bigint;
+  e: bigint;
+  d: bigint;
+  dp: bigint;
+  dq: bigint;
+  qInv: bigint;
+}
+
+function generateRsaCrtKeys(p: bigint, q: bigint, e: bigint): RsaCrtKey {
+  const n = p * q;
+  const totient = (p - 1n) * (q - 1n);
+  const d = modInverse(e, totient);
+  const crt = computeCrtParameters(p, q, d);
+  return {
+    p,
+    q,
+    n,
+    e,
+    d,
+    dp: crt.dp,
+    dq: crt.dq,
+    qInv: crt.qInv,
+  };
+}
+
+function rsaSignCrt(message: bigint, key: RsaCrtKey, faultInMp: boolean): { signature: bigint; mp: bigint; mq: bigint } {
+  const crtParams = {
+    n: key.n,
+    p: key.p,
+    q: key.q,
+    d: key.d,
+    dp: key.dp,
+    dq: key.dq,
+    qInv: key.qInv,
+  };
+  const dec = decryptCrt(message, crtParams, faultInMp);
+  return {
+    signature: dec.m,
+    mp: dec.mp,
+    mq: dec.mq,
+  };
+}
 
 export default function BellcoreFaultSimulator() {
   const [key, setKey] = useState<RsaCrtKey>(() => generateRsaCrtKeys(61n, 53n, 17n));
@@ -56,14 +102,14 @@ export default function BellcoreFaultSimulator() {
             <div className="grid grid-cols-2 gap-4 text-xs font-mono">
               <div className="p-3 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 space-y-1">
                 <span className="text-neutral-400 font-bold block text-[10px]">Prime $p$ Sub-Ring</span>
-                <div>$d_p = d \pmod{p-1} = {key.dp.toString()}$</div>
-                <div>$m_p = c^{d_p} \pmod{p} = {signatureResult ? signatureResult.mp.toString() : '---'}$</div>
+                <div>$d_p = d \pmod{'{'}p-1{'}'} = {key.dp.toString()}$</div>
+                <div>$m_p = c^{'{'}d_p{'}'} \pmod{'{'}p{'\}'} = {signatureResult ? signatureResult.mp.toString() : '---'}$</div>
               </div>
 
               <div className="p-3 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 space-y-1">
                 <span className="text-neutral-400 font-bold block text-[10px]">Prime $q$ Sub-Ring</span>
-                <div>$d_q = d \pmod{q-1} = {key.dq.toString()}$</div>
-                <div>$m_q = c^{d_q} \pmod{q} = {signatureResult ? signatureResult.mq.toString() : '---'}$</div>
+                <div>$d_q = d \pmod{'{'}q-1{'}'} = {key.dq.toString()}$</div>
+                <div>$m_q = c^{'{'}d_q{'}'} \pmod{'{'}q{'\}'} = {signatureResult ? signatureResult.mq.toString() : '---'}$</div>
               </div>
             </div>
 

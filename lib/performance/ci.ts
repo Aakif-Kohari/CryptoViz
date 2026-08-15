@@ -52,7 +52,7 @@ export class PerformanceCI {
     }
 
     // Compare profiles against baselines
-    const comparisons = BaselineManager.batchCompare(profiles, opts.thresholds)
+    const comparisons = await BaselineManager.batchCompare(profiles, opts.thresholds)
 
     // Categorize results
     const regressions = comparisons.filter((c) => c.regression === 'regression')
