@@ -708,6 +708,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'sosemanuk',
+    name: 'SOSEMANUK',
+    category: 'symmetric',
+    description: 'eSTREAM software-profile finalist (2005). Combines a 10-stage GF(2^32) LFSR with a Serpent-derived nonlinear FSM. Completes the eSTREAM software quartet alongside HC-128, Rabbit, and Salsa20.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000',
+    securityStatus: 'secure',
+    keyPlaceholder: '128/256-bit key as 32/64 hex chars',
+  },
+  {
     id: 'loki97',
     name: 'LOKI97',
     category: 'symmetric',
