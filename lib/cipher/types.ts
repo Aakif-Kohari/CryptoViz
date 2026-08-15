@@ -156,6 +156,7 @@ export type CipherName =
   | 'khufu'
   | 'mickey'
   | 'zuc'
+  | 'sosemanuk'
   | 'loki97'
   | 'shark'
   | 'rc4'
