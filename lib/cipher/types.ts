@@ -229,6 +229,7 @@ export type CipherName =
   | 'has160'
   | 'panama'
   | 'blake'
+  | 'kupyna'
   | 'poly1305'
   | 'hmac'
   | 'cmac'
