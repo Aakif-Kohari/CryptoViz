@@ -88,6 +88,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/pipeline/",
   "/pqc-lattices/",
   "/protocols/",
+  "/protocols/webauthn/",
   "/protocols/zero-knowledge/",
   "/quality/reliability/",
   "/quantum-cryptanalysis/",

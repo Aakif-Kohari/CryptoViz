@@ -93,6 +93,7 @@ const PRECACHE_URLS = [
   "/pipeline/",
   "/pqc-lattices/",
   "/protocols/",
+  "/protocols/webauthn/",
   "/protocols/zero-knowledge/",
   "/quality/reliability/",
   "/quantum-cryptanalysis/",
