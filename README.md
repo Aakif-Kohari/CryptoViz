@@ -295,12 +295,17 @@ Ensure you have the following installed before launching:
    ```bash
    git clone https://github.com/csxark/CryptoViz.git
    cd CryptoViz
-   ```
+    ```
 
-2. **Install node dependencies**:
+2.  **Install node dependencies**:
    ```bash
    npm install
    ```
+
+   ![Successful npm install](./docs/screenshots/npm-install-success.png)
+
+   *Successful dependency installation using `npm install`.*
+
 
 3. **Configure Environment Variables** (Required for OG metadata):
    Create a `.env.local` file in the root directory:
@@ -312,8 +317,13 @@ Ensure you have the following installed before launching:
    ```bash
    npm run dev
    ```
+  ![Running development server](./docs/screenshots/npm-run-dev.png)
 
 Open `http://localhost:3000` in your web browser. You should see the CryptoViz landing page with the navigation bar and theme toggle fully functional.
+
+![CryptoViz landing page](./docs/screenshots/cryptoviz-landing-page.png)
+
+*CryptoViz running locally at `http://localhost:3000`.*
 
 ---
 

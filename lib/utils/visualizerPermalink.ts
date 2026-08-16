@@ -1,5 +1,7 @@
 export const STEP_QUERY_PARAM = 'step'
 
+export const VISUALIZER_PERMALINK_MAX_LENGTH = 4096
+
 export interface VisualizerPermalinkState {
   input: string
   key: string
@@ -44,6 +46,19 @@ function parseInteger(value: string | null): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined
 }
 
+function sanitizePermalinkText(value: string | null): string {
+  if (value === null) return ''
+
+  return sanitizeCryptoInput(value, {
+    maxLength: VISUALIZER_PERMALINK_MAX_LENGTH,
+    allowNewlines: false,
+    trim: true,
+    collapseWhitespace: true,
+  }).value
+}
+
+import { sanitizeCryptoInput } from '@/lib/security/inputSanitization'
+
 export function clampStepIndex(index: number, stepCount: number): number {
   if (!Number.isFinite(index) || stepCount <= 0) return 0
   return Math.min(Math.max(Math.trunc(index), 0), stepCount - 1)
@@ -58,8 +73,12 @@ export function parseVisualizerPermalink(
   const rawRounds = parseInteger(params.get('rounds'))
 
   return {
-    input: params.has('input') ? params.get('input') ?? '' : undefined,
-    key: params.has('key') ? params.get('key') ?? '' : undefined,
+    input: params.has('input')
+      ? sanitizePermalinkText(params.get('input'))
+      : undefined,
+    key: params.has('key')
+      ? sanitizePermalinkText(params.get('key'))
+      : undefined,
     direction:
       direction === 'encrypt' || direction === 'decrypt'
         ? direction
@@ -74,11 +93,11 @@ export function parseVisualizerPermalink(
           : Math.min(Math.max(rawRounds, 4), 31),
       demoMode: parseBoolean(params.get('demoMode')),
       bobSecret: params.has('bobSecret')
-        ? params.get('bobSecret') ?? ''
+        ? sanitizePermalinkText(params.get('bobSecret'))
         : undefined,
       padding: parseBoolean(params.get('padding')),
       aesMode: params.has('aesMode')
-        ? params.get('aesMode') ?? ''
+        ? sanitizePermalinkText(params.get('aesMode'))
         : undefined,
       autoCompute: parseBoolean(params.get('autoCompute')),
     },
@@ -105,7 +124,10 @@ export function buildVisualizerPermalink(
     url.searchParams.set('aesMode', state.options.aesMode)
   }
   if (state.options.autoCompute !== undefined) {
-    url.searchParams.set('autoCompute', state.options.autoCompute ? '1' : '0')
+    url.searchParams.set(
+      'autoCompute',
+      state.options.autoCompute ? '1' : '0',
+    )
   }
   return url.toString()
 }

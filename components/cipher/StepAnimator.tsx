@@ -352,6 +352,34 @@ const StepAnimator = memo(function StepAnimator({
             </table>
           </div>
         )}
+
+        {/* Inline S-box inspector */}
+        {step.sboxInspection && (
+          <div className="mt-3">
+            {!showSBoxInspector ? (
+              <button
+                type="button"
+                onClick={() => setShowSBoxInspector(true)}
+                className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-700 transition-colors hover:border-teal-400 hover:bg-teal-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-teal-500 dark:hover:bg-teal-950/30"
+              >
+                <span className="font-mono">Inspect S-box</span>
+                <svg className="h-3 w-3 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            ) : (
+              <InlineSBoxInspector
+                family={step.sboxInspection.family}
+                desIndex={step.sboxInspection.desIndex}
+                serpentIndex={step.sboxInspection.serpentIndex}
+                inputValue={step.sboxInspection.inputValue}
+                initiallyExpanded={true}
+                onClose={() => setShowSBoxInspector(false)}
+                compact={true}
+              />
+            )}
+          </div>
+        )}
       </div>
 
       {/* Timeline */}

@@ -8,6 +8,7 @@ const eslintConfig = defineConfig([
   {
     rules: {
       "no-console": "warn",
+      "react/no-danger": "error",
     },
   },
   // Override default ignores of eslint-config-next.

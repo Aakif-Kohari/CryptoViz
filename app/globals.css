@@ -172,3 +172,49 @@ textarea:focus-visible {
   outline: 2px solid #ffffff;
   outline-offset: 2px;
 }
+
+/* Zen Presentation Mode */
+body:has(.zen-mode-active) {
+  overflow: hidden !important;
+}
+
+.zen-mode-active {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow-y: auto !important;
+  background-color: var(--background) !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 1.5rem 5vw !important;
+}
+
+.dark .zen-mode-active {
+  background-color: #09090b !important;
+}
+
+.zen-mode-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2rem !important;
+}
+
+@media (min-width: 1024px) {
+  .zen-mode-grid {
+    display: grid !important;
+    grid-template-columns: 350px 1fr !important;
+  }
+}
+
+.zen-mode-visualizer {
+  flex: 1;
+}
+
+/* Increase matrix and visualization size inside zen mode */
+.zen-mode-active .matrix-cell,
+.zen-mode-active .viz-text {
+  font-size: 1.1em;
+  padding: 0.5rem;
+}
