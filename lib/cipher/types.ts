@@ -197,6 +197,7 @@ export type CipherName =
   | 'boneh-franklin-ibe'
   | 'regev-lwe'
   | 'sqisign'
+  | 'rainbow'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
