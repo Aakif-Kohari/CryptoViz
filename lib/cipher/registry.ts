@@ -1154,6 +1154,28 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
       { name: 'Output Length (bits)', id: 'outputBits', type: 'select', default: 256, choices: [{label: '256', value: 256}, {label: '512', value: 512}] }
     ]
   },
+  {
+    id: 'radiogatun',
+    name: 'RadioGatun',
+    category: 'hash',
+    description: 'Sponge-construction hash (Bertoni, Daemen, Peeters, Van Assche, 2006). DIRECT PREDECESSOR TO KECCAK (SHA-3 winner). Introduced the sponge construction in essentially final form: mill (small nonlinear state) + belt (larger diffusion array). Distinct from Panama (different state shape, dual hash/stream mode). No successful attack documented. Status: secure.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+    options: [
+      {
+        name: 'Output Length (bits)',
+        id: 'outputBits',
+        type: 'select',
+        default: 256,
+        choices: [
+          { label: '128', value: 128 },
+          { label: '256', value: 256 },
+          { label: '512', value: 512 },
+        ]
+      }
+    ],
+  },
   // Asymmetric
   {
     id: "rsa",
