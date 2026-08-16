@@ -328,6 +328,11 @@ export function encrypt(plaintext: string, key: string, options?: CipherOptions)
         inputState: r.input,
         outputState: r.afterLinearTransform,
         isMilestone: r.round % 4 === 0,
+        sboxInspection: {
+          family: 'serpent',
+          serpentIndex: r.sbox,
+          inputValue: `0x${parseInt(r.input.slice(0, 1), 16).toString(16)}`,
+        },
       });
     });
   }

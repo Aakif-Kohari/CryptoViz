@@ -1,6 +1,7 @@
 /**
  * Auto-generated precache routes manifest.
- * Last Generated: 2026-08-14T09:07:39.273Z
+ * Last Generated: 2026-08-14T17:52:19.063Z
+ * Last Generated: 2026-08-14T17:03:17.427Z
  */
 export const PRECACHE_ROUTES: string[] = [
   "/",
@@ -88,6 +89,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/pipeline/",
   "/pqc-lattices/",
   "/protocols/",
+  "/protocols/webauthn/",
   "/protocols/zero-knowledge/",
   "/quality/reliability/",
   "/quantum-cryptanalysis/",

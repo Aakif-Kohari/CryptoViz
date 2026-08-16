@@ -390,6 +390,10 @@ function aesInstrumented(
             inputState: fromByteArray(stateBeforeSub, 'hex'),
             outputState: fromByteArray(state, 'hex'),
             note: 'Substituted state bytes using Rijndael S-box.',
+            sboxInspection: {
+              family: 'aes',
+              inputValue: `0x${stateBeforeSub[0].toString(16).padStart(2, '0')}`,
+            },
           })
 
           // ShiftRows
@@ -436,6 +440,10 @@ function aesInstrumented(
           inputState: fromByteArray(stateBeforeSubFinal, 'hex'),
           outputState: fromByteArray(state, 'hex'),
           note: 'Substituted final state bytes using Rijndael S-box.',
+          sboxInspection: {
+            family: 'aes',
+            inputValue: `0x${stateBeforeSubFinal[0].toString(16).padStart(2, '0')}`,
+          },
         })
 
         const stateBeforeShiftFinal = new Uint8Array(state)
@@ -489,6 +497,10 @@ function aesInstrumented(
           inputState: fromByteArray(stateBeforeSubDec, 'hex'),
           outputState: fromByteArray(state, 'hex'),
           note: 'Substituted state bytes using Rijndael Inverse S-box.',
+          sboxInspection: {
+            family: 'aes-inv',
+            inputValue: `0x${stateBeforeSubDec[0].toString(16).padStart(2, '0')}`,
+          },
         })
 
         for (let r = nRounds - 1; r >= 1; r--) {
@@ -532,6 +544,10 @@ function aesInstrumented(
             outputState: fromByteArray(state, 'hex'),
             note: 'Substituted state bytes using Rijndael Inverse S-box.',
             isMilestone: r === nRounds - 1 || r === 1,
+            sboxInspection: {
+              family: 'aes-inv',
+              inputValue: `0x${stateBeforeSubDecRound[0].toString(16).padStart(2, '0')}`,
+            },
           })
         }
 
