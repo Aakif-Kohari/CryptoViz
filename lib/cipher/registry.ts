@@ -1142,6 +1142,18 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '',
     securityStatus: 'secure',
   },
+  {
+    id: 'kupyna',
+    name: 'Kupyna',
+    category: 'hash',
+    description: 'Ukrainian national hash standard (DSTU 7564:2014). Uses Kalyna\'s SPN round structure in a Davies-Meyer construction. Completes the Ukrainian national suite alongside Kalyna.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+    options: [
+      { name: 'Output Length (bits)', id: 'outputBits', type: 'select', default: 256, choices: [{label: '256', value: 256}, {label: '512', value: 512}] }
+    ]
+  },
   // Asymmetric
   {
     id: "rsa",
