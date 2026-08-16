@@ -50,6 +50,7 @@ const DHVisualizer = dynamic(() => import('./DHVisualizer'), { ssr: false })
 const HmacVisualizer = dynamic(() => import('./HmacVisualizer'), { ssr: false })
 const Sm3Visualizer = dynamic(() => import('./Sm3Visualizer'), { ssr: false })
 const UniversalCipherDebugger = dynamic(() => import('./UniversalCipherDebugger'), { ssr: false })
+import ZenModeToggle from './ZenModeToggle'
 
 interface CipherLayoutProps {
   cipher: CipherDefinition;
@@ -117,6 +118,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     scopes: {},
   }));
   const [stepNoteInput, setStepNoteInput] = useState("");
+  const [isZenMode, setIsZenMode] = useState(false);
   const [securityMetrics, setSecurityMetrics] = useState(() => 
     calculateSecurityMetrics(cipher, { keySize: parseKeySize(cipher, cipher.defaultKey) })
   );
@@ -126,6 +128,32 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   useEffect(() => {
     setAnnotationStore(loadStepAnnotationStore())
   }, [])
+
+  const handleZenModeToggle = () => {
+    setIsZenMode(prev => {
+      const next = !prev;
+      if (next) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } else {
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && isZenMode) {
+        setIsZenMode(false);
+      }
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, [isZenMode]);
 
   // Restore a shared visualizer configuration from the URL (runs once per cipher).
   useEffect(() => {
@@ -621,9 +649,9 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   };
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-6 px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8">
+    <div className={`mx-auto flex max-w-7xl flex-col gap-6 px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8 ${isZenMode ? 'zen-mode-active' : ''}`}>
       {/* Title & Metadata Card */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 pb-5 dark:border-zinc-800">
+      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 pb-5 dark:border-zinc-800 ${isZenMode ? 'zen-mode-header' : ''}`}>
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-white sm:text-3xl">
             {cipher.name}
@@ -633,6 +661,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <ZenModeToggle isZenMode={isZenMode} onToggle={handleZenModeToggle} />
           <CipherLifecycleBadge status={cipher.securityStatus} size="sm" />
           <span className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
             {cipher.category}
@@ -648,6 +677,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         </div>
       </div>
 
+      <div className={`grid grid-cols-1 items-start gap-5 md:gap-6 lg:grid-cols-12 lg:gap-8 ${isZenMode ? 'zen-mode-grid' : ''}`}>
       {/* Security Strength Card */}
       <SecurityStrengthCard 
         metrics={securityMetrics} 
@@ -656,7 +686,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
 
       <div className="grid grid-cols-1 items-start gap-5 md:gap-6 lg:grid-cols-12 lg:gap-8">
         {/* Controls Column (Left) */}
-        <div className="flex flex-col gap-6 lg:col-span-5">
+        <div className={`flex flex-col gap-6 lg:col-span-5 ${isZenMode ? 'zen-mode-controls' : ''}`}>
           {cipher.category !== "hash" && cipher.id !== "dh" && (
             <div className="flex rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-800/80">
               <button
@@ -911,7 +941,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         </div>
 
         {/* Output & Trace Column (Right) */}
-        <div className="flex flex-col gap-6 lg:col-span-7">
+        <div className={`flex flex-col gap-6 lg:col-span-7 ${isZenMode ? 'zen-mode-visualizer' : ''}`}>
           <div className="flex rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-800/80">
             <button
               onClick={() => setActiveTab("result")}
@@ -1069,7 +1099,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           ) : null}
         </div>
       </div>
-      <WhereIsThisUsed cipherId={cipher.id} />
+      {!isZenMode && <WhereIsThisUsed cipherId={cipher.id} />}
     </div>
   );
 }
