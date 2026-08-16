@@ -28,6 +28,17 @@ export interface CipherStep {
   note?: string
   /** True for major steps (show in summary mode) */
   isMilestone?: boolean
+  /** S-box inspection metadata for inline S-box inspector */
+  sboxInspection?: {
+    /** S-box family (aes, des, camellia, serpent, sm4) */
+    family: 'aes' | 'aes-inv' | 'des' | 'camellia' | 'serpent' | 'sm4'
+    /** For DES: which S-box index (0-7) */
+    desIndex?: number
+    /** For Serpent: which S-box index (0-7) */
+    serpentIndex?: number
+    /** Input value to highlight in the S-box (as hex string) */
+    inputValue?: string
+  }
 }
 
 export interface CipherResult {
@@ -70,6 +81,10 @@ export interface CipherOptions {
   dkLen?: number
   salt?: string
   iterations?: number
+  incrementalCache?: {
+    input: string
+    result: CipherResult
+  }
   [key: string]: unknown
 }
 
@@ -132,7 +147,19 @@ export type CipherName =
   | 'safer-plus'
   | 'aria'
   | 'kasumi'
+  | 'grain128'
   | '3way'
+  | 'a5-1'
+  | 'lucifer'
+  | 'deal'
+  | 'des-x'
+  | 'khufu'
+  | 'mickey'
+  | 'kalyna'
+  | 'zuc'
+  | 'sosemanuk'
+  | 'loki97'
+  | 'shark'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
@@ -164,6 +191,12 @@ export type CipherName =
   | 'cramer-shoup'
   | 'sm2'
   | 'kcdsa'
+  | 'goldwasser-micali'
+  | 'ggh'
+  | 'bls'
+  | 'boneh-franklin-ibe'
+  | 'regev-lwe'
+  | 'sqisign'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
@@ -193,7 +226,14 @@ export type CipherName =
   | 'jh'
   | 'ripemd128'
   | 'haval'
+  | 'md2'
   | 'gost-r34-11-94'
+  | 'n-hash'
+  | 'snefru'
+  | 'has160'
+  | 'panama'
+  | 'blake'
+  | 'kupyna'
   | 'poly1305'
   | 'hmac'
   | 'cmac'

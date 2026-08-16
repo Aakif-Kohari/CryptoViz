@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { sharedCipherPool } from '@/lib/workers/sharedPool'
 import { describePbkdf2Stages, estimateOfflineCrackYears, OWASP_MIN_ITERATIONS, type Pbkdf2StageStep } from '@/lib/kdf/pbkdf2Trace'
 import type { WorkerRequest } from '@/types/worker'
@@ -39,23 +39,74 @@ export default function Pbkdf2Visualizer() {
   const [stages, setStages] = useState<Pbkdf2StageStep[]>([])
   const [derivedKeyHex, setDerivedKeyHex] = useState<string | null>(null)
   const [saltHex, setSaltHex] = useState<string | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
+
+  // Clear sensitive state on component unmount
+  useEffect(() => {
+    return () => {
+      // Abort any pending KDF operations
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+      // Clear password state
+      setPassword('')
+      // Clear derived key material
+      setDerivedKeyHex(null)
+      setSaltHex(null)
+      // Clear dependent output
+      setStages([])
+      setError(null)
+    }
+  }, [])
 
   async function handleDerive() {
     setError(null)
     setLoading(true)
     setDerivedKeyHex(null)
+    
+    // Abort any previous derivation
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+    
+    const controller = new AbortController()
+    abortControllerRef.current = controller
+    
     try {
       const salt = randomSaltHex()
       const { derivedKeyHex: keyHex } = await deriveKeyViaWorker(password, { iterations, hash, keyLength, salt })
-      setSaltHex(salt)
-      setDerivedKeyHex(keyHex)
-      setStages(describePbkdf2Stages({ passwordLength: password.length, saltHex: salt, iterations, hash, keyLength }))
+      
+      if (!controller.signal.aborted) {
+        setSaltHex(salt)
+        setDerivedKeyHex(keyHex)
+        setStages(describePbkdf2Stages({ passwordLength: password.length, saltHex: salt, iterations, hash, keyLength }))
+      }
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return
+      }
       setError(err instanceof Error ? err.message : 'Something went wrong.')
     } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null
+      }
       setLoading(false)
     }
   }
+
+  const handleClearPassword = useCallback(() => {
+    setPassword('')
+    // Clear derived key material
+    setDerivedKeyHex(null)
+    setSaltHex(null)
+    // Clear dependent output
+    setStages([])
+    setError(null)
+    // Abort any pending operations
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+  }, [])
 
   const meetsOwasp = iterations >= OWASP_MIN_ITERATIONS[hash]
   const crackYears = estimateOfflineCrackYears(iterations, 2 ** 40) // demo: assumes a 40-bit-strength password
@@ -66,7 +117,17 @@ export default function Pbkdf2Visualizer() {
         <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-white">Derive a key with PBKDF2</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <label htmlFor="password" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Password</label>
+            <div className="flex items-center justify-between">
+              <label htmlFor="password" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Password</label>
+              <button
+                type="button"
+                onClick={handleClearPassword}
+                aria-label="Clear password"
+                className="text-xs font-medium text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
+              >
+                Clear Password
+              </button>
+            </div>
             <input
               id="password"
               type="text"

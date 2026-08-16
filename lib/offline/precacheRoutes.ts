@@ -1,7 +1,7 @@
 /**
  * Auto-generated precache routes manifest.
- * Last Generated: 2026-08-10T01:15:44.707Z
- * Last Generated: 2026-08-10T01:04:50.024Z
+ * Last Generated: 2026-08-14T17:52:19.063Z
+ * Last Generated: 2026-08-14T17:03:17.427Z
  */
 export const PRECACHE_ROUTES: string[] = [
   "/",
@@ -9,6 +9,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/attacks/",
   "/attacks/birthday-attack/",
   "/attacks/brute-force/",
+  "/attacks/dh-mitm/",
   "/attacks/dictionary/",
   "/attacks/differential-cryptanalysis/",
   "/attacks/ecb-leakage/",
@@ -43,6 +44,8 @@ export const PRECACHE_ROUTES: string[] = [
   "/cipher-sandbox/",
   "/collections/",
   "/compare/",
+  "/cryptanalysis/sbox/",
+  "/dashboard/",
   "/demo/reed-solomon/",
   "/docs/",
   "/docs/architecture/",
@@ -57,6 +60,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/finite-field/",
   "/globals.css",
   "/glossary/",
+  "/homomorphic/",
   "/icon.svg",
   "/interoperability-test-lab/",
   "/interview/",
@@ -83,9 +87,12 @@ export const PRECACHE_ROUTES: string[] = [
   "/openpgp/",
   "/padding/",
   "/pipeline/",
+  "/pqc-lattices/",
   "/protocols/",
+  "/protocols/webauthn/",
   "/protocols/zero-knowledge/",
   "/quality/reliability/",
+  "/quantum-cryptanalysis/",
   "/rainbow-table/",
   "/reference/",
   "/resources/",
@@ -102,6 +109,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/tests/snapshots/",
   "/tests/worker/",
   "/theme-init.js",
+  "/threshold-crypto/",
   "/timeline/",
   "/visualizer/",
   "/visualizer/aes-key-expansion/",

@@ -530,3 +530,87 @@
 [#962] (open) by @csxark: `components/cipher-sandbox/CipherSandbox.tsx` missing closing brace
 [#961] (open) by @csxark: `app/not-found.tsx` has unclosed JSX expression causing compilation failure
 [#960] (open) by @csxark: `app/docs/page.tsx` has stray `]` causing 27 cascading TypeScript errors
+
+=== Audited 2026-08-12 08:43 UTC (6 new) ===
+[#1008] (open) by @Aakif-Kohari: [FEATURE] Add N-Hash function (NTT Japan, FEAL-lineage design, completes FEAL-family hash/cipher pairing)
+[#1007] (open) by @Aakif-Kohari: [FEATURE] Add HAS-160 hash function (Korean national standard, completes KCDSA's originally-intended hash pairing)
+[#1006] (open) by @Aakif-Kohari: [FEATURE] Add BLS signatures (Boneh-Lynn-Shacham, pairing-based, aggregatable, novel bilinear-pairing mathematics, blockchain-relevant)
+[#1005] (open) by @Aakif-Kohari: [FEATURE] Add A5/1 stream cipher (GSM voice encryption, LFSR-based, historically broken, completes GSM generation story with KASUMI)
+[#1004] (open) by @Aakif-Kohari: [FEATURE] Add Khufu block cipher (Merkle, 1990, key-dependent S-boxes, byte-oriented Feistel, completes Merkle cryptographic-designs trilogy)
+[#988] (closed) by @Chigael: Fix `cspContainsUnsafeInline()` CSP Grammar Detection
+
+=== Audited 2026-08-12 17:29 UTC (10 new) ===
+[#1031] (open) by @Ayush-0918: [BUG]: Use CipherError for unsupported cipher IDs in cipher worker
+[#1030] (open) by @Ayush-0918: [BUG]: Prevent favorite cipher change events after storage failure
+[#1029] (open) by @Ayush-0918: [BUG]: Make SHA-1 decrypt() correctly reject one-way hash decryption
+[#1028] (open) by @Ayush-0918: [BUG]: Fix generateKey() producing incorrect hex key length
+[#1027] (open) by @Ayush-0918: [BUG]: Fix XChaCha20 switch fallthrough and duplicate XSalsa20 import
+[#1026] (open) by @Aakif-Kohari: [FEATURE] Add Panama hash/stream design (Daemen & Clapp, 1998, dual-mode primitive, completes Daemen design trilogy with 3-Way and Square)
+[#1025] (open) by @Aakif-Kohari: [FEATURE] Add GGH lattice cryptosystem (Goldreich-Goldwasser-Halevi, 1997, broken lattice scheme, teaching complement to secure NTRU/ML-KEM)
+[#1024] (open) by @Aakif-Kohari: [FEATURE] Add Boneh-Franklin Identity-Based Encryption (pairing-based, public key = arbitrary identity string, novel category)
+[#1023] (open) by @Aakif-Kohari: [FEATURE] Add DEAL block cipher (AES candidate that uses DES as its own round function, direct reuse of existing des.ts)
+[#1022] (open) by @Aakif-Kohari: [FEATURE] Add ZUC stream cipher (Chinese national standard, GB/T 33133, used in 4G LTE encryption, completes SM2+SM3+SM4+ZUC national suite)
+
+=== Audited 2026-08-12 21:56 UTC (16 new) ===
+[#1051] (open) by @csxark: Accessible Audio & Tactile Mathematical Representation for Cryptographic Visualizations
+[#1050] (open) by @csxark: Universal Cipher Plugin & Automated Test-Vector Verification Harness
+[#1049] (open) by @csxark: Information-Theoretic Security & Shannon Entropy Workbench
+[#1048] (open) by @csxark: Threshold Cryptography & Distributed Key Generation (DKG) Interactive Simulator
+[#1046] (open) by @csxark: Automated Cryptanalysis & Hill-Climbing Language Model Workbench
+[#1045] (open) by @csxark: Microarchitectural Power & Cache Timing Side-Channel Waveform Analyzer
+[#1044] (open) by @csxark: Real-World Cryptographic Code Misuse & Vulnerability Audit Sandbox
+[#1043] (open) by @csxark: Bilinear Pairing Mathematics & Identity-Based Encryption (IBE) Formalism Visualizer
+[#1042] (open) by @csxark: Universal Step-by-Step Algorithmic Debugger & State Matrix Inspector
+[#1041] (open) by @csxark: Visual Node-Based Cryptographic DAG Pipeline Canvas
+[#1040] (open) by @csxark: Interactive Provable Security & IND-CPA/IND-CCA Game Simulator
+[#1039] (open) by @csxark: Probabilistic Primality Testing & Prime Generation Laboratory (Miller-Rabin & Baillie-PSW)
+[#1038] (open) by @csxark: Geometric Lattice Cryptography & LWE/Ring-LWE Problem Visualizer
+[#1037] (open) by @csxark: CRT Decryption Acceleration & Bellcore Fault Attack Simulator
+[#1036] (open) by @Gunjan10-droid: [FEATURE]: Add Cryptographic Nonce & IV Lifecycle Lab
+[#1034] (open) by @csxark: Interactive Galois Field $GF(2^8)$ Polynomial Arithmetic & S-Box Derivation Laboratory
+
+=== Audited 2026-08-13 19:04 UTC (15 new) ===
+[#1069] (open) by @csxark: Real-Time Algorithmic Audio Sonification Engine
+[#1068] (open) by @csxark: Interactive DAG Cryptography Prerequisite Knowledge Explorer
+[#1067] (open) by @csxark: Memory-Hard KDF Hardware Resource Trade-Off Simulator
+[#1066] (open) by @csxark: Multi-Dimensional Hardware Cryptography Radar Profiler
+[#1065] (open) by @csxark: Digital Steganography & Covert Channel Workbench
+[#1064] (open) by @csxark: Formal Security Protocol State Machine & BAN Logic Inspector
+[#1063] (closed) by @csxark: S-Box Difference Distribution (DDT) & LAT Cryptanalysis Workbench
+[#1062] (closed) by @csxark: Quantum Shor's & Grover's Circuit Visualizer
+[#1061] (closed) by @csxark: Key Exchange MitM Interception & Substitution Simulator
+[#1060] (open) by @csxark: Naor-Shamir Visual Cryptography & Optical Secret Sharing
+[#1059] (open) by @csxark: Ring-LWE & Module-LWE Polynomial Ring NTT Laboratory
+[#1058] (open) by @csxark: Physical Entropy Harvesting & Min-Entropy Conditioner Laboratory
+[#1057] (open) by @csxark: KZG Polynomial Commitment & Bilinear Pairing Visualizer
+[#1056] (closed) by @csxark: Homomorphic Encrypted Computation Workbench
+[#1055] (open) by @csxark: Interactive Group Theory & Discrete Logarithm Laboratory
+
+=== Audited 2026-08-13 22:20 UTC (27 new) ===
+[#1121] (open) by @csxark: Academic LaTeX & Markdown Mathematical Derivation Exporter for Cipher States
+[#1120] (open) by @csxark: Live Cryptographic Weak-Parameter & Known-Weak-Key Detection Engine in Playground
+[#1119] (open) by @csxark: Standardized Visualizer Component Contract Test Harness (`testVisualizerContract`)
+[#1118] (open) by @csxark: Resizable Split-Pane Workspaces, Presentation/Zen Mode, and Configurable Panel Layouts
+[#1117] (open) by @csxark: Custom Cryptographic Challenge Creator & Sharable Classroom Quiz Suite
+[#1116] (open) by @csxark: Interactive Inline S-Box Inspector & Algebraic Property Tooltip within Block Cipher Round Steps
+[#1115] (open) by @csxark: Centralized Cryptographic Diagnostic & Remediation Engine with Interactive Mathematical Hints
+[#1114] (open) by @csxark: LRU Bounded Cache with WeakRef Memory Eviction & Step State Virtualization for High-Step Traces
+[#1113] (open) by @csxark: Unified Property-Based Fuzzing Suite using fast-check for All Symmetric & Classical Ciphers
+[#1112] (open) by @csxark: StepAnimator ARIA Live-Region & Semantic Slider Focus Management System
+[#1111] (open) by @csxark: Self-Contained Interactive Cryptographic Lesson / Annotated Trace Package (`.cryptoviz`) with Playback & Verification
+[#1110] (open) by @csxark: Contextual Security Strength & Quantum Resistance Card with Dynamic Cost-to-Break Calculator
+[#1109] (open) by @csxark: Interactive Oracle Query Inspector & Step-by-Step Attack Stepper for Cryptanalysis Simulators
+[#1108] (open) by @csxark: Unified Web Worker Priority Queue with Chunked Progress Streaming
+[#1107] (open) by @csxark: Multi-Payload Scaling Benchmark Curve & Algorithmic Complexity Estimator
+[#1106] (open) by @csxark: Full Registry Integration and Type-Safe Execution Engine in Cipher Pipeline Builder
+[#1105] (open) by @csxark: Interactive Bit-Level Diff Heatmap & Hamming Distance Analyzer in Cipher Comparison Panel
+[#1104] (open) by @csxark: Dynamic Parameter & Domain Key Validation Assistant for Asymmetric & Post-Quantum Schemes
+[#1103] (open) by @csxark: Hash & MAC Sponge Construction Interactive Visualizer (SHA-3/Keccak, Ascon, Skein)
+[#1102] (open) by @csxark: Bi-Directional Multi-Format Input/Output Inspector with Endianness & Bit Breakdown
+[#1101] (open) by @csxark: Stream Cipher State Evolution & Shift-Register Pipeline Visualizer
+[#1100] (open) by @csxark: Interactive Polyalphabetic Tableau & Transposition Matrix Visualizers in Visualizer Workspace
+[#1099] (open) by @Aakif-Kohari: [FEATURE] Add DES-X (Rivest's key-whitening extension of DES, reuses existing des.ts, demonstrates the whitening technique)
+[#1098] (open) by @Aakif-Kohari: [FEATURE] Add original BLAKE hash function (2008 SHA-3 finalist, HAIFA/ChaCha-based, distinct from the already-present BLAKE2/BLAKE3 derivatives)
+[#1097] (open) by @Aakif-Kohari: [FEATURE] Add Regev's LWE encryption scheme (2005, foundational textbook lattice cryptosystem, predecessor teaching-version to ML-KEM)
+[#1096] (open) by @Aakif-Kohari: [FEATURE] Add MICKEY-128 stream cipher (eSTREAM hardware profile finalist, dual clock-controlled registers, completes eSTREAM hardware trio)
+[#1095] (open) by @Aakif-Kohari: [FEATURE] Add LOKI97 block cipher (Australian AES candidate, GF(2^64) exponentiation-based nonlinearity, complex dual-branch F-function)
