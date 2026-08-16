@@ -741,6 +741,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
   },
   {
+    id: 'seal',
+    name: 'SEAL',
+    category: 'symmetric',
+    description: 'Software-optimized stream cipher (Rogaway & Coppersmith, 1993). Implements SEAL 3.0 (corrected). All cryptographic work front-loaded into one-time SHA-1-derived table setup; keystream generation is pure table lookup with ZERO further mixing. Contrasts with HC-128\'s self-updating tables. Status: legacy (age, fixed 160-bit key).',
+    defaultKey: '0000000000000000000000000000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '160-bit key as 40 hex chars',
+    keySize: '160',
+  },
+  {
     id: 'shark',
     name: 'SHARK',
     category: 'symmetric',
