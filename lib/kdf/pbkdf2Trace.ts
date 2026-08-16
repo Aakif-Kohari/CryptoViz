@@ -102,8 +102,6 @@ export const OWASP_MIN_ITERATIONS: Record<
 /**
  * Illustrative GPU rate.
  *
- * This is deliberately NOT a benchmark of a particular GPU.
- *
  * It represents the educational model:
  *
  *   effective guesses/sec
@@ -389,11 +387,7 @@ export async function generatePbkdf2MicroTrace(
       )
     }
 
-    const u = await hmac(
-      key,
-      hmacInput,
-    )
-
+    const u = await hmac(key, hmacInput)
     const accumulatorBefore =
       accumulator
         ? new Uint8Array(accumulator)
@@ -432,7 +426,6 @@ export async function generatePbkdf2MicroTrace(
 
       hmacInputHex:
         bytesToHex(hmacInput),
-
       uHex: bytesToHex(u),
 
       accumulatorBeforeHex:
@@ -469,9 +462,7 @@ export async function generatePbkdf2MicroTrace(
       normalizedSalt,
 
     hash,
-
     sampleIterations,
-
     steps,
 
     finalAccumulatorHex:
