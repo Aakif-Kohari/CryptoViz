@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import { useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import type { CipherDefinition, CipherOptionValue } from '../../lib/cipher/registry'
@@ -211,6 +212,24 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       }
     };
   }, [cipher]);
+
+  // Clear sensitive state on component unmount
+  useEffect(() => {
+    return () => {
+      // Abort any pending operations
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      // Clear sensitive key/passphrase state
+      setKey('');
+      // Clear derived/execution state that may contain sensitive key material
+      setResult(null);
+      setError(null);
+      setDiagnostic(null);
+      // Clear bobSecret if it's sensitive
+      setBobSecret('');
+    };
+  }, []);
 
   const workspaceOptions: Record<string, unknown> = {
     hexInput,
@@ -581,6 +600,18 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     await navigator.clipboard.writeText(permalink)
   }
 
+  const handleClearKey = useCallback(() => {
+    setKey('');
+    // Clear dependent execution/output state
+    setResult(null);
+    setError(null);
+    setDiagnostic(null);
+    // If bobSecret is sensitive, clear it too
+    if (cipher.id === 'dh') {
+      setBobSecret('');
+    }
+  }, [cipher.id]);
+
   const traceOptions: Record<string, unknown> = {
     hexInput,
     rounds,
@@ -678,15 +709,25 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               </div>
             ) : cipher.defaultKey !== undefined && (
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                  {cipher.id === "ecc"
-                    ? action === "encrypt"
-                      ? "Private Key (Hex)"
-                      : "Signature, Public Key (comma separated)"
-                    : cipher.id === "dh"
-                      ? "Alice Private Secret (a) & Public Parameters (p, g)"
-                      : "Cryptographic Key / Shift"}
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                    {cipher.id === "ecc"
+                      ? action === "encrypt"
+                        ? "Private Key (Hex)"
+                        : "Signature, Public Key (comma separated)"
+                      : cipher.id === "dh"
+                        ? "Alice Private Secret (a) & Public Parameters (p, g)"
+                        : "Cryptographic Key / Shift"}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleClearKey}
+                    aria-label="Clear key"
+                    className="text-xs font-medium text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
+                  >
+                    Clear Key
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={key}
@@ -720,9 +761,19 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
 
             {cipher.id === "dh" && (
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                  Bob Private Secret (b)
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                    Bob Private Secret (b)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setBobSecret('')}
+                    aria-label="Clear Bob secret"
+                    className="text-xs font-medium text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
+                  >
+                    Clear
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={bobSecret}
