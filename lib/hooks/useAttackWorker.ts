@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { WorkerPool } from '../workers/pool'
 import type { AttackStep, OracleMode } from '../attacks/paddingOracle'
+import type { MitmResult, MitmStep } from '../attacks/meetInTheMiddle'
 
 export function useAttackWorker() {
   const poolRef = useRef<WorkerPool | null>(null)
@@ -122,6 +123,42 @@ export function useAttackWorker() {
     }
   }, [])
 
+  const runMitmAttack = useCallback(async (
+    plaintextHex: string,
+    ciphertextHex: string,
+    keySpaceBits: number,
+    onStep?: (step: MitmStep) => void
+  ): Promise<MitmResult> => {
+    if (!poolRef.current) throw new Error('Worker pool not initialized')
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const result = await poolRef.current.execute(
+        {
+          type: 'runMitmAttack',
+          payload: {
+            plaintextHex,
+            ciphertextHex,
+            keySpaceBits,
+          },
+        },
+        [],
+        (step) => {
+          if (onStep) onStep(step as MitmStep)
+        }
+      )
+      setLoading(false)
+      return result as MitmResult
+    } catch (err: unknown) {
+      setLoading(false)
+      const msg = err instanceof Error ? err.message : 'Meet-in-the-middle worker execution failed'
+      setError(msg)
+      throw new Error(msg)
+    }
+  }, [])
+
   const cancel = useCallback(() => {
     if (poolRef.current) {
       poolRef.current.terminate()
@@ -132,5 +169,5 @@ export function useAttackWorker() {
     }
   }, [])
 
-  return { recoverPlaintextConcurrently, cancel, loading, error }
+  return { recoverPlaintextConcurrently, runMitmAttack, cancel, loading, error }
 }
