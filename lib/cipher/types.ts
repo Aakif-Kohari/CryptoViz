@@ -160,6 +160,7 @@ export type CipherName =
   | 'sosemanuk'
   | 'loki97'
   | 'shark'
+  | 'crypton'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
