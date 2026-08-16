@@ -49,10 +49,7 @@ function parseInteger(value: string | null): number | undefined {
 function sanitizePermalinkText(value: string | null): string {
   if (value === null) return ''
 
-  // Importing here would make this utility unnecessarily dependent on a
-  // browser-only sanitizer. The project sanitizer is synchronous and safe
-  // for both browser and test environments, so keep the boundary explicit.
-  return sanitizePlainText(value, {
+  return sanitizeCryptoInput(value, {
     maxLength: VISUALIZER_PERMALINK_MAX_LENGTH,
     allowNewlines: false,
     trim: true,
@@ -60,7 +57,7 @@ function sanitizePermalinkText(value: string | null): string {
   }).value
 }
 
-import { sanitizePlainText } from '@/lib/security/inputSanitization'
+import { sanitizeCryptoInput } from '@/lib/security/inputSanitization'
 
 export function clampStepIndex(index: number, stepCount: number): number {
   if (!Number.isFinite(index) || stepCount <= 0) return 0
