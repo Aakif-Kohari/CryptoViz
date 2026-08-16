@@ -87,4 +87,31 @@ If you discover a security issue in an implementation beyond these documented ed
 
 ## Reporting Non-Security Issues
 
+Tell them where to go, how often they can expect to get an update on a
+reported vulnerability, what to expect if the vulnerability is accepted or
+declined, etc.
+
+
+## Cryptographic Code Audit Sandbox
+
+CryptoViz includes an interactive security lab for learning about common
+cryptographic implementation mistakes.
+
+Open:
+
+`/audit-sandbox`
+
+The sandbox currently covers:
+
+- Predictable cryptographic randomness
+- Static IV reuse
+- Non-constant-time MAC comparison
+- Unpadded RSA encryption
+- Unauthenticated encryption
+
+The sandbox uses deterministic security-property checks rather than executing
+user-provided JavaScript.
+
+This feature is intended for education and secure-development training. It is
+not a replacement for a professional security audit or penetration test.
 Bugs that are not security-sensitive, including ordinary implementation issues, incorrect non-exploitable cipher output, UI problems, and feature requests, should be reported through the normal GitHub Issues tracker.
