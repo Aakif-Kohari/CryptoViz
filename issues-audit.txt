@@ -652,3 +652,10 @@
 [#1143] (closed) by @Aakif-Kohari: [FEATURE] Add SQIsign signature scheme (isogeny-based, NIST PQC additional signature candidate, shows isogeny cryptography survived where SIDH did not)
 [#1142] (closed) by @Aakif-Kohari: [FEATURE] Add SOSEMANUK stream cipher (eSTREAM software profile finalist, completes the full eSTREAM software portfolio)
 [#1141] (closed) by @Aakif-Kohari: [FEATURE] Add SHARK block cipher (Rijmen/Daemen/Preneel et al., 1996, earliest predecessor in the Square/Rijndael lineage)
+
+=== Audited 2026-08-17 18:32 UTC (5 new) ===
+[#1224] (open) by @Aakif-Kohari: [FEATURE] Add Ascon-Hash (NIST Lightweight Cryptography Standard 2023, sponge-mode sibling of the already-present Ascon AEAD cipher)
+[#1223] (open) by @Aakif-Kohari: [FEATURE] Add Chor-Rivest knapsack cryptosystem (1988, discrete-log-based superincreasing construction, second knapsack scheme alongside Merkle-Hellman)
+[#1222] (open) by @Aakif-Kohari: [FEATURE] Add Falcon signature scheme (NIST PQC standardized, NTRU-lattice + Fast Fourier sampling, distinct from ML-DSA's Module-LWE approach)
+[#1221] (open) by @Aakif-Kohari: [FEATURE] Add Turing stream cipher (Rose & Hawkes, 2003, LFSR-plus-S-box software-optimized design, NESSIE-submitted)
+[#1220] (open) by @Aakif-Kohari: [FEATURE] Add Hierocrypt-3 block cipher (Toshiba, Japanese CRYPTREC candidate, nested SPN with recursive substitution-permutation layers)
