@@ -1,37 +1,63 @@
 import Link from "next/link";
 import { MessagesSquare } from "lucide-react";
 
-const documentationLinks = [
+interface FooterLink {
+  name: string;
+  href: string;
+}
+
+const visualizerLinks: FooterLink[] = [
+  { name: "Cipher Sandbox", href: "/cipher-sandbox" },
+  { name: "Cipher Collections", href: "/collections" },
+  { name: "Attack Simulator", href: "/attacks" },
+  { name: "Protocols & Labs", href: "/protocols" },
+  { name: "Algorithm Advisor", href: "/advisor" },
+];
+
+const learningLinks: FooterLink[] = [
+  { name: "Learning Paths", href: "/learning-paths" },
+  { name: "Challenge Mode", href: "/challenge" },
+  { name: "Cryptography Timeline", href: "/timeline" },
+  { name: "Interactive Glossary", href: "/glossary" },
+  { name: "Myth Busters", href: "/myth-busters" },
+];
+
+const documentationLinks: FooterLink[] = [
   { name: "Getting Started", href: "/docs" },
   { name: "Architecture", href: "/docs/architecture" },
   { name: "Visualization Guide", href: "/docs/visualization-development-guide" },
+  { name: "Worker Engine", href: "/docs/worker-architecture" },
 ];
 
-const communityLinks = [
-  { name: "GitHub", href: "https://github.com/csxark/CryptoViz" },
-  { name: "Issues", href: "https://github.com/csxark/CryptoViz/issues" },
-  { name: "Contribute", href: "https://github.com/csxark/CryptoViz/blob/main/CONTRIBUTING.md" },
+const communityLinks: FooterLink[] = [
+  { name: "GitHub Repository", href: "https://github.com/csxark/CryptoViz" },
+  { name: "Issues & Roadmap", href: "https://github.com/csxark/CryptoViz/issues" },
+  { name: "Contribute Guide", href: "https://github.com/csxark/CryptoViz/blob/main/CONTRIBUTING.md" },
+  { name: "Discussions", href: "https://github.com/csxark/CryptoViz/discussions" },
 ];
 
-function FooterColumn({ title, links }: { title: string; links: { name: string; href: string }[] }) {
+function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {
   return (
     <div>
       <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-[#F5F5F5]">
         {title}
       </h3>
-      <ul className="mt-4 space-y-3" aria-label={`${title} links`}>
-        {links.map((link) => (
-          <li key={link.name}>
-            <Link
-              href={link.href}
-              target={link.href.startsWith("http") ? "_blank" : undefined}
-              rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-              className="inline-block text-sm text-zinc-500 dark:text-[#8A8A94] transition-all duration-200 hover:translate-x-1 hover:text-teal-600 dark:hover:text-[#00C2AE]"
-            >
-              {link.name}
-            </Link>
-          </li>
-        ))}
+      <ul className="mt-4 space-y-2.5" aria-label={`${title} links`}>
+        {links.map((link) => {
+          const isExternal = link.href.startsWith("http");
+          return (
+            <li key={link.name}>
+              <Link
+                href={link.href}
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noopener noreferrer" : undefined}
+                className="inline-block text-sm text-zinc-500 dark:text-[#8A8A94] transition-all duration-200 hover:translate-x-1 hover:text-teal-600 dark:hover:text-[#00C2AE]"
+              >
+                {link.name}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
@@ -41,9 +67,9 @@ export default function Footer() {
   return (
     <footer className="border-t border-zinc-200/50 dark:border-[#2A2A31]/50 bg-zinc-100/80 dark:bg-black/40 transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-12 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
           {/* Brand */}
-          <div className="col-span-2 lg:col-span-2">
+          <div className="sm:col-span-2 lg:col-span-2">
             <div className="flex items-center gap-2">
               <svg
                 className="h-7 w-7 text-teal-600 dark:text-[#00C2AE]"
@@ -60,10 +86,10 @@ export default function Footer() {
                 Crypto<span className="text-teal-600 dark:text-[#00C2AE]">Viz</span>
               </span>
             </div>
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-zinc-500 dark:text-[#8A8A94]">
-              An open-source, interactive platform for learning cryptography through modern visualization and experimentation.
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-zinc-500 dark:text-[#8A8A94]">
+              An open-source, interactive platform for learning cryptography through modern visualization, hands-on attack simulations, and gamified challenges.
             </p>
-            <div className="mt-8">
+            <div className="mt-6">
               <Link
                 href="https://github.com/csxark/CryptoViz/blob/main/CONTRIBUTING.md"
                 target="_blank"
@@ -75,6 +101,8 @@ export default function Footer() {
             </div>
           </div>
 
+          <FooterColumn title="Visualizers" links={visualizerLinks} />
+          <FooterColumn title="Learn & Explore" links={learningLinks} />
           <FooterColumn title="Documentation" links={documentationLinks} />
           <FooterColumn title="Community" links={communityLinks} />
         </div>
