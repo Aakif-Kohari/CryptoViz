@@ -751,6 +751,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'crypton',
+    name: 'Crypton',
+    category: 'symmetric',
+    description: 'Korean AES competition submission (1998) — NOT a Korean national standard (distinct from SEED/LEA/ARIA which are official standards). Uses 2 S-box types × 4 position variants and a bit-permutation diffusion layer distinct from AES\'s ShiftRows+MixColumns. Status: legacy (first-round elimination, limited scrutiny).',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+    keySize: '128/192/256',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
