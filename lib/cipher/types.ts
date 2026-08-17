@@ -159,6 +159,7 @@ export type CipherName =
   | 'zuc'
   | 'sosemanuk'
   | 'loki97'
+  | 'seal'
   | 'shark'
   | 'crypton'
   | 'rc4'
