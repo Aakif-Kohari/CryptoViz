@@ -27,6 +27,7 @@ import {
   parseVisualizerPermalink,
   updateStepInCurrentUrl,
 } from '../../lib/utils/visualizerPermalink'
+import { CipherOptionsPanel } from './CipherOptionsPanel'
 import TraceTransferControls from './TraceTransferControls'
 import CipherLifecycleBadge from './CipherLifecycleBadge'
 import { SecurityStrengthCard } from './SecurityStrengthCard'
@@ -99,13 +100,31 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const [autoCompute, setAutoCompute] = useState(true);
   const router = useRouter();
 
-  // Custom options states
-  const [hexInput, setHexInput] = useState(true);
-  const [rounds, setRounds] = useState(4);
-  const [demoMode, setDemoMode] = useState(true);
-  const [bobSecret, setBobSecret] = useState("15");
-  const [aesMode, setAesMode] = useState("ECB");
-  const [padding, setPadding] = useState(true);
+  // Dynamic algorithm options state
+  const [optionsState, setOptionsState] = useState<Record<string, CipherOptionValue>>(() => {
+    const initial: Record<string, CipherOptionValue> = {}
+    if (cipher.options) {
+      for (const opt of cipher.options) {
+        initial[opt.id] = opt.default
+      }
+    }
+    // Backward compatibility defaults
+    if (initial.hexInput === undefined) initial.hexInput = true
+    if (initial.rounds === undefined) initial.rounds = 4
+    if (initial.demoMode === undefined) initial.demoMode = true
+    if (initial.bobSecret === undefined) initial.bobSecret = "15"
+    if (initial.mode === undefined) initial.mode = "ECB"
+    if (initial.padding === undefined) initial.padding = true
+    return initial
+  });
+
+  const handleOptionChange = useCallback((optionId: string, value: CipherOptionValue) => {
+    setOptionsState((prev) => ({
+      ...prev,
+      [optionId]: value,
+    }))
+  }, []);
+
   const [result, setResult] = useState<CipherResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [diagnostic, setDiagnostic] = useState<Diagnostic | null>(null);
@@ -163,12 +182,21 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     if (shared.direction !== undefined && cipher.id !== 'dh') {
       setAction(shared.direction)
     }
-    if (shared.options.hexInput !== undefined) setHexInput(shared.options.hexInput)
-    if (shared.options.rounds !== undefined) setRounds(shared.options.rounds)
-    if (shared.options.demoMode !== undefined) setDemoMode(shared.options.demoMode)
-    if (shared.options.bobSecret !== undefined) setBobSecret(shared.options.bobSecret)
-    if (shared.options.padding !== undefined) setPadding(shared.options.padding)
-    if (shared.options.aesMode !== undefined) setAesMode(shared.options.aesMode)
+
+    setOptionsState((prev) => {
+      const updated = { ...prev }
+      for (const [k, v] of Object.entries(shared.options)) {
+        if (v !== undefined) {
+          updated[k] = v as CipherOptionValue
+        }
+      }
+      // Ensure aesMode is mapped to mode if present
+      if (shared.options.aesMode !== undefined) {
+        updated.mode = shared.options.aesMode as string
+      }
+      return updated
+    })
+
     if (shared.options.autoCompute !== undefined) setAutoCompute(shared.options.autoCompute)
     pendingSharedStepRef.current = shared.step ?? null
   }, [cipher.id])
@@ -181,12 +209,15 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         key,
         direction: cipher.id === 'dh' ? 'encrypt' : action,
         step: currentStep,
-        options: { hexInput, rounds, demoMode, bobSecret, padding, aesMode, autoCompute },
+        options: {
+          ...optionsState,
+          autoCompute,
+        },
       })
       router.replace(permalink, { scroll: false })
     }, 300)
     return () => clearTimeout(debounceId)
-  }, [input, key, action, hexInput, rounds, demoMode, bobSecret, aesMode, padding, autoCompute, currentStep, cipher.id, router])
+  }, [input, key, action, optionsState, autoCompute, currentStep, cipher.id, router])
 
   // Update security metrics when key changes for relevant ciphers
   useEffect(() => {
@@ -214,26 +245,32 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     // Update security metrics when cipher changes
     setSecurityMetrics(calculateSecurityMetrics(cipher, { keySize: parseKeySize(cipher, cipher.defaultKey) }));
 
-    // Reset option defaults
+    // Reset option defaults from cipher.options schema + permalinks
+    const newOptions: Record<string, CipherOptionValue> = {}
     if (cipher.options) {
-      cipher.options.forEach((opt) => {
-        if (opt.id === "hexInput" && shared.options.hexInput === undefined && isBooleanOptionValue(opt.default)) {
-          setHexInput(opt.default);
-        }
-        if (opt.id === "rounds" && shared.options.rounds === undefined && isNumberOptionValue(opt.default)) {
-          setRounds(opt.default);
-        }
-        if (opt.id === "demoMode" && shared.options.demoMode === undefined && isBooleanOptionValue(opt.default)) {
-          setDemoMode(opt.default);
-        }
-        if (opt.id === "bobSecret" && shared.options.bobSecret === undefined && isStringOptionValue(opt.default)) {
-          setBobSecret(opt.default);
-        }
-        if (opt.id === "padding" && shared.options.padding === undefined && isBooleanOptionValue(opt.default)) {
-          setPadding(opt.default);
-        }
-      });
+      for (const opt of cipher.options) {
+        const sharedVal = shared.options[opt.id]
+        newOptions[opt.id] = (sharedVal !== undefined ? sharedVal : opt.default) as CipherOptionValue
+      }
     }
+    // Backward compatibility for ciphers with implicit defaults
+    if (newOptions.hexInput === undefined) {
+      newOptions.hexInput = (shared.options.hexInput !== undefined ? shared.options.hexInput : true) as boolean
+    }
+    if (newOptions.rounds === undefined && shared.options.rounds !== undefined) {
+      newOptions.rounds = shared.options.rounds
+    }
+    if (newOptions.demoMode === undefined && shared.options.demoMode !== undefined) {
+      newOptions.demoMode = shared.options.demoMode
+    }
+    if (newOptions.bobSecret === undefined && shared.options.bobSecret !== undefined) {
+      newOptions.bobSecret = shared.options.bobSecret
+    }
+    if (newOptions.mode === undefined && shared.options.aesMode !== undefined) {
+      newOptions.mode = shared.options.aesMode
+    }
+    setOptionsState(newOptions)
+
     return () => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
@@ -254,17 +291,12 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       setResult(null);
       setError(null);
       setDiagnostic(null);
-      // Clear bobSecret if it's sensitive
-      setBobSecret('');
+      setOptionsState((prev) => ({ ...prev, bobSecret: '' }));
     };
   }, []);
 
   const workspaceOptions: Record<string, unknown> = {
-    hexInput,
-    rounds,
-    demoMode,
-    bobSecret,
-    padding,
+    ...optionsState,
   };
 
   const handlePresetLoad = (preset: WorkspacePreset) => {
@@ -278,21 +310,10 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     if (preset.key !== undefined) {
       setKey(preset.key);
     }
-    if (typeof preset.options.hexInput === "boolean") {
-      setHexInput(preset.options.hexInput);
-    }
-    if (typeof preset.options.rounds === "number") {
-      setRounds(preset.options.rounds);
-    }
-    if (typeof preset.options.demoMode === "boolean") {
-      setDemoMode(preset.options.demoMode);
-    }
-    if (typeof preset.options.bobSecret === "string") {
-      setBobSecret(preset.options.bobSecret);
-    }
-    if (typeof preset.options.padding === "boolean") {
-      setPadding(preset.options.padding);
-    }
+    setOptionsState((prev) => ({
+      ...prev,
+      ...preset.options,
+    }));
     setAnimationSpeed(preset.animationSpeed);
     setResult(null);
     setCurrentStep(0);
@@ -313,25 +334,15 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       const options: CipherOptions = {
         instrument: true,
         signal: controller.signal,
+        ...optionsState,
       };
-      if (cipher.id === "des" || cipher.id === "3des" || cipher.id === "aes" || cipher.id === "camellia") {
-        options.hexInput = hexInput;
+
+      // Compatibility mapping for older cipher interfaces
+      if (optionsState.demoMode !== undefined && options.mode === undefined) {
+        options.mode = optionsState.demoMode ? "demo" : "real";
       }
-      if (cipher.id === "aes" || cipher.id === "camellia") {
-        options.mode = aesMode;
-      }
-      if (cipher.id === "bcrypt") {
-        options.rounds = rounds;
-      }
-      if (cipher.id === "rsa") {
-        options.mode = demoMode ? "demo" : "real";
-      }
-      if (cipher.id === "dh") {
-        options.mode = "demo";
-        options.bobSecret = bobSecret;
-      }
-      if (cipher.id === "camellia") {
-        options.padding = padding ? "PKCS7" : "None";
+      if (cipher.id === "camellia" && typeof optionsState.padding === "boolean") {
+        options.padding = optionsState.padding ? "PKCS7" : "None";
       }
 
       const currentAction = cipher.id === "dh" ? "encrypt" : action;
@@ -397,21 +408,10 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     setInput(trace.input);
     setKey(trace.key);
     setAction(trace.direction);
-    if (typeof trace.options.hexInput === "boolean") {
-      setHexInput(trace.options.hexInput);
-    }
-    if (typeof trace.options.rounds === "number") {
-      setRounds(trace.options.rounds);
-    }
-    if (typeof trace.options.demoMode === "boolean") {
-      setDemoMode(trace.options.demoMode);
-    }
-    if (typeof trace.options.bobSecret === "string") {
-      setBobSecret(trace.options.bobSecret);
-    }
-    if (typeof trace.options.padding === "boolean") {
-      setPadding(trace.options.padding);
-    }
+    setOptionsState((prev) => ({
+      ...prev,
+      ...trace.options,
+    }));
     const importedResult = traceToCipherResult(trace);
     setResult(importedResult);
     const restoredStep = pendingSharedStepRef.current;
@@ -437,12 +437,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     input,
     key,
     action,
-    hexInput,
-    rounds,
-    demoMode,
-    bobSecret,
-    aesMode,
-    padding,
+    optionsState,
   ]);
 
   const getStatusBadge = (status: "secure" | "legacy" | "deprecated" | "broken") => {
@@ -636,16 +631,12 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     setDiagnostic(null);
     // If bobSecret is sensitive, clear it too
     if (cipher.id === 'dh') {
-      setBobSecret('');
+      setOptionsState((prev) => ({ ...prev, bobSecret: '' }));
     }
   }, [cipher.id]);
 
   const traceOptions: Record<string, unknown> = {
-    hexInput,
-    rounds,
-    demoMode,
-    bobSecret,
-    padding,
+    ...optionsState,
   };
 
   return (
@@ -677,14 +668,13 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         </div>
       </div>
 
-      <div className={`grid grid-cols-1 items-start gap-5 md:gap-6 lg:grid-cols-12 lg:gap-8 ${isZenMode ? 'zen-mode-grid' : ''}`}>
       {/* Security Strength Card */}
       <SecurityStrengthCard 
         metrics={securityMetrics} 
         className="mb-6"
       />
 
-      <div className="grid grid-cols-1 items-start gap-5 md:gap-6 lg:grid-cols-12 lg:gap-8">
+      <div className={`grid grid-cols-1 items-start gap-5 md:gap-6 lg:grid-cols-12 lg:gap-8 ${isZenMode ? 'zen-mode-grid' : ''}`}>
         {/* Controls Column (Left) */}
         <div className={`flex flex-col gap-6 lg:col-span-5 ${isZenMode ? 'zen-mode-controls' : ''}`}>
           {cipher.category !== "hash" && cipher.id !== "dh" && (
@@ -768,115 +758,12 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               </div>
             )}
 
-            {cipher.id === "bcrypt" && (
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                    Bcrypt Rounds (Cost Factor)
-                  </label>
-                  <span className="font-mono text-xs font-bold text-teal-600 dark:text-teal-400">
-                    {rounds}
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="4"
-                  max="12"
-                  value={rounds}
-                  onChange={(e) => setRounds(parseInt(e.target.value))}
-                  className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-zinc-200 dark:bg-zinc-700 accent-teal-600 dark:accent-teal-400"
-                />
-              </div>
-            )}
-
-            {cipher.id === "dh" && (
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                    Bob Private Secret (b)
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setBobSecret('')}
-                    aria-label="Clear Bob secret"
-                    className="text-xs font-medium text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
-                  >
-                    Clear
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  value={bobSecret}
-                  onChange={(e) => setBobSecret(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 p-2.5 font-mono text-sm text-zinc-900 outline-none transition-all focus:border-teal-500 focus:bg-white dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-100 dark:focus:border-teal-400"
-                />
-              </div>
-            )}
-
-            {cipher.id === "rsa" && (
-              <div className="flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-800">
-                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                  Demo Mode (Square & Multiply walkthrough)
-                </span>
-                <input
-                  type="checkbox"
-                  checked={demoMode}
-                  onChange={(e) => setDemoMode(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-300 text-teal-600 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800"
-                />
-              </div>
-            )}
-
-            {["des", "3des", "aes", "camellia"].includes(cipher.id) && (
-              <div className="flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-800">
-                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                  Input / Key in Hex Format
-                </span>
-                <input
-                  type="checkbox"
-                  checked={hexInput}
-                  onChange={(e) => setHexInput(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-300 text-teal-600 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800"
-                />
-              </div>
-            )}
-
-            {(cipher.id === "aes" || cipher.id === "camellia") && (
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                  Mode of Operation
-                </label>
-                <select
-                  value={aesMode}
-                  onChange={(e) => setAesMode(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 p-2.5 font-mono text-sm text-zinc-900 outline-none transition-all focus:border-teal-500 focus:bg-white dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-100 dark:focus:border-teal-400"
-                >
-                  <option value="ECB">ECB (Electronic Codebook)</option>
-                  <option value="CBC">CBC (Cipher Block Chaining)</option>
-                  {cipher.id === "aes" && (
-                    <>
-                      <option value="CTR">CTR (Counter)</option>
-                      <option value="CFB">CFB (Cipher Feedback)</option>
-                      <option value="OFB">OFB (Output Feedback)</option>
-                    </>
-                  )}
-                </select>
-              </div>
-            )}
-
-            {cipher.id === "camellia" && (
-              <div className="flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-800">
-                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                  PKCS#7 Padding
-                </span>
-                <input
-                  type="checkbox"
-                  checked={padding}
-                  onChange={(e) => setPadding(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-300 text-teal-600 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800"
-                />
-              </div>
-            )}
+            {/* Dynamic Cipher Options Panel */}
+            <CipherOptionsPanel
+              cipher={cipher}
+              optionsState={optionsState}
+              onChange={handleOptionChange}
+            />
 
             <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <button
