@@ -198,6 +198,7 @@ export type CipherName =
   | 'bls'
   | 'boneh-franklin-ibe'
   | 'regev-lwe'
+  | 'okamoto-uchiyama'
   | 'sqisign'
   | 'rainbow'
   | 'ed25519'

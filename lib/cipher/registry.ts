@@ -1463,6 +1463,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
   },
   {
+    id: 'okamoto-uchiyama',
+    name: 'Okamoto-Uchiyama',
+    category: 'asymmetric',
+    description: 'Probabilistic additively-homomorphic encryption (EUROCRYPT 1998). Modulus n=p²q (distinct from RSA/Paillier/GM). DEFINING ASYMMETRY: decryption uses only p, never q. Positioned between Goldwasser-Micali (probabilistic predecessor) and Paillier (homomorphic descendant).',
+    defaultKey: 'mock',
+    defaultInput: '05',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Public key (encrypt) or Private key p (decrypt)',
+  },
+  {
     id: 'sqisign',
     name: 'SQIsign',
     category: 'asymmetric',
