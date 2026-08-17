@@ -1472,4 +1472,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'Secret isogeny (sign) or Public curve EA (verify)',
   },
+  {
+    id: 'rainbow',
+    name: 'Rainbow',
+    category: 'asymmetric',
+    description: 'Multivariate-quadratic signature scheme (Ding & Schmidt, 2005). NIST PQC ROUND 3 FINALIST, broken by Beullens (2022) in hours on a laptop — layered central map leaked exploitable algebraic structure. 4th major PQC family in this repo (alongside lattice/code-based/isogeny). Status: BROKEN unconditionally.',
+    defaultKey: 'mock_private',
+    defaultInput: '010203040506',
+    securityStatus: 'broken',
+    keyPlaceholder: 'Private key (sign) or Public key (verify)',
+  },
 ];
