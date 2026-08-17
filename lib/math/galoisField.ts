@@ -170,8 +170,8 @@ export function gfExtendedEuclideanWithTrace(a: number, modulus: ModulusHex = 0x
     }
   }
 
-  let r0 = modulus
-  let r1 = a
+  let r0: number = modulus
+  let r1: number = a
   let s0 = 0
   let s1 = 1
 

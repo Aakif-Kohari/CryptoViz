@@ -37,7 +37,7 @@ export default function PqcLatticesPage() {
                 The security of many quantum-resistant algorithms relies on problems like the <strong>Closest Vector Problem (CVP)</strong> or <strong>Shortest Vector Problem (SVP)</strong>. If you are given a "bad" basis (long, skewed vectors), it is exceptionally hard to find the closest lattice point to an arbitrary target. Conversely, with a "good" basis (short, nearly orthogonal vectors), the problem is easy.
               </p>
               <p>
-                <strong>Learning With Errors (LWE)</strong> is the algebraic counterpart to CVP. In LWE, you are given samples $(A, B)$ where $B = A \cdot s + e \pmod{q}$. The goal is to find the secret vector $s$. Without the small error $e$, this is simple Gaussian elimination. With the error, it becomes a hard lattice problem.
+                <strong>Learning With Errors (LWE)</strong> is the algebraic counterpart to CVP. In LWE, you are given samples $(A, B)$ where $B = A \cdot s + e \pmod{'{'}q{'}'}$. The goal is to find the secret vector $s$. Without the small error $e$, this is simple Gaussian elimination. With the error, it becomes a hard lattice problem.
               </p>
             </div>
           </section>
@@ -62,7 +62,7 @@ export default function PqcLatticesPage() {
                 <li>The polynomials themselves are reduced modulo a polynomial, typically $X^n + 1$.</li>
               </ul>
               <p>
-                Because we reduce by $X^n + 1$, the equation implies $X^n = -1$. This means any term $X^{n+k}$ wraps around to become $-X^k$. This property is known as <em>negacyclic convolution</em>.
+                Because we reduce by $X^n + 1$, the equation implies $X^n = -1$. This means any term $X^{'{'}n+k{'}'}$ wraps around to become $-X^k$. This property is known as <em>negacyclic convolution</em>.
               </p>
             </div>
           </section>
