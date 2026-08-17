@@ -8,13 +8,14 @@ export interface VisualizerPermalinkState {
   direction: 'encrypt' | 'decrypt'
   step: number
   options: {
-    hexInput: boolean
-    rounds: number
-    demoMode: boolean
-    bobSecret: string
+    hexInput?: boolean
+    rounds?: number
+    demoMode?: boolean
+    bobSecret?: string
     padding?: boolean
     aesMode?: string
     autoCompute?: boolean
+    [key: string]: unknown
   }
 }
 
@@ -31,6 +32,7 @@ export interface ParsedVisualizerPermalink {
     padding?: boolean
     aesMode?: string
     autoCompute?: boolean
+    [key: string]: unknown
   }
 }
 
@@ -72,6 +74,54 @@ export function parseVisualizerPermalink(
   const rawStep = parseInteger(params.get(STEP_QUERY_PARAM))
   const rawRounds = parseInteger(params.get('rounds'))
 
+  const options: Record<string, unknown> = {
+    hexInput: parseBoolean(params.get('hexInput')),
+    rounds:
+      rawRounds === undefined
+        ? undefined
+        : Math.min(Math.max(rawRounds, 4), 31),
+    demoMode: parseBoolean(params.get('demoMode')),
+    bobSecret: params.has('bobSecret')
+      ? sanitizePermalinkText(params.get('bobSecret'))
+      : undefined,
+    padding: parseBoolean(params.get('padding')),
+    aesMode: params.has('aesMode')
+      ? sanitizePermalinkText(params.get('aesMode'))
+      : undefined,
+    autoCompute: parseBoolean(params.get('autoCompute')),
+  }
+
+  // Parse any additional dynamic query params into options
+  const knownKeys = new Set([
+    'input',
+    'key',
+    'direction',
+    STEP_QUERY_PARAM,
+    'hexInput',
+    'rounds',
+    'demoMode',
+    'bobSecret',
+    'padding',
+    'aesMode',
+    'autoCompute',
+  ])
+
+  for (const [k, v] of params.entries()) {
+    if (!knownKeys.has(k)) {
+      const boolVal = parseBoolean(v)
+      if (boolVal !== undefined) {
+        options[k] = boolVal
+      } else {
+        const numVal = parseInteger(v)
+        if (numVal !== undefined && String(numVal) === v.trim()) {
+          options[k] = numVal
+        } else {
+          options[k] = sanitizePermalinkText(v)
+        }
+      }
+    }
+  }
+
   return {
     input: params.has('input')
       ? sanitizePermalinkText(params.get('input'))
@@ -85,22 +135,7 @@ export function parseVisualizerPermalink(
         : undefined,
     step:
       rawStep === undefined ? undefined : Math.max(Math.trunc(rawStep), 0),
-    options: {
-      hexInput: parseBoolean(params.get('hexInput')),
-      rounds:
-        rawRounds === undefined
-          ? undefined
-          : Math.min(Math.max(rawRounds, 4), 31),
-      demoMode: parseBoolean(params.get('demoMode')),
-      bobSecret: params.has('bobSecret')
-        ? sanitizePermalinkText(params.get('bobSecret'))
-        : undefined,
-      padding: parseBoolean(params.get('padding')),
-      aesMode: params.has('aesMode')
-        ? sanitizePermalinkText(params.get('aesMode'))
-        : undefined,
-      autoCompute: parseBoolean(params.get('autoCompute')),
-    },
+    options,
   }
 }
 
@@ -113,22 +148,16 @@ export function buildVisualizerPermalink(
   url.searchParams.set('key', state.key)
   url.searchParams.set('direction', state.direction)
   url.searchParams.set(STEP_QUERY_PARAM, String(Math.max(0, state.step)))
-  url.searchParams.set('hexInput', state.options.hexInput ? '1' : '0')
-  url.searchParams.set('rounds', String(state.options.rounds))
-  url.searchParams.set('demoMode', state.options.demoMode ? '1' : '0')
-  url.searchParams.set('bobSecret', state.options.bobSecret)
-  if (state.options.padding !== undefined) {
-    url.searchParams.set('padding', state.options.padding ? '1' : '0')
+
+  for (const [key, value] of Object.entries(state.options)) {
+    if (value === undefined) continue
+    if (typeof value === 'boolean') {
+      url.searchParams.set(key, value ? '1' : '0')
+    } else {
+      url.searchParams.set(key, String(value))
+    }
   }
-  if (state.options.aesMode !== undefined) {
-    url.searchParams.set('aesMode', state.options.aesMode)
-  }
-  if (state.options.autoCompute !== undefined) {
-    url.searchParams.set(
-      'autoCompute',
-      state.options.autoCompute ? '1' : '0',
-    )
-  }
+
   return url.toString()
 }
 
