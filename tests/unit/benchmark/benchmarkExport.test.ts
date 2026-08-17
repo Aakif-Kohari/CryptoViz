@@ -70,7 +70,7 @@ describe("benchmark exporters", () => {
     expect(markdown).toContain("| --- | --- | ---: | ---: | ---: | --- |");
     expect(markdown).toContain("AES\\|256");
     expect(markdown).toContain("1.2346 ms");
-    expect(markdown).toContain("810 ops/s");
+    expect(markdown).toContain("810.005 ops/s");
     expect(markdown).toContain("4.00 KB");
     expect(markdown).toContain("8 logical cores");
     expect(markdown).toContain("UA: Mozilla/5.0 TestBrowser/1.0");
