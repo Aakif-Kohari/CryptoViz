@@ -1,4 +1,3 @@
-
 /**
  * Registry-driven cipher worker with priority metadata and throttled progress streaming.
  * The cipher implementations remain unchanged; this file adds protocol-level scheduling
@@ -80,7 +79,7 @@ workerScope.addEventListener('message', async (event: MessageEvent<WorkerRequest
     workerScope.postMessage({
       requestId,
       success: false,
-      payload: { error: errorMessage, errorCode, errorMessage },
+      payload: { error: errorMessage, errorCode },
       timings: { durationMs: performance.now() - startTime },
     } satisfies WorkerResponse)
   } finally {
