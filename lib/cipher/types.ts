@@ -162,6 +162,7 @@ export type CipherName =
   | 'seal'
   | 'shark'
   | 'crypton'
+  | 'hierocrypt3'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
