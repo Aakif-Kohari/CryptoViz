@@ -200,6 +200,7 @@ export type CipherName =
   | 'regev-lwe'
   | 'okamoto-uchiyama'
   | 'sqisign'
+  | 'chor-rivest'
   | 'rainbow'
   | 'ed25519'
   | 'rabin'

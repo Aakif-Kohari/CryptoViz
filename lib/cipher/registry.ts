@@ -1518,6 +1518,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'Secret isogeny (sign) or Public curve EA (verify)',
   },
   {
+    id: 'chor-rivest',
+    name: 'Chor-Rivest',
+    category: 'asymmetric',
+    description: 'Knapsack cryptosystem disguised via discrete logarithms in the field extension GF(p^h) — genuinely more elaborate than Merkle-Hellman\'s modular-multiplication disguise. FIXED HAMMING WEIGHT constraint on messages. Status: BROKEN (Vaudenay 1998, targeting the GF(p^h) construction — distinct break from Merkle-Hellman\'s Shamir attack).',
+    defaultKey: 'mock',
+    defaultInput: 'e0',
+    securityStatus: 'broken',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
+  {
     id: 'rainbow',
     name: 'Rainbow',
     category: 'asymmetric',
