@@ -50,6 +50,7 @@ const RailFenceViz = dynamic(() => import('./RailFenceViz'), { ssr: false })
 const DHVisualizer = dynamic(() => import('./DHVisualizer'), { ssr: false })
 const HmacVisualizer = dynamic(() => import('./HmacVisualizer'), { ssr: false })
 const Sm3Visualizer = dynamic(() => import('./Sm3Visualizer'), { ssr: false })
+const HillMatrixVisualizer = dynamic(() => import('./HillMatrixVisualizer'), { ssr: false })
 const UniversalCipherDebugger = dynamic(() => import('./UniversalCipherDebugger'), { ssr: false })
 import ZenModeToggle from './ZenModeToggle'
 
@@ -470,6 +471,9 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     }
     if (cipher.id === "sm3") {
       return <Sm3Visualizer currentStep={currentStep} result={result} />;
+    }
+    if (cipher.id === "hill") {
+      return <HillMatrixVisualizer step={step} keyString={key} currentStepIndex={currentStep} />;
     }
     return null;
   };
