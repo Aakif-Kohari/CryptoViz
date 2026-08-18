@@ -1,28 +1,24 @@
-'use client'
+"use client";
 
-import { useCallback, useEffect, useMemo, useState, memo } from 'react'
-import type { CipherStep } from '../../lib/cipher/types'
-import A11yStepNarrator from '@/components/ui/A11yStepNarrator'
-import { cn } from '../../lib/utils'
+import { useState, useEffect, useCallback, memo } from "react";
+import type { CipherStep } from "../../lib/cipher/types";
+import { cn } from "../../lib/utils";
+import A11yStepNarrator from "@/components/ui/A11yStepNarrator";
 
-const SPEED_OPTIONS = [0.5, 1, 2, 4] as const
-const BASE_INTERVAL_MS = 1500
+const SPEED_OPTIONS = [0.5, 1, 2, 4] as const;
 
-export type AnimationSpeed = (typeof SPEED_OPTIONS)[number]
+export type AnimationSpeed = (typeof SPEED_OPTIONS)[number];
 
 interface StepAnimatorProps {
-  steps: CipherStep[]
-  currentStep: number
-  onStepChange: (index: number) => void
-  speed?: AnimationSpeed
-  onSpeedChange?: (speed: AnimationSpeed) => void
-  onCopyStepLink?: () => Promise<void> | void
+  steps: CipherStep[];
+  currentStep: number;
+  onStepChange: (index: number) => void;
+  speed?: AnimationSpeed;
+  onSpeedChange?: (speed: AnimationSpeed) => void;
+  onCopyStepLink?: () => Promise<void> | void;
 }
 
-function milestonePosition(index: number, total: number): number {
-  if (total <= 1) return 0
-  return (index / (total - 1)) * 100
-}
+const BASE_INTERVAL_MS = 1500;
 
 const StepAnimator = memo(function StepAnimator({
   steps,
@@ -32,18 +28,20 @@ const StepAnimator = memo(function StepAnimator({
   onSpeedChange,
   onCopyStepLink,
 }: StepAnimatorProps) {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [linkCopied, setLinkCopied] = useState(false)
-  const [internalSpeed, setInternalSpeed] = useState<AnimationSpeed>(1)
-  const [reducedMotion, setReducedMotion] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [internalSpeed, setInternalSpeed] = useState<AnimationSpeed>(1);
 
-  const speed = controlledSpeed ?? internalSpeed
-  const hasMultipleSteps = steps.length > 1
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  const speed = controlledSpeed ?? internalSpeed;
+
+  const hasMultipleSteps = steps.length > 1;
 
   const safeCurrentStep = Math.min(
     Math.max(currentStep, 0),
     Math.max(steps.length - 1, 0),
-  )
+  );
 
   const milestones = useMemo(
     () =>
@@ -70,54 +68,67 @@ const StepAnimator = memo(function StepAnimator({
   const setSpeed = useCallback(
     (nextSpeed: AnimationSpeed) => {
       if (onSpeedChange) {
-        onSpeedChange(nextSpeed)
+        onSpeedChange(nextSpeed);
       } else {
-        setInternalSpeed(nextSpeed)
+        setInternalSpeed(nextSpeed);
       }
     },
     [onSpeedChange],
-  )
+  );
 
   const copyStepLink = useCallback(async () => {
-    if (!onCopyStepLink) return
+    if (!onCopyStepLink) return;
+
     try {
-      await onCopyStepLink()
-      setLinkCopied(true)
-      window.setTimeout(() => setLinkCopied(false), 1800)
+      await onCopyStepLink();
+      setLinkCopied(true);
+
+      window.setTimeout(() => {
+        setLinkCopied(false);
+      }, 1800);
     } catch {
-      setLinkCopied(false)
+      setLinkCopied(false);
     }
-  }, [onCopyStepLink])
+  }, [onCopyStepLink]);
 
   useEffect(() => {
-    const mql = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReducedMotion(mql.matches)
+    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    setReducedMotion(mql.matches);
 
     const handleChange = (event: MediaQueryListEvent) => {
-      setReducedMotion(event.matches)
-      if (event.matches) setIsPlaying(false)
-    }
+      setReducedMotion(event.matches);
 
-    mql.addEventListener('change', handleChange)
-    return () => mql.removeEventListener('change', handleChange)
-  }, [])
+      if (event.matches) {
+        setIsPlaying(false);
+      }
+    };
+
+    mql.addEventListener("change", handleChange);
+
+    return () => {
+      mql.removeEventListener("change", handleChange);
+    };
+  }, []);
 
   const goToStep = useCallback(
     (index: number) => {
-      setIsPlaying(false)
+      setIsPlaying(false);
+
       const nextIndex = Math.min(
         Math.max(index, 0),
         Math.max(steps.length - 1, 0),
-      )
-      onStepChange(nextIndex)
+      );
+
+      onStepChange(nextIndex);
     },
     [onStepChange, steps.length],
-  )
+  );
 
   const restart = useCallback(() => {
-    setIsPlaying(false)
-    onStepChange(0)
-  }, [onStepChange])
+    setIsPlaying(false);
+    onStepChange(0);
+  }, [onStepChange]);
 
   const goToPreviousMilestone = useCallback(() => {
     if (milestones.length === 0) return
@@ -146,18 +157,18 @@ const StepAnimator = memo(function StepAnimator({
   }, [goToStep, milestones, safeCurrentStep])
 
   const togglePlay = useCallback(() => {
-    if (!hasMultipleSteps) return
+    if (!hasMultipleSteps) return;
 
     if (reducedMotion) {
-      onStepChange(steps.length - 1)
-      return
+      onStepChange(steps.length - 1);
+      return;
     }
 
     if (!isPlaying && safeCurrentStep === steps.length - 1) {
-      onStepChange(0)
+      onStepChange(0);
     }
 
-    setIsPlaying((previous) => !previous)
+    setIsPlaying((previous) => !previous);
   }, [
     hasMultipleSteps,
     reducedMotion,
@@ -165,21 +176,22 @@ const StepAnimator = memo(function StepAnimator({
     safeCurrentStep,
     steps.length,
     onStepChange,
-  ])
+  ]);
 
   useEffect(() => {
-    if (!isPlaying || reducedMotion) return
+    if (!isPlaying || reducedMotion) return;
 
-    const msPerStep = BASE_INTERVAL_MS / speed
+    const msPerStep = BASE_INTERVAL_MS / speed;
+
     const interval = window.setInterval(() => {
       if (safeCurrentStep < steps.length - 1) {
-        onStepChange(safeCurrentStep + 1)
+        onStepChange(safeCurrentStep + 1);
       } else {
-        setIsPlaying(false)
+        setIsPlaying(false);
       }
-    }, msPerStep)
+    }, msPerStep);
 
-    return () => window.clearInterval(interval)
+    return () => window.clearInterval(interval);
   }, [
     isPlaying,
     reducedMotion,
@@ -187,22 +199,22 @@ const StepAnimator = memo(function StepAnimator({
     safeCurrentStep,
     steps.length,
     onStepChange,
-  ])
+  ]);
 
   useEffect(() => {
-    if (steps.length === 0) return
+    if (steps.length === 0) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null
-      const tag = target?.tagName
+      const target = event.target as HTMLElement | null;
+      const tag = target?.tagName;
 
       if (
-        tag === 'INPUT' ||
-        tag === 'TEXTAREA' ||
-        tag === 'SELECT' ||
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
         target?.isContentEditable
       ) {
-        return
+        return;
       }
 
       if (event.key === '[' || (event.key === 'ArrowLeft' && event.shiftKey)) {
@@ -218,52 +230,55 @@ const StepAnimator = memo(function StepAnimator({
       }
 
       switch (event.key) {
-        case ' ':
-        case 'Spacebar':
-          event.preventDefault()
-          togglePlay()
-          break
-        case 'ArrowRight':
-          event.preventDefault()
-          goToStep(safeCurrentStep + 1)
-          break
-        case 'ArrowLeft':
-          event.preventDefault()
-          goToStep(safeCurrentStep - 1)
-          break
-        case 'Home':
-        case 'r':
-        case 'R':
-          event.preventDefault()
-          restart()
-          break
-        case 'End':
-          event.preventDefault()
-          goToStep(steps.length - 1)
-          break
+        case " ":
+        case "Spacebar":
+          event.preventDefault();
+          togglePlay();
+          break;
+
+        case "ArrowRight":
+          event.preventDefault();
+          goToStep(safeCurrentStep + 1);
+          break;
+
+        case "ArrowLeft":
+          event.preventDefault();
+          goToStep(safeCurrentStep - 1);
+          break;
+
+        case "Home":
+        case "r":
+        case "R":
+          event.preventDefault();
+          restart();
+          break;
+
+        case "End":
+          event.preventDefault();
+          goToStep(steps.length - 1);
+          break;
+
         default:
-          break
+          break;
       }
-    }
+    };
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [
-    steps.length,
-    safeCurrentStep,
-    togglePlay,
-    goToStep,
-    restart,
-    goToPreviousMilestone,
-    goToNextMilestone,
-  ])
+    window.addEventListener("keydown", handleKeyDown);
 
-  if (steps.length === 0) return null
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [steps.length, safeCurrentStep, togglePlay, goToStep, restart]);
 
-  const step = steps[safeCurrentStep]
+  if (steps.length === 0) return null;
+
+  const step = steps[safeCurrentStep];
+
   const progressPercent = hasMultipleSteps
     ? (safeCurrentStep / (steps.length - 1)) * 100
-    : 100
+    : 100;
+
+  const announcement = `Step ${safeCurrentStep + 1} of ${steps.length}: ${step.label}`;
 
   const mobileMilestoneValue =
     currentMilestoneIndex >= 0
@@ -272,6 +287,10 @@ const StepAnimator = memo(function StepAnimator({
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50">
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {announcement}
+      </div>
+
       <A11yStepNarrator
         step={step}
         stepIndex={safeCurrentStep}
@@ -393,41 +412,22 @@ const StepAnimator = memo(function StepAnimator({
           </span>
         </div>
 
-        <div className="relative pt-1">
-          <input
-            type="range"
-            min={0}
-            max={Math.max(steps.length - 1, 0)}
-            value={safeCurrentStep}
-            onChange={(event) => goToStep(Number(event.target.value))}
-            disabled={!hasMultipleSteps}
-            aria-label="Animation timeline"
-            aria-valuetext={`Step ${safeCurrentStep + 1} of ${steps.length}: ${step.label}`}
-            className="relative z-10 h-2 w-full cursor-pointer accent-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
-          />
-
-          {hasMultipleSteps && milestones.length > 0 && (
-            <div
-              className="pointer-events-none absolute inset-x-0 top-0 h-4"
-              data-testid="milestone-track"
-              aria-hidden="true"
-            >
-              {milestones.map(({ step: milestone, index }) => (
-                <span
-                  key={`${index}-${milestone.label}`}
-                  data-testid={`milestone-marker-${index}`}
-                  className={cn(
-                    'absolute top-0 h-4 w-0.5 -translate-x-1/2 rounded-full',
-                    index === safeCurrentStep
-                      ? 'bg-teal-700 dark:bg-teal-300'
-                      : 'bg-zinc-400 dark:bg-zinc-500',
-                  )}
-                  style={{ left: `${milestonePosition(index, steps.length)}%` }}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        <input
+          type="range"
+          min={0}
+          max={Math.max(steps.length - 1, 0)}
+          value={safeCurrentStep}
+          onChange={(event) => {
+            goToStep(Number(event.target.value));
+          }}
+          disabled={!hasMultipleSteps}
+          aria-label="Animation timeline"
+          aria-valuemin={0}
+          aria-valuemax={Math.max(steps.length - 1, 0)}
+          aria-valuenow={safeCurrentStep}
+          aria-valuetext={`Step ${safeCurrentStep + 1} of ${steps.length}: ${step.label}`}
+          className="h-2 w-full cursor-pointer accent-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
+        />
 
         <div
           className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700"
@@ -435,8 +435,8 @@ const StepAnimator = memo(function StepAnimator({
         >
           <div
             className={cn(
-              'h-full rounded-full bg-teal-600 dark:bg-teal-400',
-              !reducedMotion && 'transition-all duration-300 ease-out',
+              "h-full rounded-full bg-teal-600 dark:bg-teal-400",
+              !reducedMotion && "transition-all duration-300 ease-out",
             )}
             style={{ width: `${progressPercent}%` }}
           />
@@ -525,10 +525,10 @@ const StepAnimator = memo(function StepAnimator({
             type="button"
             onClick={togglePlay}
             disabled={!hasMultipleSteps}
-            aria-label={isPlaying ? 'Pause' : 'Play'}
+            aria-label={isPlaying ? "Pause animation" : "Play animation"}
             className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-teal-500 dark:hover:bg-teal-400"
           >
-            {isPlaying ? 'Pause' : 'Play'}
+            {isPlaying ? "Pause" : "Play"}
           </button>
 
           <button
@@ -546,7 +546,7 @@ const StepAnimator = memo(function StepAnimator({
             type="button"
             onClick={() => goToStep(steps.length - 1)}
             disabled={safeCurrentStep >= steps.length - 1}
-            aria-label="Jump to end"
+            aria-label="Go to last step"
             className="rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-300 dark:hover:bg-zinc-800"
             title="Last Step (End)"
           >
@@ -609,12 +609,12 @@ const StepAnimator = memo(function StepAnimator({
             onClick={copyStepLink}
             className="rounded-lg border border-zinc-200 px-3 py-2 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
-            {linkCopied ? 'Copied!' : 'Copy Step Link'}
+            {linkCopied ? "Copied!" : "Copy Step Link"}
           </button>
         )}
       </div>
     </div>
-  )
-})
+  );
+});
 
-export default StepAnimator
+export default StepAnimator;
