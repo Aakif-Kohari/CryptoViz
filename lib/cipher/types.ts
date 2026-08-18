@@ -243,6 +243,7 @@ export type CipherName =
   | 'blake'
   | 'kupyna'
   | 'radiogatun'
+  | 'ascon-hash'
   | 'poly1305'
   | 'hmac'
   | 'cmac'

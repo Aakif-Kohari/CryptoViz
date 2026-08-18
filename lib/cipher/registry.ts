@@ -1233,6 +1233,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
       }
     ],
   },
+  {
+    id: 'ascon-hash',
+    name: 'Ascon-Hash',
+    category: 'hash',
+    description: 'NIST Lightweight Cryptography Standard (SP 800-232, 2025). SPONGE MODE using the SAME Ascon permutation already implemented in ascon.ts for AEAD mode. Genuinely reuses the 5x64-bit-word permutation — only the surrounding construction differs (sponge absorb-then-squeeze vs. AEAD duplex). Status: secure.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+  },
   // Asymmetric
   {
     id: "rsa",
