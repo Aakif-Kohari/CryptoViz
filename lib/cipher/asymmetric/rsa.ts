@@ -2,6 +2,7 @@ import { CipherError } from '../../utils/errors'
 import { toByteArray, fromByteArray } from '../../utils/encoding'
 import type { CipherResult, CipherStep, CipherMetadata, CipherOptions, TestVector } from '../types'
 import { isPrime } from '../../asymmetric/rsaKeyGenerationWizard'
+import { parseAsymmetricInput } from './asymmetricInput'
 
 // ---------------------------------------------------------------------------
 // Real mode: genuine RSA-OAEP (SHA-256) via the WebCrypto API (crypto.subtle).
@@ -405,10 +406,7 @@ export function encrypt(
   const e = keyInfo.e ?? 65537n
 
   const steps: CipherStep[] = []
-  const isNumeric = /^\d+$/.test(input.trim())
-  const inputParts = isNumeric 
-    ? [BigInt(input.trim())] 
-    : Array.from(new TextEncoder().encode(input)).map(b => BigInt(b))
+  const inputParts = parseAsymmetricInput(input, options.inputEncoding as string | undefined, n)
 
   const ciphertexts: bigint[] = []
   for (let i = 0; i < inputParts.length; i++) {
@@ -481,8 +479,30 @@ export function decrypt(
       const crtKey = computeCrtParameters(p, q, d);
       const { m } = decryptCrt(c, crtKey);
       plaintexts.push(m);
+      if (options.instrument) {
+        steps.push({
+          index: steps.length,
+          label: `Decrypting block ${i + 1}/${cipherParts.length} (CRT)`,
+          inputState: c.toString(16),
+          outputState: m.toString(16),
+          note: `Decrypted with CRT acceleration: M = ${m}.`,
+        });
+      }
     } else {
-      plaintexts.push(modPow(c, d, n));
+      if (options.instrument) {
+        const { result, steps: powSteps } = modPowInstrumented(c, d, n);
+        plaintexts.push(result);
+        steps.push({
+          index: steps.length,
+          label: `Decrypting block ${i + 1}/${cipherParts.length}`,
+          inputState: c.toString(16),
+          outputState: result.toString(16),
+          table: powSteps,
+          note: `Computed M = C^d mod n = ${result}.`,
+        });
+      } else {
+        plaintexts.push(modPow(c, d, n));
+      }
     }
   }
 

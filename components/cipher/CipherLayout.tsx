@@ -722,6 +722,43 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               />
             </div>
 
+            {/* Asymmetric Modulus Capacity Indicator */}
+            {cipher.category === "asymmetric" && (cipher.id === "rsa" || cipher.id === "elgamal" || cipher.id === "paillier" || cipher.id === "rabin") && (() => {
+              let modulusValue: bigint | null = null
+              try {
+                const parts = key.split(/[\s,]+/).map(p => p.trim()).filter(Boolean)
+                if (cipher.id === 'rsa') {
+                  if (parts.length === 3) {
+                    modulusValue = BigInt(parts[0]) * BigInt(parts[1])
+                  } else if (parts.length === 2) {
+                    modulusValue = BigInt(parts[0])
+                  }
+                } else if (cipher.id === 'elgamal') {
+                  if (parts.length >= 1) modulusValue = BigInt(parts[0])
+                } else if (cipher.id === 'paillier' || cipher.id === 'rabin') {
+                  if (parts.length >= 1) modulusValue = BigInt(parts[0])
+                }
+              } catch {}
+
+              if (!modulusValue || modulusValue <= 1n) return null
+
+              const maxInt = modulusValue - 1n
+              const bitCapacity = Math.floor(Math.log2(Number(modulusValue)))
+              const byteCapacity = Math.max(1, Math.floor(bitCapacity / 8))
+
+              return (
+                <div className="rounded-lg border border-teal-500/20 bg-teal-50/40 p-3 text-xs dark:border-teal-500/20 dark:bg-teal-950/20">
+                  <div className="flex items-center justify-between font-semibold text-teal-800 dark:text-teal-300">
+                    <span>Modulus Capacity Indicator:</span>
+                    <span className="font-mono">{bitCapacity} bits / {byteCapacity} byte(s) per block</span>
+                  </div>
+                  <p className="mt-1 text-[11px] text-zinc-600 dark:text-zinc-400">
+                    Modulus <span className="font-mono font-bold">n = {modulusValue.toString()}</span> (max allowed integer <span className="font-mono">M = {maxInt.toString()}</span>). Plaintext blocks must be strictly less than modulus.
+                  </p>
+                </div>
+              )
+            })()}
+
             {KEYLESS_CIPHERS.includes(cipher.id) ? (
               <div className="flex flex-col gap-1 rounded-lg border border-zinc-200 bg-zinc-50/50 p-3 dark:border-zinc-800 dark:bg-zinc-950/40">
                 <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
