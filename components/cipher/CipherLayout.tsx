@@ -1,16 +1,14 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
-import type {
-  CipherDefinition,
-  CipherOptionValue,
-} from "../../lib/cipher/registry";
-import type { CipherResult, CipherOptions } from "../../lib/cipher/types";
-import { useCipherWorker } from "../../lib/hooks/useCipherWorker";
-import type { AnimationSpeed } from "./StepAnimator";
-import WorkspacePresetManager from "./WorkspacePresetManager";
-import ConversionHistory from "./ConversionHistory";
+'use client'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
+import type { CipherDefinition, CipherOptionValue } from '../../lib/cipher/registry'
+import type { CipherResult, CipherOptions } from '../../lib/cipher/types'
+import { useCipherWorker } from '../../lib/hooks/useCipherWorker'
+import type { AnimationSpeed } from './StepAnimator'
+import WorkspacePresetManager from './WorkspacePresetManager'
+import ConversionHistory from './ConversionHistory'
 import WhereIsThisUsed from "./WhereIsThisUsed";
 import type { WorkspacePreset } from "../../lib/utils/workspacePresets";
 import {
@@ -39,28 +37,27 @@ import {
 import {
   traceToCipherResult,
   type CipherTraceFile,
-} from "../../lib/utils/cipherTrace";
-import { getVisualizerComponent } from "@/components/visualizers/visualizerComponentRegistry";
+} from '../../lib/utils/cipherTrace'
+import { calculateSecurityMetrics, parseKeySize } from '../../lib/utils/securityMetrics'
+import { diagnoseError, type Diagnostic } from '../../lib/utils/errors'
+import { CryptoDiagnosticBanner } from '../ui/CryptoDiagnosticBanner'
+import { WeakParameterAlertBanner } from '../ui/WeakParameterAlertBanner'
+import { detectWeakParameters } from '../../lib/security/weakParameters'
 
-const StepAnimator = dynamic(() => import("./StepAnimator"), {
-  ssr: false,
-});
+const StepAnimator = dynamic(() => import('./StepAnimator'), { ssr: false })
+const PlayfairGrid = dynamic(() => import('./PlayfairGrid'), { ssr: false })
+const RailFenceViz = dynamic(() => import('./RailFenceViz'), { ssr: false })
+const DHVisualizer = dynamic(() => import('./DHVisualizer'), { ssr: false })
+const HmacVisualizer = dynamic(() => import('./HmacVisualizer'), { ssr: false })
+const Sm3Visualizer = dynamic(() => import('./Sm3Visualizer'), { ssr: false })
+const HillMatrixVisualizer = dynamic(() => import('./HillMatrixVisualizer'), { ssr: false })
+const UniversalCipherDebugger = dynamic(() => import('./UniversalCipherDebugger'), { ssr: false })
+import ZenModeToggle from './ZenModeToggle'
 
 interface CipherLayoutProps {
   cipher: CipherDefinition;
 }
 
-interface HistoryEntry {
-  id: string;
-  input: string;
-  key: string;
-  action: "encrypt" | "decrypt";
-  output: string;
-  timestamp: string;
-}
-
-const getHistoryStorageKey = (cipherId: string) =>
-  `cryptoviz-history-${cipherId}`;
 
 const isBooleanOptionValue = (value: CipherOptionValue): value is boolean =>
   typeof value === "boolean";
@@ -68,23 +65,6 @@ const isNumberOptionValue = (value: CipherOptionValue): value is number =>
   typeof value === "number";
 const isStringOptionValue = (value: CipherOptionValue): value is string =>
   typeof value === "string";
-
-const isValidHistoryEntry = (entry: unknown): entry is HistoryEntry => {
-  return (
-    typeof entry === "object" &&
-    entry !== null &&
-    "id" in entry &&
-    "input" in entry &&
-    "key" in entry &&
-    "action" in entry &&
-    "output" in entry &&
-    "timestamp" in entry
-  );
-};
-
-const isValidHistoryArray = (data: unknown): data is HistoryEntry[] => {
-  return Array.isArray(data) && data.every(isValidHistoryEntry);
-};
 
 export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const { runCipher, loading, error: workerError } = useCipherWorker();
@@ -139,6 +119,12 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const [securityMetrics, setSecurityMetrics] = useState(() => 
     calculateSecurityMetrics(cipher, { keySize: parseKeySize(cipher, cipher.defaultKey) })
   );
+  const weakParameterFindings = useMemo(() => detectWeakParameters({
+    cipherId: cipher.id,
+    key,
+    options: optionsState,
+    history,
+  }), [cipher.id, key, optionsState, history]);
 
   const KEYLESS_CIPHERS = [
     "atbash",
@@ -422,6 +408,11 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
             action: currentAction,
             output: String(res.output),
             timestamp: new Date().toLocaleString(),
+            parameters: (() => {
+              const nonce = cipher.id === 'chacha20-poly1305' ? key.split('|')[1]?.split(':')[0] : undefined
+              const iv = cipher.id === 'aes-gcm' && typeof optionsState.iv === 'string' ? optionsState.iv : undefined
+              return nonce || iv ? { ...(nonce ? { nonce } : {}), ...(iv ? { iv } : {}) } : undefined
+            })(),
           };
           setHistory((prev) =>
             saveConversionHistory(cipher.id, [entry, ...prev]),
@@ -722,6 +713,8 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           )}
         </div>
       </div>
+
+      <WeakParameterAlertBanner findings={weakParameterFindings} />
 
       {/* Security Strength Card */}
       <SecurityStrengthCard 
