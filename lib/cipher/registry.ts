@@ -786,6 +786,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keySize: '128/192/256',
   },
   {
+    id: 'hierocrypt3',
+    name: 'Hierocrypt-3',
+    category: 'symmetric',
+    description: 'Toshiba CRYPTREC candidate (2000). Distinctive NESTED SPN: each outer round contains TWO XS-box sub-layers (byte substitution + small internal MDS diffusion) with outer MDS-L diffusion between them — two distinct diffusion scales within one round. Status: legacy (lower CRYPTREC tier than Camellia).',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+    keySize: '128/192/256',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
