@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { SecureKeyStore } from '../storage/secureKeyStore';
+import { SecureKeyStore } from '@/lib/storage/secureKeyStore';
 
 export function useSecureKeyLifecycle(keyId: string) {
   useEffect(() => {

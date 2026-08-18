@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Bookmark, ExternalLink, BookmarkX } from 'lucide-react'
-import { type BookmarkedResource } from '@/lib/hooks/useProgress'
+import { type BookmarkedResource } from '@/hooks/useProgress'
 
 interface BookmarksProps { bookmarks: BookmarkedResource[]; onRemove: (id: string) => void }
 

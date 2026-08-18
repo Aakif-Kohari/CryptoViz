@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { CheckCircle2, Circle, ArrowRight } from 'lucide-react'
-import { ALL_ALGORITHMS, type AlgorithmProgress } from '@/lib/hooks/useProgress'
+import { ALL_ALGORITHMS, type AlgorithmProgress } from '@/hooks/useProgress'
 
 interface AlgorithmChecklistProps { visited: Record<string, AlgorithmProgress> }
 

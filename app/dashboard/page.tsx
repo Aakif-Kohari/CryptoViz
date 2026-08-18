@@ -11,7 +11,7 @@ import AlgorithmChecklist from '@/components/dashboard/AlgorithmChecklist'
 import StreakCalendar from '@/components/dashboard/StreakCalendar'
 import Bookmarks from '@/components/dashboard/Bookmarks'
 import OverallProgress from '@/components/dashboard/OverallProgress'
-import { useProgress } from '@/lib/hooks/useProgress'
+import { useProgress } from '@/hooks/useProgress'
 import { Trophy, Target, CheckCircle2, Flame, RotateCcw, AlertTriangle } from 'lucide-react'
 
 function DashboardSkeleton() {
