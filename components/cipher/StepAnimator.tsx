@@ -31,7 +31,6 @@ const StepAnimator = memo(function StepAnimator({
   const [isPlaying, setIsPlaying] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [internalSpeed, setInternalSpeed] = useState<AnimationSpeed>(1);
-
   const [reducedMotion, setReducedMotion] = useState(false);
 
   const speed = controlledSpeed ?? internalSpeed;
@@ -156,10 +155,6 @@ const StepAnimator = memo(function StepAnimator({
   ]);
 
   // Keyboard shortcuts.
-  //
-  // These are deliberately retained at window level so the existing
-  // visualizer keyboard interaction continues to work. Form controls are
-  // excluded so that arrow keys remain usable inside inputs/selects.
   useEffect(() => {
     if (steps.length === 0) return;
 
