@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
@@ -43,6 +43,8 @@ import {
 import { calculateSecurityMetrics, parseKeySize } from '../../lib/utils/securityMetrics'
 import { diagnoseError, type Diagnostic } from '../../lib/utils/errors'
 import { CryptoDiagnosticBanner } from '../ui/CryptoDiagnosticBanner'
+import { WeakParameterAlertBanner } from '../ui/WeakParameterAlertBanner'
+import { detectWeakParameters } from '../../lib/security/weakParameters'
 
 const StepAnimator = dynamic(() => import('./StepAnimator'), { ssr: false })
 const PlayfairGrid = dynamic(() => import('./PlayfairGrid'), { ssr: false })
@@ -58,38 +60,10 @@ interface CipherLayoutProps {
   cipher: CipherDefinition;
 }
 
-interface HistoryEntry {
-  id: string;
-  input: string;
-  key: string;
-  action: "encrypt" | "decrypt";
-  output: string;
-  timestamp: string;
-}
-
-const getHistoryStorageKey = (cipherId: string) =>
-  `cryptoviz-history-${cipherId}`;
 
 const isBooleanOptionValue = (value: CipherOptionValue): value is boolean => typeof value === 'boolean'
 const isNumberOptionValue = (value: CipherOptionValue): value is number => typeof value === 'number'
 const isStringOptionValue = (value: CipherOptionValue): value is string => typeof value === 'string'
-
-const isValidHistoryEntry = (entry: unknown): entry is HistoryEntry => {
-  return (
-    typeof entry === "object" &&
-    entry !== null &&
-    "id" in entry &&
-    "input" in entry &&
-    "key" in entry &&
-    "action" in entry &&
-    "output" in entry &&
-    "timestamp" in entry
-  );
-};
-
-const isValidHistoryArray = (data: unknown): data is HistoryEntry[] => {
-  return Array.isArray(data) && data.every(isValidHistoryEntry);
-};
 
 export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const { runCipher, loading, error: workerError } = useCipherWorker();
@@ -142,6 +116,12 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const [securityMetrics, setSecurityMetrics] = useState(() => 
     calculateSecurityMetrics(cipher, { keySize: parseKeySize(cipher, cipher.defaultKey) })
   );
+  const weakParameterFindings = useMemo(() => detectWeakParameters({
+    cipherId: cipher.id,
+    key,
+    options: optionsState,
+    history,
+  }), [cipher.id, key, optionsState, history]);
 
   const KEYLESS_CIPHERS = ['atbash', 'rot13', 'sha256','sha512','md5','xxhash32','bloomfilter', 'bloom-filter']
 
@@ -372,6 +352,11 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
             action: currentAction,
             output: String(res.output),
             timestamp: new Date().toLocaleString(),
+            parameters: (() => {
+              const nonce = cipher.id === 'chacha20-poly1305' ? key.split('|')[1]?.split(':')[0] : undefined
+              const iv = cipher.id === 'aes-gcm' && typeof optionsState.iv === 'string' ? optionsState.iv : undefined
+              return nonce || iv ? { ...(nonce ? { nonce } : {}), ...(iv ? { iv } : {}) } : undefined
+            })(),
           };
           setHistory((prev) =>
             saveConversionHistory(cipher.id, [entry, ...prev]),
@@ -671,6 +656,8 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           )}
         </div>
       </div>
+
+      <WeakParameterAlertBanner findings={weakParameterFindings} />
 
       {/* Security Strength Card */}
       <SecurityStrengthCard 
