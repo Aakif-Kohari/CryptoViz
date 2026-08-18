@@ -96,18 +96,37 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const [autoCompute, setAutoCompute] = useState(true);
   const router = useRouter();
 
-  // Custom options states
-  const [hexInput, setHexInput] = useState(true);
-  const [rounds, setRounds] = useState(4);
-  const [demoMode, setDemoMode] = useState(true);
-  const [bobSecret, setBobSecret] = useState("15");
-  const [aesMode, setAesMode] = useState("ECB");
-  const [padding, setPadding] = useState(true);
+  // Dynamic algorithm options state
+  const [optionsState, setOptionsState] = useState<Record<string, CipherOptionValue>>(() => {
+    const initial: Record<string, CipherOptionValue> = {}
+    if (cipher.options) {
+      for (const opt of cipher.options) {
+        initial[opt.id] = opt.default
+      }
+    }
+    // Backward compatibility defaults
+    if (initial.hexInput === undefined) initial.hexInput = true
+    if (initial.rounds === undefined) initial.rounds = 4
+    if (initial.demoMode === undefined) initial.demoMode = true
+    if (initial.bobSecret === undefined) initial.bobSecret = "15"
+    if (initial.mode === undefined) initial.mode = "ECB"
+    if (initial.padding === undefined) initial.padding = true
+    return initial
+  });
+
+  const handleOptionChange = useCallback((optionId: string, value: CipherOptionValue) => {
+    setOptionsState((prev) => ({
+      ...prev,
+      [optionId]: value,
+    }))
+  }, []);
+
   const [result, setResult] = useState<CipherResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [diagnostic, setDiagnostic] = useState<Diagnostic | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [animationSpeed, setAnimationSpeed] = useState<AnimationSpeed>(1);
-  const [activeTab, setActiveTab] = useState<"result" | "history">("result");
+  const [activeTab, setActiveTab] = useState<"result" | "history" | "debugger">("result");
   const [history, setHistory] = useState<ConversionHistoryEntry[]>([]);
   const [annotationStore, setAnnotationStore] = useState<StepAnnotationStore>(
     () => ({
@@ -116,6 +135,10 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     }),
   );
   const [stepNoteInput, setStepNoteInput] = useState("");
+  const [isZenMode, setIsZenMode] = useState(false);
+  const [securityMetrics, setSecurityMetrics] = useState(() => 
+    calculateSecurityMetrics(cipher, { keySize: parseKeySize(cipher, cipher.defaultKey) })
+  );
 
   const KEYLESS_CIPHERS = [
     "atbash",
@@ -131,6 +154,32 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   useEffect(() => {
     setAnnotationStore(loadStepAnnotationStore());
   }, []);
+
+  const handleZenModeToggle = () => {
+    setIsZenMode(prev => {
+      const next = !prev;
+      if (next) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } else {
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && isZenMode) {
+        setIsZenMode(false);
+      }
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, [isZenMode]);
 
   // Restore a shared visualizer configuration from the URL (runs once per cipher).
   useEffect(() => {
@@ -207,8 +256,12 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     setAnimationSpeed(1);
     setActiveTab("result");
     setHistory(loadConversionHistory(cipher.id));
+    
+    // Update security metrics when cipher changes
+    setSecurityMetrics(calculateSecurityMetrics(cipher, { keySize: parseKeySize(cipher, cipher.defaultKey) }));
 
-    // Reset option defaults
+    // Reset option defaults from cipher.options schema + permalinks
+    const newOptions: Record<string, CipherOptionValue> = {}
     if (cipher.options) {
       cipher.options.forEach((opt) => {
         if (
@@ -248,6 +301,11 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         }
       });
     }
+    if (newOptions.mode === undefined && shared.options.aesMode !== undefined) {
+      newOptions.mode = shared.options.aesMode
+    }
+    setOptionsState(newOptions)
+
     return () => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
@@ -255,12 +313,25 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     };
   }, [cipher]);
 
+  // Clear sensitive state on component unmount
+  useEffect(() => {
+    return () => {
+      // Abort any pending operations
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      // Clear sensitive key/passphrase state
+      setKey('');
+      // Clear derived/execution state that may contain sensitive key material
+      setResult(null);
+      setError(null);
+      setDiagnostic(null);
+      setOptionsState((prev) => ({ ...prev, bobSecret: '' }));
+    };
+  }, []);
+
   const workspaceOptions: Record<string, unknown> = {
-    hexInput,
-    rounds,
-    demoMode,
-    bobSecret,
-    padding,
+    ...optionsState,
   };
 
   const handlePresetLoad = (preset: WorkspacePreset) => {
@@ -274,21 +345,10 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     if (preset.key !== undefined) {
       setKey(preset.key);
     }
-    if (typeof preset.options.hexInput === "boolean") {
-      setHexInput(preset.options.hexInput);
-    }
-    if (typeof preset.options.rounds === "number") {
-      setRounds(preset.options.rounds);
-    }
-    if (typeof preset.options.demoMode === "boolean") {
-      setDemoMode(preset.options.demoMode);
-    }
-    if (typeof preset.options.bobSecret === "string") {
-      setBobSecret(preset.options.bobSecret);
-    }
-    if (typeof preset.options.padding === "boolean") {
-      setPadding(preset.options.padding);
-    }
+    setOptionsState((prev) => ({
+      ...prev,
+      ...preset.options,
+    }));
     setAnimationSpeed(preset.animationSpeed);
     setResult(null);
     setCurrentStep(0);
@@ -309,6 +369,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       const options: CipherOptions = {
         instrument: true,
         signal: controller.signal,
+        ...optionsState,
       };
       if (
         cipher.id === "des" ||
@@ -331,8 +392,8 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         options.mode = "demo";
         options.bobSecret = bobSecret;
       }
-      if (cipher.id === "camellia") {
-        options.padding = padding ? "PKCS7" : "None";
+      if (cipher.id === "camellia" && typeof optionsState.padding === "boolean") {
+        options.padding = optionsState.padding ? "PKCS7" : "None";
       }
 
       const currentAction = cipher.id === "dh" ? "encrypt" : action;
@@ -377,6 +438,18 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           : "An error occurred during calculation.",
       );
       setResult(null);
+      
+      // Try to generate diagnostic for the error
+      if (err && typeof err === 'object' && 'code' in err) {
+        const diagnosticResult = diagnoseError(err as any, {
+          cipherId: cipher.id,
+          fieldName: 'key',
+          fieldValue: key,
+        });
+        setDiagnostic(diagnosticResult);
+      } else {
+        setDiagnostic(null);
+      }
     } finally {
       if (abortControllerRef.current === controller) {
         abortControllerRef.current = null;
@@ -389,21 +462,10 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     setInput(trace.input);
     setKey(trace.key);
     setAction(trace.direction);
-    if (typeof trace.options.hexInput === "boolean") {
-      setHexInput(trace.options.hexInput);
-    }
-    if (typeof trace.options.rounds === "number") {
-      setRounds(trace.options.rounds);
-    }
-    if (typeof trace.options.demoMode === "boolean") {
-      setDemoMode(trace.options.demoMode);
-    }
-    if (typeof trace.options.bobSecret === "string") {
-      setBobSecret(trace.options.bobSecret);
-    }
-    if (typeof trace.options.padding === "boolean") {
-      setPadding(trace.options.padding);
-    }
+    setOptionsState((prev) => ({
+      ...prev,
+      ...trace.options,
+    }));
     const importedResult = traceToCipherResult(trace);
     setResult(importedResult);
     const restoredStep = pendingSharedStepRef.current;
@@ -429,12 +491,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     input,
     key,
     action,
-    hexInput,
-    rounds,
-    demoMode,
-    bobSecret,
-    aesMode,
-    padding,
+    optionsState,
   ]);
 
   const getStatusBadge = (
@@ -569,6 +626,34 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     );
   };
 
+  const handleDiagnosticRemediation = (value: string | number) => {
+    // Apply the remediation to the relevant input
+    if (typeof value === 'string') {
+      if (value === 'remove_last') {
+        // Special case for odd hex length - remove last character
+        setInput(prev => prev.slice(0, -1));
+      } else if (value === 'generator' || value === '') {
+        // Special case for ECC - use default point
+        setKey('');
+      } else {
+        // General case - set the key/input directly
+        setKey(value);
+      }
+    } else {
+      // Numeric value - convert to string for key/input
+      setKey(String(value));
+    }
+    
+    // Clear the error and diagnostic after applying remediation
+    setError(null);
+    setDiagnostic(null);
+    
+    // Re-run the cipher with the new value if auto-compute is enabled
+    if (autoCompute) {
+      // The effect will trigger automatically
+    }
+  };
+
   const handleClearStepAnnotations = async () => {
     if (
       !window.confirm(
@@ -593,18 +678,26 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     await navigator.clipboard.writeText(permalink);
   };
 
+  const handleClearKey = useCallback(() => {
+    setKey('');
+    // Clear dependent execution/output state
+    setResult(null);
+    setError(null);
+    setDiagnostic(null);
+    // If bobSecret is sensitive, clear it too
+    if (cipher.id === 'dh') {
+      setOptionsState((prev) => ({ ...prev, bobSecret: '' }));
+    }
+  }, [cipher.id]);
+
   const traceOptions: Record<string, unknown> = {
-    hexInput,
-    rounds,
-    demoMode,
-    bobSecret,
-    padding,
+    ...optionsState,
   };
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-6 px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8">
+    <div className={`mx-auto flex max-w-7xl flex-col gap-6 px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8 ${isZenMode ? 'zen-mode-active' : ''}`}>
       {/* Title & Metadata Card */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 pb-5 dark:border-zinc-800">
+      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 pb-5 dark:border-zinc-800 ${isZenMode ? 'zen-mode-header' : ''}`}>
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-white sm:text-3xl">
             {cipher.name}
@@ -614,16 +707,31 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <ZenModeToggle isZenMode={isZenMode} onToggle={handleZenModeToggle} />
           <CipherLifecycleBadge status={cipher.securityStatus} size="sm" />
           <span className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
             {cipher.category}
           </span>
+          {['aes', 'twofish'].includes(cipher.id) && (
+            <a 
+              href="/finite-field"
+              className="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700 hover:bg-teal-100 dark:border-teal-900 dark:bg-teal-950/50 dark:text-teal-300 dark:hover:bg-teal-900 transition-colors"
+            >
+              Learn the GF(2^8) Math
+            </a>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-5 md:gap-6 lg:grid-cols-12 lg:gap-8">
+      {/* Security Strength Card */}
+      <SecurityStrengthCard 
+        metrics={securityMetrics} 
+        className="mb-6"
+      />
+
+      <div className={`grid grid-cols-1 items-start gap-5 md:gap-6 lg:grid-cols-12 lg:gap-8 ${isZenMode ? 'zen-mode-grid' : ''}`}>
         {/* Controls Column (Left) */}
-        <div className="flex flex-col gap-6 lg:col-span-5">
+        <div className={`flex flex-col gap-6 lg:col-span-5 ${isZenMode ? 'zen-mode-controls' : ''}`}>
           {cipher.category !== "hash" && cipher.id !== "dh" && (
             <div className="flex rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-800/80">
               <button
@@ -702,101 +810,39 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                    Bcrypt Rounds (Cost Factor)
+                    {cipher.id === "ecc"
+                      ? action === "encrypt"
+                        ? "Private Key (Hex)"
+                        : "Signature, Public Key (comma separated)"
+                      : cipher.id === "dh"
+                        ? "Alice Private Secret (a) & Public Parameters (p, g)"
+                        : "Cryptographic Key / Shift"}
                   </label>
-                  <span className="font-mono text-xs font-bold text-teal-600 dark:text-teal-400">
-                    {rounds}
-                  </span>
+                  <button
+                    type="button"
+                    onClick={handleClearKey}
+                    aria-label="Clear key"
+                    className="text-xs font-medium text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
+                  >
+                    Clear Key
+                  </button>
                 </div>
                 <input
-                  type="range"
-                  min="4"
-                  max="12"
-                  value={rounds}
-                  onChange={(e) => setRounds(parseInt(e.target.value))}
-                  className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-zinc-200 dark:bg-zinc-700 accent-teal-600 dark:accent-teal-400"
-                />
-              </div>
-            )}
-
-            {cipher.id === "dh" && (
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                  Bob Private Secret (b)
-                </label>
-                <input
                   type="text"
-                  value={bobSecret}
-                  onChange={(e) => setBobSecret(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 p-2.5 font-mono text-sm text-zinc-900 outline-none transition-all focus:border-teal-500 focus:bg-white dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-100 dark:focus:border-teal-400"
+                  value={key}
+                  onChange={(e) => setKey(e.target.value)}
+                  className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 p-2.5 font-mono text-sm text-zinc-900 outline-none transition-all focus:border-teal-500 focus:bg-white dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-100 dark:focus:border-teal-400 dark:focus:bg-zinc-950"
+                  placeholder={cipher.keyPlaceholder || "Enter key..."}
                 />
               </div>
             )}
 
-            {cipher.id === "rsa" && (
-              <div className="flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-800">
-                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                  Demo Mode (Square & Multiply walkthrough)
-                </span>
-                <input
-                  type="checkbox"
-                  checked={demoMode}
-                  onChange={(e) => setDemoMode(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-300 text-teal-600 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800"
-                />
-              </div>
-            )}
-
-            {["des", "3des", "aes", "camellia"].includes(cipher.id) && (
-              <div className="flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-800">
-                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                  Input / Key in Hex Format
-                </span>
-                <input
-                  type="checkbox"
-                  checked={hexInput}
-                  onChange={(e) => setHexInput(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-300 text-teal-600 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800"
-                />
-              </div>
-            )}
-
-            {(cipher.id === "aes" || cipher.id === "camellia") && (
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                  Mode of Operation
-                </label>
-                <select
-                  value={aesMode}
-                  onChange={(e) => setAesMode(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 p-2.5 font-mono text-sm text-zinc-900 outline-none transition-all focus:border-teal-500 focus:bg-white dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-100 dark:focus:border-teal-400"
-                >
-                  <option value="ECB">ECB (Electronic Codebook)</option>
-                  <option value="CBC">CBC (Cipher Block Chaining)</option>
-                  {cipher.id === "aes" && (
-                    <>
-                      <option value="CTR">CTR (Counter)</option>
-                      <option value="CFB">CFB (Cipher Feedback)</option>
-                      <option value="OFB">OFB (Output Feedback)</option>
-                    </>
-                  )}
-                </select>
-              </div>
-            )}
-
-            {cipher.id === "camellia" && (
-              <div className="flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-800">
-                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                  PKCS#7 Padding
-                </span>
-                <input
-                  type="checkbox"
-                  checked={padding}
-                  onChange={(e) => setPadding(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-300 text-teal-600 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800"
-                />
-              </div>
-            )}
+            {/* Dynamic Cipher Options Panel */}
+            <CipherOptionsPanel
+              cipher={cipher}
+              optionsState={optionsState}
+              onChange={handleOptionChange}
+            />
 
             <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <button
@@ -837,7 +883,14 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
             onLoad={handlePresetLoad}
           />
 
-          {(error || workerError) && (
+          {diagnostic && (
+            <CryptoDiagnosticBanner
+              diagnostic={diagnostic}
+              onRemediation={handleDiagnosticRemediation}
+            />
+          )}
+
+          {(error || workerError) && !diagnostic && (
             <div className="rounded-xl border border-red-100 bg-red-50 p-4 dark:border-red-950/40 dark:bg-red-950/10">
               <div className="flex gap-2.5">
                 <div className="flex flex-col gap-0.5">
@@ -857,7 +910,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         </div>
 
         {/* Output & Trace Column (Right) */}
-        <div className="flex flex-col gap-6 lg:col-span-7">
+        <div className={`flex flex-col gap-6 lg:col-span-7 ${isZenMode ? 'zen-mode-visualizer' : ''}`}>
           <div className="flex rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-800/80">
             <button
               onClick={() => setActiveTab("result")}
@@ -879,6 +932,18 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
             >
               History
             </button>
+            {['aes', 'des', '3des', 'twofish', 'serpent', 'camellia', 'aria'].includes(cipher.id) && (
+              <button
+                onClick={() => setActiveTab("debugger")}
+                className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${
+                  activeTab === "debugger"
+                    ? "bg-white text-zinc-950 shadow dark:bg-zinc-900 dark:text-white"
+                    : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+                }`}
+              >
+                Debugger
+              </button>
+            )}
           </div>
 
           {activeTab === "result" ? (
@@ -997,16 +1062,24 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
                 </div>
               )}
             </>
-          ) : (
+          ) : activeTab === "history" ? (
             <ConversionHistory
               cipherId={cipher.id}
               history={history}
               onHistoryChange={setHistory}
             />
-          )}
+          ) : activeTab === "debugger" ? (
+            <UniversalCipherDebugger
+              cipherId={cipher.id}
+              action={action}
+              input={input}
+              key={key}
+              options={workspaceOptions}
+            />
+          ) : null}
         </div>
       </div>
-      <WhereIsThisUsed cipherId={cipher.id} />
+      {!isZenMode && <WhereIsThisUsed cipherId={cipher.id} />}
     </div>
   );
 }

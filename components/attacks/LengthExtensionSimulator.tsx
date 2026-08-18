@@ -1,148 +1,44 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { VulnerableMac, forgeLengthExtension, type LengthExtensionStep } from '@/lib/attacks/lengthExtension'
+import AttackControlBar from './AttackControlBar'
+import OracleQueryLogViewer from './OracleQueryLogViewer'
 
-const enc = (s: string) => new TextEncoder().encode(s)
-const dec = (b: Uint8Array) => new TextDecoder().decode(b)
+const enc=(s:string)=>new TextEncoder().encode(s)
+const dec=(b:Uint8Array)=>new TextDecoder().decode(b)
 
-const DEMO_SECRET = 'sup3r-s3cr3t-key' // demo-only, simulated server secret (17 bytes)
-const DEFAULT_MESSAGE = 'amount=10&to=alice'
-const DEFAULT_APPEND = '&admin=true'
-
-export default function LengthExtensionSimulator() {
-  const [message, setMessage] = useState(DEFAULT_MESSAGE)
-  const [appendData, setAppendData] = useState(DEFAULT_APPEND)
-  const [secretLengthGuess, setSecretLengthGuess] = useState(DEMO_SECRET.length)
-  const [steps, setSteps] = useState<LengthExtensionStep[]>([])
-  const [forgedText, setForgedText] = useState<string | null>(null)
-  const [forgedMacHex, setForgedMacHex] = useState<string | null>(null)
-  const [oracleAccepted, setOracleAccepted] = useState<boolean | null>(null)
-  const [leakedMacHex, setLeakedMacHex] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  function runAttack() {
-    setError(null)
-    setSteps([])
-    setForgedText(null)
-    setForgedMacHex(null)
-    setOracleAccepted(null)
-
-    try {
-      const oracle = new VulnerableMac(enc(DEMO_SECRET))
-      const messageBytes = enc(message)
-      const leakedMac = oracle.sign(messageBytes)
-      setLeakedMacHex(leakedMac)
-
-      const result = forgeLengthExtension(leakedMac, secretLengthGuess, messageBytes, enc(appendData))
-
-      setSteps(result.steps)
-      setForgedText(dec(result.forgedMessage))
-      setForgedMacHex(result.forgedHashHex)
-      setOracleAccepted(oracle.verify(result.forgedMessage, result.forgedHashHex))
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong.')
-    }
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-        <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-white">
-          1. Vulnerable server (simulated)
-        </h2>
-        <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
-          A demo server signs requests as <code className="rounded bg-zinc-100 px-1 py-0.5 dark:bg-zinc-800">SHA-256(secret || message)</code> and
-          leaks that MAC alongside the message. It never reveals its secret.
-        </p>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Original message (attacker sees this)
-        </label>
-        <input
-          className="mb-4 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        {leakedMacHex && (
-          <p className="break-all text-xs text-zinc-500 dark:text-zinc-500">
-            Leaked MAC: <code>{leakedMacHex}</code>
-          </p>
-        )}
-      </div>
-
-      <div className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-        <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-white">
-          2. Attacker inputs
-        </h2>
-        <div className="mb-4 grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Data to append
-            </label>
-            <input
-              className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
-              value={appendData}
-              onChange={(e) => setAppendData(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Guessed secret length (bytes)
-            </label>
-            <input
-              type="number"
-              min={0}
-              className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
-              value={secretLengthGuess}
-              onChange={(e) => setSecretLengthGuess(Number(e.target.value))}
-            />
-          </div>
-        </div>
-        <button
-          onClick={runAttack}
-          className="rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-400"
-        >
-          Forge extended MAC
-        </button>
-        {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
-      </div>
-
-      {steps.length > 0 && (
-        <div className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-white">3. Attack trace</h2>
-          <ol className="space-y-3">
-            {steps.map((step, i) => (
-              <li key={`step-${i}-${step.label}`} className="border-l-2 border-teal-500 pl-3">
-                <p className="text-sm font-medium text-zinc-900 dark:text-white">{step.label}</p>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">{step.detail}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
-
-      {forgedText !== null && (
-        <div
-          className={`rounded-lg border p-5 ${
-            oracleAccepted
-              ? 'border-red-300 bg-red-50 dark:border-red-900 dark:bg-red-950/30'
-              : 'border-amber-300 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30'
-          }`}
-        >
-          <h2 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">4. Result</h2>
-          <p className="mb-2 break-all text-sm text-zinc-700 dark:text-zinc-300">
-            Forged message: <code>{forgedText}</code>
-          </p>
-          <p className="mb-2 break-all text-sm text-zinc-700 dark:text-zinc-300">
-            Forged MAC: <code>{forgedMacHex}</code>
-          </p>
-          <p className={`text-sm font-semibold ${oracleAccepted ? 'text-red-700 dark:text-red-400' : 'text-amber-700 dark:text-amber-400'}`}>
-            {oracleAccepted
-              ? 'Vulnerable server accepted the forged MAC — the secret-length guess was correct.'
-              : 'Server rejected the forged MAC — the secret-length guess was wrong. Try adjusting it.'}
-          </p>
-        </div>
-      )}
-    </div>
-  )
+export default function LengthExtensionSimulator(){
+ const [secret,setSecret]=useState('sup3r-s3cr3t-key'),[message,setMessage]=useState('amount=10&to=alice'),[appendData,setAppendData]=useState('&admin=true'),[secretLength,setSecretLength]=useState(17)
+ const [steps,setSteps]=useState<LengthExtensionStep[]>([]),[cursor,setCursor]=useState(-1),[running,setRunning]=useState(false),[leaked,setLeaked]=useState<string|null>(null),[forged,setForged]=useState<string|null>(null),[mac,setMac]=useState<string|null>(null),[accepted,setAccepted]=useState<boolean|null>(null),[error,setError]=useState<string|null>(null)
+ const timer=useRef<ReturnType<typeof setInterval>|null>(null)
+ useEffect(()=>()=>{if(timer.current)clearInterval(timer.current)},[])
+ function run(){
+   if(timer.current)clearInterval(timer.current);setRunning(false);setError(null);setSteps([]);setCursor(-1)
+   try{
+    const oracle=new VulnerableMac(enc(secret)), original=enc(message), append=enc(appendData), leakedMac=oracle.sign(original)
+    const result=forgeLengthExtension(leakedMac,secretLength,original,append)
+    setLeaked(leakedMac);setSteps(result.steps);setForged(dec(result.forgedMessage));setMac(result.forgedHashHex);setAccepted(oracle.verify(result.forgedMessage,result.forgedHashHex))
+   }catch(e){setError(e instanceof Error?e.message:String(e))}
+ }
+ function play(){if(!steps.length)return;setRunning(true);timer.current=setInterval(()=>setCursor(c=>{if(c>=steps.length-1){if(timer.current)clearInterval(timer.current);setRunning(false);return c}return c+1}),500)}
+ function pause(){if(timer.current)clearInterval(timer.current);setRunning(false)}
+ const current=steps[cursor]
+ const log=steps.slice(0,cursor+1).map((s,i)=>({index:i,label:s.label,detail:s.detail,status:'info' as const}))
+ return <div className="space-y-5">
+  <div className="grid gap-3 rounded-lg border p-5">
+   <label className="text-sm">Demo server secret (custom target)<input className="mt-1 w-full rounded border px-2 py-2" value={secret} onChange={e=>setSecret(e.target.value)}/></label>
+   <label className="text-sm">Original message<input className="mt-1 w-full rounded border px-2 py-2" value={message} onChange={e=>setMessage(e.target.value)}/></label>
+   <div className="grid gap-3 sm:grid-cols-2"><label className="text-sm">Data to append<input className="mt-1 w-full rounded border px-2 py-2" value={appendData} onChange={e=>setAppendData(e.target.value)}/></label><label className="text-sm">Guessed secret length<input type="number" min={0} className="mt-1 w-full rounded border px-2 py-2" value={secretLength} onChange={e=>setSecretLength(+e.target.value)}/></label></div>
+   <button onClick={run} className="w-fit rounded bg-teal-600 px-4 py-2 text-sm font-medium text-white">Prepare interactive extension</button>{error&&<p className="text-sm text-red-600">{error}</p>}
+   {leaked&&<p className="break-all text-xs text-zinc-500">Leaked MAC: <code>{leaked}</code></p>}
+  </div>
+  {steps.length>0&&<div className="space-y-4">
+   <AttackControlBar running={running} canPrevious={cursor>=0} canNext={cursor<steps.length-1} onPlay={play} onPause={pause} onPrevious={()=>setCursor(c=>Math.max(-1,c-1))} onNext={()=>setCursor(c=>Math.min(steps.length-1,c+1))} onReset={()=>{pause();setCursor(-1)}}/>
+   <div className="text-xs text-zinc-500">Step {Math.max(0,cursor+1)} / {steps.length}</div>
+   {current&&<div className="rounded-lg border border-cyan-300 bg-cyan-50 p-4 dark:bg-cyan-950/20"><h3 className="font-semibold">{current.label}</h3><p className="mt-1 text-sm">{current.detail}</p></div>}
+   <OracleQueryLogViewer entries={log}/>
+   {cursor===steps.length-1&&forged&&<div className={`rounded border p-4 ${accepted?'border-red-300 bg-red-50':'border-amber-300 bg-amber-50'}`}><div className="font-semibold">Forged request</div><code className="break-all">{forged}</code><p className="mt-2 break-all text-xs">Forged MAC: {mac}</p><p className="mt-2 text-sm">{accepted?'Simulated vulnerable verifier accepted the forged MAC.':'Verifier rejected the forged MAC; check the secret-length guess.'}</p></div>}
+  </div>}
+ </div>
 }

@@ -63,7 +63,7 @@ export function assertSkipjackKeyHex(value: string): string {
   const cleaned = cleanHex(value);
   if (!cleaned) throw new Error("Skipjack key is required.");
   if (!/^[A-F0-9]+$/.test(cleaned)) throw new Error("Skipjack key must contain only hexadecimal characters.");
-  if (cleaned.length !== 20) throw new Error("Skipjack key must be exactly 20 hexadecimal characters.");
+  if (cleaned.length !== 20) throw new Error("Skipjack key must be exactly 80-bit (20 hexadecimal characters).");
   return cleaned;
 }
 

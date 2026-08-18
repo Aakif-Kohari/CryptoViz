@@ -36,7 +36,8 @@ const PERM = Array.from({ length: 1024 }, (_, i) => {
 const RC: bigint[] = Array.from({ length: 42 }, (_, i) => BigInt(i + 1) * 0x123456789abcdefn)
 
 function applySBox(state: Uint8Array, round: number): Uint8Array {
-    const out = new Uint8Array(128)
+    const buf = new ArrayBuffer(128)
+    const out = new Uint8Array(buf)
     for (let i = 0; i < 128; i++) {
         const hi = (state[i] >> 4) & 0xf
         const lo = state[i] & 0xf
@@ -48,7 +49,8 @@ function applySBox(state: Uint8Array, round: number): Uint8Array {
 }
 
 function applyL(state: Uint8Array): Uint8Array {
-    const out = new Uint8Array(128)
+    const buf = new ArrayBuffer(128)
+    const out = new Uint8Array(buf)
     for (let i = 0; i < 128; i++) {
         const hi = (state[i] >> 4) & 0xf
         const lo = state[i] & 0xf
@@ -69,7 +71,8 @@ function applyPerm(state: Uint8Array): Uint8Array {
     for (let i = 0; i < 1024; i++) {
         permBits[i] = bits[PERM[i]]
     }
-    const out = new Uint8Array(128)
+    const buf = new ArrayBuffer(128)
+    const out = new Uint8Array(buf)
     for (let i = 0; i < 128; i++) {
         let byte = 0
         for (let b = 0; b < 8; b++) {
@@ -81,7 +84,9 @@ function applyPerm(state: Uint8Array): Uint8Array {
 }
 
 function E8(state: Uint8Array): Uint8Array {
-    let s = new Uint8Array(state)
+    const buf = new ArrayBuffer(128)
+    const s = new Uint8Array(buf)
+    s.set(state)
     for (let r = 0; r < 42; r++) {
         // Add Round Constant (simplified XOR into first 32 bytes)
         const rcBytes = new Uint8Array(32)
@@ -91,9 +96,10 @@ function E8(state: Uint8Array): Uint8Array {
         }
         for (let i = 0; i < 32; i++) s[i] ^= rcBytes[i]
 
-        s = applySBox(s, r)
-        s = applyL(s)
-        s = applyPerm(s)
+        const s1_state = applySBox(s, r)
+        const s2_state = applyL(s1_state)
+        const s3_state = applyPerm(s2_state)
+        s.set(s3_state)
     }
     return s
 }
@@ -127,10 +133,14 @@ function jhCore(input: string, instrument: boolean): CipherResult {
     // Padding: append 0x80, zeros, then 64-bit length (big-endian)
     const bitLen = BigInt(inBytes.length * 8)
     const blockCount = Math.ceil((inBytes.length + 9) / 64)
-    const padded = new Uint8Array(blockCount * 64)
-    padded.set(inBytes)
-    padded[inBytes.length] = 0x80
-    const view = new DataView(padded.buffer)
+    const paddedBytes = new Uint8Array(blockCount * 64)
+    paddedBytes.set(inBytes)
+    paddedBytes[inBytes.length] = 0x80
+    // Create view on copy to avoid buffer type mismatch warnings
+    const bufferCopy = new ArrayBuffer(paddedBytes.byteLength)
+    const padded = new Uint8Array(bufferCopy)
+    padded.set(paddedBytes)
+    const view = new DataView(bufferCopy)
     view.setBigUint64(padded.length - 8, bitLen, false)
 
     for (let i = 0; i < blockCount; i++) {
