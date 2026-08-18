@@ -1,9 +1,9 @@
 
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { CipherResult } from '../cipher/types'
-import type { WorkerRequest, WorkerResponse } from '../../types/worker'
-import type { WorkerPriority } from '../workers/pool'
+import type { CipherResult } from '@/lib/cipher/types'
+import type { WorkerRequest, WorkerResponse } from '@/types/worker'
+import type { WorkerPriority } from '@/lib/workers/pool'
 
 const MAX_CACHE_SIZE = 200
 const resultCache = new Map<string, CipherResult>()
@@ -67,7 +67,7 @@ export function useCipherWorker() {
 
   const createWorker = useCallback(() => {
     if (typeof window === 'undefined') return null
-    const worker = new Worker(new URL('../workers/cipher.worker.ts', import.meta.url))
+    const worker = new Worker(new URL('../lib/workers/cipher.worker.ts', import.meta.url))
     worker.onmessage = (event: MessageEvent<WorkerResponse | any>) => {
       const data = event.data
       if (data?.type === 'PROGRESS') {

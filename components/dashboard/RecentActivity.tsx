@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Clock, ArrowRight } from 'lucide-react'
-import { type AlgorithmProgress, ALL_ALGORITHMS } from '@/lib/hooks/useProgress'
+import { type AlgorithmProgress, ALL_ALGORITHMS } from '@/hooks/useProgress'
 
 interface RecentActivityProps { recentAlgorithms: AlgorithmProgress[] }
 

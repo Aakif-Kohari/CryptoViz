@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { BookOpen, Search, Sparkles, Award, Network, LayoutList } from 'lucide-react'
 import { LEARNING_PATHS } from '@/lib/learning-paths/data'
-import { useLearningPath } from '@/lib/hooks/useLearningPath'
+import { useLearningPath } from '@/hooks/useLearningPath'
 import ResumeBanner from '@/components/learning-paths/ResumeBanner'
 import RecommendationCard from '@/components/learning-paths/RecommendationCard'
 import PathCard from '@/components/learning-paths/PathCard'

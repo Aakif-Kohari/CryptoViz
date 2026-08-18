@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { safeGetItemJson, safeSetItemJson } from '../utils/storage'
-import { UserLearningProgress, LastActiveLesson, LearningPath, Lesson } from '../learning-paths/types'
-import { LEARNING_PATHS, getLearningPathById } from '../learning-paths/data'
+import { safeGetItemJson, safeSetItemJson } from '@/lib/utils/storage'
+import { UserLearningProgress, LastActiveLesson, LearningPath, Lesson } from '@/lib/learning-paths/types'
+import { LEARNING_PATHS, getLearningPathById } from '@/lib/learning-paths/data'
 
 const STORAGE_KEY = 'cryptoviz_learning_path_progress_v1'
 
