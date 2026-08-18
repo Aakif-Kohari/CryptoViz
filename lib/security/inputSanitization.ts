@@ -141,15 +141,17 @@ export function sanitizeHexInput(value: unknown, maxLength = 8192): Sanitization
 
 export function sanitizeIdentifier(value: unknown, maxLength = 80): SanitizationResult {
   const original = normalizeInput(value);
-  let sanitized = original.trim().replace(/[^a-zA-Z0-9_-]/g, "-").replace(/^-+|-+$/g, "").replace(/-+/g, "-");
+  let sanitized = original.trim().replace(/[^a-zA-Z0-9_-]/g, "-").replace(/-+/g, "-");
 
   if (sanitized.length > maxLength) sanitized = sanitized.slice(0, maxLength);
+
+  const isEmptyOrOnlySeparators = !sanitized || /^[-_]+$/.test(sanitized);
 
   return {
     value: sanitized,
     changed: sanitized !== original,
     removedCharacters: Math.max(0, original.length - sanitized.length),
-    warnings: sanitized ? [] : ["Identifier became empty after sanitization."],
+    warnings: isEmptyOrOnlySeparators ? ["Identifier became empty after sanitization."] : [],
   };
 }
 
