@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import type { CipherDefinition, CipherOptionValue } from '../../lib/cipher/registry'
 import type { CipherResult, CipherOptions } from '../../lib/cipher/types'
+import { createVirtualizedCipherResult, type VirtualizedCipherResult } from '../../lib/cipher/stepVirtualization'
 import { useCipherWorker } from '../../lib/hooks/useCipherWorker'
 import type { AnimationSpeed } from './StepAnimator'
 import WorkspacePresetManager from './WorkspacePresetManager'
@@ -101,7 +102,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     }))
   }, []);
 
-  const [result, setResult] = useState<CipherResult | null>(null);
+  const [result, setResult] = useState<VirtualizedCipherResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [diagnostic, setDiagnostic] = useState<Diagnostic | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
@@ -391,7 +392,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         options,
       );
       if (!controller.signal.aborted) {
-        setResult(res);
+        setResult(createVirtualizedCipherResult(res));
         const restoredStep = pendingSharedStepRef.current;
         setCurrentStep(
           restoredStep === null
@@ -458,7 +459,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       ...trace.options,
     }));
     const importedResult = traceToCipherResult(trace);
-    setResult(importedResult);
+    setResult(createVirtualizedCipherResult(importedResult));
     const restoredStep = pendingSharedStepRef.current;
     setCurrentStep(
       restoredStep === null
@@ -573,8 +574,8 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     ? scopeAnnotations.find((item) => item.stepId === activeStepId)
     : undefined;
 
-  const bookmarkedSteps = result?.steps
-    ? result.steps
+  const bookmarkedSteps = result?.stepMetadata
+    ? result.stepMetadata
         .map((step, index) => {
           const stepId = createStableStepId(step.label, index);
           const annotation = scopeAnnotations.find(
@@ -1083,6 +1084,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
 
                   <StepAnimator
                     steps={result.steps}
+                    stepMetadata={result.stepMetadata}
                     currentStep={currentStep}
                     onStepChange={handleStepChange}
                     speed={animationSpeed}
