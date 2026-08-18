@@ -1527,4 +1527,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'broken',
     keyPlaceholder: 'Private key (sign) or Public key (verify)',
   },
+  {
+    id: 'falcon',
+    name: 'Falcon',
+    category: 'asymmetric',
+    description: 'NIST PQC standardized signature (FIPS 206). NTRU-lattice + Fast Fourier sampling over a four-polynomial trapdoor (f,g,F,G satisfying fG-gF=q). Produces notably COMPACT signatures vs. ML-DSA, at the cost of numerically delicate floating-point signing. Status: secure.',
+    defaultKey: 'mock_private',
+    defaultInput: '68656c6c6f',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Private key (sign) or Message (verify)',
+  },
 ];
