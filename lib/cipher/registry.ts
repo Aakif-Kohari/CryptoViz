@@ -775,6 +775,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'turing',
+    name: 'Turing',
+    category: 'symmetric',
+    description: 'NESSIE-submitted software-speed stream cipher (Rose & Hawkes, 2003). COMPLETELY FIXED 17-stage GF(2^32) LFSR + COMPLETELY FIXED S-box nonlinear filter — neither self-updates (unlike HC-128) nor is externally hash-derived (unlike SEAL). Status: legacy.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128/160/256-bit key as 32/40/64 hex chars',
+    keySize: '128/160/256',
+  },
+  {
     id: 'crypton',
     name: 'Crypton',
     category: 'symmetric',

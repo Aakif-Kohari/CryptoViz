@@ -161,6 +161,7 @@ export type CipherName =
   | 'loki97'
   | 'seal'
   | 'shark'
+  | 'turing'
   | 'crypton'
   | 'rc4'
   | 'salsa20'
