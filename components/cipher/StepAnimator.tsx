@@ -1,24 +1,24 @@
-'use client'
+"use client";
 
-import { useState, useEffect, useCallback, memo } from 'react'
-import type { CipherStep } from '../../lib/cipher/types'
-import { cn } from '../../lib/utils'
-import A11yStepNarrator from '@/components/ui/A11yStepNarrator'
+import { useState, useEffect, useCallback, memo } from "react";
+import type { CipherStep } from "../../lib/cipher/types";
+import { cn } from "../../lib/utils";
+import A11yStepNarrator from "@/components/ui/A11yStepNarrator";
 
-const SPEED_OPTIONS = [0.5, 1, 2, 4] as const
+const SPEED_OPTIONS = [0.5, 1, 2, 4] as const;
 
-export type AnimationSpeed = (typeof SPEED_OPTIONS)[number]
+export type AnimationSpeed = (typeof SPEED_OPTIONS)[number];
 
 interface StepAnimatorProps {
-  steps: CipherStep[]
-  currentStep: number
-  onStepChange: (index: number) => void
-  speed?: AnimationSpeed
-  onSpeedChange?: (speed: AnimationSpeed) => void
-  onCopyStepLink?: () => Promise<void> | void
+  steps: CipherStep[];
+  currentStep: number;
+  onStepChange: (index: number) => void;
+  speed?: AnimationSpeed;
+  onSpeedChange?: (speed: AnimationSpeed) => void;
+  onCopyStepLink?: () => Promise<void> | void;
 }
 
-const BASE_INTERVAL_MS = 1500
+const BASE_INTERVAL_MS = 1500;
 
 const StepAnimator = memo(function StepAnimator({
   steps,
@@ -28,103 +28,100 @@ const StepAnimator = memo(function StepAnimator({
   onSpeedChange,
   onCopyStepLink,
 }: StepAnimatorProps) {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [linkCopied, setLinkCopied] = useState(false)
-  const [internalSpeed, setInternalSpeed] =
-    useState<AnimationSpeed>(1)
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [internalSpeed, setInternalSpeed] = useState<AnimationSpeed>(1);
 
-  const [reducedMotion, setReducedMotion] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false);
 
-  const speed = controlledSpeed ?? internalSpeed
+  const speed = controlledSpeed ?? internalSpeed;
 
-  const hasMultipleSteps = steps.length > 1
+  const hasMultipleSteps = steps.length > 1;
 
   const safeCurrentStep = Math.min(
     Math.max(currentStep, 0),
     Math.max(steps.length - 1, 0),
-  )
+  );
 
   const setSpeed = useCallback(
     (nextSpeed: AnimationSpeed) => {
       if (onSpeedChange) {
-        onSpeedChange(nextSpeed)
+        onSpeedChange(nextSpeed);
       } else {
-        setInternalSpeed(nextSpeed)
+        setInternalSpeed(nextSpeed);
       }
     },
     [onSpeedChange],
-  )
+  );
 
   const copyStepLink = useCallback(async () => {
-    if (!onCopyStepLink) return
+    if (!onCopyStepLink) return;
 
     try {
-      await onCopyStepLink()
-      setLinkCopied(true)
+      await onCopyStepLink();
+      setLinkCopied(true);
 
       window.setTimeout(() => {
-        setLinkCopied(false)
-      }, 1800)
+        setLinkCopied(false);
+      }, 1800);
     } catch {
-      setLinkCopied(false)
+      setLinkCopied(false);
     }
-  }, [onCopyStepLink])
+  }, [onCopyStepLink]);
 
   // Respect the user's OS-level motion preference.
   useEffect(() => {
-    const mql = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    )
+    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    setReducedMotion(mql.matches)
+    setReducedMotion(mql.matches);
 
     const handleChange = (event: MediaQueryListEvent) => {
-      setReducedMotion(event.matches)
+      setReducedMotion(event.matches);
 
       if (event.matches) {
-        setIsPlaying(false)
+        setIsPlaying(false);
       }
-    }
+    };
 
-    mql.addEventListener('change', handleChange)
+    mql.addEventListener("change", handleChange);
 
     return () => {
-      mql.removeEventListener('change', handleChange)
-    }
-  }, [])
+      mql.removeEventListener("change", handleChange);
+    };
+  }, []);
 
   const goToStep = useCallback(
     (index: number) => {
-      setIsPlaying(false)
+      setIsPlaying(false);
 
       const nextIndex = Math.min(
         Math.max(index, 0),
         Math.max(steps.length - 1, 0),
-      )
+      );
 
-      onStepChange(nextIndex)
+      onStepChange(nextIndex);
     },
     [onStepChange, steps.length],
-  )
+  );
 
   const restart = useCallback(() => {
-    setIsPlaying(false)
-    onStepChange(0)
-  }, [onStepChange])
+    setIsPlaying(false);
+    onStepChange(0);
+  }, [onStepChange]);
 
   const togglePlay = useCallback(() => {
-    if (!hasMultipleSteps) return
+    if (!hasMultipleSteps) return;
 
     if (reducedMotion) {
-      onStepChange(steps.length - 1)
-      return
+      onStepChange(steps.length - 1);
+      return;
     }
 
     if (!isPlaying && safeCurrentStep === steps.length - 1) {
-      onStepChange(0)
+      onStepChange(0);
     }
 
-    setIsPlaying((previous) => !previous)
+    setIsPlaying((previous) => !previous);
   }, [
     hasMultipleSteps,
     reducedMotion,
@@ -132,23 +129,23 @@ const StepAnimator = memo(function StepAnimator({
     safeCurrentStep,
     steps.length,
     onStepChange,
-  ])
+  ]);
 
   // Auto-advance loop.
   useEffect(() => {
-    if (!isPlaying || reducedMotion) return
+    if (!isPlaying || reducedMotion) return;
 
-    const msPerStep = BASE_INTERVAL_MS / speed
+    const msPerStep = BASE_INTERVAL_MS / speed;
 
     const interval = window.setInterval(() => {
       if (safeCurrentStep < steps.length - 1) {
-        onStepChange(safeCurrentStep + 1)
+        onStepChange(safeCurrentStep + 1);
       } else {
-        setIsPlaying(false)
+        setIsPlaying(false);
       }
-    }, msPerStep)
+    }, msPerStep);
 
-    return () => window.clearInterval(interval)
+    return () => window.clearInterval(interval);
   }, [
     isPlaying,
     reducedMotion,
@@ -156,7 +153,7 @@ const StepAnimator = memo(function StepAnimator({
     safeCurrentStep,
     steps.length,
     onStepChange,
-  ])
+  ]);
 
   // Keyboard shortcuts.
   //
@@ -164,79 +161,78 @@ const StepAnimator = memo(function StepAnimator({
   // visualizer keyboard interaction continues to work. Form controls are
   // excluded so that arrow keys remain usable inside inputs/selects.
   useEffect(() => {
-    if (steps.length === 0) return
+    if (steps.length === 0) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null
-      const tag = target?.tagName
+      const target = event.target as HTMLElement | null;
+      const tag = target?.tagName;
 
       if (
-        tag === 'INPUT' ||
-        tag === 'TEXTAREA' ||
-        tag === 'SELECT' ||
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
         target?.isContentEditable
       ) {
-        return
+        return;
       }
 
       switch (event.key) {
-        case ' ':
-        case 'Spacebar':
-          event.preventDefault()
-          togglePlay()
-          break
+        case " ":
+        case "Spacebar":
+          event.preventDefault();
+          togglePlay();
+          break;
 
-        case 'ArrowRight':
-          event.preventDefault()
-          goToStep(safeCurrentStep + 1)
-          break
+        case "ArrowRight":
+          event.preventDefault();
+          goToStep(safeCurrentStep + 1);
+          break;
 
-        case 'ArrowLeft':
-          event.preventDefault()
-          goToStep(safeCurrentStep - 1)
-          break
+        case "ArrowLeft":
+          event.preventDefault();
+          goToStep(safeCurrentStep - 1);
+          break;
 
-        case 'Home':
-        case 'r':
-        case 'R':
-          event.preventDefault()
-          restart()
-          break
+        case "Home":
+        case "r":
+        case "R":
+          event.preventDefault();
+          restart();
+          break;
 
-        case 'End':
-          event.preventDefault()
-          goToStep(steps.length - 1)
-          break
+        case "End":
+          event.preventDefault();
+          goToStep(steps.length - 1);
+          break;
 
         default:
-          break
+          break;
       }
-    }
+    };
 
-    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [
-    steps.length,
-    safeCurrentStep,
-    togglePlay,
-    goToStep,
-    restart,
-  ])
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [steps.length, safeCurrentStep, togglePlay, goToStep, restart]);
 
-  if (steps.length === 0) return null
+  if (steps.length === 0) return null;
 
-  const step = steps[safeCurrentStep]
+  const step = steps[safeCurrentStep];
 
   const progressPercent = hasMultipleSteps
     ? (safeCurrentStep / (steps.length - 1)) * 100
-    : 100
+    : 100;
+
+  const announcement = `Step ${safeCurrentStep + 1} of ${steps.length}: ${step.label}`;
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50">
-      {/* Accessible narration is visually hidden but exposed to screen readers. */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {announcement}
+      </div>
+
       <A11yStepNarrator
         step={step}
         stepIndex={safeCurrentStep}
@@ -286,9 +282,7 @@ const StepAnimator = memo(function StepAnimator({
 
                 <div className="mt-1 break-all font-mono text-xs text-zinc-700 dark:text-zinc-300">
                   {step.inputState || (
-                    <span className="italic text-zinc-400">
-                      None
-                    </span>
+                    <span className="italic text-zinc-400">None</span>
                   )}
                 </div>
               </div>
@@ -302,9 +296,7 @@ const StepAnimator = memo(function StepAnimator({
 
                 <div className="mt-1 break-all font-mono text-xs text-zinc-700 dark:text-zinc-300">
                   {step.outputState || (
-                    <span className="italic text-zinc-400">
-                      None
-                    </span>
+                    <span className="italic text-zinc-400">None</span>
                   )}
                 </div>
               </div>
@@ -318,16 +310,10 @@ const StepAnimator = memo(function StepAnimator({
             <table className="w-full text-left font-mono text-xs">
               <thead className="bg-zinc-50 text-zinc-500 dark:bg-zinc-950/40 dark:text-zinc-500">
                 <tr>
-                  <th
-                    scope="col"
-                    className="px-3 py-1.5 font-semibold"
-                  >
+                  <th scope="col" className="px-3 py-1.5 font-semibold">
                     Parameter
                   </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-1.5 font-semibold"
-                  >
+                  <th scope="col" className="px-3 py-1.5 font-semibold">
                     Value
                   </th>
                 </tr>
@@ -335,10 +321,7 @@ const StepAnimator = memo(function StepAnimator({
 
               <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                 {step.table.map((row) => (
-                  <tr
-                    key={row.key}
-                    className="bg-white dark:bg-zinc-900/10"
-                  >
+                  <tr key={row.key} className="bg-white dark:bg-zinc-900/10">
                     <td className="px-3 py-1.5 font-medium text-zinc-500 dark:text-zinc-400">
                       {row.key}
                     </td>
@@ -370,10 +353,13 @@ const StepAnimator = memo(function StepAnimator({
           max={Math.max(steps.length - 1, 0)}
           value={safeCurrentStep}
           onChange={(event) => {
-            goToStep(Number(event.target.value))
+            goToStep(Number(event.target.value));
           }}
           disabled={!hasMultipleSteps}
           aria-label="Animation timeline"
+          aria-valuemin={0}
+          aria-valuemax={Math.max(steps.length - 1, 0)}
+          aria-valuenow={safeCurrentStep}
           aria-valuetext={`Step ${safeCurrentStep + 1} of ${steps.length}: ${step.label}`}
           className="h-2 w-full cursor-pointer accent-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
         />
@@ -384,9 +370,8 @@ const StepAnimator = memo(function StepAnimator({
         >
           <div
             className={cn(
-              'h-full rounded-full bg-teal-600 dark:bg-teal-400',
-              !reducedMotion &&
-                'transition-all duration-300 ease-out',
+              "h-full rounded-full bg-teal-600 dark:bg-teal-400",
+              !reducedMotion && "transition-all duration-300 ease-out",
             )}
             style={{
               width: `${progressPercent}%`,
@@ -413,9 +398,7 @@ const StepAnimator = memo(function StepAnimator({
           {/* Previous */}
           <button
             type="button"
-            onClick={() =>
-              goToStep(safeCurrentStep - 1)
-            }
+            onClick={() => goToStep(safeCurrentStep - 1)}
             disabled={safeCurrentStep === 0}
             aria-label="Previous step"
             className="rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-300 dark:hover:bg-zinc-800"
@@ -429,25 +412,17 @@ const StepAnimator = memo(function StepAnimator({
             type="button"
             onClick={togglePlay}
             disabled={!hasMultipleSteps}
-            aria-label={
-              isPlaying
-                ? 'Pause animation'
-                : 'Play animation'
-            }
+            aria-label={isPlaying ? "Pause animation" : "Play animation"}
             className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-teal-500 dark:hover:bg-teal-400"
           >
-            {isPlaying ? 'Pause' : 'Play'}
+            {isPlaying ? "Pause" : "Play"}
           </button>
 
           {/* Next */}
           <button
             type="button"
-            onClick={() =>
-              goToStep(safeCurrentStep + 1)
-            }
-            disabled={
-              safeCurrentStep >= steps.length - 1
-            }
+            onClick={() => goToStep(safeCurrentStep + 1)}
+            disabled={safeCurrentStep >= steps.length - 1}
             aria-label="Next step"
             className="rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-300 dark:hover:bg-zinc-800"
             title="Next Step (→)"
@@ -458,12 +433,8 @@ const StepAnimator = memo(function StepAnimator({
           {/* End */}
           <button
             type="button"
-            onClick={() =>
-              goToStep(steps.length - 1)
-            }
-            disabled={
-              safeCurrentStep >= steps.length - 1
-            }
+            onClick={() => goToStep(steps.length - 1)}
+            disabled={safeCurrentStep >= steps.length - 1}
             aria-label="Go to last step"
             className="rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-300 dark:hover:bg-zinc-800"
             title="Last Step (End)"
@@ -485,20 +456,13 @@ const StepAnimator = memo(function StepAnimator({
             id="animation-speed"
             value={speed}
             onChange={(event) =>
-              setSpeed(
-                Number(
-                  event.target.value,
-                ) as AnimationSpeed,
-              )
+              setSpeed(Number(event.target.value) as AnimationSpeed)
             }
             className="rounded-lg border border-zinc-200 bg-white px-2.5 py-2 text-xs font-medium text-zinc-700 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
             aria-label="Animation speed"
           >
             {SPEED_OPTIONS.map((option) => (
-              <option
-                key={option}
-                value={option}
-              >
+              <option key={option} value={option}>
                 {option}x
               </option>
             ))}
@@ -511,12 +475,12 @@ const StepAnimator = memo(function StepAnimator({
             onClick={copyStepLink}
             className="rounded-lg border border-zinc-200 px-3 py-2 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
-            {linkCopied ? 'Copied!' : 'Copy Step Link'}
+            {linkCopied ? "Copied!" : "Copy Step Link"}
           </button>
         )}
       </div>
     </div>
-  )
-})
+  );
+});
 
-export default StepAnimator
+export default StepAnimator;
