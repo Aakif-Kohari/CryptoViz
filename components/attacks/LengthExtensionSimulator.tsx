@@ -1,4 +1,4 @@
-use client'
+'use client';
 
 import { useEffect, useRef, useState } from 'react'
 import { VulnerableMac, forgeLengthExtension, type LengthExtensionStep } from '@/lib/attacks/lengthExtension'

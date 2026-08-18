@@ -1,4 +1,4 @@
-use client'
+'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { type AttackStep, type OracleMode, BLOCK_SIZE } from '@/lib/attacks/paddingOracle'
