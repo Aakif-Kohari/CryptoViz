@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, useCallback, useMemo, memo } from "react";
 import type { CipherStep } from "../../lib/cipher/types";
 import { cn } from "../../lib/utils";
 import A11yStepNarrator from "@/components/ui/A11yStepNarrator";
