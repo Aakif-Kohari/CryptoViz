@@ -23,6 +23,7 @@
 
 import { CipherError } from '../../utils/errors'
 import type { CipherResult, CipherStep, CipherMetadata, CipherOptions, TestVector } from '../types'
+import { parseAsymmetricInput } from './asymmetricInput'
 
 const METADATA: CipherMetadata = {
   name: 'Rabin',
@@ -87,13 +88,16 @@ function parsePrivateKey(keyStr: string): RabinPrivateKey {
   return { p, q }
 }
 
-function rabinEncryptCore(input: string, key: string, instrument: boolean): CipherResult {
+function rabinEncryptCore(
+  input: string,
+  key: string,
+  instrument: boolean,
+  inputEncoding?: string
+): CipherResult {
   const start = performance.now()
   const pub = parsePublicKey(key)
-  const m = BigInt(input.trim())
-  if (m < 0n || m >= pub.n) {
-    throw new CipherError('INVALID_INPUT', `Plaintext must satisfy 0 <= m < n (n=${pub.n}).`)
-  }
+  const blocks = parseAsymmetricInput(input, inputEncoding, pub.n)
+  const m = blocks[0]
 
   const c = modPow(m, 2n, pub.n)
   const steps: CipherStep[] = []
@@ -134,7 +138,7 @@ function rabinDecryptCore(input: string, key: string, instrument: boolean): Ciph
   const r2 = norm(n - r1, n)
   const r3 = norm(yp * p * mq - yq * q * mp, n)
   const r4 = norm(n - r3, n)
-  const roots = Array.from(new Set([r1, r2, r3, r4].map((r) => r.toString())))
+  const roots = Array.from(new Set([r1, r2, r3, r4])).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)).map((r) => r.toString())
 
   const steps: CipherStep[] = []
   if (instrument) {
@@ -166,7 +170,7 @@ function rabinDecryptCore(input: string, key: string, instrument: boolean): Ciph
 }
 
 export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-  return rabinEncryptCore(input, key, !!options.instrument)
+  return rabinEncryptCore(input, key, !!options.instrument, options.inputEncoding as string | undefined)
 }
 
 export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {

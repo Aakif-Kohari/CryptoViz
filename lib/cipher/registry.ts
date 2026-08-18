@@ -775,10 +775,32 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '128-bit key as 32 hex chars',
   },
   {
+    id: 'turing',
+    name: 'Turing',
+    category: 'symmetric',
+    description: 'NESSIE-submitted software-speed stream cipher (Rose & Hawkes, 2003). COMPLETELY FIXED 17-stage GF(2^32) LFSR + COMPLETELY FIXED S-box nonlinear filter — neither self-updates (unlike HC-128) nor is externally hash-derived (unlike SEAL). Status: legacy.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128/160/256-bit key as 32/40/64 hex chars',
+    keySize: '128/160/256',
+  },
+  {
     id: 'crypton',
     name: 'Crypton',
     category: 'symmetric',
     description: 'Korean AES competition submission (1998) — NOT a Korean national standard (distinct from SEED/LEA/ARIA which are official standards). Uses 2 S-box types × 4 position variants and a bit-permutation diffusion layer distinct from AES\'s ShiftRows+MixColumns. Status: legacy (first-round elimination, limited scrutiny).',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+    keySize: '128/192/256',
+  },
+  {
+    id: 'hierocrypt3',
+    name: 'Hierocrypt-3',
+    category: 'symmetric',
+    description: 'Toshiba CRYPTREC candidate (2000). Distinctive NESTED SPN: each outer round contains TWO XS-box sub-layers (byte substitution + small internal MDS diffusion) with outer MDS-L diffusion between them — two distinct diffusion scales within one round. Status: legacy (lower CRYPTREC tier than Camellia).',
     defaultKey: '00000000000000000000000000000000',
     defaultInput: '00000000000000000000000000000000',
     securityStatus: 'legacy',
@@ -1211,6 +1233,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
       }
     ],
   },
+  {
+    id: 'ascon-hash',
+    name: 'Ascon-Hash',
+    category: 'hash',
+    description: 'NIST Lightweight Cryptography Standard (SP 800-232, 2025). SPONGE MODE using the SAME Ascon permutation already implemented in ascon.ts for AEAD mode. Genuinely reuses the 5x64-bit-word permutation — only the surrounding construction differs (sponge absorb-then-squeeze vs. AEAD duplex). Status: secure.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+  },
   // Asymmetric
   {
     id: "rsa",
@@ -1228,6 +1259,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     prerequisites: ["hmac"],
     recommendedNext: ["ecc", "dh", "ml-kem"],
     options: [
+      {
+        name: "Input Encoding Mode",
+        id: "inputEncoding",
+        type: "select",
+        default: "integer",
+        choices: [
+          { label: "Raw Math Integer (M < n)", value: "integer" },
+          { label: "UTF-8 Text Stream", value: "text" },
+          { label: "Hex Bytes", value: "hex" },
+        ],
+      },
       {
         name: "Demo Mode (Small Primes)",
         id: "demoMode",
@@ -1518,6 +1560,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'Secret isogeny (sign) or Public curve EA (verify)',
   },
   {
+    id: 'chor-rivest',
+    name: 'Chor-Rivest',
+    category: 'asymmetric',
+    description: 'Knapsack cryptosystem disguised via discrete logarithms in the field extension GF(p^h) — genuinely more elaborate than Merkle-Hellman\'s modular-multiplication disguise. FIXED HAMMING WEIGHT constraint on messages. Status: BROKEN (Vaudenay 1998, targeting the GF(p^h) construction — distinct break from Merkle-Hellman\'s Shamir attack).',
+    defaultKey: 'mock',
+    defaultInput: 'e0',
+    securityStatus: 'broken',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
+  {
     id: 'rainbow',
     name: 'Rainbow',
     category: 'asymmetric',
@@ -1526,5 +1578,15 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '010203040506',
     securityStatus: 'broken',
     keyPlaceholder: 'Private key (sign) or Public key (verify)',
+  },
+  {
+    id: 'falcon',
+    name: 'Falcon',
+    category: 'asymmetric',
+    description: 'NIST PQC standardized signature (FIPS 206). NTRU-lattice + Fast Fourier sampling over a four-polynomial trapdoor (f,g,F,G satisfying fG-gF=q). Produces notably COMPACT signatures vs. ML-DSA, at the cost of numerically delicate floating-point signing. Status: secure.',
+    defaultKey: 'mock_private',
+    defaultInput: '68656c6c6f',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Private key (sign) or Message (verify)',
   },
 ];

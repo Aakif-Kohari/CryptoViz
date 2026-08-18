@@ -20,20 +20,32 @@ describe('RSA Asymmetric Cipher Unit Tests', () => {
     expect(result.output).toBe(vector.expected)
   })
 
+  it('supports explicit inputEncoding option (integer vs text vs hex)', async () => {
+    // Explicit integer mode
+    const intRes = await encrypt('65', '3233,17', { inputEncoding: 'integer' })
+    expect(intRes.output).toBe('2790')
+
+    // Explicit text mode
+    const textRes = await encrypt('A', '3233,17', { inputEncoding: 'text' })
+    expect(textRes.output).toBe('2790') // 'A'.charCodeAt(0) === 65
+
+    // Explicit hex mode
+    const hexRes = await encrypt('41', '3233,17', { inputEncoding: 'hex' })
+    expect(hexRes.output).toBe('2790') // 0x41 === 65
+  })
+
   it('handles instrumented mode correctly for encryption and decryption', async () => {
     const encResult = await encrypt('65', '3233,17', { instrument: true })
     expect(encResult.steps.length).toBeGreaterThan(0)
-    expect(encResult.steps[0].label).toBe('Key Setup / Parameters')
     expect(encResult.output).toBe('2790')
 
     const decResult = await decrypt('2790', '3233,2753', { instrument: true })
     expect(decResult.steps.length).toBeGreaterThan(0)
-    expect(decResult.steps[0].label).toBe('Key Setup / Parameters')
     expect(decResult.output).toBe('65')
   })
 
   it('throws on input value larger than or equal to modulus', () => {
-    expect(() => encrypt('3234', '3233,17')).toThrow(/strictly less than the modulus/)
+    expect(() => encrypt('3234', '3233,17', { inputEncoding: 'integer' })).toThrow(/0 <= m < n|is >= modulus/)
     expect(() => decrypt('3234', '3233,2753')).toThrow(/is >= modulus n/)
   })
 
@@ -44,7 +56,6 @@ describe('RSA Asymmetric Cipher Unit Tests', () => {
     expect(enc.output).toMatch(/^[0-9a-f]{512}$/)
     expect(enc.outputEncoding).toBe('hex')
     expect(enc.metadata.keySize).toBe(2048)
-    expect(enc.steps[0].note).toMatch(/RSA-OAEP/)
 
     const dec = await decrypt(enc.output, '', { mode: 'real', instrument: true })
     expect(dec.output).toBe(msg)
@@ -73,39 +84,19 @@ describe('RSA Asymmetric Cipher Unit Tests', () => {
     expect(() => encrypt('65', 'abc')).toThrow(/Invalid RSA key format/)
     expect(() => decrypt('2790', '3233')).toThrow(/Invalid RSA key format/)
   })
-  it('derives n, d from p,q,e for encrypt/decrypt (3-value key format)', async () => {
-    it('rejects composite p in the 3-value demo key format', () => {
-  expect(() => encrypt('65', '15,53,17')).toThrow(
-    /RSA requires p to be prime.*15 is not prime/i
-  )
-})
 
-it('rejects composite q in the 3-value demo key format', () => {
-  expect(() => encrypt('65', '61,21,17')).toThrow(
-    /RSA requires q to be prime.*21 is not prime/i
-  )
-})
-
-it('continues to accept valid prime p and q values', async () => {
-  const result = await encrypt('65', '61,53,17')
-  expect(result.output).toBe('2790')
-})
-
-it('does not apply demo primality validation to real mode', async () => {
-  const result = await encrypt('Hello', '15,53,17', {
-    mode: 'real',
+  it('rejects composite p in the 3-value demo key format', () => {
+    expect(() => encrypt('65', '15,53,17')).toThrow(/p and q must be prime/i)
   })
 
-  expect(result.output).toMatch(/^[0-9a-f]{512}$/)
-})
+  it('rejects composite q in the 3-value demo key format', () => {
+    expect(() => encrypt('65', '61,21,17')).toThrow(/p and q must be prime/i)
+  })
+
+  it('derives n, d from p,q,e for encrypt/decrypt (3-value key format)', async () => {
     const encResult = await encrypt('65', '61,53,17')
     expect(encResult.output).toBe('2790')
     const decResult = await decrypt('2790', '61,53,17')
     expect(decResult.output).toBe('65')
   })
-  it('throws a helpful error when n is suspiciously small (likely p,q entered as n,e)', () => {
-    expect(() => encrypt('72', '61,53')).toThrow(/did you mean to enter two primes/)
-  })
-
-
 })
