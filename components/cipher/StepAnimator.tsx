@@ -31,7 +31,6 @@ const StepAnimator = memo(function StepAnimator({
   const [isPlaying, setIsPlaying] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [internalSpeed, setInternalSpeed] = useState<AnimationSpeed>(1);
-
   const [reducedMotion, setReducedMotion] = useState(false);
 
   const speed = controlledSpeed ?? internalSpeed;
@@ -201,6 +200,7 @@ const StepAnimator = memo(function StepAnimator({
     onStepChange,
   ]);
 
+  // Keyboard shortcuts.
   useEffect(() => {
     if (steps.length === 0) return;
 
