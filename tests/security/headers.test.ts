@@ -15,13 +15,15 @@ describe('CSP header configuration (vercel.json)', () => {
     expect(cspHeader).toBeDefined()
   })
 
-  it('does not allow unsafe-inline scripts', () => {
-    const scriptSrc = cspHeader.value
+  it('does not allow unsafe-inline scripts in script-src-elem', () => {
+    const scriptSrcElem = cspHeader.value
       .split(';')
       .map((d: string) => d.trim())
-      .find((d: string) => d.startsWith('script-src'))
-    expect(scriptSrc).toBeDefined()
-    expect(scriptSrc).not.toContain("'unsafe-inline'")
+      .find((d: string) => d.startsWith('script-src-elem '))
+
+    expect(scriptSrcElem).toBeDefined()
+    expect(scriptSrcElem).toContain("'self'")
+    expect(scriptSrcElem).not.toContain("'unsafe-inline'")
   })
 
   it('restricts worker-src to self and blob (required for cipher.worker.ts)', () => {

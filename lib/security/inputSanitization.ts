@@ -13,6 +13,7 @@ export interface SanitizationOptions {
   trim?: boolean;
   collapseWhitespace?: boolean;
   preserveCase?: boolean;
+  escapeHtml?: boolean;
 }
 
 export interface SanitizationResult {
@@ -53,7 +54,7 @@ export function stripControlCharacters(value: unknown, allowNewlines = false): s
   return stripped.replace(/[\r\n\t]/g, " ");
 }
 
-export function sanitizePlainText(value: unknown, options: SanitizationOptions = {}): SanitizationResult {
+export function sanitizeCryptoInput(value: unknown, options: SanitizationOptions = {}): SanitizationResult {
   const maxLength = Math.max(1, options.maxLength ?? DEFAULT_MAX_LENGTH);
   const original = normalizeInput(value);
   let sanitized = stripControlCharacters(original, options.allowNewlines ?? false);
@@ -65,7 +66,9 @@ export function sanitizePlainText(value: unknown, options: SanitizationOptions =
       : sanitized.replace(/\s+/g, " ");
   }
 
-  sanitized = escapeHtml(sanitized);
+  if (options.escapeHtml === true) {
+    sanitized = escapeHtml(sanitized);
+  }
 
   const warnings: string[] = [];
   if (sanitized.length > maxLength) {
@@ -81,13 +84,21 @@ export function sanitizePlainText(value: unknown, options: SanitizationOptions =
   };
 }
 
+export function sanitizePlainText(value: unknown, options: SanitizationOptions = {}): SanitizationResult {
+  return sanitizeCryptoInput(value, {
+    escapeHtml: options.escapeHtml ?? true,
+    ...options,
+  });
+}
+
 export function sanitizeSearchQuery(value: unknown, maxLength = 160): SanitizationResult {
-  const result = sanitizePlainText(value, {
+  const result = sanitizeCryptoInput(value, {
     kind: "search",
     maxLength,
     allowNewlines: false,
     trim: true,
     collapseWhitespace: true,
+    escapeHtml: false,
   });
 
   const withoutOperators = result.value.replace(/[<>]/g, "");
@@ -130,7 +141,7 @@ export function sanitizeHexInput(value: unknown, maxLength = 8192): Sanitization
 
 export function sanitizeIdentifier(value: unknown, maxLength = 80): SanitizationResult {
   const original = normalizeInput(value);
-  let sanitized = original.trim().replace(/[^a-zA-Z0-9_-]/g, "-").replace(/-+/g, "-");
+  let sanitized = original.trim().replace(/[^a-zA-Z0-9_-]/g, "-").replace(/^-+|-+$/g, "").replace(/-+/g, "-");
 
   if (sanitized.length > maxLength) sanitized = sanitized.slice(0, maxLength);
 

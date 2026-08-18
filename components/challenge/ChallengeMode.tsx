@@ -15,6 +15,8 @@ import {
   safeSetItemJson,
   safeJsonParse,
 } from '../../lib/utils/storage'
+import ChallengeHistoryDrawer from './ChallengeHistoryDrawer'
+import { getChallengeHistory, clearChallengeHistory } from '@/lib/challenge/historyManager'
 
 type FeedbackState = 'idle' | 'correct' | 'incorrect'
 
@@ -143,6 +145,18 @@ export default function ChallengeMode() {
 
   const [questionRuns, setQuestionRuns] = useState<QuestionRun[] | null>(null)
   const [challengeExplanation, setChallengeExplanation] = useState<{ title: string; details: string[] } | null>(null)
+  const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false)
+  const [historyEntries, setHistoryEntries] = useState<ChallengeHistoryEntry[]>(() => getChallengeHistory())
+
+  const handleOpenHistoryDrawer = useCallback(() => {
+    setHistoryEntries(getChallengeHistory())
+    setIsHistoryDrawerOpen(true)
+  }, [])
+
+  const handleClearHistory = useCallback(() => {
+    clearChallengeHistory()
+    setHistoryEntries([])
+  }, [])
 
   const handleQuestionCountChange = useCallback((count: QuestionCountOption) => {
     setQuestionCount(count)
@@ -661,6 +675,13 @@ export default function ChallengeMode() {
             >
               New Session
             </button>
+            <button
+              type="button"
+              onClick={handleOpenHistoryDrawer}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-6 py-3 text-sm font-semibold text-zinc-700 shadow-sm transition-all hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+            >
+              View History Log & Mistakes
+            </button>
           </div>
 
           <div className="mt-6">
@@ -1158,10 +1179,17 @@ export default function ChallengeMode() {
           </div>
 
           <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40 transition-all hover:shadow-md">
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Challenge History</h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-500">
-              Your last {HISTORY_CAP} runs are saved locally. Replay lets you try the exact same session again.
+            <h3 className="mb-2 text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Challenge History</h3>
+            <p className="text-xs text-zinc-500 dark:text-zinc-500 mb-3">
+              Your last {HISTORY_CAP} runs are saved locally. Review past attempts, mistakes, and accuracy.
             </p>
+            <button
+              type="button"
+              onClick={handleOpenHistoryDrawer}
+              className="w-full rounded-lg border border-teal-500/40 bg-teal-50/50 px-3 py-2 text-xs font-semibold text-teal-700 hover:bg-teal-100 dark:border-teal-500/30 dark:bg-teal-950/30 dark:text-teal-300 dark:hover:bg-teal-900/40"
+            >
+              View Past Sessions & Mistake Drawer
+            </button>
           </div>
         </div>
       </div>
@@ -1169,6 +1197,14 @@ export default function ChallengeMode() {
       <div className="h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800" role="progressbar" aria-valuenow={timeLimit === 0 ? 100 : timeLeft} aria-valuemin={0} aria-valuemax={timeLimit === 0 ? 100 : timeLimit} aria-label="Time remaining">
         <div className={`h-full rounded-full transition-all duration-1000 ease-linear ${timeLimit > 0 && timeLeft <= 10 ? 'bg-red-500' : 'bg-teal-600 dark:bg-teal-500'}`} style={{ width: `${timePercent}%` }} />
       </div>
+
+      {/* History Drawer Modal */}
+      <ChallengeHistoryDrawer
+        isOpen={isHistoryDrawerOpen}
+        onClose={() => setIsHistoryDrawerOpen(false)}
+        history={historyEntries}
+        onClearHistory={handleClearHistory}
+      />
     </div>
   )
 }

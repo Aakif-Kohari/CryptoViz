@@ -166,6 +166,8 @@ Cipher engines run inside the Worker's isolated global context. They **must not*
 
 All styling uses Tailwind CSS v4 utility classes and CSS custom properties defined in `app/globals.css`.
 
+For detailed visualizer component development patterns, including prop contracts, rendering conventions, and accessibility requirements, see the [Visualizer Development Guide](./docs/visualizer-development-guide.md).
+
 | Rule Category | Correct Approach | Incorrect Approach |
 | :--- | :--- | :--- |
 | **Class Merging** | `className={cn('text-sm', isActive && 'text-teal-600')}` | `className={'text-sm ' + (isActive ? 'text-teal-600' : '')}` |

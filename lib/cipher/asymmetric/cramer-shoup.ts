@@ -22,12 +22,12 @@ const Q = P - 1n
 const G1 = 2n
 const G2 = 3n
 
-function mod(n: bigint, m: bigint): bigint { return ((n % m) + m) % m }
-function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
-    let res = 1n, b = mod(base, mod), e = exp
+function modBigInt(n: bigint, m: bigint): bigint { return ((n % m) + m) % m }
+function modPow(base: bigint, exp: bigint, modVal: bigint): bigint {
+    let res = 1n, b = modBigInt(base, modVal), e = exp
     while (e > 0n) {
-        if (e % 2n === 1n) res = (res * b) % mod
-        b = (b * b) % mod
+        if (e % 2n === 1n) res = (res * b) % modVal
+        b = (b * b) % modVal
         e /= 2n
     }
     return res
@@ -53,7 +53,7 @@ function bigintToBytes(n: bigint, len: number): number[] {
 
 // Simple mock hash for alpha = Hash(u1 || u2 || e)
 function mockHash(u1: bigint, u2: bigint, e: bigint): bigint {
-    return mod(u1 ^ u2 ^ e, Q)
+    return modBigInt(u1 ^ u2 ^ e, Q)
 }
 
 function cramerShoupCore(input: string, key: string, doDecrypt: boolean, instrument: boolean): CipherResult {
@@ -81,15 +81,15 @@ function cramerShoupCore(input: string, key: string, doDecrypt: boolean, instrum
         // e = h^r * m mod p
         const z = 5n // Mock secret exponent
         const h = modPow(G1, z, P)
-        const e = mod(modPow(h, r, P) * m, P)
+        const e = modBigInt(modPow(h, r, P) * m, P)
 
         const alpha = mockHash(u1, u2, e)
 
         // v = c^r * d^(r*alpha)
         const x1 = 1n, x2 = 2n, y1 = 3n, y2 = 4n
-        const c = mod(modPow(G1, x1, P) * modPow(G2, x2, P), P)
-        const d = mod(modPow(G1, y1, P) * modPow(G2, y2, P), P)
-        const v = mod(modPow(c, r, P) * modPow(d, r * alpha, P), P)
+        const c = modBigInt(modPow(G1, x1, P) * modPow(G2, x2, P), P)
+        const d = modBigInt(modPow(G1, y1, P) * modPow(G2, y2, P), P)
+        const v = modBigInt(modPow(c, r, P) * modPow(d, r * alpha, P), P)
 
         outHex = toHex(bigintToBytes(u1, 8)) + toHex(bigintToBytes(u2, 8)) +
             toHex(bigintToBytes(e, 8)) + toHex(bigintToBytes(v, 8))
@@ -111,16 +111,16 @@ function cramerShoupCore(input: string, key: string, doDecrypt: boolean, instrum
 
         // INTEGRITY CHECK
         const x1 = 1n, x2 = 2n, y1 = 3n, y2 = 4n
-        const check = mod(modPow(u1, x1 + y1 * alpha, P) * modPow(u2, x2 + y2 * alpha, P), P)
+        const check = modBigInt(modPow(u1, x1 + y1 * alpha, P) * modPow(u2, x2 + y2 * alpha, P), P)
 
         if (check !== v) {
-            throw new CipherError('INTEGRITY_CHECK_FAILED', 'Cramer-Shoup CCA2 integrity check failed. Ciphertext rejected.')
+            throw new CipherError('INVALID_INPUT', 'Cramer-Shoup CCA2 integrity check failed. Ciphertext rejected.')
         }
 
         const z = 5n
         const u1z = modPow(u1, z, P)
         // m = e / u1^z mod p
-        const m = mod(e * modInverse(u1z, P), P)
+        const m = modBigInt(e * modInverse(u1z, P), P)
 
         outHex = toHex(bigintToBytes(m, 8))
 
@@ -133,13 +133,13 @@ function cramerShoupCore(input: string, key: string, doDecrypt: boolean, instrum
 }
 
 function modInverse(k: bigint, p: bigint): bigint {
-    let t = 0n, newt = 1n, r = p, newr = mod(k, p)
+    let t = 0n, newt = 1n, r = p, newr = modBigInt(k, p)
     while (newr !== 0n) {
         const q = r / newr;
-        [t, newt] = [newt, t - q * newt]
-        [r, newr] = [newr, r - q * newr]
+        [t, newt] = [newt, t - q * newt];
+        [r, newr] = [newr, r - q * newr];
     }
-    return mod(t, p)
+    return modBigInt(t, p)
 }
 
 export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {

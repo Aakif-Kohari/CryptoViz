@@ -595,6 +595,10 @@ function executeCamellia(
       outputState: fromByteArray(resultBlock, 'hex'),
       note: `Camellia block processing complete for block ${b + 1}.`,
       isMilestone: true,
+      sboxInspection: {
+        family: 'camellia',
+        inputValue: `0x${block[0].toString(16).padStart(2, '0')}`,
+      },
     })
   }
 

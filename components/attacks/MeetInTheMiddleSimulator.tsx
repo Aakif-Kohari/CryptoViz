@@ -1,120 +1,48 @@
-'use client'
+use client'
 
-import { useState } from 'react'
-import { doubleDesEncrypt, meetInTheMiddleAttack, type MitmStep, type MitmResult } from '@/lib/attacks/meetInTheMiddle'
+import { useMemo, useState } from 'react'
+import { doubleDesEncrypt, meetInTheMiddleAttack, type MitmStep } from '@/lib/attacks/meetInTheMiddle'
+import { useAttackWorker } from '@/lib/hooks/useAttackWorker'
+import AttackControlBar from './AttackControlBar'
+import OracleQueryLogViewer from './OracleQueryLogViewer'
 
-function hexToBytes(hex: string): Uint8Array {
-  const clean = hex.replace(/\s+/g, '')
-  const out = new Uint8Array(clean.length / 2)
-  for (let i = 0; i < out.length; i++) out[i] = parseInt(clean.substr(i * 2, 2), 16)
-  return out
-}
+const hexToBytes=(hex:string)=>{const c=hex.replace(/\s+/g,'');if(!/^[0-9a-fA-F]{16}$/.test(c))throw new Error('Plaintext/key values must be exactly 16 hex characters.');const o=new Uint8Array(8);for(let i=0;i<8;i++)o[i]=parseInt(c.slice(i*2,i*2+2),16);return o}
+const hex=(b:Uint8Array)=>Array.from(b).map(x=>x.toString(16).padStart(2,'0')).join('')
+const DEFAULT_P='0123456789abcdef', DEFAULT_A='00000000000012ab', DEFAULT_B='0000000000003ecd'
 
-const DEFAULT_PLAINTEXT = '0123456789abcdef'
-const DEFAULT_KEY_A = '00000000000012ab'
-const DEFAULT_KEY_B = '0000000000003ecd'
-
-export default function MeetInTheMiddleSimulator() {
-  const [plaintextHex, setPlaintextHex] = useState(DEFAULT_PLAINTEXT)
-  const [keySpaceBits, setKeySpaceBits] = useState(16)
-  const [running, setRunning] = useState(false)
-  const [steps, setSteps] = useState<MitmStep[]>([])
-  const [result, setResult] = useState<MitmResult | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  function runAttack() {
-    setError(null)
-    setSteps([])
-    setResult(null)
-    setRunning(true)
-
-    try {
-      const plaintext = hexToBytes(plaintextHex)
-      if (plaintext.length !== 8) {
-        throw new Error('Plaintext must be exactly 16 hex characters (8 bytes).')
-      }
-      const keyA = hexToBytes(DEFAULT_KEY_A)
-      const keyB = hexToBytes(DEFAULT_KEY_B)
-      const ciphertext = doubleDesEncrypt(plaintext, keyA, keyB)
-
-      const attackResult = meetInTheMiddleAttack(plaintext, ciphertext, keySpaceBits, (step) =>
-        setSteps((prev) => [...prev, step])
-      )
-      setResult(attackResult)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong.')
-    } finally {
-      setRunning(false)
-    }
+export default function MeetInTheMiddleSimulator(){
+  const [plaintext,setPlaintext]=useState(DEFAULT_P),[keyA,setKeyA]=useState(DEFAULT_A),[keyB,setKeyB]=useState(DEFAULT_B),[bits,setBits]=useState(16)
+  const [steps,setSteps]=useState<MitmStep[]>([]),[cursor,setCursor]=useState(-1),[running,setRunning]=useState(false),[error,setError]=useState<string|null>(null)
+  const {runMitmAttack,cancel}=useAttackWorker()
+  const current=steps[cursor]
+  const log=useMemo(()=>steps.slice(0,cursor+1).map((s,i)=>({index:i,label:s.label,detail:s.detail,status:s.label.includes('collision')?'match' as const:'info' as const})),[steps])
+  async function run(){
+    setError(null);setSteps([]);setCursor(-1);setRunning(true)
+    try{
+      const p=hexToBytes(plaintext),a=hexToBytes(keyA),b=hexToBytes(keyB),c=doubleDesEncrypt(p,a,b)
+      const result=await runMitmAttack(hex(p),hex(c),bits,s=>setSteps(prev=>[...prev,s]))
+      setSteps(result.steps);setCursor(-1)
+    }catch(e){
+      try{
+        const p=hexToBytes(plaintext),a=hexToBytes(keyA),b=hexToBytes(keyB),c=doubleDesEncrypt(p,a,b)
+        const result=meetInTheMiddleAttack(p,c,bits,s=>setSteps(prev=>[...prev,s]))
+        setSteps(result.steps);setCursor(-1)
+      }catch(inner){setError(inner instanceof Error?inner.message:String(inner))}
+    }finally{setRunning(false)}
   }
-
-  return (
-    <div className="space-y-6">
-      <div className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-        <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-white">
-          1. Known plaintext / double-DES setup
-        </h2>
-        <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
-          A demo message is encrypted with two chained DES keys,{' '}
-          <code className="rounded bg-zinc-100 px-1 py-0.5 dark:bg-zinc-800">C = E_k2(E_k1(P))</code>. The attacker
-          knows <code>P</code> and <code>C</code> but neither key.
-        </p>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Plaintext block (16 hex chars / 8 bytes)
-        </label>
-        <input
-          className="mb-4 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-mono text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
-          value={plaintextHex}
-          onChange={(e) => setPlaintextHex(e.target.value)}
-        />
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Reduced keyspace size ({keySpaceBits} bits — kept small so the search finishes in-browser)
-        </label>
-        <input
-          type="range"
-          min={8}
-          max={20}
-          value={keySpaceBits}
-          onChange={(e) => setKeySpaceBits(Number(e.target.value))}
-          className="w-full"
-        />
-        <button
-          onClick={runAttack}
-          disabled={running}
-          className="mt-4 rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-700 disabled:opacity-50 dark:bg-teal-500 dark:hover:bg-teal-400"
-        >
-          {running ? 'Searching…' : 'Run meet-in-the-middle attack'}
-        </button>
-        {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
-      </div>
-
-      {steps.length > 0 && (
-        <div className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-white">2. Attack trace</h2>
-          <ol className="space-y-3">
-            {steps.map((step, i) => (
-              <li key={`step-${i}-${step.label}`} className="border-l-2 border-teal-500 pl-3">
-                <p className="text-sm font-medium text-zinc-900 dark:text-white">{step.label}</p>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">{step.detail}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
-
-      {result && (
-        <div className="rounded-lg border border-red-300 bg-red-50 p-5 dark:border-red-900 dark:bg-red-950/30">
-          <h2 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">3. Recovered keys</h2>
-          <p className="text-sm text-zinc-700 dark:text-zinc-300">
-            k1 = <code>{result.foundKeyAHex}</code>, k2 = <code>{result.foundKeyBHex}</code>
-          </p>
-          <p className="mt-2 text-sm font-semibold text-red-700 dark:text-red-400">
-            Found in {result.attemptsUntilMatch.toLocaleString()} of {result.keyASearchSpace.toLocaleString()} possible
-            backward-pass attempts — roughly 2×2^{keySpaceBits} work instead of 2^{keySpaceBits * 2} for a naive
-            two-key brute force.
-          </p>
-        </div>
-      )}
+  return <div className="space-y-5">
+    <div className="grid gap-3 rounded-lg border p-5">
+      <label className="text-sm">Known plaintext<input className="mt-1 w-full rounded border px-2 py-2 font-mono" value={plaintext} onChange={e=>setPlaintext(e.target.value)}/></label>
+      <div className="grid gap-3 sm:grid-cols-2"><label className="text-sm">Target key 1<input className="mt-1 w-full rounded border px-2 py-2 font-mono" value={keyA} onChange={e=>setKeyA(e.target.value)}/></label><label className="text-sm">Target key 2<input className="mt-1 w-full rounded border px-2 py-2 font-mono" value={keyB} onChange={e=>setKeyB(e.target.value)}/></label></div>
+      <label className="text-sm">Reduced keyspace: {bits} bits<input type="range" min={8} max={20} value={bits} onChange={e=>setBits(+e.target.value)} className="w-full"/></label>
+      <button onClick={run} disabled={running} className="w-fit rounded bg-teal-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">{running?'Building trace…':'Prepare interactive MitM'}</button>
+      {error&&<p className="text-sm text-red-600">{error}</p>}
     </div>
-  )
+    {steps.length>0&&<div className="space-y-4">
+      <AttackControlBar running={false} canPrevious={cursor>=0} canNext={cursor<steps.length-1} onPlay={()=>setRunning(true)} onPause={()=>setRunning(false)} onPrevious={()=>setCursor(c=>Math.max(-1,c-1))} onNext={()=>setCursor(c=>Math.min(steps.length-1,c+1))} onReset={()=>setCursor(-1)} />
+      <div className="text-xs text-zinc-500">Trace step {Math.max(0,cursor+1)} / {steps.length}</div>
+      {current&&<div className="rounded-lg border p-4"><h3 className="font-semibold">{current.label}</h3><p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{current.detail}</p></div>}
+      <OracleQueryLogViewer entries={log}/>
+    </div>}
+  </div>
 }

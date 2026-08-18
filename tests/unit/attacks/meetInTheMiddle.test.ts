@@ -30,6 +30,19 @@ describe('meetInTheMiddleAttack', () => {
     expect(result.steps.length).toBeGreaterThanOrEqual(2)
   })
 
+  it('emits progress steps during search execution', () => {
+    const plaintext = hexToBytes('0123456789abcdef')
+    const keyA = hexToBytes('0000000000000001')
+    const keyB = hexToBytes('0000000000000002')
+    const ciphertext = doubleDesEncrypt(plaintext, keyA, keyB)
+
+    const steps: Array<{ label: string; detail: string }> = []
+    meetInTheMiddleAttack(plaintext, ciphertext, 8, (step) => steps.push(step))
+
+    expect(steps.length).toBeGreaterThan(0)
+    expect(steps.some((s) => s.label.includes('Forward pass'))).toBe(true)
+  })
+
   it('rejects block sizes other than 8 bytes', () => {
     expect(() =>
       meetInTheMiddleAttack(new Uint8Array(4), new Uint8Array(8), 8)

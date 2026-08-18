@@ -1,31 +1,39 @@
+
 import type { CipherResult, CipherOptions } from '@/lib/cipher/types'
 
 export type WorkerRequestType = 'encrypt' | 'decrypt'
+export type WorkerPriority = 'INTERACTIVE' | 'NORMAL' | 'BACKGROUND'
 
 export interface WorkerRequestPayload {
   cipherId: string
   input: string
   key: string
   options?: CipherOptions
+  priority?: WorkerPriority
+  jobId?: string
 }
 
 export interface WorkerRequest {
   type: WorkerRequestType
   requestId: string
   payload: WorkerRequestPayload
+  jobId?: string
+  priority?: WorkerPriority
+}
+
+export interface WorkerProgressMessage {
+  type: 'PROGRESS'
+  jobId: string
+  percent: number
+  currentMilestone: string
 }
 
 export interface WorkerResponsePayload {
   result?: CipherResult
-  /** Legacy error message (string) */
   error?: string
-
-  /** Standardized error code for typed UI feedback */
   errorCode?: import('@/lib/utils/errors').CipherErrorCode
-  /** Optional human readable error message */
   errorMessage?: string
 }
-
 
 export interface WorkerResponseTimings {
   durationMs: number
