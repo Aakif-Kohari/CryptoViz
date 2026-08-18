@@ -43,11 +43,11 @@ Any SaaS architecture involving authentication, billing, databases, or backend s
 
 ### Static Export Security Headers
 
-Because CryptoViz is deployed as a static Next.js export, Next.js middleware does not execute as it would in a server-side or edge deployment. The `middleware.ts` file therefore should not be considered the production source of truth for security headers in the static deployment.
+Because CryptoViz is deployed as a static Next.js export (`output: 'export'`), Next.js middleware does not execute as it would in a server-side or edge deployment. Unused SSR middleware files (`middleware.ts`) have been removed to eliminate false confidence in non-functional runtime security headers.
 
-Production security headers, including the Content Security Policy and other browser security headers, are configured in `vercel.json`.
+Production security headers, including Content Security Policy (CSP), clickjacking protection (`X-Frame-Options`), and other browser security headers, are statically configured in `vercel.json`.
 
-The deployment-level configuration should remain the source of truth for response security headers unless the application is migrated to an SSR or edge deployment where middleware can execute.
+`vercel.json` is the single source of truth for response security headers in production.
 
 ## ⚠️ Known Educational Security Limitations
 
