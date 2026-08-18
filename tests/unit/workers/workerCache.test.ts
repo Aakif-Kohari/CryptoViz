@@ -156,3 +156,15 @@ describe("worker cache lifecycle", () => {
     expect(calls).toBe(2);
   });
 });
+
+describe('worker cache weak references', () => {
+  it('supports explicitly disabling weak references for deterministic strong caching', () => {
+    const cache = new WorkerCache<{ value: string }>({ weakRef: false });
+    const value = { value: 'kept' };
+
+    cache.set('object', value);
+
+    expect(cache.get('object')).toBe(value);
+    expect(cache.stats().weakRefEnabled).toBe(false);
+  });
+});
