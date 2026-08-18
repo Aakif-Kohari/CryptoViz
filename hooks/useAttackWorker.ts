@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { WorkerPool } from '../workers/pool'
-import type { AttackStep, OracleMode } from '../attacks/paddingOracle'
-import type { MitmResult, MitmStep } from '../attacks/meetInTheMiddle'
+import { WorkerPool } from '@/lib/workers/pool'
+import type { AttackStep, OracleMode } from '@/lib/attacks/paddingOracle'
+import type { MitmResult, MitmStep } from '@/lib/attacks/meetInTheMiddle'
 
 export function useAttackWorker() {
   const poolRef = useRef<WorkerPool | null>(null)
@@ -13,7 +13,7 @@ export function useAttackWorker() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       poolRef.current = new WorkerPool(() => {
-        return new Worker(new URL('../workers/attack.worker.ts', import.meta.url))
+        return new Worker(new URL('../lib/workers/attack.worker.ts', import.meta.url))
       })
     }
 
@@ -163,7 +163,7 @@ export function useAttackWorker() {
     if (poolRef.current) {
       poolRef.current.terminate()
       poolRef.current = new WorkerPool(() => {
-        return new Worker(new URL('../workers/attack.worker.ts', import.meta.url))
+        return new Worker(new URL('../lib/workers/attack.worker.ts', import.meta.url))
       })
       setLoading(false)
     }
