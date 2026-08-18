@@ -203,6 +203,7 @@ export type CipherName =
   | 'okamoto-uchiyama'
   | 'sqisign'
   | 'rainbow'
+  | 'falcon'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
