@@ -1229,6 +1229,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     recommendedNext: ["ecc", "dh", "ml-kem"],
     options: [
       {
+        name: "Input Encoding Mode",
+        id: "inputEncoding",
+        type: "select",
+        default: "integer",
+        choices: [
+          { label: "Raw Math Integer (M < n)", value: "integer" },
+          { label: "UTF-8 Text Stream", value: "text" },
+          { label: "Hex Bytes", value: "hex" },
+        ],
+      },
+      {
         name: "Demo Mode (Small Primes)",
         id: "demoMode",
         type: "boolean",
