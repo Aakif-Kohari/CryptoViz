@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from "react";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 import {
   PipelineStage,
   PIPELINE_PRESETS,
@@ -8,7 +9,7 @@ import {
   exportPipelineToJson,
   importPipelineFromJson,
   StageCategory,
-} from '@/lib/pipeline/pipelineEngine';
+} from "@/lib/pipeline/pipelineEngine";
 import {
   Plus,
   Trash2,
@@ -25,7 +26,7 @@ import {
   Code,
   ShieldCheck,
   Zap,
-} from 'lucide-react';
+} from "lucide-react";
 
 const AVAILABLE_ALGORITHMS: Array<{
   category: StageCategory;
@@ -34,66 +35,170 @@ const AVAILABLE_ALGORITHMS: Array<{
   defaultParams: Record<string, string>;
   paramSchema?: Array<{ key: string; label: string; placeholder: string }>;
 }> = [
-  { category: 'encode', algorithm: 'base64-encode', name: 'Base64 Encode', defaultParams: {} },
-  { category: 'decode', algorithm: 'base64-decode', name: 'Base64 Decode', defaultParams: {} },
-  { category: 'encode', algorithm: 'hex-encode', name: 'Hex Encode', defaultParams: {} },
-  { category: 'decode', algorithm: 'hex-decode', name: 'Hex Decode', defaultParams: {} },
   {
-    category: 'encrypt',
-    algorithm: 'caesar',
-    name: 'Caesar Encrypt',
-    defaultParams: { shift: '3' },
-    paramSchema: [{ key: 'shift', label: 'Shift Amount (1–25)', placeholder: '3' }],
+    category: "encode",
+    algorithm: "base64-encode",
+    name: "Base64 Encode",
+    defaultParams: {},
   },
   {
-    category: 'encrypt',
-    algorithm: 'caesar-decrypt',
-    name: 'Caesar Decrypt',
-    defaultParams: { shift: '3' },
-    paramSchema: [{ key: 'shift', label: 'Shift Amount (1–25)', placeholder: '3' }],
-  },
-  { category: 'encrypt', algorithm: 'atbash', name: 'Atbash Cipher', defaultParams: {} },
-  { category: 'hash', algorithm: 'sha256', name: 'SHA-256 Digest', defaultParams: {} },
-  {
-    category: 'sign',
-    algorithm: 'rsa-sign',
-    name: 'RSA Digital Signature',
-    defaultParams: { key: 'priv-key-2048' },
-    paramSchema: [{ key: 'key', label: 'Signing Key Identifier', placeholder: 'priv-key-2048' }],
+    category: "decode",
+    algorithm: "base64-decode",
+    name: "Base64 Decode",
+    defaultParams: {},
   },
   {
-    category: 'verify',
-    algorithm: 'rsa-verify',
-    name: 'RSA Verify Signature',
-    defaultParams: { key: 'pub-key-2048' },
-    paramSchema: [{ key: 'key', label: 'Verification Key Identifier', placeholder: 'pub-key-2048' }],
+    category: "encode",
+    algorithm: "hex-encode",
+    name: "Hex Encode",
+    defaultParams: {},
+  },
+  {
+    category: "decode",
+    algorithm: "hex-decode",
+    name: "Hex Decode",
+    defaultParams: {},
+  },
+  {
+    category: "encrypt",
+    algorithm: "caesar",
+    name: "Caesar Encrypt",
+    defaultParams: { shift: "3" },
+    paramSchema: [
+      { key: "shift", label: "Shift Amount (1–25)", placeholder: "3" },
+    ],
+  },
+  {
+    category: "encrypt",
+    algorithm: "caesar-decrypt",
+    name: "Caesar Decrypt",
+    defaultParams: { shift: "3" },
+    paramSchema: [
+      { key: "shift", label: "Shift Amount (1–25)", placeholder: "3" },
+    ],
+  },
+  {
+    category: "encrypt",
+    algorithm: "atbash",
+    name: "Atbash Cipher",
+    defaultParams: {},
+  },
+  {
+    category: "hash",
+    algorithm: "sha256",
+    name: "SHA-256 Digest",
+    defaultParams: {},
+  },
+  {
+    category: "sign",
+    algorithm: "rsa-sign",
+    name: "RSA Digital Signature",
+    defaultParams: { key: "priv-key-2048" },
+    paramSchema: [
+      {
+        key: "key",
+        label: "Signing Key Identifier",
+        placeholder: "priv-key-2048",
+      },
+    ],
+  },
+  {
+    category: "verify",
+    algorithm: "rsa-verify",
+    name: "RSA Verify Signature",
+    defaultParams: { key: "pub-key-2048" },
+    paramSchema: [
+      {
+        key: "key",
+        label: "Verification Key Identifier",
+        placeholder: "pub-key-2048",
+      },
+    ],
   },
 ];
 
-const CATEGORY_BADGES: Record<StageCategory, { bg: string; text: string; label: string }> = {
-  encode: { bg: 'bg-blue-500/10 border-blue-500/30', text: 'text-blue-600 dark:text-blue-400', label: 'ENCODE' },
-  decode: { bg: 'bg-indigo-500/10 border-indigo-500/30', text: 'text-indigo-600 dark:text-indigo-400', label: 'DECODE' },
-  encrypt: { bg: 'bg-teal-500/10 border-teal-500/30', text: 'text-teal-600 dark:text-teal-400', label: 'ENCRYPT' },
-  hash: { bg: 'bg-purple-500/10 border-purple-500/30', text: 'text-purple-600 dark:text-purple-400', label: 'HASH' },
-  sign: { bg: 'bg-amber-500/10 border-amber-500/30', text: 'text-amber-600 dark:text-amber-400', label: 'SIGN' },
-  verify: { bg: 'bg-emerald-500/10 border-emerald-500/30', text: 'text-emerald-600 dark:text-emerald-400', label: 'VERIFY' },
+const CATEGORY_BADGES: Record<
+  StageCategory,
+  { bg: string; text: string; label: string }
+> = {
+  encode: {
+    bg: "bg-blue-500/10 border-blue-500/30",
+    text: "text-blue-600 dark:text-blue-400",
+    label: "ENCODE",
+  },
+  decode: {
+    bg: "bg-indigo-500/10 border-indigo-500/30",
+    text: "text-indigo-600 dark:text-indigo-400",
+    label: "DECODE",
+  },
+  encrypt: {
+    bg: "bg-teal-500/10 border-teal-500/30",
+    text: "text-teal-600 dark:text-teal-400",
+    label: "ENCRYPT",
+  },
+  hash: {
+    bg: "bg-purple-500/10 border-purple-500/30",
+    text: "text-purple-600 dark:text-purple-400",
+    label: "HASH",
+  },
+  sign: {
+    bg: "bg-amber-500/10 border-amber-500/30",
+    text: "text-amber-600 dark:text-amber-400",
+    label: "SIGN",
+  },
+  verify: {
+    bg: "bg-emerald-500/10 border-emerald-500/30",
+    text: "text-emerald-600 dark:text-emerald-400",
+    label: "VERIFY",
+  },
 };
 
 export default function CipherPipelineBuilder() {
-  const [inputText, setInputText] = useState<string>('CryptoViz Secure Message 2026');
+  const [inputText, setInputText] = useState<string>(
+    "CryptoViz Secure Message 2026",
+  );
   const [stages, setStages] = useState<PipelineStage[]>([
-    { id: 'stg-1', category: 'encode', algorithm: 'base64-encode', name: 'Base64 Encode', params: {} },
-    { id: 'stg-2', category: 'encrypt', algorithm: 'caesar', name: 'Caesar Encrypt', params: { shift: '5' } },
-    { id: 'stg-3', category: 'hash', algorithm: 'sha256', name: 'SHA-256 Digest', params: {} },
+    {
+      id: "stg-1",
+      category: "encode",
+      algorithm: "base64-encode",
+      name: "Base64 Encode",
+      params: {},
+    },
+    {
+      id: "stg-2",
+      category: "encrypt",
+      algorithm: "caesar",
+      name: "Caesar Encrypt",
+      params: { shift: "5" },
+    },
+    {
+      id: "stg-3",
+      category: "hash",
+      algorithm: "sha256",
+      name: "SHA-256 Digest",
+      params: {},
+    },
   ]);
   const [copied, setCopied] = useState<boolean>(false);
-  const [importJsonInput, setImportJsonInput] = useState<string>('');
-  const [showImportModal, setShowImportModal] = useState<boolean>(false);
+  const [importJsonInput, setImportJsonInput] = useState<string>("");
+  const [showImportModal, setShowImportModal] = useState(false);
+
+  const importModalRef = useFocusTrap({
+    enabled: showImportModal,
+    onEscape: () => {
+      setShowImportModal(false);
+      setImportError(null);
+    },
+  });
   const [importError, setImportError] = useState<string | null>(null);
 
-  const result = useMemo(() => executePipeline(inputText, stages), [inputText, stages]);
+  const result = useMemo(
+    () => executePipeline(inputText, stages),
+    [inputText, stages],
+  );
 
-  const addStage = (algChoice: typeof AVAILABLE_ALGORITHMS[number]) => {
+  const addStage = (algChoice: (typeof AVAILABLE_ALGORITHMS)[number]) => {
     const newStage: PipelineStage = {
       id: `stg-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
       category: algChoice.category,
@@ -108,14 +213,14 @@ export default function CipherPipelineBuilder() {
     setStages((prev) => prev.filter((s) => s.id !== id));
   };
 
-  const moveStage = (index: number, direction: 'up' | 'down') => {
+  const moveStage = (index: number, direction: "up" | "down") => {
     if (
-      (direction === 'up' && index === 0) ||
-      (direction === 'down' && index === stages.length - 1)
+      (direction === "up" && index === 0) ||
+      (direction === "down" && index === stages.length - 1)
     ) {
       return;
     }
-    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    const newIndex = direction === "up" ? index - 1 : index + 1;
     setStages((prev) => {
       const copy = [...prev];
       const temp = copy[index];
@@ -130,8 +235,8 @@ export default function CipherPipelineBuilder() {
       prev.map((stg) =>
         stg.id === stageId
           ? { ...stg, params: { ...stg.params, [paramKey]: value } }
-          : stg
-      )
+          : stg,
+      ),
     );
   };
 
@@ -142,7 +247,7 @@ export default function CipherPipelineBuilder() {
       found.stages.map((stg, idx) => ({
         ...stg,
         id: `preset-stg-${Date.now()}-${idx}`,
-      }))
+      })),
     );
   };
 
@@ -159,9 +264,9 @@ export default function CipherPipelineBuilder() {
       const importedStages = importPipelineFromJson(importJsonInput);
       setStages(importedStages);
       setShowImportModal(false);
-      setImportJsonInput('');
+      setImportJsonInput("");
     } catch (err: any) {
-      setImportError(err.message || 'Invalid JSON format');
+      setImportError(err.message || "Invalid JSON format");
     }
   };
 
@@ -178,8 +283,9 @@ export default function CipherPipelineBuilder() {
             Cipher <span className="text-purple-500">Pipeline Builder</span>
           </h1>
           <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
-            Chain multiple cryptographic transformations together (Encode → Encrypt → Hash → Sign → Verify)
-            to build, simulate, and analyze complete end-to-end security protocols in real time.
+            Chain multiple cryptographic transformations together (Encode →
+            Encrypt → Hash → Sign → Verify) to build, simulate, and analyze
+            complete end-to-end security protocols in real time.
           </p>
 
           {/* Action Bar */}
@@ -188,8 +294,12 @@ export default function CipherPipelineBuilder() {
               onClick={handleCopyExport}
               className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-4 py-2 text-xs font-bold text-white shadow-lg hover:bg-purple-500 transition-colors"
             >
-              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              {copied ? 'Copied JSON!' : 'Export Pipeline JSON'}
+              {copied ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+              {copied ? "Copied JSON!" : "Export Pipeline JSON"}
             </button>
             <button
               onClick={() => setShowImportModal(true)}
@@ -233,7 +343,9 @@ export default function CipherPipelineBuilder() {
                 onClick={() => loadPreset(preset.id)}
                 className="w-full text-left rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-zinc-50 dark:bg-zinc-800/40 p-3 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all"
               >
-                <div className="font-bold text-zinc-900 dark:text-white">{preset.name}</div>
+                <div className="font-bold text-zinc-900 dark:text-white">
+                  {preset.name}
+                </div>
                 <div className="mt-0.5 text-[11px] font-normal text-zinc-500 dark:text-zinc-400 line-clamp-1">
                   {preset.description}
                 </div>
@@ -266,15 +378,20 @@ export default function CipherPipelineBuilder() {
             <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 p-12 text-center">
               <Code className="mx-auto h-8 w-8 text-zinc-400 mb-2" />
               <p className="text-zinc-500 dark:text-zinc-400 font-medium text-sm">
-                Your pipeline is currently empty. Add stages from the right panel or load a preset above.
+                Your pipeline is currently empty. Add stages from the right
+                panel or load a preset above.
               </p>
             </div>
           ) : (
             <div className="space-y-4">
               {stages.map((stage, idx) => {
                 const badge = CATEGORY_BADGES[stage.category];
-                const stageExec = result.stageResults.find((r) => r.stageId === stage.id);
-                const algInfo = AVAILABLE_ALGORITHMS.find((a) => a.algorithm === stage.algorithm);
+                const stageExec = result.stageResults.find(
+                  (r) => r.stageId === stage.id,
+                );
+                const algInfo = AVAILABLE_ALGORITHMS.find(
+                  (a) => a.algorithm === stage.algorithm,
+                );
 
                 return (
                   <div
@@ -287,7 +404,9 @@ export default function CipherPipelineBuilder() {
                         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-purple-500/10 font-mono text-xs font-bold text-purple-600 dark:text-purple-400">
                           {idx + 1}
                         </span>
-                        <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${badge.bg} ${badge.text}`}>
+                        <span
+                          className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${badge.bg} ${badge.text}`}
+                        >
                           {badge.label}
                         </span>
                         <h3 className="font-bold text-zinc-900 dark:text-white text-base">
@@ -298,7 +417,7 @@ export default function CipherPipelineBuilder() {
                       {/* Reorder / Delete Controls */}
                       <div className="flex items-center gap-1">
                         <button
-                          onClick={() => moveStage(idx, 'up')}
+                          onClick={() => moveStage(idx, "up")}
                           disabled={idx === 0}
                           className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-30"
                           aria-label="Move stage up"
@@ -306,7 +425,7 @@ export default function CipherPipelineBuilder() {
                           <ArrowUp className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => moveStage(idx, 'down')}
+                          onClick={() => moveStage(idx, "down")}
                           disabled={idx === stages.length - 1}
                           className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-30"
                           aria-label="Move stage down"
@@ -327,14 +446,23 @@ export default function CipherPipelineBuilder() {
                     {algInfo?.paramSchema && algInfo.paramSchema.length > 0 && (
                       <div className="flex flex-wrap gap-4 border-t border-zinc-100 dark:border-zinc-800/80 pt-3">
                         {algInfo.paramSchema.map((schema) => (
-                          <div key={schema.key} className="flex items-center gap-2 text-xs">
+                          <div
+                            key={schema.key}
+                            className="flex items-center gap-2 text-xs"
+                          >
                             <label className="font-medium text-zinc-600 dark:text-zinc-400">
                               {schema.label}:
                             </label>
                             <input
                               type="text"
-                              value={stage.params[schema.key] ?? ''}
-                              onChange={(e) => updateParam(stage.id, schema.key, e.target.value)}
+                              value={stage.params[schema.key] ?? ""}
+                              onChange={(e) =>
+                                updateParam(
+                                  stage.id,
+                                  schema.key,
+                                  e.target.value,
+                                )
+                              }
                               placeholder={schema.placeholder}
                               className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-2.5 py-1 text-xs text-zinc-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-purple-500"
                             />
@@ -352,7 +480,9 @@ export default function CipherPipelineBuilder() {
                         </div>
                         <div className="text-teal-600 dark:text-teal-400 break-all">
                           {stageExec.error ? (
-                            <span className="text-red-500 font-sans font-semibold">Error: {stageExec.error}</span>
+                            <span className="text-red-500 font-sans font-semibold">
+                              Error: {stageExec.error}
+                            </span>
                           ) : (
                             stageExec.output
                           )}
@@ -383,10 +513,14 @@ export default function CipherPipelineBuilder() {
                     className="w-full flex items-center justify-between rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-zinc-50 dark:bg-zinc-800/40 p-3 text-left hover:border-purple-500/50 hover:bg-purple-500/10 transition-all"
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className={`rounded-md border px-2 py-0.5 text-[9px] font-bold ${badge.bg} ${badge.text}`}>
+                      <span
+                        className={`rounded-md border px-2 py-0.5 text-[9px] font-bold ${badge.bg} ${badge.text}`}
+                      >
                         {badge.label}
                       </span>
-                      <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">{alg.name}</span>
+                      <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
+                        {alg.name}
+                      </span>
                     </div>
                     <Plus className="h-4 w-4 text-purple-500" />
                   </button>
@@ -407,7 +541,7 @@ export default function CipherPipelineBuilder() {
             </div>
 
             <div className="rounded-xl border border-purple-500/20 bg-white dark:bg-zinc-950 p-4 font-mono text-xs text-purple-700 dark:text-purple-300 break-all leading-relaxed min-h-[80px]">
-              {result.finalOutput || '(No output produced)'}
+              {result.finalOutput || "(No output produced)"}
             </div>
           </div>
         </div>
@@ -415,31 +549,65 @@ export default function CipherPipelineBuilder() {
 
       {/* ── Import Modal ── */}
       {showImportModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-2xl space-y-4">
-            <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Import Pipeline Configuration</h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              Paste a previously exported pipeline JSON object below to restore stage sequence.
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          role="presentation"
+        >
+          <div
+            ref={importModalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="import-pipeline-dialog-title"
+            aria-describedby="import-pipeline-dialog-description"
+            tabIndex={-1}
+            className="w-full max-w-lg rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-2xl space-y-4"
+          >
+            <h3
+              id="import-pipeline-dialog-title"
+              className="text-lg font-bold text-zinc-900 dark:text-white"
+            >
+              Import Pipeline Configuration
+            </h3>
+
+            <p
+              id="import-pipeline-dialog-description"
+              className="text-xs text-zinc-500 dark:text-zinc-400"
+            >
+              Paste a previously exported pipeline JSON object below to restore
+              stage sequence.
             </p>
 
             <textarea
               value={importJsonInput}
-              onChange={(e) => setImportJsonInput(e.target.value)}
+              onChange={(event) => setImportJsonInput(event.target.value)}
               rows={6}
-              placeholder={`{\n  "version": "1.0",\n  "stages": [...]\n}`}
+              placeholder={`{
+  "version": "1.0",
+  "stages": [...]
+}`}
               className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-3 font-mono text-xs text-zinc-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
 
-            {importError && <p className="text-xs font-bold text-red-500">{importError}</p>}
+            {importError && (
+              <p role="alert" className="text-xs font-bold text-red-500">
+                {importError}
+              </p>
+            )}
 
             <div className="flex justify-end gap-3 pt-2">
               <button
-                onClick={() => setShowImportModal(false)}
+                type="button"
+                onClick={() => {
+                  setShowImportModal(false);
+                  setImportError(null);
+                }}
                 className="rounded-xl border border-zinc-300 dark:border-zinc-700 px-4 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400"
               >
                 Cancel
               </button>
+
               <button
+                type="button"
                 onClick={handleImportSubmit}
                 className="rounded-xl bg-purple-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:bg-purple-500"
               >
