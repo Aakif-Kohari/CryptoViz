@@ -43,3 +43,108 @@ export async function importPackFromJson(jsonData: any): Promise<void> {
     localStorage.setItem(storageKey, JSON.stringify(existingPacks));
   }
 }
+
+/**
+ * Exports an OfflinePack into a structured JSON string representation.
+ */
+export function exportPackAsJson(pack: any): string {
+  return JSON.stringify({
+    metadata: {
+      id: pack.id,
+      title: pack.title,
+      description: pack.description,
+      version: pack.version || '1.0.0',
+      category: pack.category,
+      generator: 'CryptoViz Offline Exporter 1.0',
+      exportedAt: new Date().toISOString(),
+    },
+    topics: pack.topics || [],
+    documentation: pack.documentation || [],
+    referenceCode: pack.referenceCode || {
+      caesar: `function caesar(str, shift) { return str.replace(/[a-z]/gi, c => String.fromCharCode((c.charCodeAt(0) % 32 + shift) % 26 + (c < 'a' ? 65 : 97))); }`
+    }
+  }, null, 2);
+}
+
+/**
+ * Exports an OfflinePack into a Markdown document string.
+ */
+export function exportPackAsMarkdown(pack: any): string {
+  let md = `# ${pack.title}\n\n`;
+  md += `> ${pack.description}\n\n`;
+  md += `**Category:** ${pack.category} | **Version:** ${pack.version || '1.0.0'}\n\n`;
+  md += `## Topics Covered\n`;
+  (pack.topics || []).forEach((t: string) => {
+    md += `- ${t}\n`;
+  });
+  md += `\n## Included Documentation & Formulas\n`;
+  (pack.documentation || []).forEach((d: any) => {
+    md += `### ${d.title || d.topic}\n${d.content || d.summary}\n\n`;
+  });
+  return md;
+}
+
+/**
+ * Exports an OfflinePack into a standalone single-file HTML document with embedded JavaScript.
+ */
+export function exportPackAsSingleFileHtml(pack: any): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${pack.title} - CryptoViz Standalone Offline</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; max-width: 800px; margin: auto; }
+    h1 { color: #38bdf8; }
+    .card { background: #1e293b; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1.5rem; border: 1px solid #334155; }
+    textarea, input, button { width: 100%; box-sizing: border-box; padding: 0.5rem; margin: 0.5rem 0; background: #0f172a; color: #fff; border: 1px solid #475569; border-radius: 0.25rem; }
+    button { background: #0284c7; font-weight: bold; cursor: pointer; border: none; padding: 0.75rem; }
+    button:hover { background: #0369a1; }
+  </style>
+</head>
+<body>
+  <h1>${pack.title}</h1>
+  <p>${pack.description}</p>
+  <div class="card">
+    <h2>Interactive Standalone Offline Cipher Runner</h2>
+    <label>Input Text:</label>
+    <textarea id="inputText" rows="3">Hello CryptoViz!</textarea>
+    <button onclick="runCipher()">Run Demonstration Cipher</button>
+    <label>Output Result:</label>
+    <textarea id="outputText" rows="3" readonly></textarea>
+  </div>
+  <script>
+    async function runCipher() {
+      const input = document.getElementById('inputText').value;
+      if (window.crypto && window.crypto.subtle) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(input);
+        const hash = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hash));
+        const hex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        document.getElementById('outputText').value = 'SHA-256 Digest: ' + hex;
+      } else {
+        document.getElementById('outputText').value = 'Encoded: ' + btoa(input);
+      }
+    }
+  </script>
+</body>
+</html>`;
+}
+
+/**
+ * Triggers a browser download of a generated text/blob file.
+ */
+export function downloadFile(filename: string, content: string, mimeType: string): void {
+  if (typeof window === 'undefined') return;
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+

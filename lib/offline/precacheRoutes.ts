@@ -1,6 +1,6 @@
 /**
  * Auto-generated precache routes manifest.
- * Last Generated: 2026-08-17T05:43:13.121Z
+ * Last Generated: 2026-08-18T02:25:56.695Z
  */
 export const PRECACHE_ROUTES: string[] = [
   "/",
