@@ -30,6 +30,9 @@ import {
 } from "../../lib/utils/visualizerPermalink";
 import TraceTransferControls from "./TraceTransferControls";
 import CipherLifecycleBadge from "./CipherLifecycleBadge";
+import LessonPackageModal from "./LessonPackageModal";
+import LessonPlayerModal from "./LessonPlayerModal";
+import type { LessonPackage } from "../../lib/utils/lessonPackage";
 import {
   loadConversionHistory,
   saveConversionHistory,
@@ -117,6 +120,9 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   );
   const [stepNoteInput, setStepNoteInput] = useState("");
   const [isZenMode, setIsZenMode] = useState(false);
+  const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
+  const [activeLesson, setActiveLesson] = useState<LessonPackage | null>(null);
+  const [isLessonPlayerOpen, setIsLessonPlayerOpen] = useState(false);
   const [securityMetrics, setSecurityMetrics] = useState(() => 
     calculateSecurityMetrics(cipher, { keySize: parseKeySize(cipher, cipher.defaultKey) })
   );
@@ -469,6 +475,41 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     pendingSharedStepRef.current = null;
     setActiveTab("result");
     setError(null);
+  };
+
+  const handleLessonImported = (lesson: LessonPackage) => {
+    setActiveLesson(lesson);
+    setAutoCompute(false);
+    setInput(lesson.executionContext.input);
+    setKey(lesson.executionContext.key);
+    setAction(lesson.executionContext.direction);
+    setOptionsState((prev) => ({
+      ...prev,
+      ...lesson.executionContext.options,
+    }));
+    const importedResult = traceToCipherResult({
+      schemaVersion: 1,
+      cipherId: lesson.executionContext.algorithmId,
+      direction: lesson.executionContext.direction,
+      input: lesson.executionContext.input,
+      key: lesson.executionContext.key,
+      options: lesson.executionContext.options,
+      output: lesson.output,
+      outputEncoding: lesson.outputEncoding,
+      steps: lesson.steps,
+      metadata: { name: lesson.metadata.targetCipher, securityStatus: 'secure' },
+      durationMs: 0,
+      timestamp: lesson.metadata.createdAt,
+    });
+    setResult(createVirtualizedCipherResult(importedResult));
+    setCurrentStep(0);
+    setActiveTab("result");
+    setError(null);
+    setIsLessonPlayerOpen(true);
+  };
+
+  const handleLessonStepNavigate = (stepIndex: number) => {
+    setCurrentStep(stepIndex);
   };
 
   useEffect(() => {
@@ -1006,6 +1047,8 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
                 options={traceOptions}
                 result={result}
                 onImport={handleTraceImport}
+                onOpenLessonModal={() => setIsLessonModalOpen(true)}
+                onLessonImported={handleLessonImported}
               />
 
               {renderSpecificVisualizer()}
@@ -1112,6 +1155,44 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         </div>
       </div>
       {!isZenMode && <WhereIsThisUsed cipherId={cipher.id} />}
+
+      <LessonPackageModal
+        isOpen={isLessonModalOpen}
+        onClose={() => setIsLessonModalOpen(false)}
+        cipherId={cipher.id}
+        cipherName={cipher.name}
+        direction={cipher.id === "dh" ? "encrypt" : action}
+        input={input}
+        key={key}
+        options={traceOptions}
+        steps={result?.steps ?? []}
+        output={result?.output ?? ''}
+        outputEncoding={result?.outputEncoding ?? 'utf8'}
+        metadata={result?.metadata ?? { name: cipher.name, securityStatus: cipher.securityStatus }}
+        stepNotes={(() => {
+          const notes: Record<number, string> = {}
+          if (result?.steps) {
+            result.steps.forEach((step, index) => {
+              const stepId = createStableStepId(step.label, index)
+              const annotation = scopeAnnotations.find((a) => a.stepId === stepId && a.note)
+              if (annotation) {
+                notes[index] = annotation.note
+              }
+            })
+          }
+          return notes
+        })()}
+        onLessonImported={handleLessonImported}
+      />
+
+      {activeLesson && (
+        <LessonPlayerModal
+          isOpen={isLessonPlayerOpen}
+          onClose={() => setIsLessonPlayerOpen(false)}
+          lesson={activeLesson}
+          onStepNavigate={handleLessonStepNavigate}
+        />
+      )}
     </div>
   );
 }

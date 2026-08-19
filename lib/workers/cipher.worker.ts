@@ -12,10 +12,11 @@ const workerScope = self as unknown as Worker & typeof globalThis
 const cancelledJobs = new Set<string>()
 const lastProgressAt = new Map<string, number>()
 
+// Interface representing incoming messages that could be a cancel action
 interface CancelMessage {
-  type?: string
-  jobId?: string
-  requestId?: string
+  type?: string;
+  jobId?: string;
+  requestId?: string;
 }
 
 function postProgress(jobId: string, percent: number, currentMilestone: string, force = false) {
@@ -42,6 +43,7 @@ workerScope.addEventListener('message', async (event: MessageEvent<WorkerRequest
     }
   }
 
+  // Handle cancellation requests
   const cancelCandidate = rawData as CancelMessage
   if (cancelCandidate?.type === 'CANCEL') {
     const id = cancelCandidate.jobId ?? cancelCandidate.requestId
@@ -56,21 +58,21 @@ workerScope.addEventListener('message', async (event: MessageEvent<WorkerRequest
 
   try {
     if (cancelledJobs.has(jobId)) throw new DOMException('The user aborted the request.', 'AbortError')
-
+    
     const { type, payload } = requestData
     const { cipherId, input, key, options } = payload
     const safeOptions = options || {}
-
+    
     postProgress(jobId, 0, 'Starting cipher', true)
 
     const dispatcher = await getDispatcher(cipherId)
     postProgress(jobId, 10, 'Loading cipher implementation', true)
-
+    
     if (cancelledJobs.has(jobId)) throw new DOMException('The user aborted the request.', 'AbortError')
 
     const handler = type === 'encrypt' ? dispatcher.encrypt : dispatcher.decrypt
     postProgress(jobId, 20, 'Executing cryptographic operation', true)
-
+    
     const result = (await handler(input, key, safeOptions)) as CipherResult
 
     // Trace-aware progress gives the UI useful milestones without flooding postMessage.
@@ -97,7 +99,7 @@ workerScope.addEventListener('message', async (event: MessageEvent<WorkerRequest
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : String(error)
     const errorCode = error instanceof CipherError ? error.code : undefined
-
+    
     workerScope.postMessage({
       requestId,
       success: false,
