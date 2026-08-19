@@ -1,17 +1,17 @@
 "use client";
 
 import type { SessionDelta } from "@/lib/utils/sessionComparison";
+import { getMetricBg, getMetricTextColor } from "@/lib/utils/sessionComparison";
 import { formatBytes } from "@/lib/utils/benchmarkHistory";
 import { Zap, Clock, Cpu, HardDrive, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import Card from "@/components/ui/Card";
 
 interface SessionDeltaCardProps {
   delta: SessionDelta;
-
 }
 
 export default function SessionDeltaCard({
   delta,
-
 }: SessionDeltaCardProps) {
   const isSpeedup = delta.speedupRatio >= 1.02;
   const isSlowdown = delta.speedupRatio <= 0.98;
@@ -19,19 +19,16 @@ export default function SessionDeltaCard({
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {/* Metric 1: Overall Speedup Ratio */}
-      <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
+      <Card className="p-5 transition-all hover:shadow-md">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
             Speedup Ratio (B / A)
           </span>
           <div
-            className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-              isSpeedup
-                ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400"
-                : isSlowdown
-                  ? "bg-rose-100 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
-                  : "bg-amber-100 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400"
-            }`}
+            className={`flex h-8 w-8 items-center justify-center rounded-lg ${getMetricBg(
+              isSpeedup,
+              isSlowdown
+            )}`}
           >
             <Zap className="h-4.5 w-4.5" />
           </div>
@@ -41,13 +38,10 @@ export default function SessionDeltaCard({
             {delta.speedupRatio.toFixed(2)}x
           </span>
           <span
-            className={`flex items-center text-xs font-bold ${
-              isSpeedup
-                ? "text-emerald-600 dark:text-emerald-400"
-                : isSlowdown
-                  ? "text-rose-600 dark:text-rose-400"
-                  : "text-zinc-500 dark:text-zinc-400"
-            }`}
+            className={`flex items-center text-xs font-bold ${getMetricTextColor(
+              isSpeedup,
+              isSlowdown
+            )}`}
           >
             {isSpeedup ? (
               <TrendingUp className="mr-0.5 h-3.5 w-3.5" />
@@ -63,10 +57,10 @@ export default function SessionDeltaCard({
         <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400 truncate">
           Average throughput relative performance
         </p>
-      </div>
+      </Card>
 
       {/* Metric 2: Cipher Time Delta */}
-      <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
+      <Card className="p-5 transition-all hover:shadow-md">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
             Mean Execution Time
@@ -84,10 +78,10 @@ export default function SessionDeltaCard({
         <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400 truncate">
           Delta in average per-cipher compute duration
         </p>
-      </div>
+      </Card>
 
       {/* Metric 3: Worker IPC Overhead Delta */}
-      <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
+      <Card className="p-5 transition-all hover:shadow-md">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
             Worker RTT Delta
@@ -105,10 +99,10 @@ export default function SessionDeltaCard({
         <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400 truncate">
           Web Worker postMessage serialization difference
         </p>
-      </div>
+      </Card>
 
       {/* Metric 4: Memory Usage Delta */}
-      <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
+      <Card className="p-5 transition-all hover:shadow-md">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
             Memory Growth Delta
@@ -126,7 +120,7 @@ export default function SessionDeltaCard({
         <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400 truncate">
           {delta.memoryDeltaBytes <= 0 ? "Lower memory footprint" : "Higher memory allocation"}
         </p>
-      </div>
+      </Card>
     </div>
   );
 }
