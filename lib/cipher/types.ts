@@ -248,6 +248,7 @@ export type CipherName =
   | 'kupyna'
   | 'radiogatun'
   | 'ascon-hash'
+  | 'kangarootwelve'
   | 'poly1305'
   | 'hmac'
   | 'cmac'
