@@ -1242,6 +1242,23 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: '',
     securityStatus: 'secure',
   },
+  {
+    id: 'kangarootwelve',
+    name: 'KangarooTwelve',
+    category: 'hash',
+    description: 'Fast tree-hashing XOF (Bertoni, Daemen et al., 2016). GENUINE REUSE of sha3.ts Keccak-p permutation, parameterized for 12 rounds instead of 24. TREE-HASHING STRUCTURE: input split into 8192-byte chunks processed independently (in principle, in parallel), then combined via root computation. Fundamentally different from sequential hashes. IRTF-documented. Status: secure.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'secure',
+    options: [
+      {
+        name: 'Output Length (bytes)',
+        id: 'outputLength',
+        type: 'number',
+        default: 32,
+      }
+    ],
+  },
   // Asymmetric
   {
     id: "rsa",
