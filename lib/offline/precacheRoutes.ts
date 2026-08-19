@@ -1,6 +1,6 @@
 /**
  * Auto-generated precache routes manifest.
- * Last Generated: 2026-08-14T09:07:39.273Z
+ * Last Generated: 2026-08-18T01:58:08.292Z
  */
 export const PRECACHE_ROUTES: string[] = [
   "/",
@@ -22,6 +22,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/attacks/rsa/",
   "/attacks/side-channel/",
   "/attacks/timing/",
+  "/audit-sandbox/",
   "/avalanche/",
   "/benchmark/",
   "/benchmarks/history/",
@@ -56,6 +57,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/emv/",
   "/encoding-errors/",
   "/encoding/",
+  "/entropy-harvesting/",
   "/finite-field/",
   "/globals.css",
   "/glossary/",
@@ -88,6 +90,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/pipeline/",
   "/pqc-lattices/",
   "/protocols/",
+  "/protocols/webauthn/",
   "/protocols/zero-knowledge/",
   "/quality/reliability/",
   "/quantum-cryptanalysis/",
@@ -100,8 +103,10 @@ export const PRECACHE_ROUTES: string[] = [
   "/resources/standards-rfc/",
   "/resources/video-library/",
   "/sbox/",
+  "/security-games/",
   "/security-recommendation/",
   "/signal-lab/",
+  "/steganography/",
   "/test-vectors/",
   "/tests/integration/",
   "/tests/snapshots/",
@@ -109,6 +114,7 @@ export const PRECACHE_ROUTES: string[] = [
   "/theme-init.js",
   "/threshold-crypto/",
   "/timeline/",
+  "/visual-cryptography/",
   "/visualizer/",
   "/visualizer/aes-key-expansion/",
   "/visualizer/aes/",

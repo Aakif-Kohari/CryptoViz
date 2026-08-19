@@ -378,6 +378,11 @@ function desInstrumented(
           inputState: xorHex,
           outputState: sBoxOutput.toString(16).padStart(8, '0'),
           note: 'Passed 48-bit XORed value through S-boxes S1-S8 to produce a 32-bit output.',
+          sboxInspection: {
+            family: 'des',
+            desIndex: 0,
+            inputValue: `0b${xorHigh.toString(2).padStart(6, '0').slice(0, 6)}`,
+          },
         })
 
         // 4. Permutation P & Left XOR

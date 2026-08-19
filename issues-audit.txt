@@ -614,3 +614,48 @@
 [#1097] (open) by @Aakif-Kohari: [FEATURE] Add Regev's LWE encryption scheme (2005, foundational textbook lattice cryptosystem, predecessor teaching-version to ML-KEM)
 [#1096] (open) by @Aakif-Kohari: [FEATURE] Add MICKEY-128 stream cipher (eSTREAM hardware profile finalist, dual clock-controlled registers, completes eSTREAM hardware trio)
 [#1095] (open) by @Aakif-Kohari: [FEATURE] Add LOKI97 block cipher (Australian AES candidate, GF(2^64) exponentiation-based nonlinearity, complex dual-branch F-function)
+
+=== Audited 2026-08-16 21:51 UTC (36 new) ===
+[#1201] (open) by @Aakif-Kohari: [FEATURE] Add RadioGatun hash construction (Daemen et al., 2006, direct sponge-construction predecessor to the actual SHA-3 winner Keccak)
+[#1200] (open) by @Aakif-Kohari: [FEATURE] Add Okamoto-Uchiyama probabilistic encryption (1998, p²q composite modulus, homomorphic addition, distinct from Paillier)
+[#1199] (open) by @Aakif-Kohari: [FEATURE] Add Rainbow signature scheme (multivariate PQC, NIST Round 3 finalist, broken by Beullens 2022, completes 4th major PQC family)
+[#1198] (open) by @Aakif-Kohari: [FEATURE] Add SEAL stream cipher (Rogaway & Coppersmith, 1993, SHA-1-derived precomputed tables, pioneering software-speed-optimized design)
+[#1197] (open) by @Aakif-Kohari: [FEATURE] Add Crypton block cipher (Korean AES candidate, byte-oriented SPN with two S-box types, independently designed alternative to SEED/ARIA)
+[#1175] (closed) by @Diwakar-odds: feat(backend/storage): Ephemeral Cryptographic Key Store with Automatic Memory Wiping & Secure Storage Lifecycle Manager
+[#1174] (closed) by @Diwakar-odds: feat(backend/engine): Kalyna & Kupyna Cryptographic Primitives Implementation with Instrumented vs Fast-Path Execution Pipeline
+[#1173] (closed) by @Diwakar-odds: feat(backend/engine): Distributed Multi-Threaded Web Worker Pool for Heavy Cryptanalytic Attacks & Progression Yielding
+[#1170] (closed) by @ankitasahu83964: docs: add screenshots to README for local setup
+[#1169] (open) by @csxark: High-Contrast Mode & WCAG 2.1 AA Color Palette Tokens for State Matrices and Byte Diff Heatmaps
+[#1168] (closed) by @csxark: Fullscreen Zen Presentation Mode with Resizable Step Matrix Panels in Visualizer Workspace
+[#1167] (closed) by @csxark: Standardized Visualizer Component Contract Specification & Interactive Development Template
+[#1166] (open) by @csxark: Virtualized Step List & Memoized Matrix Rendering in High-Step Visualizers
+[#1165] (closed) by @csxark: Pre-Loaded Cover Media Scenarios & Spatial LSB Bit-Plane Slicing in Steganography Workbench
+[#1164] (open) by @csxark: Shared Input/Key Parser & Validator Pipeline with Structured Feedback
+[#1163] (closed) by @csxark: Clear Ephemeral Key State on Component Unmount & Memory Wipe Safeguard
+[#1162] (open) by @csxark: Automated Cipher Engine Conformance & Fast-Path vs. Instrumented-Path Parity Test Suite
+[#1161] (open) by @csxark: Automated Focus Trapping, Accessible Keyboard Stepping & ARIA Announcements in Modal Overlays
+[#1160] (open) by @csxark: Interactive "Reset to Safe Defaults" & One-Click Fix Action in Visualizer Error Callouts
+[#1159] (open) by @csxark: Offline Storage Quota Inspector, Pack Importer & Cache Lifecycle Manager
+[#1158] (closed) by @csxark: HMAC Chained Iteration Micro-Trace & XOR Accumulation Visualizer for PBKDF2
+[#1157] (open) by @csxark: Multi-Format Structured Report Exporter (Markdown Tables & JSON Suite Schema) for Benchmark Dashboard
+[#1156] (open) by @csxark: Explicit Text vs. Integer Encoding Mode Switcher & Modulus Capacity Indicator for Asymmetric Ciphers
+[#1155] (open) by @csxark: Interactive 2x2 Matrix Dot-Product & Modular Reduction Visualizer for Hill Cipher
+[#1154] (open) by @csxark: Structured 16-Byte Block Grouping, Error Propagation Horizon & Feedback Flow in Modes Lab
+[#1153] (open) by @csxark: Worker Thread Offloading & Progressive Yielding for Meet-in-the-Middle and CPU-Intensive Attack Simulators
+[#1152] (open) by @csxark: Interactive Historical Session Log & Mistake Review Drawer in Challenge Mode
+[#1151] (open) by @csxark: Separate HTML Entity Escaping from Cryptographic Plaintext & Key Normalization
+[#1150] (open) by @csxark: Timeline Milestone Navigation, Phase Indicators & Quick-Jump Scrubber in StepAnimator
+[#1149] (open) by @csxark: Centralized Sub-Visualizer Registry & Dynamic Component Mounting in Visualizer Workspace
+[#1148] (open) by @csxark: Dynamic Option Schema Rendering & Worker Parameter Mapping in Visualizer Workspace
+[#1145] (closed) by @Aakif-Kohari: [FEATURE] Add Kupyna hash function (Ukrainian national standard, DSTU 7564:2014, Kalyna-based compression, completes Ukrainian national suite)
+[#1144] (closed) by @Aakif-Kohari: [FEATURE] Add Kalyna block cipher (Ukrainian national standard, DSTU 7624:2014, multi-size blocks/keys, distinct national-suite representation)
+[#1143] (closed) by @Aakif-Kohari: [FEATURE] Add SQIsign signature scheme (isogeny-based, NIST PQC additional signature candidate, shows isogeny cryptography survived where SIDH did not)
+[#1142] (closed) by @Aakif-Kohari: [FEATURE] Add SOSEMANUK stream cipher (eSTREAM software profile finalist, completes the full eSTREAM software portfolio)
+[#1141] (closed) by @Aakif-Kohari: [FEATURE] Add SHARK block cipher (Rijmen/Daemen/Preneel et al., 1996, earliest predecessor in the Square/Rijndael lineage)
+
+=== Audited 2026-08-17 18:32 UTC (5 new) ===
+[#1224] (open) by @Aakif-Kohari: [FEATURE] Add Ascon-Hash (NIST Lightweight Cryptography Standard 2023, sponge-mode sibling of the already-present Ascon AEAD cipher)
+[#1223] (open) by @Aakif-Kohari: [FEATURE] Add Chor-Rivest knapsack cryptosystem (1988, discrete-log-based superincreasing construction, second knapsack scheme alongside Merkle-Hellman)
+[#1222] (open) by @Aakif-Kohari: [FEATURE] Add Falcon signature scheme (NIST PQC standardized, NTRU-lattice + Fast Fourier sampling, distinct from ML-DSA's Module-LWE approach)
+[#1221] (open) by @Aakif-Kohari: [FEATURE] Add Turing stream cipher (Rose & Hawkes, 2003, LFSR-plus-S-box software-optimized design, NESSIE-submitted)
+[#1220] (open) by @Aakif-Kohari: [FEATURE] Add Hierocrypt-3 block cipher (Toshiba, Japanese CRYPTREC candidate, nested SPN with recursive substitution-permutation layers)

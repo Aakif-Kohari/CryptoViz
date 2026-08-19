@@ -304,6 +304,17 @@ npm run lint
 
 ---
 
+# Cryptographic Audit Sandbox
+
+## Audit Sandbox does not show
+
+Verify that the development server is running:
+
+```bash
+npm run dev
+
+---
+
 # Related Documentation
 
 * [README.md](./README.md)

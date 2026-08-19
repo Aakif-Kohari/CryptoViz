@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { useLearningPath } from '@/lib/hooks/useLearningPath'
+import { useLearningPath } from '@/hooks/useLearningPath'
 
 describe('useLearningPath Hook', () => {
   beforeEach(() => {

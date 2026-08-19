@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback } from 'react'
 import type { CipherDefinition } from '../../lib/cipher/registry'
 import type {
   CipherDirection,
@@ -60,6 +61,19 @@ export default function CipherComparisonPanel({
     resetPanel()
   }, [cipher.id, resetToken])
 
+  // Clear sensitive key state on component unmount
+  useEffect(() => {
+    return () => {
+      // Abort any pending operations
+      abortControllerRef.current?.abort()
+      // Clear sensitive key state
+      setKey('')
+      // Clear derived/execution state that may contain sensitive key material
+      setResult(null)
+      setError(null)
+    }
+  }, [])
+
   const supportedDirections = getSupportedDirections(cipher)
 
   const updateOption = (
@@ -71,6 +85,14 @@ export default function CipherComparisonPanel({
       [optionId]: value,
     }))
   }
+
+  const handleClearKey = useCallback(() => {
+    setKey('')
+    // Clear dependent comparison results
+    setResult(null)
+    setError(null)
+    onResult?.(null)
+  }, [onResult])
 
   const handleRun = async () => {
     abortControllerRef.current?.abort()
@@ -187,16 +209,29 @@ export default function CipherComparisonPanel({
         )}
 
         {cipher.defaultKey !== undefined && (
-          <label className="grid gap-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300">
-            Key
+          <div className="grid gap-1.5">
+            <div className="flex items-center justify-between">
+              <label htmlFor={`key-${cipher.id}`} className="text-xs font-semibold text-zinc-600 dark:text-zinc-300">
+                Key
+              </label>
+              <button
+                type="button"
+                onClick={handleClearKey}
+                aria-label="Clear key"
+                className="text-xs font-medium text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
+              >
+                Clear Key
+              </button>
+            </div>
             <input
+              id={`key-${cipher.id}`}
               type="text"
               value={key}
               onChange={(event) => setKey(event.target.value)}
               placeholder={cipher.keyPlaceholder || 'Enter key'}
               className="rounded-lg border border-zinc-200 bg-zinc-50 p-2.5 font-mono text-sm font-normal text-zinc-900 outline-none focus:border-teal-500 dark:border-zinc-700 dark:bg-zinc-950/50 dark:text-white"
             />
-          </label>
+          </div>
         )}
 
         {(cipher.options ?? []).map((option) => {

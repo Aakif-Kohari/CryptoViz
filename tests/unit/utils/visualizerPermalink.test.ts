@@ -5,20 +5,16 @@ import {
 } from '@/lib/utils/visualizerPermalink'
 
 describe('parseVisualizerPermalink security boundary', () => {
-  it('neutralizes HTML/script payloads in input, key, bobSecret, and aesMode', () => {
-    const payload = '<img src=x onerror=alert(1)>'
+  it('preserves special symbols like &, <, >, ", \' unmutated in inputs and keys', () => {
+    const payload = 'P@ss&Word<1> "quote" \'single\' x < y && y > z'
     const result = parseVisualizerPermalink(
       `?input=${encodeURIComponent(payload)}&key=${encodeURIComponent(payload)}&bobSecret=${encodeURIComponent(payload)}&aesMode=${encodeURIComponent(payload)}`,
     )
 
-    expect(result.input).not.toContain('<')
-    expect(result.input).not.toContain('>')
-    expect(result.input).not.toContain('onerror=')
-    expect(result.key).not.toContain('<')
-    expect(result.key).not.toContain('>')
-    expect(result.options.bobSecret).not.toContain('<')
-    expect(result.options.aesMode).not.toContain('<')
-    expect(result.input).toContain('&lt;')
+    expect(result.input).toBe(payload)
+    expect(result.key).toBe(payload)
+    expect(result.options.bobSecret).toBe(payload)
+    expect(result.options.aesMode).toBe(payload)
   })
 
   it('enforces the 4096-character limit on parsed text values', () => {
@@ -36,7 +32,7 @@ describe('parseVisualizerPermalink security boundary', () => {
 
   it('removes control characters and normalizes whitespace', () => {
     const result = parseVisualizerPermalink(
-      `?input=${encodeURIComponent('  hello\\n\\tworld  ')}`,
+      `?input=${encodeURIComponent("  hello\n\tworld  ")}`,
     )
 
     expect(result.input).toBe('hello world')

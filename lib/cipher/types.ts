@@ -28,6 +28,17 @@ export interface CipherStep {
   note?: string
   /** True for major steps (show in summary mode) */
   isMilestone?: boolean
+  /** S-box inspection metadata for inline S-box inspector */
+  sboxInspection?: {
+    /** S-box family (aes, des, camellia, serpent, sm4) */
+    family: 'aes' | 'aes-inv' | 'des' | 'camellia' | 'serpent' | 'sm4'
+    /** For DES: which S-box index (0-7) */
+    desIndex?: number
+    /** For Serpent: which S-box index (0-7) */
+    serpentIndex?: number
+    /** Input value to highlight in the S-box (as hex string) */
+    inputValue?: string
+  }
 }
 
 export interface CipherResult {
@@ -141,8 +152,20 @@ export type CipherName =
   | 'a5-1'
   | 'lucifer'
   | 'deal'
+  | 'des-x'
   | 'khufu'
+  | 'mickey'
+  | 'kalyna'
   | 'zuc'
+  | 'sosemanuk'
+  | 'loki97'
+  | 'seal'
+  | 'shark'
+  | 'turing'
+  | 'crypton'
+  | 'hierocrypt3'
+  | 'wake'
+  | 'e2'
   | 'rc4'
   | 'salsa20'
   | 'skipjack'
@@ -178,6 +201,14 @@ export type CipherName =
   | 'ggh'
   | 'bls'
   | 'boneh-franklin-ibe'
+  | 'regev-lwe'
+  | 'okamoto-uchiyama'
+  | 'sqisign'
+  | 'chor-rivest'
+  | 'rainbow'
+  | 'falcon'
+  | 'mqv'
+  | 'niederreiter'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
@@ -213,6 +244,11 @@ export type CipherName =
   | 'snefru'
   | 'has160'
   | 'panama'
+  | 'blake'
+  | 'kupyna'
+  | 'radiogatun'
+  | 'ascon-hash'
+  | 'kangarootwelve'
   | 'poly1305'
   | 'hmac'
   | 'cmac'

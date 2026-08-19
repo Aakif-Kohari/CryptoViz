@@ -4,8 +4,10 @@ import React, { useState, useMemo } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/footer';
 import PracticePageTemplate from "@/components/layout/PracticePageTemplate";
-import { Search, ShieldAlert, Zap, ArrowRight, Lock, Key, Clock, ShieldCheck, Bug } from 'lucide-react';
+import { Search, ShieldAlert, ArrowRight, Bug } from 'lucide-react';
 import Link from 'next/link';
+import { AutomatedCryptanalysisWorkbench } from '@/components/attacks/AutomatedCryptanalysisWorkbench';
+import SideChannelWaveformLab from "@/components/attacks/SideChannelWaveformLab";
 
 export interface AttackDemoItem {
   id: string;
@@ -19,6 +21,16 @@ export interface AttackDemoItem {
 }
 
 export const ATTACK_COLLECTION: AttackDemoItem[] = [
+  {
+    id: 'automated-cryptanalysis',
+    slug: 'automated-cryptanalysis',
+    title: 'Automated Cryptanalysis Solver',
+    category: 'Cryptanalysis',
+    riskLevel: 'High',
+    summary: 'Heuristic optimization and quadgram language models automatically breaking monoalphabetic substitution ciphers.',
+    educationalNote: 'Demonstrates how statistical patterns in natural languages allow computers to break large cryptographic key spaces in seconds without knowing the key.',
+    tags: ['Hill-Climbing', 'Quadgrams', 'Heuristics', 'Substitution'],
+  },
   {
     id: 'brute-force',
     slug: 'brute-force',
@@ -70,6 +82,16 @@ export const ATTACK_COLLECTION: AttackDemoItem[] = [
     tags: ['Side-Channel', 'Execution Delay', 'Constant-Time'],
   },
   {
+    id: 'side-channel-waveform',
+    slug: 'side-channel-waveform',
+    title: 'Power & Cache Side-Channel Analyzer',
+    category: 'Side-Channel',
+    riskLevel: 'High',
+    summary: 'Interactive RSA SPA waveform, AES DPA correlation, and Flush+Reload cache-line heatmap simulations.',
+    educationalNote: 'Shows how secret-dependent power and memory-access patterns can leak information, and why constant-time, cache-oblivious, and hardware-accelerated implementations matter.',
+    tags: ['SPA', 'DPA', 'Flush+Reload', 'Cache'],
+  },
+  {
     id: 'dh-mitm',
     slug: 'dh-mitm',
     title: 'Diffie-Hellman Man-in-the-Middle Attack',
@@ -78,6 +100,16 @@ export const ATTACK_COLLECTION: AttackDemoItem[] = [
     summary: 'Eve intercepts and substitutes public keys in unauthenticated Diffie-Hellman, establishing dual shared secrets with Alice and Bob.',
     educationalNote: 'Mitigated by authenticating public keys via digital signatures (Station-to-Station), PKI, or certificates so substitution attempts are detected.',
     tags: ['Diffie-Hellman', 'Key Exchange', 'Key Substitution'],
+  },
+  {
+    id: 'bellcore-crt',
+    slug: 'bellcore-crt',
+    title: 'RSA-CRT Bellcore Fault Attack',
+    category: 'Cryptanalysis',
+    riskLevel: 'Critical',
+    summary: 'Exploiting hardware transient bit-flips during Chinese Remainder Theorem sub-ring calculations to instantly factor RSA modulus n via Euclidean GCD.',
+    educationalNote: 'Demonstrates why production crypto implementations require fault detection checks or randomized RSA blinding to prevent hardware fault injection attacks.',
+    tags: ['RSA', 'CRT', 'Fault Injection', 'GCD'],
   },
 ];
 
@@ -98,22 +130,21 @@ export default function AttackCollectionPage() {
       }
       return true;
     });
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery, searchQuery.length, selectedCategory]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-[#060816] text-zinc-900 dark:text-white transition-colors duration-300">
       <Navbar />
-        <PracticePageTemplate
-          title="Attack Simulator Collection"
-          description="Explore interactive, safe simulations of real-world cryptographic attacks (Brute-Force, Dictionary, ECB Pattern Leakage, Replay Attacks, and Timing Attacks). Understand vulnerabilities and learn industry-standard mitigations."
-          eyebrow="SAFE EDUCATIONAL SIMULATORS"
-          breadcrumbs={[
-            { label: "Practice" },
-            { label: "Attack Simulators" },
-          ]}
-          hideHeader
-        >
-
+      <PracticePageTemplate
+        title="Attack Simulator Collection"
+        description="Explore interactive, safe simulations of real-world cryptographic attacks including automated hill-climbing solvers, brute-force search, and side-channels."
+        eyebrow="SAFE EDUCATIONAL SIMULATORS"
+        breadcrumbs={[
+          { label: "Practice" },
+          { label: "Attack Simulators" },
+        ]}
+        hideHeader
+      >
         {/* Hero Section */}
         <section aria-labelledby="attack-hero-title" className="relative overflow-hidden rounded-3xl border border-red-500/30 bg-gradient-to-br from-red-500/10 via-rose-500/5 to-transparent p-8 sm:p-12 backdrop-blur-2xl">
           <div className="max-w-3xl space-y-4">
@@ -125,13 +156,27 @@ export default function AttackCollectionPage() {
               Attack Simulator <span className="text-red-500">Collection</span>
             </h1>
             <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-300 leading-relaxed">
-              Explore interactive, safe simulations of real-world cryptographic attacks (Brute-Force, Dictionary, ECB Pattern Leakage, Replay Attacks, and Timing Attacks). Understand vulnerabilities and learn industry-standard mitigations.
+              Explore interactive, safe simulations of real-world cryptographic attacks. Understand vulnerabilities and learn industry-standard mitigations.
             </p>
           </div>
         </section>
 
+        {/* Hardware Side-Channel Featured Lab */}
+        <section aria-label="Featured Power and Cache Side-Channel Lab" className="space-y-4">
+          <div className="rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/5 via-transparent to-transparent p-1">
+            <SideChannelWaveformLab />
+          </div>
+        </section>
+
+        {/* Automated Cryptanalysis Featured Workbench */}
+        <section aria-label="Featured Automated Workbench" className="space-y-4">
+          <div className="rounded-2xl border border-teal-500/30 bg-gradient-to-r from-teal-500/5 via-transparent to-transparent p-1">
+            <AutomatedCryptanalysisWorkbench />
+          </div>
+        </section>
+
         {/* Search & Category Filter */}
-        <section aria-label="Attack simulator filters" className="space-y-4">
+        <section aria-label="Attack simulator filters" className="space-y-4 pt-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="relative w-full sm:w-80">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />

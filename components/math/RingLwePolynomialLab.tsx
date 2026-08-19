@@ -60,7 +60,7 @@ export default function RingLwePolynomialLab({ className }: RingLwePolynomialLab
         </h3>
         
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          In Ring-LWE (used in Kyber/ML-KEM), arithmetic is performed on polynomials with coefficients modulo $q$, and the polynomial itself is reduced modulo $X^n + 1$. Because $X^n = -1$, terms like $c \cdot X^{n+k}$ wrap around as $-c \cdot X^k$.
+          In Ring-LWE (used in Kyber/ML-KEM), arithmetic is performed on polynomials with coefficients modulo $q$, and the polynomial itself is reduced modulo $X^n + 1$. Because $X^n = -1$, terms like $c \cdot X^{'{'}n+k{'}'}$ wrap around as $-c \cdot X^k$.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -73,7 +73,7 @@ export default function RingLwePolynomialLab({ className }: RingLwePolynomialLab
               className="w-full p-2 border rounded-md bg-zinc-50 dark:bg-zinc-950 text-sm font-mono dark:border-zinc-800"
               placeholder="e.g. 1, 2, -1, 3"
             />
-            <div className="text-xs text-zinc-400 h-4">{results.success && formatPoly(results.a)}</div>
+            <div className="text-xs text-zinc-400 h-4">{(results.success && results.a) ? formatPoly(results.a) : ""}</div>
           </div>
           
           <div className="flex flex-col gap-1.5">
@@ -85,7 +85,7 @@ export default function RingLwePolynomialLab({ className }: RingLwePolynomialLab
               className="w-full p-2 border rounded-md bg-zinc-50 dark:bg-zinc-950 text-sm font-mono dark:border-zinc-800"
               placeholder="e.g. 0, 1, -1, 0"
             />
-            <div className="text-xs text-zinc-400 h-4">{results.success && formatPoly(results.s)}</div>
+            <div className="text-xs text-zinc-400 h-4">{(results.success && results.s) ? formatPoly(results.s) : ""}</div>
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -122,7 +122,7 @@ export default function RingLwePolynomialLab({ className }: RingLwePolynomialLab
           </div>
         </div>
 
-        {results.success ? (
+        {results.success && results.rawMult && results.ringReduced && results.fullyReduced ? (
           <div className="mt-4 flex flex-col gap-4 border-t border-zinc-200 dark:border-zinc-800 pt-4">
             <div>
               <div className="text-xs font-semibold text-zinc-500 uppercase mb-1">Step 1: Standard Multiplication (A * S)</div>

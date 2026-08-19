@@ -3,7 +3,7 @@
 import { use, useEffect } from 'react'
 import { notFound } from 'next/navigation'
 import { getLessonById } from '@/lib/learning-paths/data'
-import { useLearningPath } from '@/lib/hooks/useLearningPath'
+import { useLearningPath } from '@/hooks/useLearningPath'
 import LessonViewer from '@/components/learning-paths/LessonViewer'
 
 export default function LessonDetailPage({

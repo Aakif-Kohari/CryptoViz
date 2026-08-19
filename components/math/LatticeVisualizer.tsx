@@ -33,7 +33,9 @@ export default function LatticeVisualizer({ className }: LatticeVisualizerProps)
   const [isDragging, setIsDragging] = useState(false);
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    e.target.releasePointerCapture(e.pointerId); // we manage this ourselves via window if needed, or just let it drag
+    if (e.target instanceof Element) {
+      e.target.releasePointerCapture(e.pointerId);
+    }
     setIsDragging(true);
   };
 

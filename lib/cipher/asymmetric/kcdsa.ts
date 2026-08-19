@@ -27,21 +27,21 @@ const P = 0xFFFFFFFFFFFFFFC5n // Toy prime
 const Q = 0xFFFFFFFFFFFFFFC5n // Toy q (p-1 for simplicity in toy)
 const G = 2n
 
-function mod(n: bigint, m: bigint): bigint { return ((n % m) + m) % m }
+function modBigInt(n: bigint, m: bigint): bigint { return ((n % m) + m) % m }
 function modInverse(k: bigint, p: bigint): bigint {
-    let t = 0n, newt = 1n, r = p, newr = mod(k, p)
+    let t = 0n, newt = 1n, r = p, newr = modBigInt(k, p)
     while (newr !== 0n) {
         const q = r / newr;
-        [t, newt] = [newt, t - q * newt]
-        [r, newr] = [newr, r - q * newr]
+        [t, newt] = [newt, t - q * newt];
+        [r, newr] = [newr, r - q * newr];
     }
-    return mod(t, p)
+    return modBigInt(t, p)
 }
-function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
-    let res = 1n, b = mod(base, mod), e = exp
+function modPow(base: bigint, exp: bigint, modVal: bigint): bigint {
+    let res = 1n, b = modBigInt(base, modVal), e = exp
     while (e > 0n) {
-        if (e % 2n === 1n) res = (res * b) % mod
-        b = (b * b) % mod
+        if (e % 2n === 1n) res = (res * b) % modVal
+        b = (b * b) % modVal
         e /= 2n
     }
     return res
@@ -92,10 +92,10 @@ function kcdsaCore(input: string, key: string, doDecrypt: boolean, instrument: b
         const h = BigInt('0x' + hHex.slice(0, 16)) % Q // Truncate to q size
 
         // r derivation (KCDSA specific XOR-based combination)
-        const r = mod(h ^ (w % (1n << 64n)), Q)
+        const r = modBigInt(h ^ (w % (1n << 64n)), Q)
 
         // s = k^-1 * (x * r + ...) mod q (Simplified KCDSA equation)
-        const s = mod(modInverse(k, Q) * (x * r + h), Q)
+        const s = modBigInt(modInverse(k, Q) * (x * r + h), Q)
 
         outHex = toHex(bigintToBytes(r, 8)) + toHex(bigintToBytes(s, 8))
 
