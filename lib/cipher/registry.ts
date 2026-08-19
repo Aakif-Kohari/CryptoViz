@@ -1611,4 +1611,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'Private key (sign) or Message (verify)',
   },
+  {
+    id: 'niederreiter',
+    name: 'Niederreiter',
+    category: 'asymmetric',
+    description: 'DUAL of Classic McEliece (1986). Syndrome-based code encryption: message encoded as exact-weight-t error vector, ciphertext is ONLY the (n-k)-bit syndrome — substantially SHORTER than McEliece\'s n-bit codeword. Proven equivalent in security. Toy parameters for visualizer.',
+    defaultKey: 'mock',
+    defaultInput: 'c0',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
 ];
