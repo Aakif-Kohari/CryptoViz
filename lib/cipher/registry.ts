@@ -1580,6 +1580,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: 'Private key (sign) or Public key (verify)',
   },
   {
+    id: 'mqv',
+    name: 'MQV',
+    category: 'asymmetric',
+    description: 'Authenticated key agreement (Menezes-Qu-Vanstone, 1995). Bakes mutual authentication DIRECTLY INTO the key-agreement math by mixing long-term static keys with fresh ephemeral keys — no separate signature/certificate exchange needed. Distinct from unauthenticated DH/X25519/X448. Status: secure (with documented KCI nuance).',
+    defaultKey: 'mock',
+    defaultInput: 'mock',
+    securityStatus: 'secure',
+    keyPlaceholder: 'Static + Ephemeral key pairs',
+  },
+  {
     id: 'falcon',
     name: 'Falcon',
     category: 'asymmetric',
