@@ -207,6 +207,7 @@ export type CipherName =
   | 'chor-rivest'
   | 'rainbow'
   | 'falcon'
+  | 'mqv'
   | 'niederreiter'
   | 'ed25519'
   | 'rabin'
