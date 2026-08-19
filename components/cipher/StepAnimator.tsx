@@ -20,6 +20,27 @@ interface StepAnimatorProps {
 
 const BASE_INTERVAL_MS = 1500;
 
+interface StepTableRowProps {
+  rowKey: string;
+  value: React.ReactNode;
+}
+
+const StepTableRow = memo(function StepTableRow({
+  rowKey,
+  value,
+}: StepTableRowProps) {
+  return (
+    <tr className="bg-white dark:bg-zinc-900/10">
+      <td className="px-3 py-1.5 font-medium text-zinc-500 dark:text-zinc-400">
+        {rowKey}
+      </td>
+      <td className="break-all px-3 py-1.5 text-zinc-900 dark:text-zinc-200">
+        {value}
+      </td>
+    </tr>
+  );
+});
+
 const StepAnimator = memo(function StepAnimator({
   steps,
   currentStep,
@@ -34,7 +55,6 @@ const StepAnimator = memo(function StepAnimator({
   const [reducedMotion, setReducedMotion] = useState(false);
 
   const speed = controlledSpeed ?? internalSpeed;
-
   const hasMultipleSteps = steps.length > 1;
 
   const safeCurrentStep = Math.min(
@@ -71,19 +91,16 @@ const StepAnimator = memo(function StepAnimator({
   // Respect the user's OS-level motion preference.
   useEffect(() => {
     const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
-
     setReducedMotion(mql.matches);
 
     const handleChange = (event: MediaQueryListEvent) => {
       setReducedMotion(event.matches);
-
       if (event.matches) {
         setIsPlaying(false);
       }
     };
 
     mql.addEventListener("change", handleChange);
-
     return () => {
       mql.removeEventListener("change", handleChange);
     };
@@ -92,12 +109,10 @@ const StepAnimator = memo(function StepAnimator({
   const goToStep = useCallback(
     (index: number) => {
       setIsPlaying(false);
-
       const nextIndex = Math.min(
         Math.max(index, 0),
         Math.max(steps.length - 1, 0),
       );
-
       onStepChange(nextIndex);
     },
     [onStepChange, steps.length],
@@ -206,7 +221,6 @@ const StepAnimator = memo(function StepAnimator({
     };
 
     window.addEventListener("keydown", handleKeyDown);
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
@@ -215,15 +229,13 @@ const StepAnimator = memo(function StepAnimator({
   if (steps.length === 0) return null;
 
   const step = steps[safeCurrentStep];
-
   const progressPercent = hasMultipleSteps
     ? (safeCurrentStep / (steps.length - 1)) * 100
     : 100;
-
   const announcement = `Step ${safeCurrentStep + 1} of ${steps.length}: ${step.label}`;
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50">
+    <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50 [content-visibility:auto]">
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {announcement}
       </div>
@@ -316,15 +328,11 @@ const StepAnimator = memo(function StepAnimator({
 
               <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                 {step.table.map((row) => (
-                  <tr key={row.key} className="bg-white dark:bg-zinc-900/10">
-                    <td className="px-3 py-1.5 font-medium text-zinc-500 dark:text-zinc-400">
-                      {row.key}
-                    </td>
-
-                    <td className="break-all px-3 py-1.5 text-zinc-900 dark:text-zinc-200">
-                      {row.value}
-                    </td>
-                  </tr>
+                  <StepTableRow
+                    key={row.key}
+                    rowKey={row.key}
+                    value={row.value}
+                  />
                 ))}
               </tbody>
             </table>
