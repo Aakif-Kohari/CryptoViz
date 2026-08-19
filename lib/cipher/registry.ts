@@ -797,6 +797,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keySize: '128/192/256',
   },
   {
+    id: 'wake',
+    name: 'WAKE',
+    category: 'symmetric',
+    description: 'Word Auto Key Encryption (David Wheeler, 1993). Stream cipher with a 256-entry 32-bit table that is CONTINUOUSLY UPDATED during keystream generation — each output word feeds back to overwrite a table entry, making the table data-dependent. Distinct from HC-128/SEAL/Turing. Status: legacy.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128-bit key as 32 hex chars',
+    keySize: '128',
+  },
+  {
     id: 'hierocrypt3',
     name: 'Hierocrypt-3',
     category: 'symmetric',
