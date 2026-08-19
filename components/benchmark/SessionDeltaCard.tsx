@@ -3,6 +3,7 @@
 import type { SessionDelta } from "@/lib/utils/sessionComparison";
 import { getMetricBg, getMetricTextColor } from "@/lib/utils/sessionComparison";
 import { formatBytes } from "@/lib/utils/benchmarkHistory";
+import { SPEEDUP_THRESHOLD, SLOWDOWN_THRESHOLD } from "@/constants/benchmark";
 import { Zap, Clock, Cpu, HardDrive, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import Card from "@/components/ui/Card";
 
@@ -13,8 +14,8 @@ interface SessionDeltaCardProps {
 export default function SessionDeltaCard({
   delta,
 }: SessionDeltaCardProps) {
-  const isSpeedup = delta.speedupRatio >= 1.02;
-  const isSlowdown = delta.speedupRatio <= 0.98;
+  const isSpeedup = delta.speedupRatio >= SPEEDUP_THRESHOLD;
+  const isSlowdown = delta.speedupRatio <= SLOWDOWN_THRESHOLD;
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
