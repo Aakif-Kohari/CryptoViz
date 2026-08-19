@@ -808,6 +808,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keySize: '128/192/256',
   },
   {
+    id: 'e2',
+    name: 'E2',
+    category: 'symmetric',
+    description: 'NTT AES Round 1 candidate (1998). Direct historical predecessor to Camellia. 128-bit Feistel with byte-oriented S-box + BRL binary matrix diffusion, plus outer whitening layers. Status: legacy (superseded by Camellia).',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '00000000000000000000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
+    keySize: '128/192/256',
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
