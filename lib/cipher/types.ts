@@ -165,6 +165,7 @@ export type CipherName =
   | 'crypton'
   | 'hierocrypt3'
   | 'wake'
+  | 'prince'
   | 'e2'
   | 'cast128'
   | 'rc4'
