@@ -209,6 +209,8 @@ export type CipherName =
   | 'falcon'
   | 'mqv'
   | 'niederreiter'
+  | 'xmss'
+  | 'lms'
   | 'ed25519'
   | 'rabin'
   | 'x25519'
