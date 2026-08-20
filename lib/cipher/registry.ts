@@ -819,6 +819,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keySize: '128/192/256',
   },
   {
+    id: 'prince',
+    name: 'PRINCE',
+    category: 'symmetric',
+    description: 'Ultra-low-latency 64-bit block cipher (ASIACRYPT 2012). FKS construction with an α-reflection property: decryption is structurally equivalent to encryption with a modified key (k₀\', k₁ ⊕ α). 12-round SPN targeting hardware-constrained IoT.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '32 hex characters (128-bit key)',
+  },
+  {
     id: 'e2',
     name: 'E2',
     category: 'symmetric',
