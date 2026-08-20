@@ -1281,6 +1281,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
       }
     ],
   },
+  {
+    id: 'fugue',
+    name: 'Fugue',
+    category: 'hash',
+    description: 'IBM SHA-3 finalist. Accumulative sponge with TIX/CMIX/SMIX (AES SuperSBox). Supports 224/256/384/512-bit outputs.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'experimental',
+    options: [{ name: 'Output Bits', id: 'outputBits', type: 'select', default: 256, choices: [{ label: '256-bit', value: 256 }, { label: '512-bit', value: 512 }] }]
+  },
   // Asymmetric
   {
     id: "rsa",
