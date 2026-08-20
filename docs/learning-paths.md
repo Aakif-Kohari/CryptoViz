@@ -19,7 +19,7 @@ The **Interactive Learning Paths** feature provides structured, step-by-step cry
 
 ## Key Technical Features
 
-### 1. Progress Persistence (`lib/hooks/useLearningPath.ts`)
+### 1. Progress Persistence (`hooks/useLearningPath.ts`)
 - Uses `safeGetItemJson` and `safeSetItemJson` from `lib/utils/storage.ts` to save user progress in `localStorage` under key `cryptoviz_learning_path_progress_v1`.
 - Tracks completed lessons, quiz scores, path completion percentages, and last active timestamp.
 
