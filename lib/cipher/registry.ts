@@ -819,6 +819,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keySize: '128/192/256',
   },
   {
+    id: 'prince',
+    name: 'PRINCE',
+    category: 'symmetric',
+    description: 'Ultra-low-latency 64-bit block cipher (ASIACRYPT 2012). FKS construction with an α-reflection property: decryption is structurally equivalent to encryption with a modified key (k₀\', k₁ ⊕ α). 12-round SPN targeting hardware-constrained IoT.',
+    defaultKey: '00000000000000000000000000000000',
+    defaultInput: '0000000000000000',
+    securityStatus: 'legacy',
+    keyPlaceholder: '32 hex characters (128-bit key)',
+  },
+  {
     id: 'e2',
     name: 'E2',
     category: 'symmetric',
@@ -828,6 +838,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'legacy',
     keyPlaceholder: '128/192/256-bit key as 32/48/64 hex chars',
     keySize: '128/192/256',
+  },
+  {
+    id: 'cast128',
+    name: 'CAST-128 (CAST5)',
+    category: 'symmetric',
+    description: 'RFC 2144 block cipher with 64-bit blocks and a 40–128-bit variable-length key. 16-round Feistel (12 rounds for keys ≤80 bits) with four bent-function-derived S-boxes and three heterogeneous round function types. Historically mandatory in PGP/OpenPGP and early SSH.',
+    defaultKey: '0123456789abcdef0123456789abcdef',
+    defaultInput: '0123456789abcdef',
+    securityStatus: 'legacy',
+    keyPlaceholder: '10–32 hex characters (5–16 bytes)',
+    options: [{ name: 'Mode', id: 'mode', type: 'select', default: 'cbc', choices: [{ label: 'CBC', value: 'cbc' }, { label: 'ECB', value: 'ecb' }] }]
   },
   {
     id: "sha256",
@@ -1265,6 +1286,27 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
   },
   {
+    id: 'ripemd256',
+    name: 'RIPEMD-256',
+    category:
+    'hash',
+    description: 'ISO/IEC 10118-3. Two-lane parallel RIPEMD-128 with swaps. ⚠ NOT a security upgrade over 128-bit.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy'
+    
+  },
+  {
+    id: 'ripemd320',
+    name: 'RIPEMD-320',
+    category: 'hash',
+    description: 'ISO/IEC 10118-3. Two-lane parallel RIPEMD-160 with swaps. ⚠ NOT a security upgrade over 160-bit.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy'
+    
+  },
+  {
     id: 'kangarootwelve',
     name: 'KangarooTwelve',
     category: 'hash',
@@ -1280,6 +1322,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
         default: 32,
       }
     ],
+  },
+  {
+    id: 'fugue',
+    name: 'Fugue',
+    category: 'hash',
+    description: 'IBM SHA-3 finalist. Accumulative sponge with TIX/CMIX/SMIX (AES SuperSBox). Supports 224/256/384/512-bit outputs.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'experimental',
+    options: [{ name: 'Output Bits', id: 'outputBits', type: 'select', default: 256, choices: [{ label: '256-bit', value: 256 }, { label: '512-bit', value: 512 }] }]
   },
   // Asymmetric
   {
@@ -1647,5 +1699,25 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     defaultInput: 'c0',
     securityStatus: 'secure',
     keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
+  },
+  {
+    id: 'xmss',
+    name: 'XMSS',
+    category: 'asymmetric',
+    description: 'RFC 8391 stateful hash-based signature. WOTS+ chains + Merkle tree. Quantum-safe. ⚠ Stateful: leaf index must never be reused.',
+    defaultKey: '00'.repeat(32),
+    defaultInput: '48656c6c6f',
+    securityStatus: 'recommended',
+    options: [{ name: 'Leaf Index', id: 'leafIndex', type: 'number', default: 0 }]
+  },
+  {
+    id: 'lms',
+    name: 'LMS',
+    category: 'asymmetric',
+    description: 'RFC 8554 stateful hash-based signature. LM-OTS chains + Merkle tree. Quantum-safe. ⚠ Stateful.',
+    defaultKey: '00'.repeat(32),
+    defaultInput: '48656c6c6f',
+    securityStatus: 'recommended',
+    options: [{ name: 'Leaf Index', id: 'leafIndex', type: 'number', default: 0 }]
   },
 ];
