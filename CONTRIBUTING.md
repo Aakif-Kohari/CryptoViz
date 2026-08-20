@@ -129,13 +129,21 @@ Open `lib/workers/cipher.worker.ts` and add a dynamic import loader entry for yo
 ### Step 6: Configure Static Page Pre-rendering
 Open `app/visualizer/[cipher]/page.tsx` and ensure that your new cipher slug is returned by `generateStaticParams()` to allow Next.js to pre-render the page at build time.
 
-### Step 7: Run Final Verification
+### Step 7: Add Visualizer Component (if applicable)
+If your cipher requires custom visualization beyond the standard step-by-step display, create a visualizer component following the patterns in [docs/visualizer-development-guide.md](./docs/visualizer-development-guide.md). The guide provides:
+- Standard component props and interfaces
+- Rendering conventions for matrices, highlights, and tables
+- Styling guidelines with Tailwind v4 tokens
+- Accessibility requirements and ARIA attributes
+- A complete template component at `components/visualizers/TemplateVisualizer.tsx`
+
+### Step 8: Run Final Verification
 Verify your implementation passes all compilation check gates:
 ```bash
 npm lint && npm typecheck && npm test && npm build
 ```
 
-### Step 8: Verify Performance Budgets
+### Step 9: Verify Performance Budgets
 Verify that your cipher steps do not exceed the step budgets mapped in `GUIDELINES.md` (e.g., summary-mode limit for long inputs).
 
 ### Cipher PR Checklist
@@ -146,6 +154,7 @@ Verify that your cipher steps do not exceed the step budgets mapped in `GUIDELIN
 - [ ] No DOM APIs (`window`, `document`, `localStorage`) are used in the cipher module.
 - [ ] The cipher is registered in the Web Worker routing switch.
 - [ ] The cipher slug is configured in the static export `generateStaticParams`.
+- [ ] Custom visualizer (if applicable) follows the [visualizer development guide](./docs/visualizer-development-guide.md).
 - [ ] Bundle size change is measured and noted in the PR description.
 
 ---

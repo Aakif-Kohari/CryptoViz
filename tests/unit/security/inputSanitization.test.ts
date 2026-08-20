@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildSanitizationChecklist,
   escapeHtml,
+  sanitizeCryptoInput,
   sanitizeHexInput,
   sanitizeIdentifier,
   sanitizeMarkdown,
@@ -31,6 +32,14 @@ describe("shared input sanitization", () => {
 
     expect(result.value).toBe("hello &lt;b&gt;world&lt;/b&gt;");
     expect(result.changed).toBe(true);
+  });
+
+  it("sanitizes crypto inputs without entity-escaping special symbols", () => {
+    const input = "P@ss&Word<1> 'quote' \"double\" `backtick` x < y && y > z";
+    const result = sanitizeCryptoInput(input);
+
+    expect(result.value).toBe(input);
+    expect(result.changed).toBe(false);
   });
 
   it("truncates plain text and reports warning", () => {

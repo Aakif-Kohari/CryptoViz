@@ -44,6 +44,7 @@ export default function RootLayout({
             theme-init effect (same 'theme' localStorage key, same system-
             preference fallback) so the class it sets is never wrong or out
             of sync with what Navbar computes. */}
+        <script src="/theme-init.js" />
       </head>
       <body className="min-h-full flex flex-col bg-white dark:bg-[#060816] relative">
         {/* Skip-to-content link for keyboard and screen reader users */}
@@ -55,7 +56,11 @@ export default function RootLayout({
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
 
         </div>
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          <main id="main-content" tabIndex={-1} className="outline-none flex-1">
+            {children}
+          </main>
+        </LanguageProvider>
         <Analytics />
       </body>
     </html>

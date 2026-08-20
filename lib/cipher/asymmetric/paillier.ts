@@ -24,6 +24,7 @@
 import { CipherError } from '../../utils/errors'
 import { modInverse } from './rsa'
 import type { CipherResult, CipherStep, CipherMetadata, CipherOptions, TestVector } from '../types'
+import { parseAsymmetricInput } from './asymmetricInput'
 
 const METADATA: CipherMetadata = {
   name: 'Paillier',
@@ -103,14 +104,17 @@ function L(x: bigint, n: bigint): bigint {
   return (x - 1n) / n
 }
 
-function paillierEncryptCore(input: string, key: string, instrument: boolean): CipherResult {
+function paillierEncryptCore(
+  input: string,
+  key: string,
+  instrument: boolean,
+  inputEncoding?: string
+): CipherResult {
   const start = performance.now()
   const pub = parsePublicKey(key)
   const n2 = pub.n * pub.n
-  const m = BigInt(input.trim())
-  if (m < 0n || m >= pub.n) {
-    throw new CipherError('INVALID_INPUT', `Plaintext must satisfy 0 <= m < n (n=${pub.n}).`)
-  }
+  const blocks = parseAsymmetricInput(input, inputEncoding, pub.n)
+  const m = blocks[0]
 
   // Random r coprime to n. Demo mode allows a fixed r via the key string for
   // reproducible test vectors; real usage should always pick fresh randomness.
@@ -192,7 +196,7 @@ function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
 }
 
 export function encrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
-  return paillierEncryptCore(input, key, !!options.instrument)
+  return paillierEncryptCore(input, key, !!options.instrument, options.inputEncoding as string | undefined)
 }
 
 export function decrypt(input: string, key: string, options: CipherOptions = {}): CipherResult {
@@ -209,6 +213,20 @@ export function homomorphicAdd(c1: string, c2: string, publicKeyStr: string): st
   const n2 = pub.n * pub.n
   const sum = (BigInt(c1) * BigInt(c2)) % n2
   return sum.toString()
+}
+
+/**
+ * Homomorphic scalar multiplication: raise a ciphertext to the power k mod n².
+ * Decrypting the result yields k * m mod n (E(m)^k = E(k·m)).
+ */
+export function homomorphicScalarMul(c: string, k: string, publicKeyStr: string): string {
+  const pub = parsePublicKey(publicKeyStr)
+  const n2 = pub.n * pub.n
+  const scalar = BigInt(k)
+  if (scalar < 0n) {
+    throw new CipherError('INVALID_INPUT', 'Scalar multiplier k must be non-negative.')
+  }
+  return modPow(BigInt(c), scalar, n2).toString()
 }
 
 export const TEST_VECTORS: TestVector[] = [

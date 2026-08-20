@@ -35,6 +35,9 @@ import {
 } from "../../lib/utils/visualizerPermalink";
 import TraceTransferControls from "./TraceTransferControls";
 import CipherLifecycleBadge from "./CipherLifecycleBadge";
+import LessonPackageModal from "./LessonPackageModal";
+import LessonPlayerModal from "./LessonPlayerModal";
+import type { LessonPackage } from "../../lib/utils/lessonPackage";
 import {
   loadConversionHistory,
   saveConversionHistory,
@@ -51,25 +54,20 @@ import DataProvenanceBadge from "../ui/DataProvenanceBadge";
 import { resolveProvenance } from "../../lib/provenance/resolve";
 import type { DataProvenanceMetadata } from "../../lib/provenance";
 
-const StepAnimator = dynamic(() => import("./StepAnimator"), {
-  ssr: false,
-});
+const StepAnimator = dynamic(() => import('./StepAnimator'), { ssr: false })
+const PlayfairGrid = dynamic(() => import('./PlayfairGrid'), { ssr: false })
+const RailFenceViz = dynamic(() => import('./RailFenceViz'), { ssr: false })
+const DHVisualizer = dynamic(() => import('./DHVisualizer'), { ssr: false })
+const HmacVisualizer = dynamic(() => import('./HmacVisualizer'), { ssr: false })
+const Sm3Visualizer = dynamic(() => import('./Sm3Visualizer'), { ssr: false })
+const HillMatrixVisualizer = dynamic(() => import('./HillMatrixVisualizer'), { ssr: false })
+const UniversalCipherDebugger = dynamic(() => import('./UniversalCipherDebugger'), { ssr: false })
+import ZenModeToggle from './ZenModeToggle'
 
 interface CipherLayoutProps {
   cipher: CipherDefinition;
 }
 
-interface HistoryEntry {
-  id: string;
-  input: string;
-  key: string;
-  action: "encrypt" | "decrypt";
-  output: string;
-  timestamp: string;
-}
-
-const getHistoryStorageKey = (cipherId: string) =>
-  `cryptoviz-history-${cipherId}`;
 
 const isBooleanOptionValue = (
   value: CipherOptionValue,
@@ -435,12 +433,25 @@ export default function CipherLayout({
     };
   }, [cipher]);
 
+  // Clear sensitive state on component unmount
+  useEffect(() => {
+    return () => {
+      // Abort any pending operations
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      // Clear sensitive key/passphrase state
+      setKey('');
+      // Clear derived/execution state that may contain sensitive key material
+      setResult(null);
+      setError(null);
+      setDiagnostic(null);
+      setOptionsState((prev) => ({ ...prev, bobSecret: '' }));
+    };
+  }, []);
+
   const workspaceOptions: Record<string, unknown> = {
-    hexInput,
-    rounds,
-    demoMode,
-    bobSecret,
-    padding,
+    ...optionsState,
   };
 
   const handlePresetLoad = (
@@ -549,6 +560,7 @@ export default function CipherLayout({
       const options: CipherOptions = {
         instrument: true,
         signal: controller.signal,
+        ...optionsState,
       };
 
       if (
@@ -695,6 +707,18 @@ export default function CipherLayout({
       );
 
       setResult(null);
+      
+      // Try to generate diagnostic for the error
+      if (err && typeof err === 'object' && 'code' in err) {
+        const diagnosticResult = diagnoseError(err as any, {
+          cipherId: cipher.id,
+          fieldName: 'key',
+          fieldValue: key,
+        });
+        setDiagnostic(diagnosticResult);
+      } else {
+        setDiagnostic(null);
+      }
     } finally {
       if (
         abortControllerRef.current ===
@@ -788,6 +812,41 @@ export default function CipherLayout({
     setError(null);
   };
 
+  const handleLessonImported = (lesson: LessonPackage) => {
+    setActiveLesson(lesson);
+    setAutoCompute(false);
+    setInput(lesson.executionContext.input);
+    setKey(lesson.executionContext.key);
+    setAction(lesson.executionContext.direction);
+    setOptionsState((prev) => ({
+      ...prev,
+      ...lesson.executionContext.options,
+    }));
+    const importedResult = traceToCipherResult({
+      schemaVersion: 1,
+      cipherId: lesson.executionContext.algorithmId,
+      direction: lesson.executionContext.direction,
+      input: lesson.executionContext.input,
+      key: lesson.executionContext.key,
+      options: lesson.executionContext.options,
+      output: lesson.output,
+      outputEncoding: lesson.outputEncoding,
+      steps: lesson.steps,
+      metadata: { name: lesson.metadata.targetCipher, securityStatus: 'secure' },
+      durationMs: 0,
+      timestamp: lesson.metadata.createdAt,
+    });
+    setResult(createVirtualizedCipherResult(importedResult));
+    setCurrentStep(0);
+    setActiveTab("result");
+    setError(null);
+    setIsLessonPlayerOpen(true);
+  };
+
+  const handleLessonStepNavigate = (stepIndex: number) => {
+    setCurrentStep(stepIndex);
+  };
+
   useEffect(() => {
     if (!autoCompute) {
       return;
@@ -804,12 +863,7 @@ export default function CipherLayout({
     input,
     key,
     action,
-    hexInput,
-    rounds,
-    demoMode,
-    bobSecret,
-    aesMode,
-    padding,
+    optionsState,
   ]);
 
   const renderSpecificVisualizer = () => {
@@ -1075,7 +1129,7 @@ export default function CipherLayout({
   };
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-6 px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8">
+    <div className={`mx-auto flex max-w-7xl flex-col gap-6 px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8 ${isZenMode ? 'zen-mode-active' : ''}`}>
       {/* Title & Metadata Card */}
       <div className="flex flex-col justify-between gap-4 border-b border-zinc-200 pb-5 md:flex-row md:items-center dark:border-zinc-800">
         <div>
@@ -1097,6 +1151,14 @@ export default function CipherLayout({
           <span className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
             {cipher.category}
           </span>
+          {['aes', 'twofish'].includes(cipher.id) && (
+            <a 
+              href="/finite-field"
+              className="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700 hover:bg-teal-100 dark:border-teal-900 dark:bg-teal-950/50 dark:text-teal-300 dark:hover:bg-teal-900 transition-colors"
+            >
+              Learn the GF(2^8) Math
+            </a>
+          )}
         </div>
       </div>
 
@@ -1202,7 +1264,13 @@ export default function CipherLayout({
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                    Bcrypt Rounds (Cost Factor)
+                    {cipher.id === "ecc"
+                      ? action === "encrypt"
+                        ? "Private Key (Hex)"
+                        : "Signature, Public Key (comma separated)"
+                      : cipher.id === "dh"
+                        ? "Alice Private Secret (a) & Public Parameters (p, g)"
+                        : "Cryptographic Key / Shift"}
                   </label>
 
                   <span className="font-mono text-xs font-bold text-teal-600 dark:text-teal-400">
@@ -1416,7 +1484,14 @@ export default function CipherLayout({
             onLoad={handlePresetLoad}
           />
 
-          {(error || workerError) && (
+          {diagnostic && (
+            <CryptoDiagnosticBanner
+              diagnostic={diagnostic}
+              onRemediation={handleDiagnosticRemediation}
+            />
+          )}
+
+          {(error || workerError) && !diagnostic && (
             <div className="rounded-xl border border-red-100 bg-red-50 p-4 dark:border-red-950/40 dark:bg-red-950/10">
               <div className="flex gap-2.5">
                 <div className="flex flex-col gap-0.5">
@@ -1464,6 +1539,18 @@ export default function CipherLayout({
             >
               History
             </button>
+            {['aes', 'des', '3des', 'twofish', 'serpent', 'camellia', 'aria'].includes(cipher.id) && (
+              <button
+                onClick={() => setActiveTab("debugger")}
+                className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all duration-200 active:scale-95 ${
+                  activeTab === "debugger"
+                    ? "bg-white text-zinc-950 shadow dark:bg-zinc-900 dark:text-white"
+                    : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+                }`}
+              >
+                Debugger
+              </button>
+            )}
           </div>
 
           {activeTab === "result" ? (
@@ -1639,7 +1726,7 @@ export default function CipherLayout({
                   </div>
                 )}
             </>
-          ) : (
+          ) : activeTab === "history" ? (
             <ConversionHistory
               cipherId={cipher.id}
               history={history}
@@ -1647,7 +1734,15 @@ export default function CipherLayout({
                 setHistory
               }
             />
-          )}
+          ) : activeTab === "debugger" ? (
+            <UniversalCipherDebugger
+              cipherId={cipher.id}
+              action={action}
+              input={input}
+              key={key}
+              options={workspaceOptions}
+            />
+          ) : null}
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import {useMemo, useState} from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { sharedCipherPool } from '@/lib/workers/sharedPool'
 
 import {
@@ -594,179 +594,87 @@ function MicroTrace({
 }
 
 export default function Pbkdf2Visualizer() {
-  const [password, setPassword] =
-    useState(
-      'correct horse battery staple',
-    )
+  const [password, setPassword] = useState('correct horse battery staple')
+  const [iterations, setIterations] = useState(600_000)
+  const [hash, setHash] = useState<'SHA-256' | 'SHA-512'>('SHA-256')
+  const [keyLength, setKeyLength] = useState<16 | 24 | 32>(32)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [stages, setStages] = useState<Pbkdf2StageStep[]>([])
+  const [derivedKeyHex, setDerivedKeyHex] = useState<string | null>(null)
+  const [saltHex, setSaltHex] = useState<string | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
-  const [iterations, setIterations] =
-    useState(600_000)
-
-  const [hash, setHash] =
-    useState<Pbkdf2Hash>(
-      'SHA-256',
-    )
-
-  const [keyLength, setKeyLength] =
-    useState<16 | 24 | 32>(32)
-
-  const [loading, setLoading] =
-    useState(false)
-
-  const [traceLoading, setTraceLoading] =
-    useState(false)
-
-  const [error, setError] =
-    useState<string | null>(null)
-
-  const [traceError, setTraceError] =
-    useState<string | null>(null)
-
-  const [stages, setStages] =
-    useState<Pbkdf2StageStep[]>([])
-
-  const [microTrace, setMicroTrace] =
-    useState<Pbkdf2MicroTrace | null>(
-      null,
-    )
-
-  const [activeTraceStep, setActiveTraceStep] =
-    useState(0)
-
-  const [derivedKeyHex, setDerivedKeyHex] =
-    useState<string | null>(null)
-
-  const [saltHex, setSaltHex] =
-    useState<string | null>(null)
-
-  const meetsOwasp =
-    iterations >=
-    OWASP_MIN_ITERATIONS[hash]
-
-  const crackYears =
-    estimateOfflineCrackYears(
-      iterations,
-      2 ** 40,
-    )
-
-  const traceInputSalt =
-    saltHex ?? '00112233445566778899aabbccddeeff'
-
-  const stageSummary = useMemo(
-    () =>
-      describePbkdf2Stages({
-        passwordLength:
-          password.length,
-        saltHex:
-          traceInputSalt,
-        iterations,
-        hash,
-        keyLength,
-      }),
-    [
-      password.length,
-      traceInputSalt,
-      iterations,
-      hash,
-      keyLength,
-    ],
-  )
+  // Clear sensitive state on component unmount
+  useEffect(() => {
+    return () => {
+      // Abort any pending KDF operations
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+      // Clear password state
+      setPassword('')
+      // Clear derived key material
+      setDerivedKeyHex(null)
+      setSaltHex(null)
+      // Clear dependent output
+      setStages([])
+      setError(null)
+    }
+  }, [])
 
   async function handleDerive() {
     setError(null)
     setTraceError(null)
     setLoading(true)
     setDerivedKeyHex(null)
-    setMicroTrace(null)
-    setStages([])
-
+    
+    // Abort any previous derivation
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+    
+    const controller = new AbortController()
+    abortControllerRef.current = controller
+    
     try {
-      const salt =
-        randomSaltHex()
-
-      const [
-        derived,
-        trace,
-      ] = await Promise.all([
-        deriveKeyViaWorker(
-          password,
-          {
-            iterations,
-            hash,
-            keyLength,
-            salt,
-          },
-        ),
-        generatePbkdf2MicroTrace(
-          password,
-          salt,
-          5,
-          hash,
-        ),
-      ])
-
-      setSaltHex(salt)
-      setDerivedKeyHex(
-        derived.derivedKeyHex,
-      )
-
-      setStages(
-        describePbkdf2Stages({
-          passwordLength:
-            password.length,
-          saltHex: salt,
-          iterations,
-          hash,
-          keyLength,
-        }),
-      )
-
-      setMicroTrace(trace)
-      setActiveTraceStep(0)
+      const salt = randomSaltHex()
+      const { derivedKeyHex: keyHex } = await deriveKeyViaWorker(password, { iterations, hash, keyLength, salt })
+      
+      if (!controller.signal.aborted) {
+        setSaltHex(salt)
+        setDerivedKeyHex(keyHex)
+        setStages(describePbkdf2Stages({ passwordLength: password.length, saltHex: salt, iterations, hash, keyLength }))
+      }
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Something went wrong.',
-      )
+      if (err instanceof Error && err.name === 'AbortError') {
+        return
+      }
+      setError(err instanceof Error ? err.message : 'Something went wrong.')
     } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null
+      }
       setLoading(false)
     }
   }
 
-  async function regenerateMicroTrace() {
-    setTraceError(null)
-    setTraceLoading(true)
-
-    try {
-      const salt =
-        saltHex ??
-        randomSaltHex()
-
-      const trace =
-        await generatePbkdf2MicroTrace(
-          password,
-          salt,
-          5,
-          hash,
-        )
-
-      setMicroTrace(trace)
-      setActiveTraceStep(0)
-
-      if (!saltHex) {
-        setSaltHex(salt)
-      }
-    } catch (err) {
-      setTraceError(
-        err instanceof Error
-          ? err.message
-          : 'Unable to generate micro-trace.',
-      )
-    } finally {
-      setTraceLoading(false)
+  const handleClearPassword = useCallback(() => {
+    setPassword('')
+    // Clear derived key material
+    setDerivedKeyHex(null)
+    setSaltHex(null)
+    // Clear dependent output
+    setStages([])
+    setError(null)
+    // Abort any pending operations
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
     }
-  }
+  }, [])
+
+  const meetsOwasp = iterations >= OWASP_MIN_ITERATIONS[hash]
+  const crackYears = estimateOfflineCrackYears(iterations, 2 ** 40) // demo: assumes a 40-bit-strength password
 
   return (
     <div className="space-y-6">
@@ -784,13 +692,17 @@ export default function Pbkdf2Visualizer() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <label
-              htmlFor="password"
-              className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              Password
-            </label>
-
+            <div className="flex items-center justify-between">
+              <label htmlFor="password" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Password</label>
+              <button
+                type="button"
+                onClick={handleClearPassword}
+                aria-label="Clear password"
+                className="text-xs font-medium text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
+              >
+                Clear Password
+              </button>
+            </div>
             <input
               id="password"
               type="text"

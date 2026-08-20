@@ -17,7 +17,7 @@ import {
   FileCheck,
 } from 'lucide-react'
 import { getLearningPathById } from '@/lib/learning-paths/data'
-import { useLearningPath } from '@/lib/hooks/useLearningPath'
+import { useLearningPath } from '@/hooks/useLearningPath'
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Shield,

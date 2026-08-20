@@ -199,6 +199,10 @@ function sm4Core(
                 outputState: toHex(blockOut),
                 note: `Each of the 32 rounds: tmp = X0 ⊕ T(X1⊕X2⊕X3⊕RK[i]); shift X left; X3=tmp. Output is (X3,X2,X1,X0).`,
                 isMilestone: true,
+                sboxInspection: {
+                    family: 'sm4',
+                    inputValue: `0x${blockIn[0].toString(16).padStart(2, '0')}`,
+                },
             })
         }
     }

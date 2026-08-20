@@ -6,7 +6,8 @@
  */
 
 import type { CipherResult, CipherStep, CipherOptions, TestVector } from '../types'
-import { CipherError, validateInput, validateKey, toByteArray, fromByteArray } from '../../utils'
+import { CipherError, validateKey, toByteArray, fromByteArray } from '../../utils'
+import { parseAndValidateHex, validateKeyLength, validateRequiredInput } from '../../utils/cipherValidation'
 
 const METADATA = {
   name: 'AES (Advanced Encryption Standard)',
@@ -390,6 +391,10 @@ function aesInstrumented(
             inputState: fromByteArray(stateBeforeSub, 'hex'),
             outputState: fromByteArray(state, 'hex'),
             note: 'Substituted state bytes using Rijndael S-box.',
+            sboxInspection: {
+              family: 'aes',
+              inputValue: `0x${stateBeforeSub[0].toString(16).padStart(2, '0')}`,
+            },
           })
 
           // ShiftRows
@@ -436,6 +441,10 @@ function aesInstrumented(
           inputState: fromByteArray(stateBeforeSubFinal, 'hex'),
           outputState: fromByteArray(state, 'hex'),
           note: 'Substituted final state bytes using Rijndael S-box.',
+          sboxInspection: {
+            family: 'aes',
+            inputValue: `0x${stateBeforeSubFinal[0].toString(16).padStart(2, '0')}`,
+          },
         })
 
         const stateBeforeShiftFinal = new Uint8Array(state)
@@ -489,6 +498,10 @@ function aesInstrumented(
           inputState: fromByteArray(stateBeforeSubDec, 'hex'),
           outputState: fromByteArray(state, 'hex'),
           note: 'Substituted state bytes using Rijndael Inverse S-box.',
+          sboxInspection: {
+            family: 'aes-inv',
+            inputValue: `0x${stateBeforeSubDec[0].toString(16).padStart(2, '0')}`,
+          },
         })
 
         for (let r = nRounds - 1; r >= 1; r--) {
@@ -532,6 +545,10 @@ function aesInstrumented(
             outputState: fromByteArray(state, 'hex'),
             note: 'Substituted state bytes using Rijndael Inverse S-box.',
             isMilestone: r === nRounds - 1 || r === 1,
+            sboxInspection: {
+              family: 'aes-inv',
+              inputValue: `0x${stateBeforeSubDecRound[0].toString(16).padStart(2, '0')}`,
+            },
           })
         }
 
@@ -882,23 +899,14 @@ function aesFast(
 function getKeyBytes(key: string): Uint8Array {
   let keyBytes: Uint8Array
 
-  if (/^[0-9a-fA-F]{32}$/.test(key)) {
-    keyBytes = toByteArray(key, 'hex')
-  } else if (/^[0-9a-fA-F]{48}$/.test(key)) {
-    keyBytes = toByteArray(key, 'hex')
-  } else if (/^[0-9a-fA-F]{64}$/.test(key)) {
-    keyBytes = toByteArray(key, 'hex')
+  const normalizedLength = key.replace(/\s+/g, '').length
+  if ([32, 48, 64].includes(normalizedLength)) {
+    keyBytes = parseAndValidateHex(key, undefined, 'AES key')
   } else {
     keyBytes = toByteArray(key, 'utf8')
   }
 
-  if (![16, 24, 32].includes(keyBytes.length)) {
-    throw new CipherError(
-      'INVALID_KEY_LENGTH',
-      `AES key must be exactly 16, 24, or 32 bytes (got ${keyBytes.length} bytes).`
-    )
-  }
-
+  validateKeyLength(keyBytes, [16, 24, 32], 'AES')
   return keyBytes
 }
 
@@ -907,7 +915,7 @@ export function encrypt(
   key: string,
   options: CipherOptions = {}
 ): CipherResult {
-  validateInput(input)
+  validateRequiredInput(input)
   validateKey(key)
 
   const inEnc = options.encoding || 'utf8'
@@ -915,16 +923,6 @@ export function encrypt(
 
   const keyBytes = getKeyBytes(key)
 
-  if (
-    keyBytes.length !== 16 &&
-    keyBytes.length !== 24 &&
-    keyBytes.length !== 32
-  ) {
-    throw new CipherError(
-      'INVALID_KEY_LENGTH',
-      `AES key must be exactly 16, 24, or 32 bytes (got ${keyBytes.length} bytes).`
-    )
-  }
 
   const mode = parseMode(options.mode)
 
@@ -965,7 +963,7 @@ export function decrypt(
   key: string,
   options: CipherOptions = {}
 ): CipherResult {
-  validateInput(input)
+  validateRequiredInput(input)
   validateKey(key)
 
   const mode = parseMode(options.mode)
@@ -977,29 +975,17 @@ export function decrypt(
     if (input.length < 32) {
       throw new CipherError('INVALID_INPUT', `${mode} ciphertext must include a 32-character hex IV prefix.`)
     }
-    iv = toByteArray(input.slice(0, 32), 'hex')
+    iv = parseAndValidateHex(input.slice(0, 32), 16, 'AES IV')
     cipherHex = input.slice(32)
   }
 
-  const inputBytes = toByteArray(cipherHex, 'hex')
+  const inputBytes = parseAndValidateHex(cipherHex, undefined, 'AES ciphertext')
   // Block modes need whole 16-byte blocks; stream modes accept any length.
   if (!isStreamMode(mode) && inputBytes.length % 16 !== 0) {
     throw new CipherError('INVALID_PADDING', 'AES ciphertext must be a multiple of 16 bytes.')
   }
 
-  // ...(keep the existing keyBytes detection block unchanged)...
-const keyBytes = getKeyBytes(key)
-
-if (
-  keyBytes.length !== 16 &&
-  keyBytes.length !== 24 &&
-  keyBytes.length !== 32
-) {
-  throw new CipherError(
-    'INVALID_KEY_LENGTH',
-    `AES key must be exactly 16, 24, or 32 bytes (got ${keyBytes.length} bytes).`
-  )
-}
+  const keyBytes = getKeyBytes(key)
   let result: CipherResult
   if (options.instrument) {
     result = aesInstrumented(inputBytes, keyBytes, true, mode, iv)
