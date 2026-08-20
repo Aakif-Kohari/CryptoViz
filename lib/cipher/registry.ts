@@ -830,6 +830,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keySize: '128/192/256',
   },
   {
+    id: 'cast128',
+    name: 'CAST-128 (CAST5)',
+    category: 'symmetric',
+    description: 'RFC 2144 block cipher with 64-bit blocks and a 40–128-bit variable-length key. 16-round Feistel (12 rounds for keys ≤80 bits) with four bent-function-derived S-boxes and three heterogeneous round function types. Historically mandatory in PGP/OpenPGP and early SSH.',
+    defaultKey: '0123456789abcdef0123456789abcdef',
+    defaultInput: '0123456789abcdef',
+    securityStatus: 'legacy',
+    keyPlaceholder: '10–32 hex characters (5–16 bytes)',
+    options: [{ name: 'Mode', id: 'mode', type: 'select', default: 'cbc', choices: [{ label: 'CBC', value: 'cbc' }, { label: 'ECB', value: 'ecb' }] }]
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
