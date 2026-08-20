@@ -250,6 +250,8 @@ export type CipherName =
   | 'kupyna'
   | 'radiogatun'
   | 'ascon-hash'
+  | 'ripemd256'
+  | 'ripemd320'
   | 'kangarootwelve'
   | 'fugue'
   | 'poly1305'

@@ -1286,6 +1286,27 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
   },
   {
+    id: 'ripemd256',
+    name: 'RIPEMD-256',
+    category:
+    'hash',
+    description: 'ISO/IEC 10118-3. Two-lane parallel RIPEMD-128 with swaps. ⚠ NOT a security upgrade over 128-bit.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy'
+    
+  },
+  {
+    id: 'ripemd320',
+    name: 'RIPEMD-320',
+    category: 'hash',
+    description: 'ISO/IEC 10118-3. Two-lane parallel RIPEMD-160 with swaps. ⚠ NOT a security upgrade over 160-bit.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'legacy'
+    
+  },
+  {
     id: 'kangarootwelve',
     name: 'KangarooTwelve',
     category: 'hash',
