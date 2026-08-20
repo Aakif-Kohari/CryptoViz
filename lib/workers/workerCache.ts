@@ -168,7 +168,16 @@ export class WorkerCache<TValue> {
   }
 
   has(key: string): boolean {
-    return this.get(key) !== undefined;
+    // A membership probe must not touch hit/miss stats or LRU recency, so it
+    // can't delegate to get(). Mirror get()'s "would return a value" checks
+    // (existence, expiry, live reference) without the side effects.
+    const entry = this.entries.get(key);
+    if (!entry) return false;
+    if (this.isExpired(entry)) {
+      this.deleteEntry(key, "expiration");
+      return false;
+    }
+    return this.dereference(entry) !== undefined;
   }
 
   delete(key: string): boolean {
