@@ -55,7 +55,7 @@ export interface CipherMetadata {
   blockSize?: number
   rounds?: number
   modeOfOperation?: string
-  securityStatus: 'secure' | 'legacy' | 'deprecated' | 'broken'
+  securityStatus: "recommended" | "secure" | "legacy" | "deprecated" | "broken" | "experimental"
   breakingComplexity?: string
   yearDesigned?: number
   standardBody?: string
@@ -251,6 +251,7 @@ export type CipherName =
   | 'radiogatun'
   | 'ascon-hash'
   | 'kangarootwelve'
+  | 'fugue'
   | 'poly1305'
   | 'hmac'
   | 'cmac'
