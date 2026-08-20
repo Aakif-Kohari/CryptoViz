@@ -1700,4 +1700,24 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'Public key (encrypt) or Private key (decrypt)',
   },
+  {
+    id: 'xmss',
+    name: 'XMSS',
+    category: 'asymmetric',
+    description: 'RFC 8391 stateful hash-based signature. WOTS+ chains + Merkle tree. Quantum-safe. ⚠ Stateful: leaf index must never be reused.',
+    defaultKey: '00'.repeat(32),
+    defaultInput: '48656c6c6f',
+    securityStatus: 'recommended',
+    options: [{ name: 'Leaf Index', id: 'leafIndex', type: 'number', default: 0 }]
+  },
+  {
+    id: 'lms',
+    name: 'LMS',
+    category: 'asymmetric',
+    description: 'RFC 8554 stateful hash-based signature. LM-OTS chains + Merkle tree. Quantum-safe. ⚠ Stateful.',
+    defaultKey: '00'.repeat(32),
+    defaultInput: '48656c6c6f',
+    securityStatus: 'recommended',
+    options: [{ name: 'Leaf Index', id: 'leafIndex', type: 'number', default: 0 }]
+  },
 ];
