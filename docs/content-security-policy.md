@@ -1,68 +1,40 @@
-# Content Security Policy Hardening
+# Content Security Policy & Security Headers
 
-Issue #724 reports that the current deployment still permits `unsafe-inline` CSP
-directives. This update adds a nonce-based CSP helper and Next.js middleware that
-sets stricter security headers on application routes.
+CryptoViz is configured as a fully static Next.js export (`output: 'export'`). Because static exports generate pre-rendered HTML files served via static hosting (e.g. Vercel Static), Next.js `middleware.ts` and runtime server-side nonces do not execute in production.
 
-## What changed
+Security headers—including Content Security Policy (CSP)—are defined statically in [`vercel.json`](../vercel.json).
 
-- Added `lib/security/contentSecurityPolicy.ts`.
-- Added a nonce-based CSP builder.
-- Added strict CSP validation helpers.
-- Added companion security headers.
-- Added middleware that injects a per-request `x-nonce` header and CSP header.
-- Added focused CSP unit tests.
-- Added manual verification checklist.
+## Security Headers Architecture
 
-## Policy goals
+- **Single Source of Truth**: All HTTP security headers are configured in `vercel.json`.
+- **Script Policy**: `script-src 'self'; script-src-elem 'self'`. Inline scripts (`'unsafe-inline'`) are prohibited for scripts. Theme initialization is loaded as a same-origin script (`/theme-init.js`).
+- **Style Policy**: `style-src 'self' 'unsafe-inline'` is permitted to allow Next.js runtime element styling during static export.
+- **Strict Lockdown**: `object-src 'none'`, `frame-ancestors 'none'`, `base-uri 'self'`, `upgrade-insecure-requests`.
+- **Worker Policy**: `worker-src 'self' blob:` (required for background Web Workers such as `cipher.worker.ts`).
 
-The generated CSP avoids `unsafe-inline` and uses:
+## Configured Headers
 
-```text
-script-src 'self' 'nonce-<nonce>' 'strict-dynamic'
-style-src 'self' 'nonce-<nonce>'
-object-src 'none'
-frame-ancestors 'none'
-base-uri 'self'
-script-src-attr 'none'
-style-src-attr 'none'
+In `vercel.json`:
+
+```json
+{
+  "Content-Security-Policy": "default-src 'self'; base-uri 'self'; form-action 'self'; script-src 'self'; script-src-elem 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://avatars.githubusercontent.com https://github.githubassets.com https://images.unsplash.com; font-src 'self' data:; connect-src 'self' https://api.github.com https://*.vercel-insights.com https://*.supabase.co; worker-src 'self' blob:; frame-src 'self' https://www.youtube-nocookie.com; child-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests",
+  "X-Frame-Options": "DENY",
+  "X-Content-Type-Options": "nosniff",
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Cross-Origin-Opener-Policy": "same-origin",
+  "Cross-Origin-Resource-Policy": "same-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
+}
 ```
 
-## Local development
+## Verification & Testing
 
-Next.js development can require `unsafe-eval`. The middleware only allows
-`unsafe-eval` when `NODE_ENV !== "production"`. It does not allow
-`unsafe-inline` in either development or production.
-
-## Rollout controls
-
-Set these optional environment variables if needed:
-
-```text
-CSP_REPORT_ONLY=true
-CSP_REPORT_URI=https://your-report-endpoint.example/csp
-```
-
-Use report-only mode for an initial deployment check, then switch to enforced
-mode once reports are clean.
-
-## Manual verification
-
-1. Start the app.
-2. Open the browser developer tools Network tab.
-3. Reload an application page.
-4. Inspect response headers.
-5. Confirm `Content-Security-Policy` is present.
-6. Confirm the header does not contain `unsafe-inline`.
-7. Confirm `script-src` includes a nonce.
-8. Confirm `style-src` includes a nonce.
-9. Confirm `object-src 'none'`.
-10. Confirm `frame-ancestors 'none'`.
-
-## Commands
+Security headers are tested automatically against `vercel.json`:
 
 ```powershell
-npx vitest run tests/unit/security/contentSecurityPolicy.test.ts
-npm run lint
+npx vitest run tests/security/headers.test.ts tests/security/csp.security.test.ts
 npm run build
 ```
+

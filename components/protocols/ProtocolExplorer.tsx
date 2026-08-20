@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 
 type ProtocolStep = {
   title: string
@@ -103,6 +104,20 @@ const protocols: Protocol[] = [
       { title: 'TCP Handshake', description: 'Establish a reliable connection (SYN, SYN-ACK, ACK).', sender: 'Browser', receiver: 'Server', message: 'TCP Setup' },
       { title: 'TLS Handshake', description: 'Establish the secure TLS tunnel (as explored in the TLS section).', sender: 'Browser', receiver: 'Server', message: 'TLS Handshake' },
       { title: 'HTTP Request/Response', description: 'Standard HTTP traffic is sent through the encrypted tunnel.', sender: 'Browser', receiver: 'Server', message: 'Encrypted HTTP Traffic' }
+    ]
+  },
+  {
+    id: 'webauthn',
+    name: 'WebAuthn & Passkeys',
+    purpose: 'Standard for passwordless public-key authentication bound to origins, preventing phishing.',
+    actors: ['Browser (Client)', 'Authenticator', 'RP Server'],
+    concepts: ['Asymmetric Cryptography (P-256)', 'Origin Binding', 'User Presence/Verification', 'CBOR/COSE encoding'],
+    differences: 'Unlike credentials sent to a server (passwords/tokens), WebAuthn private keys never leave the authenticator. Signatures are bound to the domain name, making phishing attacks impossible.',
+    steps: [
+      { title: 'Challenge Creation', description: 'The Relying Party (Server) generates a cryptographically secure random challenge and sends registration/assertion options to the client.', sender: 'RP Server', receiver: 'Browser (Client)', message: 'Challenge + Options' },
+      { title: 'User Authorization', description: 'The user verifies their identity (PIN, TouchID, FaceID) on the authenticator device to unlock the cryptographic key.', sender: 'Browser (Client)', receiver: 'Authenticator', message: 'User Consent (Biometric/PIN)' },
+      { title: 'Credential Operation', description: 'The authenticator generates a keypair (for registration) or retrieves a private key (for assertion) to sign the challenge.', sender: 'Authenticator', receiver: 'Browser (Client)', message: 'Signed Challenge' },
+      { title: 'Verification & Auth', description: 'The client forwards the signed response to the server. The server verifies the signature, challenge, and origin to complete authentication.', sender: 'Browser (Client)', receiver: 'RP Server', message: 'Assertion/Attestation Signature' }
     ]
   }
 ]
@@ -269,6 +284,19 @@ export default function ProtocolExplorer() {
               <p className="text-sm text-blue-800 dark:text-blue-200/80 leading-relaxed">
                 {activeProtocol.differences}
               </p>
+              {activeProtocol.id === 'webauthn' && (
+                <div className="mt-4">
+                  <Link
+                    href="/protocols/webauthn"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm transition-colors"
+                  >
+                    Go to WebAuthn Playground
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </section>

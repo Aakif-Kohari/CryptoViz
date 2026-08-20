@@ -15,10 +15,13 @@ import {
   safeSetItemJson,
   safeJsonParse,
 } from '../../lib/utils/storage'
+import ChallengeHistoryDrawer from './ChallengeHistoryDrawer'
+import { getChallengeHistory, clearChallengeHistory } from '@/lib/challenge/historyManager'
+import { hashChallengeAnswer, type CustomChallengeSet } from '@/lib/challenge/customChallengeSerializer'
 
 type FeedbackState = 'idle' | 'correct' | 'incorrect'
 
-export type QuestionCountOption = 5 | 10 | 20
+export type QuestionCountOption = number
 export type TimeLimitOption = 30 | 60 | 120 | 0
 
 const QUESTION_COUNT_OPTIONS: readonly QuestionCountOption[] = [5, 10, 20]
@@ -102,7 +105,7 @@ function uid() {
   return Math.random().toString(36).slice(2) + '-' + Date.now().toString(36)
 }
 
-export default function ChallengeMode() {
+export default function ChallengeMode({ customChallenge }: { customChallenge?: CustomChallengeSet | null }) {
   const { runCipher, loading, error } = useCipherWorker()
   const successTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const sessionPersistedRef = useRef(false)
@@ -117,6 +120,7 @@ export default function ChallengeMode() {
   const [difficulty, setDifficulty] = useState<ChallengeDifficulty>('medium')
   const [questionCount, setQuestionCount] = useState<QuestionCountOption>(DEFAULT_QUESTION_COUNT)
   const [timeLimit, setTimeLimit] = useState<TimeLimitOption>(DEFAULT_TIME_LIMIT)
+  const isCustomChallenge = Boolean(customChallenge)
   const [started, setStarted] = useState(false)
   const [_replayMode, setReplayMode] = useState(false)
 
@@ -143,6 +147,18 @@ export default function ChallengeMode() {
 
   const [questionRuns, setQuestionRuns] = useState<QuestionRun[] | null>(null)
   const [challengeExplanation, setChallengeExplanation] = useState<{ title: string; details: string[] } | null>(null)
+  const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false)
+  const [historyEntries, setHistoryEntries] = useState<ChallengeHistoryEntry[]>(() => getChallengeHistory())
+
+  const handleOpenHistoryDrawer = useCallback(() => {
+    setHistoryEntries(getChallengeHistory())
+    setIsHistoryDrawerOpen(true)
+  }, [])
+
+  const handleClearHistory = useCallback(() => {
+    clearChallengeHistory()
+    setHistoryEntries([])
+  }, [])
 
   const handleQuestionCountChange = useCallback((count: QuestionCountOption) => {
     setQuestionCount(count)
@@ -158,6 +174,33 @@ export default function ChallengeMode() {
     if (!sessionChallenges) return null
     return sessionChallenges[currentQuestionIndex] ?? null
   }, [sessionChallenges, currentQuestionIndex])
+
+  useEffect(() => {
+    if (!isHydrated || !customChallenge) return
+    const challenges: ChallengeData[] = customChallenge.questions.map((question) => ({
+      cipherId: question.cipherId,
+      type: 'encrypt',
+      plaintext: '',
+      key: '',
+      difficulty: customChallenge.difficulty,
+      hints: question.hints,
+      ciphertext: question.ciphertext,
+      answerHash: question.answerHash,
+    }))
+    setDifficulty(customChallenge.difficulty)
+    setQuestionCount(challenges.length as QuestionCountOption)
+    setTimeLimit(customChallenge.timeLimit as TimeLimitOption)
+    setSessionChallenges(challenges)
+    setQuestionRuns(new Array(challenges.length))
+    setCurrentQuestionIndex(0)
+    setExpectedCiphertext(challenges[0]?.ciphertext ?? '')
+    setFeedback('idle')
+    setChallengeExplanation(null)
+    setAnswer('')
+    setShowHintIndex(0)
+    setTimeLeft(customChallenge.timeLimit)
+    setStarted(true)
+  }, [customChallenge, isCustomChallenge, isHydrated])
 
   const currentCipherName = useMemo(() => {
     if (!currentChallenge) return 'Cipher'
@@ -212,6 +255,10 @@ export default function ChallengeMode() {
 
   const loadExpectedCiphertextForCurrent = useCallback(async () => {
     if (!currentChallenge) return
+    if (currentChallenge.ciphertext && currentChallenge.answerHash) {
+      setExpectedCiphertext(currentChallenge.ciphertext)
+      return
+    }
     setExpectedCiphertext('')
 
     try {
@@ -378,14 +425,16 @@ export default function ChallengeMode() {
     setFeedback('idle')
   }, [currentChallenge])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!currentChallenge) return
     if (!answer.trim()) return
     if (loading || !!error) return
     if (feedback === 'correct') return
 
-    const isCorrect = answer.toUpperCase() === currentChallenge.plaintext.toUpperCase()
+    const isCorrect = currentChallenge.answerHash
+      ? (await hashChallengeAnswer(answer)) === currentChallenge.answerHash
+      : answer.toUpperCase() === currentChallenge.plaintext.toUpperCase()
 
     if (isCorrect) {
       const hintCount = showHintIndex
@@ -551,6 +600,20 @@ export default function ChallengeMode() {
     sessionPersistedRef.current = true
   }, [started, questionRuns, currentQuestionIndex, difficulty, questionCount])
 
+  const handleCopyCertificate = useCallback(async () => {
+    if (!sessionSummary) return
+    const title = customChallenge?.title ?? 'CryptoViz Challenge'
+    const text = [
+      title,
+      'Completion Certificate / Score Summary',
+      `Score: ${sessionSummary.correctCount}/${questionCount} (${Math.round(sessionSummary.accuracy * 100)}%)`,
+      `XP earned: ${sessionSummary.totalXp}`,
+      `Hints used: ${sessionSummary.totalHintsUsed}`,
+      `Completed: ${new Date().toLocaleString()}`,
+    ].join('\n')
+    await navigator.clipboard.writeText(text)
+  }, [customChallenge?.title, questionCount, sessionSummary])
+
   const handleReplay = useCallback(() => {
     if (!sessionChallenges) return
     successTimeoutRef.current && clearTimeout(successTimeoutRef.current)
@@ -588,7 +651,7 @@ export default function ChallengeMode() {
               </svg>
             </div>
             <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">Challenge Complete</h2>
-            <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Here&apos;s your session summary.</p>
+            <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{customChallenge?.title ? `${customChallenge.title} · ` : ''}Here&apos;s your session summary.</p>
           </div>
 
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-4">
@@ -649,6 +712,13 @@ export default function ChallengeMode() {
             </button>
             <button
               type="button"
+              onClick={() => void handleCopyCertificate()}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-teal-300 bg-teal-50 px-6 py-3 text-sm font-semibold text-teal-800 shadow-sm transition-all hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-300 dark:hover:bg-teal-950/50"
+            >
+              Copy Completion Certificate
+            </button>
+            <button
+              type="button"
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-600 px-8 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 active:scale-[0.98] dark:bg-teal-500 dark:hover:bg-teal-400 dark:focus:ring-offset-zinc-900"
               onClick={() => {
                 setStarted(false)
@@ -660,6 +730,13 @@ export default function ChallengeMode() {
               }}
             >
               New Session
+            </button>
+            <button
+              type="button"
+              onClick={handleOpenHistoryDrawer}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-6 py-3 text-sm font-semibold text-zinc-700 shadow-sm transition-all hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+            >
+              View History Log & Mistakes
             </button>
           </div>
 
@@ -1158,10 +1235,17 @@ export default function ChallengeMode() {
           </div>
 
           <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40 transition-all hover:shadow-md">
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Challenge History</h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-500">
-              Your last {HISTORY_CAP} runs are saved locally. Replay lets you try the exact same session again.
+            <h3 className="mb-2 text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Challenge History</h3>
+            <p className="text-xs text-zinc-500 dark:text-zinc-500 mb-3">
+              Your last {HISTORY_CAP} runs are saved locally. Review past attempts, mistakes, and accuracy.
             </p>
+            <button
+              type="button"
+              onClick={handleOpenHistoryDrawer}
+              className="w-full rounded-lg border border-teal-500/40 bg-teal-50/50 px-3 py-2 text-xs font-semibold text-teal-700 hover:bg-teal-100 dark:border-teal-500/30 dark:bg-teal-950/30 dark:text-teal-300 dark:hover:bg-teal-900/40"
+            >
+              View Past Sessions & Mistake Drawer
+            </button>
           </div>
         </div>
       </div>
@@ -1169,6 +1253,14 @@ export default function ChallengeMode() {
       <div className="h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800" role="progressbar" aria-valuenow={timeLimit === 0 ? 100 : timeLeft} aria-valuemin={0} aria-valuemax={timeLimit === 0 ? 100 : timeLimit} aria-label="Time remaining">
         <div className={`h-full rounded-full transition-all duration-1000 ease-linear ${timeLimit > 0 && timeLeft <= 10 ? 'bg-red-500' : 'bg-teal-600 dark:bg-teal-500'}`} style={{ width: `${timePercent}%` }} />
       </div>
+
+      {/* History Drawer Modal */}
+      <ChallengeHistoryDrawer
+        isOpen={isHistoryDrawerOpen}
+        onClose={() => setIsHistoryDrawerOpen(false)}
+        history={historyEntries}
+        onClearHistory={handleClearHistory}
+      />
     </div>
   )
 }

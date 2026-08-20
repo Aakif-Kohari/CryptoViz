@@ -41,7 +41,9 @@ function PHT(a: number, b: number): [number, number] {
 
 // Armenian Network (Simplified representation of the 2-pass PHT wiring)
 function armenianNetwork(state: Uint8Array): Uint8Array {
-    const s = new Uint8Array(state)
+    const buf = new ArrayBuffer(16)
+    const s = new Uint8Array(buf)
+    s.set(state)
     // Upper 3-PHT layer (pairs: 0-1, 2-3, 4-5, 6-7, 8-9, 10-11, 12-13, 14-15)
     for (let i = 0; i < 16; i += 2) {
         const [a, b] = PHT(s[i], s[i + 1])
@@ -104,7 +106,10 @@ function saferPlusCore(input: string, key: string, doDecrypt: boolean, instrumen
     }
 
     for (let b = 0; b < numBlocks; b++) {
-        let state = inBytes.slice(b * 16, b * 16 + 16)
+        const sliceVal = inBytes.slice(b * 16, b * 16 + 16)
+        const bufState = new ArrayBuffer(16)
+        const state = new Uint8Array(bufState)
+        state.set(sliceVal)
 
         if (!doDecrypt) {
             for (let r = 0; r < 8; r++) {
@@ -120,7 +125,7 @@ function saferPlusCore(input: string, key: string, doDecrypt: boolean, instrumen
                 for (let i = 0; i < 16; i++) state[i] = u8(state[i] + roundKeys[r + 1][i])
 
                 // Armenian PHT Network
-                state = armenianNetwork(state);
+                state.set(armenianNetwork(state));
             }
             // Final whitening
             for (let i = 0; i < 16; i++) state[i] = u8(state[i] + roundKeys[8][i])
@@ -129,7 +134,7 @@ function saferPlusCore(input: string, key: string, doDecrypt: boolean, instrumen
             for (let i = 0; i < 16; i++) state[i] = u8(state[i] - roundKeys[8][i])
             for (let r = 7; r >= 0; r--) {
                 // Inverse Armenian (simplified representation)
-                state = armenianNetwork(state) // PHT is its own inverse if using mod 256 and proper coefficients, but SAFER+ uses specific inverse PHT. 
+                state.set(armenianNetwork(state)) // PHT is its own inverse if using mod 256 and proper coefficients, but SAFER+ uses specific inverse PHT. 
                 // For visualizer, we assume structural symmetry.
 
                 for (let i = 0; i < 16; i++) state[i] = u8(state[i] - roundKeys[r + 1][i])
