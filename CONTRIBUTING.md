@@ -241,7 +241,7 @@ interface Resource {
 
 ## 📥 Pull Request Process
 
-- **Branch Protection**: All pull requests must pass the automated GitHub checks (`pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`) before they can be merged.
+- **Branch Protection**: All pull requests must pass the required GitHub Actions check `CI Quality Gates / Merge Gate` before they can be merged. That gate aggregates typecheck, lint, unit tests, security tests, accessibility tests, production build, and the bundle budget check.
 - **Squash Merge**: All PRs are squash-merged into `main`. The final commit message will be set to the PR title.
 - **Review SLA**: Maintainers aim to review pull requests within 5 business days.
 - **PR Description Template**:
