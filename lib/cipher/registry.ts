@@ -896,6 +896,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: "broken",
   },
   {
+    id: 'luffa',
+    name: 'Luffa',
+    category: 'hash',
+    description: 'SHA-3 finalist (NEC Europe). Multi-channel message queue sponge: 3–5 parallel 256-bit chains, Q permutation (SubCrumb + MixWord). Staggered message injection.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'experimental',
+    options: [{ name: 'Output Bits', id: 'outputBits', type: 'select', default: 256, choices: [{ label: '256-bit', value: 256 }, { label: '384-bit', value: 384 }, { label: '512-bit', value: 512 }] }]
+  },
+  {
     id: "hmac",
     name: "HMAC-SHA256",
     category: "hash",
