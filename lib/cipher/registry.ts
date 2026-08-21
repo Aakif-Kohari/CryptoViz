@@ -851,6 +851,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     options: [{ name: 'Mode', id: 'mode', type: 'select', default: 'cbc', choices: [{ label: 'CBC', value: 'cbc' }, { label: 'ECB', value: 'ecb' }] }]
   },
   {
+    id: 'skinny',
+    name: 'SKINNY-128',
+    category: 'symmetric',
+    description: 'Tweakable block cipher (EUROCRYPT 2016). TWEAKEY framework: key and tweak treated uniformly through parallel sub-tweakey arrays with LFSR feedback. Core primitive of ROMULUS (NIST LWC Standard).',
+    defaultKey: '00'.repeat(32),
+    defaultInput: '000102030405060708090a0b0c0d0e0f',
+    securityStatus: 'secure',
+    keyPlaceholder: '32/64/96 hex chars (128/256/384-bit tweakey)',
+    options: [{ name: 'Parameter Set', id: 'paramSet', type: 'select', default: '128-256', choices: [{ label: 'SKINNY-128-128 (40 rounds)', value: '128-128' }, { label: 'SKINNY-128-256 (48 rounds)', value: '128-256' }, { label: 'SKINNY-128-384 (56 rounds)', value: '128-384' }] }]
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
