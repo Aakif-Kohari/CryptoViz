@@ -34,6 +34,7 @@ import {
   updateStepInCurrentUrl,
 } from "../../lib/utils/visualizerPermalink";
 import TraceTransferControls from "./TraceTransferControls";
+import ExportReportControls from "./ExportReportControls";
 import CipherLifecycleBadge from "./CipherLifecycleBadge";
 import LessonPackageModal from "./LessonPackageModal";
 import LessonPlayerModal from "./LessonPlayerModal";
@@ -1597,6 +1598,20 @@ export default function CipherLayout({
                 onImport={
                   handleTraceImport
                 }
+              />
+              <div className="mt-2" />
+              <ExportReportControls
+                cipherId={cipher.id}
+                direction={
+                  cipher.id === "dh"
+                    ? "encrypt"
+                    : action
+                }
+                input={input}
+                cipherKey={key}
+                options={traceOptions}
+                result={result}
+                currentStepIndex={currentStep}
               />
 
               {renderSpecificVisualizer()}
