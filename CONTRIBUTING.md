@@ -26,6 +26,10 @@ Before writing any code, please complete the following steps:
 
 2. Read [Guidelines.md](./GUIDELINES.md) to understand the coding standards, rules, and guidelines we follow.
 
+3. Read [docs/contribution-checklists.md](./docs/contribution-checklists.md) and complete the checklist matching your contribution type (new cipher, new visualizer, or security-sensitive feature) before opening a PR.
+
+4. If your contribution involves reduced parameters, mocked peers, or synthetic data of any kind, read [docs/simulation-vs-live-data-policy.md](./docs/simulation-vs-live-data-policy.md). Contributors are prohibited from describing simulated operations as verified operations, in code, UI copy, or PR descriptions.
+
 ---
 
 ## 💻 Local Development Setup
