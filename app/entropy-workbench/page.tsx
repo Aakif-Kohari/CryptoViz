@@ -8,7 +8,7 @@ export default function EntropyWorkbenchPage() {
           Information-Theoretic Security Workbench
         </h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Explore Shannon's foundations of cryptography, perfect secrecy, and unicity distances.
+          Explore Shannon&apos;s foundations of cryptography, perfect secrecy, and unicity distances.
         </p>
       </div>
 
