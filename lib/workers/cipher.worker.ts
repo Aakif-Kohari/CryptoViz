@@ -5,7 +5,9 @@
  */
 import { CipherError } from '../utils/errors'
 import type { CipherErrorCode } from '../utils/errors'
-import type { WorkerRequest, WorkerResponse } from '../../types/worker'
+import type { WorkerRequest} from '../../types/worker'
+import type { WorkerExecuteMessage, WorkerMessage, WorkerResponse } from '../../types/worker'
+import { validateWorkerMessage } from './cipher-worker-protocol'
 import type { CipherResult } from '../cipher/types'
 import { getDispatcher } from './cipherDispatchRegistry'
 import { WorkerJobLifecycle } from './cipher-worker-lifecycle'
@@ -47,6 +49,8 @@ function postLifecycleError(requestId: string, jobId: string, code: CipherErrorC
     jobId,
   } satisfies WorkerResponse & { jobId: string })
 }
+workerScope.addEventListener('message', async (event: MessageEvent<unknown>) => {
+  let rawData: unknown = event.data
 
 function parseIncoming(data: unknown): WorkerRequest | CancelMessage | null {
   let value = data
@@ -55,6 +59,9 @@ function parseIncoming(data: unknown): WorkerRequest | CancelMessage | null {
       value = JSON.parse(new TextDecoder().decode(value))
     } catch {
       return null
+      rawData = JSON.parse(new TextDecoder().decode(rawData)) as unknown
+    } catch {
+      // Validation below returns a structured protocol error.
     }
   }
   if (!value || typeof value !== 'object') return null
@@ -114,6 +121,35 @@ workerScope.addEventListener('message', async (event: MessageEvent<WorkerRequest
   }
 
   lifecycle.start(jobId)
+  const validation = validateWorkerMessage(rawData)
+  if (!validation.success) {
+    workerScope.postMessage({
+      requestId: validation.requestId,
+      success: false,
+      payload: {
+        error: validation.error,
+        errorCode: 'INVALID_WORKER_MESSAGE',
+        errorMessage: validation.error,
+      },
+    } satisfies WorkerResponse)
+    return
+  }
+
+  const message: WorkerMessage = validation.value
+
+  if (message.type === 'PING') {
+    workerScope.postMessage({ type: 'PONG', requestId: message.requestId ?? 'unknown' })
+    return
+  }
+
+  if (message.type === 'CANCEL') {
+    cancelledJobs.add(message.jobId)
+    return
+  }
+
+  const requestData: WorkerExecuteMessage = message
+  const requestId = requestData.requestId
+  const jobId = requestData.jobId ?? requestData.payload.jobId ?? requestId
   const startTime = performance.now()
   let timeoutId: ReturnType<typeof setTimeout> | undefined
   let terminal = false
@@ -160,6 +196,13 @@ workerScope.addEventListener('message', async (event: MessageEvent<WorkerRequest
       failJob('INVALID_WORKER_MESSAGE', 'Worker payload contains invalid cipherId, input, or key.')
       return
     }
+    if (cancelledJobs.has(jobId)) throw new DOMException('The user aborted the request.', 'AbortError')
+
+    const { payload } = requestData
+    const { type, cipherId, input, key, options } = payload
+    const safeOptions = options || {}
+
+    postProgress(jobId, 0, 'Starting cipher', true)
 
     postProgress(jobId, 0, 'Starting cipher', true)
     const dispatcher = await getDispatcher(cipherId)
@@ -178,6 +221,12 @@ workerScope.addEventListener('message', async (event: MessageEvent<WorkerRequest
       cancelJob()
       return
     }
+    if (cancelledJobs.has(jobId)) throw new DOMException('The user aborted the request.', 'AbortError')
+
+    const handler = type === 'encrypt' ? dispatcher.encrypt : dispatcher.decrypt
+    postProgress(jobId, 20, 'Executing cryptographic operation', true)
+
+    const result = (await handler(input, key, safeOptions)) as CipherResult
 
     const steps = result.steps ?? []
     if (steps.length) {
@@ -220,6 +269,16 @@ workerScope.addEventListener('message', async (event: MessageEvent<WorkerRequest
     failJob(errorCode, errorMessage)
   } finally {
     if (timeoutId) clearTimeout(timeoutId)
+    const errorCode = error instanceof CipherError ? error.code : undefined
+
+    workerScope.postMessage({
+      requestId,
+      success: false,
+      payload: { error: errorMessage, errorCode },
+      timings: { durationMs: performance.now() - startTime },
+    } satisfies WorkerResponse)
+  } finally {
+    cancelledJobs.delete(jobId)
     lastProgressAt.delete(jobId)
   }
 })
