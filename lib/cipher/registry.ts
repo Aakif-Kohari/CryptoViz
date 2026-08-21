@@ -864,6 +864,19 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     recommendedNext: ["hmac", "sha512", "bcrypt"],
   },
   {
+    id: 'cubehash',
+    name: 'CubeHash',
+    category: 'hash',
+    description: 'SHA-3 finalist (Daniel Bernstein). Configurable r/b/h hypercube sponge. 128-byte state, 10 mixing steps per round (only additions, rotations, XOR, swaps — no S-boxes).',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'experimental',
+    options: [
+      { name: 'Output Bits', id: 'outputBits', type: 'select', default: 256, choices: [{ label: '256-bit', value: 256 }, { label: '512-bit', value: 512 }] },
+      { name: 'Rounds per Block (r)', id: 'rounds', type: 'number', default: 16 }
+    ]
+  },
+  {
     id: "sha512",
     name: "SHA-512",
     category: "hash",
