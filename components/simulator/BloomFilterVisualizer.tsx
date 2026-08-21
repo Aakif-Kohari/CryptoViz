@@ -236,7 +236,7 @@ export default function BloomFilterVisualizer() {
             )
           })}
         </div>
-      </div>
+      </Card>
 
       {/* Query / Action Result Display */}
       {lastActionResult && (
@@ -289,7 +289,7 @@ export default function BloomFilterVisualizer() {
               ))}
             </div>
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Real-time Statistics & Math Panel */}
