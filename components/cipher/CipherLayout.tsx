@@ -34,6 +34,7 @@ import {
   updateStepInCurrentUrl,
 } from "../../lib/utils/visualizerPermalink";
 import TraceTransferControls from "./TraceTransferControls";
+import ExportReportControls from "./ExportReportControls";
 import CipherLifecycleBadge from "./CipherLifecycleBadge";
 import type { LessonPackage } from "../../lib/utils/lessonPackage";
 import {
@@ -612,6 +613,10 @@ export default function CipherLayout({
     setAnnotationStore(clearScopeAnnotations(annotationStore, annotationScope));
   };
 
+  if (cipher.id === "aes" || cipher.id === "camellia") {
+    traceOptions.mode = aesMode;
+  }
+
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6 px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8">
       {/* Title & Metadata Card */}
@@ -835,6 +840,20 @@ export default function CipherLayout({
                 options={optionsState}
                 result={result}
                 onImport={handleTraceImport}
+              />
+              <div className="mt-2" />
+              <ExportReportControls
+                cipherId={cipher.id}
+                direction={
+                  cipher.id === "dh"
+                    ? "encrypt"
+                    : action
+                }
+                input={input}
+                cipherKey={key}
+                options={traceOptions}
+                result={result}
+                currentStepIndex={currentStep}
               />
 
               {renderSpecificVisualizer()}
