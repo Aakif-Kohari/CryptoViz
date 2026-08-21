@@ -1,22 +1,37 @@
 import type { CipherStep } from '../cipher/types'
 
+const LATEX_TEXT_MAP: Record<string, string> = {
+  '\\': '\\textbackslash{}',
+  '{': '\\{',
+  '}': '\\}',
+  '$': '\\$',
+  '&': '\\&',
+  '#': '\\#',
+  '^': '\\textasciicircum{}',
+  '_': '\\_',
+  '%': '\\%',
+  '~': '\\textasciitilde{}'
+}
+const LATEX_TEXT_REGEX = /[\\{}$&#^_%~]/g
+
 /**
  * Escapes text for safe inclusion in standard LaTeX text mode.
  */
 export function escapeLatexText(text: string): string {
   if (!text) return ''
-  return text
-    .replace(/\\/g, '\\textbackslash{}')
-    .replace(/\{/g, '\\{')
-    .replace(/\}/g, '\\}')
-    .replace(/\$/g, '\\$')
-    .replace(/&/g, '\\&')
-    .replace(/#/g, '\\#')
-    .replace(/\^/g, '\\textasciicircum{}')
-    .replace(/_/g, '\\_')
-    .replace(/%/g, '\\%')
-    .replace(/~/g, '\\textasciitilde{}')
+  return text.replace(LATEX_TEXT_REGEX, (match) => LATEX_TEXT_MAP[match] || match)
 }
+
+const LATEX_MATH_MAP: Record<string, string> = {
+  '\\': '\\backslash{}',
+  '{': '\\{',
+  '}': '\\}',
+  '&': '\\&',
+  '%': '\\%',
+  '$': '\\$',
+  '#': '\\#'
+}
+const LATEX_MATH_REGEX = /[\\{}&%$#]/g
 
 /**
  * Escapes content intended for math mode (where e.g. _ and ^ are valid).
@@ -24,11 +39,7 @@ export function escapeLatexText(text: string): string {
  */
 export function escapeLatexMath(text: string): string {
   if (!text) return ''
-  return text
-    .replace(/&/g, '\\&')
-    .replace(/%/g, '\\%')
-    .replace(/\$/g, '\\$')
-    .replace(/#/g, '\\#')
+  return text.replace(LATEX_MATH_REGEX, (match) => LATEX_MATH_MAP[match] || match)
 }
 
 /**

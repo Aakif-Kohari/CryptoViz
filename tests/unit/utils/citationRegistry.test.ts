@@ -44,18 +44,33 @@ describe('citationRegistry', () => {
       expect(bibtex).toContain('year = {1978}')
     })
 
-    test('produces deterministic exact BibTeX output', () => {
+    test('produces deterministic exact BibTeX output for Hill', () => {
       const bibtex1 = citationToBibtex('hill', undefined)
       const bibtex2 = citationToBibtex('hill', undefined)
 
       expect(bibtex1).toBe(bibtex2)
-      expect(bibtex1).toBe(`@techreport{Hill1929,
+      expect(bibtex1).toBe(`@article{Hill1929,
   title = {Cryptography in an Algebraic Alphabet},
   author = {Hill, Lester S.},
   year = {1929},
+  journal = {The American Mathematical Monthly},
+  volume = {36},
+  pages = {306--312},
   publisher = {Mathematical Association of America},
+  number = {6},
   url = {https://doi.org/10.2307/2299285}
 }`)
+    })
+
+    test('produces correct BibTeX fields for RSA as an article', () => {
+      const bibtex = citationToBibtex('rsa', undefined)
+      expect(bibtex).not.toBeNull()
+      expect(bibtex).toContain('@article{RSA1978,')
+      expect(bibtex).toContain('journal = {Communications of the ACM},')
+      expect(bibtex).toContain('volume = {21},')
+      expect(bibtex).toContain('pages = {120--126},')
+      expect(bibtex).toContain('number = {2},')
+      expect(bibtex).toContain('publisher = {Association for Computing Machinery},')
     })
   })
 })

@@ -26,6 +26,13 @@ describe('latexExport', () => {
   })
 
   describe('matrixToLatex', () => {
+
+    test('escapes backslashes and curly braces in matrix cell values', () => {
+      const matrix = [['\\command{payload}']]
+      const expected = `\\begin{bmatrix}\n\\backslash{}\\command\\{payload\\}\n\\end{bmatrix}`
+      expect(matrixToLatex(matrix)).toBe(expected)
+    })
+
     test('handles empty matrix', () => {
       expect(matrixToLatex([])).toBe('\\begin{bmatrix}\n\\end{bmatrix}')
     })
@@ -82,7 +89,7 @@ describe('latexExport', () => {
     test('renders Hill 2x2 actual representation (matrix in step)', () => {
       const step: CipherStep = {
         index: 0,
-        label: 'Block 1 — \\'AB\\'',
+        label: "Block 1 — 'AB'",
         inputState: 'AB',
         outputState: 'XY',
         note: 'Some note with %',

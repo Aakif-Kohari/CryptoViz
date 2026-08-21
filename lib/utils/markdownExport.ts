@@ -2,6 +2,20 @@ import type { CipherTraceFile } from './cipherTrace'
 import { stepToLatex, escapeLatexText } from './latexExport'
 import { citationToBibtex } from './citationRegistry'
 
+function escapeMd(text: string): string {
+  if (!text) return ''
+  return text.replace(/[`*_{}[\]()#+\-.!]/g, '\\$&')
+}
+
+function getSafeCodeFence(content: string): string {
+  const match = content.match(/`+/g)
+  let max = 0
+  if (match) {
+    max = Math.max(...match.map(m => m.length))
+  }
+  return '`'.repeat(Math.max(3, max + 1))
+}
+
 /**
  * Converts an entire CipherTraceFile to a Markdown session document.
  * Only exports information actually present in the trace.
@@ -13,28 +27,31 @@ export function traceToMarkdown(trace: CipherTraceFile): string {
   lines.push('')
 
   lines.push('## Cipher')
-  lines.push(`**Name:** ${trace.metadata.name}`)
+  lines.push(`**Name:** ${escapeMd(trace.metadata.name)}`)
   if (trace.metadata.modeOfOperation) {
-    lines.push(`**Mode:** ${trace.metadata.modeOfOperation}`)
+    lines.push(`**Mode:** ${escapeMd(trace.metadata.modeOfOperation)}`)
   }
   lines.push(`**Direction:** ${trace.direction === 'encrypt' ? 'Encryption' : 'Decryption'}`)
   lines.push('')
 
   lines.push('## Input')
-  lines.push('```text')
+  const inFence = getSafeCodeFence(trace.input)
+  lines.push(inFence + 'text')
   lines.push(trace.input)
-  lines.push('```')
+  lines.push(inFence)
   lines.push('')
 
   lines.push('## Parameters')
-  lines.push(`**Key:** \`${trace.key}\``)
+  const safeKey = trace.key.replace(/`/g, '')
+  lines.push(`**Key:** \`${safeKey}\``)
 
   const optionsEntries = Object.entries(trace.options)
   if (optionsEntries.length > 0) {
     lines.push('')
     lines.push('**Options:**')
     optionsEntries.forEach(([k, v]) => {
-      lines.push(`- ${k}: \`${v}\``)
+      const safeV = String(v).replace(/`/g, '')
+      lines.push(`- ${escapeMd(k)}: \`${safeV}\``)
     })
   }
   lines.push('')
@@ -44,10 +61,10 @@ export function traceToMarkdown(trace: CipherTraceFile): string {
 
   if (trace.steps && trace.steps.length > 0) {
     trace.steps.forEach(step => {
-      lines.push(`### Step ${step.index + 1}: ${step.label}`)
+      lines.push(`### Step ${step.index + 1}: ${escapeMd(step.label)}`)
       if (step.note) {
         lines.push('')
-        lines.push(step.note)
+        lines.push(escapeMd(step.note))
       }
       lines.push('')
 
@@ -56,14 +73,13 @@ export function traceToMarkdown(trace: CipherTraceFile): string {
 
       // Output LaTeX representation
       const latex = stepToLatex(step, trace.cipherId)
-      // Remove any surrounding text-mode from stepToLatex to make it clean math block if it's purely math,
-      // but stepToLatex includes \text and \textbf which require a math environment to render properly in Markdown math blocks if they are not already.
-      // Wait, stepToLatex outputs lines intended for a LaTeX math block or standard text?
-      // Actually, stepToLatex uses \textbf and \text, which are valid inside a Math block (e.g. $$ ... $$) in KaTeX/MathJax.
-      // So we wrap the entire output in $$ ... $$
-      lines.push('$$')
-      lines.push(latex)
-      lines.push('$$')
+      if (latex.includes('\\[') || latex.includes('$$')) {
+        lines.push(latex)
+      } else {
+        lines.push('$$')
+        lines.push(latex)
+        lines.push('$$')
+      }
       lines.push('')
     })
   } else {
@@ -72,10 +88,11 @@ export function traceToMarkdown(trace: CipherTraceFile): string {
   }
 
   lines.push('## Final Result')
-  lines.push(`**Output Encoding:** ${trace.outputEncoding}`)
-  lines.push('```text')
+  lines.push(`**Output Encoding:** ${escapeMd(trace.outputEncoding)}`)
+  const outFence = getSafeCodeFence(trace.output)
+  lines.push(outFence + 'text')
   lines.push(trace.output)
-  lines.push('```')
+  lines.push(outFence)
   lines.push('')
 
   const bibtex = citationToBibtex(trace.cipherId, trace.metadata)

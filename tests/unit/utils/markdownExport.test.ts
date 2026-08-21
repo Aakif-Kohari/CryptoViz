@@ -4,9 +4,105 @@ import type { CipherTraceFile } from '../../../lib/utils/cipherTrace'
 
 describe('markdownExport', () => {
   describe('traceToMarkdown', () => {
+
+    test('reports AES mode in trace output', () => {
+      const trace: CipherTraceFile = {
+        schemaVersion: 1,
+        durationMs: 42,
+        timestamp: '2026-08-21T00:00:00.000Z',
+        cipherId: 'aes',
+        direction: 'encrypt',
+        input: 'IN',
+        key: 'KEY',
+        options: { mode: 'CBC' },
+        metadata: {
+          name: 'AES',
+          modeOfOperation: 'CBC',
+          securityStatus: 'secure',
+          provenance: { source: 'local', status: 'verified', verificationDetails: {} }
+        },
+        output: 'OUT',
+        outputEncoding: 'utf8',
+        steps: []
+      }
+      const md = traceToMarkdown(trace)
+      expect(md).toContain('**Mode:** CBC')
+      expect(md).toContain('- mode: \`CBC\`')
+    })
+
+
+    test('escapes Markdown metadata and generates safe code fences', () => {
+      const trace: CipherTraceFile = {
+        schemaVersion: 1,
+        durationMs: 42,
+        timestamp: '2026-08-21T00:00:00.000Z',
+        cipherId: 'dummy',
+        direction: 'encrypt',
+        input: 'data with `` backticks',
+        key: 'key_*#',
+        options: { '*mode': 'cbc' },
+        metadata: {
+          name: '*Cipher*',
+          securityStatus: 'secure',
+          provenance: { source: 'local', status: 'verified', verificationDetails: {} }
+        },
+        output: 'output ``` backticks',
+        outputEncoding: 'utf8',
+        steps: [
+          {
+            index: 0,
+            label: '# Header Note',
+            note: 'Important: *note*',
+            inputState: 'A',
+            outputState: 'B'
+          }
+        ]
+      }
+      const md = traceToMarkdown(trace)
+      expect(md).toContain('**Name:** \\*Cipher\\*')
+      expect(md).toContain('**Key:** \`key_\\*\\#\`')
+      expect(md).toContain('- \\*mode: \`cbc\`')
+      expect(md).toContain('### Step 1: \\# Header Note')
+      expect(md).toContain('Important: \\*note\\*')
+      expect(md).toContain('```text\ndata with `` backticks\n```')
+      expect(md).toContain('````text\noutput ``` backticks\n````')
+    })
+
+
+    test('does not nest display-math delimiters', () => {
+      const trace: CipherTraceFile = {
+        schemaVersion: 1,
+        durationMs: 42,
+        timestamp: '2026-08-21T00:00:00.000Z',
+        cipherId: 'dummy',
+        direction: 'encrypt',
+        input: 'IN',
+        key: 'KEY',
+        options: {},
+        metadata: {
+          name: 'Dummy',
+          securityStatus: 'secure',
+          provenance: { source: 'local', status: 'verified', verificationDetails: {} }
+        },
+        output: 'OUT',
+        outputEncoding: 'utf8',
+        steps: [
+          {
+            index: 0,
+            label: 'State',
+            matrix: [['1', '2'], ['3', '4']]
+          }
+        ]
+      }
+      const md = traceToMarkdown(trace)
+      expect(md).toContain('\\begin{bmatrix}')
+      expect(md).not.toContain('$')
+    })
+
     test('renders a complete trace with multiple steps', () => {
       const trace: CipherTraceFile = {
-        version: 1,
+        schemaVersion: 1,
+        durationMs: 42,
         timestamp: '2026-08-21T00:00:00.000Z',
         cipherId: 'caesar',
         direction: 'encrypt',
@@ -52,8 +148,8 @@ describe('markdownExport', () => {
       expect(md).toContain('## Steps')
       expect(md).toContain('### Step 1: Shift H')
       expect(md).toContain('Shifted by 3')
-      expect(md).toContain('- **Input:** `H`')
-      expect(md).toContain('- **Output:** `K`')
+      expect(md).toContain('Input State: \\texttt{H} \\\\')
+      expect(md).toContain('Output State: \\texttt{K} \\\\')
       expect(md).toContain('### Step 2: Shift E')
       expect(md).toContain('## Final Result')
       expect(md).toContain('KHOOR')
@@ -63,7 +159,8 @@ describe('markdownExport', () => {
 
     test('renders matrix as LaTeX', () => {
       const trace: CipherTraceFile = {
-        version: 1,
+        schemaVersion: 1,
+        durationMs: 42,
         timestamp: '2026-08-21T00:00:00.000Z',
         cipherId: 'hill',
         direction: 'encrypt',
@@ -90,19 +187,19 @@ describe('markdownExport', () => {
 
       const md = traceToMarkdown(trace)
 
-      expect(md).toContain('$$')
       expect(md).toContain('\\begin{bmatrix}')
       expect(md).toContain('1 & 2 \\\\')
       expect(md).toContain('3 & 4')
       expect(md).toContain('\\end{bmatrix}')
       expect(md).toContain('## References')
       expect(md).toContain('```bibtex')
-      expect(md).toContain('@techreport{Hill1929')
+      expect(md).toContain('@article{Hill1929')
     })
 
     test('handles missing optional fields safely', () => {
       const trace: CipherTraceFile = {
-        version: 1,
+        schemaVersion: 1,
+        durationMs: 42,
         timestamp: '2026-08-21T00:00:00.000Z',
         cipherId: 'unknown',
         direction: 'encrypt',
@@ -127,7 +224,8 @@ describe('markdownExport', () => {
 
     test('renders AES state correctly', () => {
       const trace: CipherTraceFile = {
-        version: 1,
+        schemaVersion: 1,
+        durationMs: 42,
         timestamp: '2026-08-21T00:00:00.000Z',
         cipherId: 'aes',
         direction: 'encrypt',
@@ -152,7 +250,6 @@ describe('markdownExport', () => {
       }
 
       const md = traceToMarkdown(trace)
-      expect(md).toContain('$$')
       expect(md).toContain('00 & 04 & 08 & 0C')
       expect(md).toContain('\\rightarrow')
       expect(md).toContain('10 & 14 & 18 & 1C')

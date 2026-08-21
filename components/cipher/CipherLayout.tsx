@@ -1129,6 +1129,10 @@ export default function CipherLayout({
     padding,
   };
 
+  if (cipher.id === "aes" || cipher.id === "camellia") {
+    traceOptions.mode = aesMode;
+  }
+
   return (
     <div className={`mx-auto flex max-w-7xl flex-col gap-6 px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8 ${isZenMode ? 'zen-mode-active' : ''}`}>
       {/* Title & Metadata Card */}
