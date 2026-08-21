@@ -37,6 +37,9 @@ jobs:
       - name: Run TypeScript type checking
         run: npm run typecheck
 
+      - name: Check Bundle Budgets
+        run: npm run check:budgets
+
       - name: Run tests
         run: npm test
 
