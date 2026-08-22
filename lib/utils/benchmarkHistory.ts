@@ -4,11 +4,19 @@ import {
   setItem,
 } from "./storage";
 import { reviveBenchmarkSession, reviveScalingResult } from "./dateReviver";
+import {
+  CRYPTOVIZ_BENCHMARK_HISTORY_KEY,
+  CRYPTOVIZ_SCALING_HISTORY_KEY,
+  CRYPTOVIZ_MAX_BENCHMARK_HISTORY,
+  CRYPTOVIZ_MAX_SCALING_HISTORY,
+} from "@/constants";
 
-export const BENCHMARK_HISTORY_KEY = "cryptoviz-benchmark-history";
-export const SCALING_HISTORY_KEY = "cryptoviz-scaling-history";
-export const MAX_BENCHMARK_HISTORY = 20;
-export const MAX_SCALING_HISTORY = 20;
+export {
+  CRYPTOVIZ_BENCHMARK_HISTORY_KEY as BENCHMARK_HISTORY_KEY,
+  CRYPTOVIZ_SCALING_HISTORY_KEY as SCALING_HISTORY_KEY,
+  CRYPTOVIZ_MAX_BENCHMARK_HISTORY as MAX_BENCHMARK_HISTORY,
+  CRYPTOVIZ_MAX_SCALING_HISTORY as MAX_SCALING_HISTORY,
+};
 
 export function loadBenchmarkHistory(): BenchmarkSession[] {
   const parsed = getItem<BenchmarkSession[]>(
@@ -32,7 +40,7 @@ export function addBenchmarkSession(
 ): BenchmarkSession[] {
   return [session, ...sessions.filter((item) => item.id !== session.id)].slice(
     0,
-    MAX_BENCHMARK_HISTORY,
+    CRYPTOVIZ_MAX_BENCHMARK_HISTORY,
   );
 }
 
@@ -60,6 +68,6 @@ export function addScalingResult(
 ): ScalingBenchmarkResult[] {
   return [result, ...history.filter((item) => item.cipherId !== result.cipherId)].slice(
     0,
-    MAX_SCALING_HISTORY,
+    CRYPTOVIZ_MAX_SCALING_HISTORY,
   );
 }
