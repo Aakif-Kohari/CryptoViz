@@ -873,6 +873,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     options: [{ name: 'Parameter Set', id: 'paramSet', type: 'select', default: '128-256', choices: [{ label: 'SKINNY-128-128 (40 rounds)', value: '128-128' }, { label: 'SKINNY-128-256 (48 rounds)', value: '128-256' }, { label: 'SKINNY-128-384 (56 rounds)', value: '128-384' }] }]
   },
   {
+    id: 'led',
+    name: 'LED',
+    category: 'symmetric',
+    description: 'Ultra-lightweight block cipher (CHES 2011). NO key schedule; raw user key XOR\'d into state every 4 rounds. AES-inspired SPN with 4-bit S-box. LED-64 and LED-128 variants.',
+    defaultKey: '0011223344556677',
+    defaultInput: '0001020304050607',
+    securityStatus: 'legacy',
+    keyPlaceholder: '16 or 32 hex characters (64 or 128-bit key)',
+    options: [{ name: 'Key Size', id: 'keySize', type: 'select', default: '64', choices: [{ label: 'LED-64 (64-bit key)', value: '64' }, { label: 'LED-128 (128-bit key)', value: '128' }] }]
+  },
+  {
     id: "sha256",
     name: "SHA-256",
     category: "hash",
