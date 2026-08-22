@@ -11,7 +11,10 @@ export function calculateMinEntropy(probabilities: number[]): number {
   return -Math.log2(maxP);
 }
 
-export function calculateUnicityDistance(keyEntropyBits: number, languageRedundancyBitsPerChar: number): number {
+export function calculateUnicityDistance(
+  keyEntropyBits: number,
+  languageRedundancyBitsPerChar: number
+): number {
   if (languageRedundancyBitsPerChar <= 0) return Infinity;
   return keyEntropyBits / languageRedundancyBitsPerChar;
 }

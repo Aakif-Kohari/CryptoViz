@@ -63,7 +63,7 @@ export default function ShannonEntropyWorkbench() {
       {/* Tab 1: Perfect Secrecy */}
       {activeTab === "secrecy" && (
         <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
-          <h2 className="text-lg font-bold text-zinc-900 dark:text-white">Shannon's Perfect Secrecy Theorem</h2>
+          <h2 className="text-lg font-bold text-zinc-900 dark:text-white">Shannon&apos;s Perfect Secrecy Theorem</h2>
           <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
             A cryptosystem has perfect secrecy if the posterior probability equals the prior probability: 
             $P(M=m | C=c) = P(M=m)$. This requires key space $|K| \geq |M|$.
@@ -138,9 +138,79 @@ export default function ShannonEntropyWorkbench() {
         <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
           <h2 className="text-lg font-bold text-zinc-900 dark:text-white">Shannon Entropy ($H$) vs. Min-Entropy ($H_\infty$)</h2>
           <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Min-entropy measures vulnerability against the worst-case guess, whereas Shannon entropy measures average uncertainty.
+            Min-entropy measures vulnerability against the worst-case single guess, whereas Shannon entropy measures average uncertainty across all possibilities.
           </p>
-          {/* Sample spectrum breakdown table or chart */}
+
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Example 1: Uniform Distribution */}
+            {(() => {
+              const dist = [0.25, 0.25, 0.25, 0.25];
+              const h = calculateShannonEntropy(dist);
+              const hInf = calculateMinEntropy(dist);
+              return (
+                <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">Uniform (e.g., Random Bytes)</h3>
+                  <div className="mt-3 flex flex-col gap-1 font-mono text-sm">
+                    <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
+                      <span>Shannon ($H$):</span>
+                      <span className="font-bold text-teal-600 dark:text-teal-400">{h.toFixed(2)} bits</span>
+                    </div>
+                    <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
+                      <span>Min ($H_\infty$):</span>
+                      <span className="font-bold text-teal-600 dark:text-teal-400">{hInf.toFixed(2)} bits</span>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-2xs text-zinc-500">Both metrics align because every outcome carries equal weight.</p>
+                </div>
+              );
+            })()}
+
+            {/* Example 2: Skewed Distribution */}
+            {(() => {
+              const dist = [0.7, 0.2, 0.08, 0.02];
+              const h = calculateShannonEntropy(dist);
+              const hInf = calculateMinEntropy(dist);
+              return (
+                <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">Skewed (e.g., English Letters)</h3>
+                  <div className="mt-3 flex flex-col gap-1 font-mono text-sm">
+                    <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
+                      <span>Shannon ($H$):</span>
+                      <span className="font-bold text-teal-600 dark:text-teal-400">{h.toFixed(2)} bits</span>
+                    </div>
+                    <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
+                      <span>Min ($H_\infty$):</span>
+                      <span className="font-bold text-amber-600 dark:text-amber-400">{hInf.toFixed(2)} bits</span>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-2xs text-zinc-500">Min-entropy drops lower due to the heavy bias of the most probable outcome ($70\%$ chance).</p>
+                </div>
+              );
+            })()}
+
+            {/* Example 3: Predictable Passwords */}
+            {(() => {
+              const dist = [0.9, 0.05, 0.03, 0.02];
+              const h = calculateShannonEntropy(dist);
+              const hInf = calculateMinEntropy(dist);
+              return (
+                <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">Predictable (e.g., Bad Passwords)</h3>
+                  <div className="mt-3 flex flex-col gap-1 font-mono text-sm">
+                    <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
+                      <span>Shannon ($H$):</span>
+                      <span className="font-bold text-teal-600 dark:text-teal-400">{h.toFixed(2)} bits</span>
+                    </div>
+                    <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
+                      <span>Min ($H_\infty$):</span>
+                      <span className="font-bold text-rose-600 dark:text-rose-400">{hInf.toFixed(2)} bits</span>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-2xs text-zinc-500">Extremely low min-entropy exposes systems to fast offline brute-force attacks on common guesses.</p>
+                </div>
+              );
+            })()}
+          </div>
         </div>
       )}
     </div>
