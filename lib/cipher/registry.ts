@@ -899,6 +899,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     ]
   },
   {
+    id: 'shabal',
+    name: 'Shabal',
+    category: 'hash',
+    description: 'SHA-3 finalist. Asymmetric permutation over a large rolling state (A, B, C registers). Stream-cipher-like update. Supports 192/224/256/384/512-bit output.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'experimental',
+    options: [{ name: 'Output Bits', id: 'outputBits', type: 'select', default: 256, choices: [{ label: '192-bit', value: 192 }, { label: '224-bit', value: 224 }, { label: '256-bit', value: 256 }, { label: '384-bit', value: 384 }, { label: '512-bit', value: 512 }] }]
+  },
+  {
     id: "sha512",
     name: "SHA-512",
     category: "hash",
