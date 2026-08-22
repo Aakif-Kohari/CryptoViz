@@ -3,24 +3,12 @@ import {
   safeGetItemJson,
   safeSetItemJson,
 } from "./storage";
+import { reviveBenchmarkSession, reviveScalingResult } from "./dateReviver";
 
 export const BENCHMARK_HISTORY_KEY = "cryptoviz-benchmark-history";
 export const SCALING_HISTORY_KEY = "cryptoviz-scaling-history";
 export const MAX_BENCHMARK_HISTORY = 20;
 export const MAX_SCALING_HISTORY = 20;
-
-function reviveSession(session: BenchmarkSession): BenchmarkSession {
-  return {
-    ...session,
-    timestamp: new Date(session.timestamp),
-    results: Array.isArray(session.results)
-      ? session.results.map((result) => ({
-          ...result,
-          timestamp: new Date(result.timestamp),
-        }))
-      : [],
-  };
-}
 
 export function loadBenchmarkHistory(): BenchmarkSession[] {
   const parsed = safeGetItemJson<BenchmarkSession[]>(
@@ -28,7 +16,7 @@ export function loadBenchmarkHistory(): BenchmarkSession[] {
     [],
     (val): val is BenchmarkSession[] => Array.isArray(val),
   );
-  return parsed.map(reviveSession);
+  return parsed.map(reviveBenchmarkSession);
 }
 
 export function saveBenchmarkHistory(sessions: BenchmarkSession[]): void {
@@ -49,13 +37,6 @@ export function addBenchmarkSession(
 }
 
 export { formatBytes } from "@/lib/formatters";
-
-function reviveScalingResult(result: ScalingBenchmarkResult): ScalingBenchmarkResult {
-  return {
-    ...result,
-    timestamp: new Date(result.timestamp),
-  };
-}
 
 export function loadScalingHistory(): ScalingBenchmarkResult[] {
   const parsed = safeGetItemJson<ScalingBenchmarkResult[]>(
