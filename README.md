@@ -465,6 +465,14 @@ We welcome contributions to CryptoViz. Please read [CONTRIBUTING.md](./CONTRIBUT
 - **To add a new doc**: Add a `.mdx` file to the content path with the required Zod frontmatter fields.
 - **To add a resource**: Update the static resource array database with verified HTTPS URLs.
 
+### Constants Naming Convention
+
+CryptoViz enforces a lint-friendly, centralized naming convention for application constants:
+
+- **Central Module**: All shared constants (storage keys, collection limits, event names, performance thresholds, and schema versions) are defined in [`constants/index.ts`](file:///c:/Users/Rushabh%20Mahajan/Documents/GitHub/CryptoViz/constants/index.ts) and exported via `@/constants`.
+- **`CRYPTOVIZ_` Prefix**: All global constants use UPPER_SNAKE_CASE prefixed with **`CRYPTOVIZ_`** (e.g., `CRYPTOVIZ_BENCHMARK_HISTORY_KEY`, `CRYPTOVIZ_MAX_FAVORITE_CIPHERS`, `CRYPTOVIZ_SPEEDUP_THRESHOLD`).
+- **No Hard-coded Strings**: Modules across the codebase import constants directly from `@/constants` to ensure maintainability, avoid magic strings, and satisfy linter rules.
+
 
 ---
 
