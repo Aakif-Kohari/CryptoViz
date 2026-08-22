@@ -42,6 +42,8 @@ const PATH_OVERRIDES: Record<string, string> = {
   "shake256": "../cipher/hash/shake.ts",
   'ripemd256': '../cipher/hash/ripemd256-320',
   'ripemd320': '../cipher/hash/ripemd256-320',
+  'lamport': '../cipher/asymmetric/lamport-wots',
+  'wots': '../cipher/asymmetric/lamport-wots',
 };
 
 const SPECIAL_DISPATCHERS: Record<string, () => Promise<CipherDispatcher>> = {

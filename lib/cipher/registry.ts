@@ -1765,4 +1765,25 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'recommended',
     options: [{ name: 'Leaf Index', id: 'leafIndex', type: 'number', default: 0 }]
   },
+  {
+    id: 'lamport',
+    name: 'Lamport OTS',
+    category: 'asymmetric',
+    description: 'Lamport One-Time Signature (1979). Hash-based: sign each bit of the message hash by revealing one of two pre-hashed secrets. ⚠ One-time use only. Foundational building block of XMSS.',
+    defaultKey: '00'.repeat(32),
+    defaultInput: '48656c6c6f',
+    securityStatus: 'secure',
+    keyPlaceholder: '64 hex characters (32-byte seed)',
+  },
+  {
+    id: 'wots',
+    name: 'Winternitz OTS',
+    category: 'asymmetric',
+    description: 'Winternitz One-Time Signature. Extends Lamport OTS using SHA-256 hash chains of length 2^w − 1. Predecessor of WOTS+ (XMSS) and LM-OTS (LMS). ⚠ One-time use only.',
+    defaultKey: '00'.repeat(32),
+    defaultInput: '48656c6c6f',
+    securityStatus: 'secure',
+    keyPlaceholder: '64 hex characters (32-byte seed)',
+    options: [{ name: 'Winternitz Parameter (w)', id: 'w', type: 'select', default: 4, choices: [{ label: 'w=2', value: 2 }, { label: 'w=4', value: 4 }, { label: 'w=8', value: 8 }] }]
+  },
 ];
