@@ -862,6 +862,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     options: [{ name: 'Mode', id: 'mode', type: 'select', default: 'cbc', choices: [{ label: 'CBC', value: 'cbc' }, { label: 'ECB', value: 'ecb' }] }]
   },
   {
+    id: 'midori',
+    name: 'MIDORI',
+    category: 'symmetric',
+    description: 'Energy-minimised lightweight block cipher (ASIACRYPT 2015). Bundle key schedule (k0, k1 alternated). Binary MixColumn (no GF multiplication). Lowest known energy-per-encryption.',
+    defaultKey: '00112233445566778899aabbccddeeff',
+    defaultInput: '0001020304050607',
+    securityStatus: 'secure',
+    keyPlaceholder: '32 hex characters (128-bit key)',
+    options: [{ name: 'Variant', id: 'variant', type: 'select', default: '64', choices: [{ label: 'MIDORI-64 (64-bit block)', value: '64' }, { label: 'MIDORI-128 (128-bit block)', value: '128' }] }]
+  },
+  {
     id: 'skinny',
     name: 'SKINNY-128',
     category: 'symmetric',
