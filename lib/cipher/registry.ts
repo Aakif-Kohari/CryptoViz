@@ -1786,4 +1786,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keyPlaceholder: '64 hex characters (32-byte seed)',
     options: [{ name: 'Winternitz Parameter (w)', id: 'w', type: 'select', default: 4, choices: [{ label: 'w=2', value: 2 }, { label: 'w=4', value: 4 }, { label: 'w=8', value: 8 }] }]
   },
+  {
+    id: 'hqc',
+    name: 'HQC',
+    category: 'asymmetric',
+    description: 'NIST PQC Round 4 Alternate. Code-based KEM (QC-MDPC). Ring arithmetic over GF(2)[X]/(X^n - 1). Decryption failure probability is a core security parameter. SHAKE256-backed.',
+    defaultKey: '00'.repeat(32),
+    defaultInput: '48656c6c6f',
+    securityStatus: 'recommended',
+    keyPlaceholder: '64 hex characters (32-byte seed)',
+  },
 ];
