@@ -20,7 +20,7 @@ export {
 
 export function loadBenchmarkHistory(): BenchmarkSession[] {
   const parsed = getItem<BenchmarkSession[]>(
-    CRYPTOVIZ_BENCHMARK_HISTORY_KEY,
+    BENCHMARK_HISTORY_KEY,
     [],
     (val): val is BenchmarkSession[] => Array.isArray(val),
   );
@@ -29,8 +29,8 @@ export function loadBenchmarkHistory(): BenchmarkSession[] {
 
 export function saveBenchmarkHistory(sessions: BenchmarkSession[]): void {
   setItem(
-    CRYPTOVIZ_BENCHMARK_HISTORY_KEY,
-    sessions.slice(0, CRYPTOVIZ_MAX_BENCHMARK_HISTORY),
+    BENCHMARK_HISTORY_KEY,
+    sessions.slice(0, MAX_BENCHMARK_HISTORY),
   );
 }
 
@@ -48,7 +48,7 @@ export { formatBytes } from "@/lib/formatters";
 
 export function loadScalingHistory(): ScalingBenchmarkResult[] {
   const parsed = getItem<ScalingBenchmarkResult[]>(
-    CRYPTOVIZ_SCALING_HISTORY_KEY,
+    SCALING_HISTORY_KEY,
     [],
     (val): val is ScalingBenchmarkResult[] => Array.isArray(val),
   );
@@ -57,8 +57,8 @@ export function loadScalingHistory(): ScalingBenchmarkResult[] {
 
 export function saveScalingHistory(results: ScalingBenchmarkResult[]): void {
   setItem(
-    CRYPTOVIZ_SCALING_HISTORY_KEY,
-    results.slice(0, CRYPTOVIZ_MAX_SCALING_HISTORY),
+    SCALING_HISTORY_KEY,
+    results.slice(0, MAX_SCALING_HISTORY),
   );
 }
 
