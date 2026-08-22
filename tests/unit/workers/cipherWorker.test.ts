@@ -104,13 +104,16 @@ describe("Worker Communication Suite", () => {
 
     // Verify the response
     expect(postMessageSpy).toHaveBeenCalled();
-    const response = postMessageSpy.mock.calls[0][0] as any;
+    const response = postMessageSpy.mock.calls
+      .map((c) => c[0])
+      .find((msg) => msg?.requestId === "req-unknown");
 
+    expect(response).toBeDefined();
     expect(response.success).toBe(false);
     expect(response.payload.errorCode).toBe("ALGORITHM_UNSUPPORTED");
-    expect(response.payload.errorMessage).toContain("fake-cipher-123");
+    expect(response.payload.error).toContain("fake-cipher-123");
   });
-});
+
   describe("Dynamic Cipher Module Lazy-Loading", () => {
     it("dynamically imports and executes a classical cipher module (caesar)", async () => {
       const caesarMod = await import("@/lib/cipher/classical/caesar");
@@ -140,3 +143,4 @@ describe("Worker Communication Suite", () => {
     });
   });
 });
+

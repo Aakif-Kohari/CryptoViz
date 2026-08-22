@@ -62,7 +62,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run unit tests
+      - name: Check Bundle Budgets
+        run: npm run check:budgets
+
+      - name: Run tests
         run: npm test
         env:
           CI: true
