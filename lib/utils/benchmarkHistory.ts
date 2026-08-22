@@ -1,7 +1,7 @@
 import type { BenchmarkSession, ScalingBenchmarkResult } from "@/types/benchmark";
 import {
-  safeGetItemJson,
-  safeSetItemJson,
+  getItem,
+  setItem,
 } from "./storage";
 import { reviveBenchmarkSession, reviveScalingResult } from "./dateReviver";
 
@@ -11,7 +11,7 @@ export const MAX_BENCHMARK_HISTORY = 20;
 export const MAX_SCALING_HISTORY = 20;
 
 export function loadBenchmarkHistory(): BenchmarkSession[] {
-  const parsed = safeGetItemJson<BenchmarkSession[]>(
+  const parsed = getItem<BenchmarkSession[]>(
     BENCHMARK_HISTORY_KEY,
     [],
     (val): val is BenchmarkSession[] => Array.isArray(val),
@@ -20,7 +20,7 @@ export function loadBenchmarkHistory(): BenchmarkSession[] {
 }
 
 export function saveBenchmarkHistory(sessions: BenchmarkSession[]): void {
-  safeSetItemJson(
+  setItem(
     BENCHMARK_HISTORY_KEY,
     sessions.slice(0, MAX_BENCHMARK_HISTORY),
   );
@@ -39,7 +39,7 @@ export function addBenchmarkSession(
 export { formatBytes } from "@/lib/formatters";
 
 export function loadScalingHistory(): ScalingBenchmarkResult[] {
-  const parsed = safeGetItemJson<ScalingBenchmarkResult[]>(
+  const parsed = getItem<ScalingBenchmarkResult[]>(
     SCALING_HISTORY_KEY,
     [],
     (val): val is ScalingBenchmarkResult[] => Array.isArray(val),
@@ -48,7 +48,7 @@ export function loadScalingHistory(): ScalingBenchmarkResult[] {
 }
 
 export function saveScalingHistory(results: ScalingBenchmarkResult[]): void {
-  safeSetItemJson(
+  setItem(
     SCALING_HISTORY_KEY,
     results.slice(0, MAX_SCALING_HISTORY),
   );
