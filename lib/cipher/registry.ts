@@ -886,6 +886,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     recommendedNext: ["hmac", "sha512", "bcrypt"],
   },
   {
+    id: 'bmw',
+    name: 'Blue Midnight Wish',
+    category: 'hash',
+    description: 'SHA-3 finalist. ARX double-pipe compression. No S-boxes, no MDS matrices, no field arithmetic. Supports 224/256/384/512-bit output.',
+    defaultKey: '',
+    defaultInput: '',
+    securityStatus: 'experimental',
+    options: [{ name: 'Output Bits', id: 'outputBits', type: 'select', default: 256, choices: [{ label: '256-bit', value: 256 }, { label: '384-bit', value: 384 }, { label: '512-bit', value: 512 }] }]
+  },
+  {
     id: 'cubehash',
     name: 'CubeHash',
     category: 'hash',
