@@ -5,7 +5,7 @@ import type { BenchmarkSession, BenchmarkResult } from "@/types/benchmark";
 import {
   exportSessionComparisonJSON,
   exportSessionComparisonCSV,
-} from "@/lib/utils/sessionComparison";
+} from "@/lib/utils/comparison";
 import { Download, Upload, FileCode, FileSpreadsheet, Check, AlertCircle } from "lucide-react";
 
 interface SessionExportImportProps {
