@@ -840,6 +840,17 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     keySize: '128/192/256',
   },
   {
+    id: 'twine',
+    name: 'TWINE',
+    category: 'symmetric',
+    description: 'Ultra-compact Type-2 Generalised Feistel cipher (NTT Japan, 2013). 64-bit block, 36 rounds, 4-bit S-box, nibble permutation diffusion. Targets hardware < 2000 GE.',
+    defaultKey: '00112233445566778899',
+    defaultInput: '0011223344556677',
+    securityStatus: 'legacy',
+    keyPlaceholder: '20 or 32 hex characters (80 or 128-bit key)',
+    options: [{ name: 'Key Size', id: 'keySize', type: 'select', default: '80', choices: [{ label: 'TWINE-80 (80-bit key)', value: '80' }, { label: 'TWINE-128 (128-bit key)', value: '128' }] }]
+  },
+  {
     id: 'cast128',
     name: 'CAST-128 (CAST5)',
     category: 'symmetric',
